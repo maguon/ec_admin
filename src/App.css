@@ -1,0 +1,1097 @@
+html,
+body {
+    position: relative;
+    height: 100%;
+    overflow-y: hidden;
+}
+
+body {
+    /* min-width: 1368px; */
+    /*background-color: #f2f4f8;*/
+    /*background: #f1f5f5;*/
+    overflow-x: auto;
+    font-size: 15px;
+}
+
+/*********************** 主画面 头部(header)样式 **********************/
+.header-icon {
+    margin-left: 30px;
+}
+
+.header-icon img {
+    position: absolute;
+    margin-top: -4px;
+    height: 36px;
+    width: 36px;
+    border-radius: 50%;
+    background: white;
+}
+
+.header-font {
+    margin-left: 70px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+/*********************** Material 左侧导航 组件 样式 **********************/
+
+/** 子菜单中间分割线 */
+.collapsible-body ul + ul {
+    border-top: 1px solid #e0e0e0;
+}
+
+/** 子菜单选中样式 */
+.selected-menu {
+    color: #fff;
+    /*background: -webkit-linear-gradient(45deg, #8e24aa, #ff6e40);*/
+    /*background:      -o-linear-gradient(45deg, #8e24aa, #ff6e40);*/
+    background: linear-gradient(45deg, #9866aa, #9866aa);
+    /*-webkit-box-shadow: 3px 3px 20px 0 rgba(255, 110, 64, .5);*/
+    /*box-shadow: 3px 3px 20px 0 rgba(255, 110, 64, .5);*/
+}
+
+/*********************** 主画面 主体部分(body)样式 **********************/
+.main-body {
+    /** header height 64px + footer height: 50px + margin-top: 2px = 116px */
+    height: calc(100% - 116px);
+    overflow-y: auto;
+    margin-top: 2px;
+    padding-top: 20px;
+}
+
+/** 主画面 底部(footer)样式 */
+.footer {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    height: 50px;
+    z-index: 10;
+    background: #6F6B83;
+    padding-top: 12px;
+    text-align: right;
+}
+
+.footer-msg {
+    color: white;
+    padding-right: 20px;
+    font-size: 15px;
+}
+
+/*********************** 各个主画面 共通部分 样式 **********************/
+
+/* Position */
+.position-relative {
+    position: relative;
+}
+
+.position-absolute {
+    position: absolute;
+}
+
+/* display */
+.display-block {
+    display: block !important;
+}
+
+.display-none {
+    display: none !important;
+}
+
+/** col 后 自定义宽度 */
+.s-percent-5 {
+    width: 5%;
+}
+
+.s-percent-10 {
+    width: 10%;
+}
+
+.s-percent-1-8 {
+    width: 12.5%;
+}
+
+.s-percent-20 {
+    width: 20%;
+}
+
+/* Margin 0 & Padding 0 */
+.no-margin {
+    margin: 0 !important;
+}
+
+.no-padding {
+    padding: 0 !important;
+}
+
+/** 自定义-全画面布局位置样式(调整布局用 margin padding) */
+.margin-top5 {
+    margin-top: 5px;
+}
+
+.margin-top8 {
+    margin-top: 8px !important;
+}
+
+.margin-top10 {
+    margin-top: 10px !important;
+}
+
+.margin-top15 {
+    margin-top: 15px !important;
+}
+
+.margin-top20 {
+    margin-top: 20px;
+}
+
+.margin-top30 {
+    margin-top: 30px;
+}
+
+.margin-top40 {
+    margin-top: 40px;
+}
+
+.margin-bottom0 {
+    margin-bottom: 0 !important;
+}
+
+.margin-bottom8 {
+    margin-bottom: 8px !important;
+}
+
+.margin-bottom15 {
+    margin-bottom: 15px !important;
+}
+
+.margin-left5 {
+    margin-left: 5px;
+}
+
+.margin-left10 {
+    margin-left: 10px;
+}
+
+.margin-left20 {
+    margin-left: 30px !important;
+}
+
+.margin-left30 {
+    margin-left: 30px !important;
+}
+
+.margin-left50 {
+    margin-left: 50px !important;
+}
+
+.margin-left150 {
+    margin-left: 150px !important;
+}
+
+.margin-right10 {
+    margin-right: 10px !important;
+}
+
+.margin-right20 {
+    margin-right: 20px !important;
+}
+
+.margin-right50 {
+    margin-right: 50px !important;
+}
+
+.margin-right150 {
+    margin-right: 150px !important;
+}
+
+.padding-left0 {
+    padding-left: 0 !important;
+}
+
+.padding-left5 {
+    padding-left: 5px !important;
+}
+
+.padding-left10 {
+    padding-left: 10px !important;
+}
+
+.padding-left20 {
+    padding-left: 20px !important;
+}
+
+.padding-left50 {
+    padding-left: 50px !important;
+}
+
+.padding-left80 {
+    padding-left: 80px !important;
+}
+
+.padding-left90 {
+    padding-left: 90px !important;
+}
+
+.padding-right0 {
+    padding-right: 0 !important;
+}
+
+.padding-right5 {
+    padding-right: 5px !important;
+}
+
+.padding-right10 {
+    padding-right: 10px !important;
+}
+
+.padding-right20 {
+    padding-right: 20px !important;
+}
+
+.padding-right50 {
+    padding-right: 50px !important;
+}
+
+.padding-top5 {
+    padding-top: 5px !important;
+}
+
+.padding-top10 {
+    padding-top: 10px !important;
+}
+
+.padding-top15 {
+    padding-top: 15px !important;
+}
+
+.padding-top20 {
+    padding-top: 20px !important;
+}
+
+.padding-bottom0 {
+    padding-bottom: 0 !important;
+}
+
+.padding-bottom10 {
+    padding-bottom: 10px !important;
+}
+
+.padding-bottom15 {
+    padding-bottom: 15px !important;
+}
+
+.padding-bottom20 {
+    padding-bottom: 20px !important;
+}
+
+/** 自定义-全画面字体大小 */
+.bold-font {
+    font-weight: bold;
+}
+
+.fz12 {
+    font-size: 12px;
+}
+
+.fz14 {
+    font-size: 14px;
+}
+
+.fz15 {
+    font-size: 15px !important;
+}
+
+.fz16 {
+    font-size: 16px;
+}
+
+.fz18 {
+    font-size: 18px;
+}
+
+.fz20 {
+    font-size: 20px;
+}
+
+.fz24 {
+    font-size: 24px;
+}
+
+.fz30 {
+    font-size: 30px;
+}
+
+.height-60 {
+    height: 60px !important;
+}
+
+.height-90 {
+    height: 90px !important;
+}
+
+.height-400 {
+    height: 400px !important;
+}
+
+.user-title-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 100%;
+    font-size: 40px;
+}
+
+/** 数据过长时，隐藏部分内容 */
+.text-ellipsis {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/*********************** Material样式 重定义 **********************/
+.vc-center {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+.input-field {
+    margin-bottom: 0;
+}
+
+.custom-input-field {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-top: 0 !important;
+}
+
+.no-helper-input .input-field .helper-text {
+    display: none !important;
+}
+
+/** Material switch 组件 样式 */
+.switch label input[type=checkbox]:checked + .lever {
+    background-color: #D483B8
+}
+
+.switch label input[type=checkbox]:checked + .lever:after {
+    background-color: #ffffff
+}
+
+/** Material Tab 组件 样式 */
+/*.tabs {*/
+/*    position: relative;*/
+/*    overflow-x: auto;*/
+/*    overflow-y: hidden;*/
+/*    height: 48px;*/
+/*    width: 100%;*/
+/*    background-color: #fff;*/
+/*    margin: 0 auto;*/
+/*    white-space: nowrap;*/
+/*    border-bottom: 1px solid #D9BEDD;*/
+/*}*/
+
+/*.tabs .tab {*/
+/*    display: inline-block;*/
+/*    text-align: center;*/
+/*    line-height: 48px;*/
+/*    height: 48px;*/
+/*    padding: 0;*/
+/*    margin: 0;*/
+/*}*/
+
+/*.tabs .tab a {*/
+/*    color: grey;*/
+/*    display: block;*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*    padding: 0 24px;*/
+/*    font-size: 14px;*/
+/*    text-overflow: ellipsis;*/
+/*    overflow: hidden;*/
+/*    -webkit-transition: color .28s ease;*/
+/*    transition: color .28s ease;*/
+/*}*/
+
+/*.tabs .tab:hover {*/
+/*    background-color: transparent;*/
+/*    color: #724278;*/
+/*}*/
+
+/*.tabs .tab.active {*/
+/*    background-color: #724278;*/
+/*    color: white !important;*/
+/*}*/
+
+/*.tabs .tab.disabled a,*/
+/*.tabs .tab.disabled a:hover {*/
+/*    color: grey;*/
+/*    cursor: default;*/
+/*}*/
+
+/*.tabs .indicator {*/
+/*    position: absolute;*/
+/*    bottom: 0;*/
+/*    height: 0;*/
+/*    will-change: left, right;*/
+/*}*/
+
+.tabs .tab.active {
+    background-color: rgba(246,178,181,0.2);
+    outline: none;
+}
+
+table.striped > tbody > tr:nth-child(odd) {
+    background-color: #F7F6F9 !important;
+}
+
+[type="checkbox"].filled-in:checked + label:after {
+    top: 0;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #D483B8;
+    background-color: #D483B8;
+    z-index: 0;
+}
+
+[type="checkbox"].filled-in.tabbed:focus + label:after {
+    border-radius: 2px;
+    border-color: #5a5a5a;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+[type="checkbox"].filled-in.tabbed:checked:focus + label:after {
+    border-radius: 2px;
+    background-color: #D483B8;
+    border-color: #D483B8;
+}
+
+[type="radio"]:checked + label:after, [type="radio"].with-gap:checked + label:before, [type="radio"].with-gap:checked + label:after {
+    border: 2px solid #D483B8;
+}
+
+[type="radio"]:checked + label:after, [type="radio"].with-gap:checked + label:after {
+    background-color: #D483B8;
+}
+
+[type="radio"]:checked + label:after, [type="radio"].with-gap:checked + label:before, [type="radio"].with-gap:checked + label:after {
+    border: 2px solid #D483B8;
+}
+
+/*********************** 各个主画面 具体样式 **********************/
+
+/** 画面加载样式 start */
+.c-loader-wrapper {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 10000000000;
+}
+
+.c-loader-box {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.c-loader-circle {
+    width: 9em;
+    height: 9em;
+}
+
+/** 标题：画面主体部分，标题样式 */
+.page-title {
+    font-weight: bold;
+    font-size: 20px;
+    color: #724278 !important;
+}
+
+/** 检索画面：条件部分样式 */
+.search-condition-box {
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+}
+
+/** 检索画面：列表画面 操作按钮 样式 */
+.operation {
+    padding: 8px 5px 8px 5px;
+}
+
+.operation i {
+    font-size: 22px;
+}
+
+/* 照片 */
+.picture-list {
+    height: 200px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    font-size: 100px;
+    min-width: 200px;
+}
+
+img.responsive-img {
+    max-width: 100%;
+    height: auto;
+}
+
+.img-box{
+    height: 202px;
+    width: 202px;
+}
+
+.video-box{
+    height: 400px;
+    width: 700px;
+}
+
+/* video.js 显示当前的播放时间，以及总共视频时长 */
+.video-js .vjs-time-control {
+    display: block !important;
+}
+
+/* video.js 默认倒序显示时间，也就是视频播放的剩余时间。 */
+.video-js .vjs-remaining-time {
+    display: none !important;
+}
+
+/* 统计画面用*/
+.statistic-half-page {
+    min-width: 400px;
+    height: 350px;
+    padding-top: 80px;
+}
+
+.table-icon {
+    position: absolute;
+    right: 12px;
+    bottom: 10px;
+}
+/**********************************************  下面内容不确定保留  *************************************************/
+
+/** 自定义-全画面布局边框样式(border) start */
+.detail-box {
+    border: 1px solid #D4D4D4;
+}
+
+.grey-border {
+    border-top: 1px solid #D4D4D4;
+}
+
+.no-border-top {
+    border-top: 0 !important;
+}
+
+.table-top-line {
+    border-top: 2px solid #D4D4D4;
+}
+
+.border-top-line {
+    border-top: 1px solid #D4D4D4;
+}
+
+.border-right-line {
+    border-right: 1px solid #D4D4D4;
+}
+
+.border-right-pink-line {
+    border-right: 1px solid #D9BEDD;
+}
+
+.border-bottom-line {
+    border-bottom: 1px solid #D4D4D4;
+}
+
+.border-bottom-dotted-line {
+    border-bottom: 1px dotted #D4D4D4;
+}
+
+.border-left-line {
+    border-left: 1px solid #D4D4D4;
+}
+
+.no-border-bottom {
+    border-bottom: 0 !important;
+    -webkit-box-shadow: 0 0 0 0 #26a69a !important;
+}
+
+/** 自定义粗分割线(画面标题部分用) */
+.custom-divider {
+    background: #D9BEDD;
+    height: 2px;
+}
+
+.bold-divider {
+    background: #ccc;
+    height: 2px;
+}
+
+.grey-divider {
+    background: #D4D4D4;
+}
+
+/** 虚分割线 */
+.dotted-line {
+    height: 1px;
+    border-bottom: 1px dotted #ccc;
+    width: calc(100% - 20px);
+    margin-left: 10px;
+}
+
+/** 自定义-全画面布局边框样式(border) end */
+
+
+/** 自定义-全画面颜色样式(字体颜色，背景颜色) start */
+.purple-font {
+    color: #724278 !important;
+}
+
+.pink-font {
+    color: #D483B8 !important;
+}
+
+.blue-font {
+    color: #0C6CC3 !important;
+}
+
+.red-font {
+    color: #F44336;
+}
+
+.custom-purple {
+    background-color: #724278 !important;
+}
+
+.custom-pink {
+    background-color: #D483B8 !important;
+}
+
+.custom-grey {
+    background-color: #F7F6F9 !important;
+}
+
+.custom-dark-grey {
+    background-color: #F0EFF4 !important;
+}
+
+
+/** TODO 自定义-全画面按钮/图标样式 start */
+.btn {
+    background: #724278;
+}
+
+.btn:focus {
+    background-color: #6E2678 !important;
+    color: white;
+}
+
+.btn:hover {
+    background-color: #6E2678 !important;
+    color: white;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.confirm-btn {
+    width: 110px;
+    padding: 0 10px !important;
+    background-color: #724278;
+}
+
+.confirm-btn:hover {
+    background: #6E2678;
+}
+
+.close-btn {
+    width: 110px;
+    background-color: #9E9E9E;
+}
+
+.close-btn:hover {
+    background: #8D8D8D !important;
+}
+
+.custom-btn {
+    width: 110px;
+    padding: 0 10px !important;
+    color: #C54C88;
+    background-color: white;
+    border: 1px solid #C54C88;
+}
+
+.custom-btn:hover {
+    background-color: #efefef !important;
+    color: #C54C88;
+}
+
+.custom-btn:focus {
+    background-color: #efefef !important;
+    color: #C54C88;
+}
+
+.orange-btn {
+    width: 110px;
+    padding: 0 10px !important;
+    background-color: #fea353 !important;
+}
+
+.orange-btn:hover {
+    background: #febc60 !important;
+}
+
+.orange-btn:focus {
+    background-color: #febc60 !important;
+    color: white;
+}
+
+.purple-btn {
+    padding: 0 10px !important;
+    color: #724278;
+    background-color: white;
+    border: 1px solid #724278;
+}
+
+.purple-btn:hover {
+    background-color: #efefef !important;
+    color: #724278;
+}
+
+.purple-btn:focus {
+    background-color: #efefef !important;
+    color: #724278;
+}
+
+.query-btn {
+    margin-left: 20px;
+    margin-right: 10px;
+    background-color: #724278;
+}
+
+.btn-height24 {
+    line-height: 24px !important;
+    height: 24px !important;
+}
+
+.small-btn {
+    width: 32px;
+    height: 32px;
+}
+
+.small-icon {
+    font-size: 20px !important;
+    line-height: 20px !important;
+}
+
+.tiny-btn {
+    width: 24px;
+    height: 24px;
+}
+
+.tiny-icon {
+    font-size: 18px !important;
+    line-height: 18px !important;
+}
+
+.add-btn {
+    margin-right: 10px;
+    background-color: #D483B8;
+}
+
+.add-btn:hover {
+    background-color: #c578a9 !important;
+}
+
+.detail-btn {
+    height: 32px;
+    line-height: 32px;
+    font-size: 12px;
+    padding: 0 18px;
+}
+
+/** 确认图标 样式 */
+.confirm-icon {
+    position: absolute;
+    right: 12px;
+    bottom: 20px;
+}
+
+/** 日期控件 图标 样式 */
+.data-icon {
+    position: absolute;
+    right: 12px;
+    bottom: 38px;
+}
+
+.data-clear-icon {
+    position: absolute;
+    right: 32px;
+    bottom: 38px;
+}
+
+.date-icon {
+    position: absolute;
+    right: 12px;
+    bottom: 10px;
+}
+
+/** 自定义-全画面按钮/图标样式 end */
+
+
+/** 自定义-全画面列表部分样式补充 start */
+.no-data-tr {
+    letter-spacing: 2px;
+    text-align: center;
+}
+
+
+/** 固定表格样式 */
+.fixed-table {
+    width: 100%;
+    display: table;
+    table-layout: fixed;
+}
+
+
+.message-td {
+    width: 600px;
+}
+
+.ellipsis-td {
+    width: 300px;
+}
+
+.must-input {
+    color: #F44336;
+    margin-right: 3px !important;
+}
+
+.word-wrap {
+    overflow: hidden;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+/** 自定义-全画面列表部分样式补充 end */
+
+
+/** modal 样式定义部分 start */
+.custom-modal {
+    min-width: 900px;
+    z-index: 1000 !important;
+    background: white;
+}
+
+.modal-overlay {
+    z-index: 999 !important;
+}
+
+/* modal 画面 主体 样式 */
+.modal-content {
+    position: relative !important;
+    padding: 0 !important;
+}
+
+/* modal 画面 header 样式 */
+.modal-content h4 {
+    height: 50px;
+    font-size: 20px;
+    color:#fff !important;
+    text-align:center;
+    line-height: 50px;
+    background-color: #724278;
+}
+
+/* modal 画面 footer 样式 */
+.modal .modal-footer {
+    padding: 4px 20px;
+}
+
+/* modal 个别画面特殊设定 */
+#newAdminModal {
+    max-height: 400px;
+}
+
+#messageModal,#newFakeUserModal {
+    max-height: 450px;
+}
+/** modal 样式定义部分 end */
+
+
+/** 卡片布局时，数据列表样式(城市设置画面) */
+.card-unit {
+    margin-top: 8px;
+    margin-bottom: 10px;
+    color: #B6598F;
+    border: 1px solid #DCAFC9;
+}
+
+/** 线路设置画面：卡片布局时，数据列表样式 */
+.route-card {
+    margin-bottom: 15px;
+    /*border: 1px solid #A799A8;*/
+    /*color: #846B8A;*/
+    border: 1px solid #DCAFC9;
+    color: #B6598F;
+    background: white;
+    width: 100%;
+    height: 56px;
+    font-size: 10px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.route-card-div {
+    height: 20px;
+    line-height: 15px;
+    margin-top: 5px;
+}
+
+/** react select 错误信息样式 */
+.error-msg {
+    position: relative;
+    min-height: 18px;
+    display: block;
+    font-size: 12px;
+    color: #F44336;
+}
+
+
+/******* React Table footer 部分 select 控件 显示 ****/
+.ReactTable select {
+    display: block !important;
+}
+
+
+
+.material-icons {
+    font-family: 'Material Icons';
+    font-size: 24px;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    /* Preferred icon size */
+
+    display: inline-block;
+
+    white-space: nowrap;
+    letter-spacing: normal;
+    text-transform: none;
+    word-wrap: normal;
+
+    direction: ltr;
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+    /* Support for IE. */
+    -webkit-font-feature-settings: 'liga';
+    -moz-font-feature-settings: 'liga';
+    font-feature-settings: 'liga';
+}
+
+
+/*----------------------------------------
+	Dropdown  TODO delete
+------------------------------------------*/
+.dropdown-content li:hover,
+.dropdown-content li.active {
+    background-color: #eee;
+}
+
+.dropdown-content li > a,
+.dropdown-content li > span {
+    padding: 14px 24px;
+}
+
+.dropdown-content li > a:hover,
+.dropdown-content li > a.active,
+.dropdown-content li > span:hover,
+.dropdown-content li > span.active {
+    background-color: #eee;
+}
+
+.dropdown-content li > a > i {
+    width: 24px;
+    margin: 0 12px 0 0;
+}
+
+
+
+.material-icons {
+    font-family: 'Material Icons';
+    font-size: 24px;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    /* Preferred icon size */
+
+    display: inline-block;
+
+    white-space: nowrap;
+    letter-spacing: normal;
+    text-transform: none;
+    word-wrap: normal;
+
+    direction: ltr;
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+    /* Support for IE. */
+    -webkit-font-feature-settings: 'liga';
+    -moz-font-feature-settings: 'liga';
+    font-feature-settings: 'liga';
+}
+
+/* Rules for sizing the icon. */
+.material-icons.md-18 {
+    font-size: 18px;
+}
+
+.material-icons.md-24 {
+    font-size: 24px;
+}
+
+.material-icons.md-36 {
+    font-size: 36px;
+}
+
+.material-icons.md-48 {
+    font-size: 48px;
+}
+
+/* Rules for using icons as black on a light background. */
+.material-icons.md-dark {
+    color: rgba(0, 0, 0, .54);
+}
+
+.material-icons.md-dark.md-inactive {
+    color: rgba(0, 0, 0, .26);
+}
+
+/* Rules for using icons as white on a dark background. */
+.material-icons.md-light {
+    color: white;
+}
+
+.material-icons.md-light.md-inactive {
+    color: rgba(255, 255, 255, .3);
+}
