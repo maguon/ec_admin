@@ -2,6 +2,7 @@ import {handleActions} from 'redux-actions';
 import {MainPanelActionType} from '../../types';
 
 const initialState = {
+    startDate: '2020-01-01',
     // 今日新增用户数
     todayUserCount: 0,
 
@@ -52,6 +53,14 @@ export default handleActions({
         return {
             ...state,
             msgList: action.payload
+        }
+    }
+
+    ,
+    [MainPanelActionType.setStartDate]: (state, action) => {
+        return {
+            ...state,
+            startDate: action.payload
         }
     }
 }, initialState);

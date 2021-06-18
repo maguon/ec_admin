@@ -1,10 +1,11 @@
 import React ,{Fragment,useEffect,useState}from 'react';
 import {connect} from 'react-redux';
-import {AppBar,Box,Button,Container,Divider,Grid,Table,TableBody,TableCell,TableContainer,TableHead,TablePagination,TableRow,TableSortLabel,Paper,Toolbar,Typography} from '@material-ui/core';
+import {AppBar,Box,TextField,Button,Container,Divider,Grid,Table,TableBody,TableCell,TableContainer,TableHead,TablePagination,TableRow,TableSortLabel,Paper,Toolbar,Typography} from '@material-ui/core';
 import Swal from 'sweetalert2';
 import { makeStyles } from '@material-ui/core/styles';
 import {SimpleModal} from '../'
-import {AppActionType} from '../../types'
+import {AppActionType, MainPanelActionType} from '../../types'
+
 const mainPanelAction = require('../../actions/main/MainPanelAction');
 
 
@@ -23,7 +24,7 @@ paper: {
 // 综合页面
 function MainPanel (props) {
     const [modalOpen, setModalOpen] = React.useState(false);
-    const {mainPanelReducer,getUserMsg} = props;
+    const {mainPanelReducer,getUserMsg, setSelectedDate} = props;
     const classes = useStyles();
 
     useEffect(()=>{
@@ -38,6 +39,18 @@ function MainPanel (props) {
         },1000);
         
     }
+
+    const handleDateChange = (event) => {
+        console.log('',event);
+        setSelectedDate(event);
+        // setSelectedDate(event.target.value);
+    };
+
+    const handleChangeTextDate = (event) => {
+        console.log('',event);
+        setSelectedDate(event.target.value);
+    };
+
     return (
         <Container maxWidth={'xl'}  style={{paddingBottom:50}} >
             <Box my={2}>
@@ -70,12 +83,8 @@ function MainPanel (props) {
                     </Grid>
                     <Grid item lg={4} sm={12} xs={12}>
                         <Paper className={classes.paper} elevation={3}>
-                            <Typography variant="body2">用户数</Typography>
-                            <Typography variant="body2">
-                                <Button variant="contained" onClick={()=>{setModalOpen(true)}} color="primary">
-                                    打开对话框
-                                </Button>
-                            </Typography>
+                            <TextField label="年份(始)" fullWidth={true} margin={'normal'} type="datetime-local"
+                                       value={mainPanelReducer.startDate} onChange={handleChangeTextDate}/>
                         </Paper>
                     </Grid>
                 </Grid>
@@ -159,7 +168,11 @@ const mapDispatchToProps = (dispatch) => ({
     },
     getUserMsg :(params)=>{
         dispatch(mainPanelAction.getUserMsg(params));
-    }
+    },
+    setSelectedDate :(params)=>{
+        console.log('setSelectedDate is : ', params);
+        dispatch(MainPanelActionType.setStartDate(params));
+    },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MainPanel)
