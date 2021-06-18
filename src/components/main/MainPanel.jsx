@@ -80,7 +80,7 @@ function MainPanel (props) {
                     </Grid>
                 </Grid>
                 <TableContainer component={Paper} style={{marginTop:40}}>
-                    <Table  size={'middle'} aria-label="a dense table">
+                    <Table  size={'medium'} aria-label="a dense table">
                         <TableHead >
                         <TableRow style={{height:60}}>
                             <TableCell align="center">文章编号</TableCell>

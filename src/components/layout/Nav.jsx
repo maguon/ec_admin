@@ -43,7 +43,7 @@ function Nav (props) {
     return (
         <>
             <Drawer anchor="left" open={appReducer.showDrawerFlag} onClose={toggleDrawer(false)}>
-                <div style={{width: 250,overflow:"hidden"}} role="presentation"   >
+                <div style={{width: 250}} role="presentation"   >
                 <Box style={{padding:16,
                         alignItems: 'center',
                         display: 'flex',
