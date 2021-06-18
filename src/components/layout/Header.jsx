@@ -70,7 +70,7 @@ function Header (props) {
                 </IconButton>
                 <div >                        
                     <Typography  variant="h6" noWrap>
-                        <img   style={{width:36,paddingTop:6}} src="/logo120.png" alt=""/>
+                        <img   style={{width:36,paddingTop:6}} src="/logo_reverse120.png" alt=""/>
                     </Typography>
                 </div>
 
