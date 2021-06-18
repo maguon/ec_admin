@@ -39,7 +39,7 @@ function MainPanel (props) {
         
     }
     return (
-        <Container maxWidth={'xl'} style={{paddingBottom:50}} >
+        <Container maxWidth={'xl'}  style={{paddingBottom:50}} >
             <Box my={2}>
             
                 <Typography variant="body1" style={{paddingTop:10,paddingBottom:10}}>

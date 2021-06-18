@@ -33,7 +33,8 @@ class Login extends React.Component {
                     alignItems:"center"
             }}>
             <Container maxWidth="sm" style={{paddingTop:80}}>
-                <Typography color="textPrimary" variant="h2" >{webName}</Typography>
+                <Typography color="textPrimary" variant="h2" align="center" ><img   style={{paddingTop:6}} src="/logo120.png" alt=""/></Typography>
+                <Typography color="textPrimary" variant="h2" align="center">{webName}</Typography>
                 <form>
                     <TextField fullWidth
                         label="用户名"
