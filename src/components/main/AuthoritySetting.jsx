@@ -19,6 +19,11 @@ const sysConst = require('../../utils/SysConst');
 
 const useStyles = makeStyles((theme) => ({
     // 标题样式
+    root: {
+        width: `calc(100% - 50px)`,
+        paddingLeft: 30
+    },
+    // 标题样式
     pageTitle: {
         color: '#3C3CC4',
         fontSize: 20,
@@ -61,7 +66,7 @@ function AuthoritySetting (props) {
 
 
     return (
-        <div>
+        <div className={classes.root}>
             {/* 标题部分 */}
             <Typography gutterBottom className={classes.pageTitle}>权限设置</Typography>
             <Divider light className={classes.pageDivider}/>
@@ -86,7 +91,9 @@ function AuthoritySetting (props) {
 
                 {/*查询按钮*/}
                 <Grid item xs={1}>
-                    <IconButton className={classes.addButton} onClick={queryMenuList}><Icon>search</Icon></IconButton>
+                    <IconButton className={classes.addButton} onClick={queryMenuList}>
+                        <i className="mdi mdi-magnify mdi-24px" />
+                    </IconButton>
                 </Grid>
             </Grid>
 
@@ -126,7 +133,7 @@ function AuthoritySetting (props) {
                                                         onChange={() => {changeMenu(index, key)}}
                                                     />
                                                 }
-                                                label={menu.label}
+                                                label={menu.name}
                                             />
                                         </Grid>
                                     )

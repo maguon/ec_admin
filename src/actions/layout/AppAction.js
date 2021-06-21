@@ -34,8 +34,13 @@ export const getCurrentUserMenu = () => async (dispatch) => {
 
         // 发送 get 请求
         const res = await httpUtil.httpGet(url);
+        console.log()
         if (res.success === true) {
-            dispatch({type: AppActionType.setCurrentUserMenu, payload: res.result[0].menu_list})
+            if (res.result[0].menu_list.length > 0) {
+                dispatch({type: AppActionType.setCurrentUserMenu, payload: res.result[0].menu_list})
+            } else {
+                dispatch({type: AppActionType.setCurrentUserMenu, payload: sysConst.ALL_PAGE_LIST});
+            }
         } else if (res.success === false) {
             Swal.fire('查询失败', res.msg, 'warning');
         }

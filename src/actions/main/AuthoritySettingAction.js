@@ -19,14 +19,12 @@ export const getMenuList = () => async (dispatch, getState) => {
 
         dispatch({type: AuthoritySettingActionType.setCurrentUserType, payload: conditionUserType});
         if (res.success) {
-            console.log('sysConst.ALL_PAGE_LIST',sysConst.ALL_PAGE_LIST);
-            if (res.result.menu_list.length > 0) {
-                dispatch({type: AuthoritySettingActionType.setMenuList, payload: res.result.menu_list});
+            if (res.result[0].menu_list.length > 0) {
+                dispatch({type: AuthoritySettingActionType.setMenuList, payload: res.result[0].menu_list});
             } else {
                 dispatch({type: AuthoritySettingActionType.setMenuList, payload: sysConst.ALL_PAGE_LIST});
             }
-
-            console.log('currentMenu',getState().AuthoritySettingReducer.currentMenu);
+            console.log('currentMenu', getState().AuthoritySettingReducer.currentMenu);
         } else if (!res.success) {
             Swal.fire('获取菜单权限信息失败', res.msg, 'warning');
         }
@@ -43,11 +41,11 @@ export const changeMenuList = (i , k) => async (dispatch, getState) => {
 
         let newStatus;
         if (k === -1) {
-            newStatus = !currentMenu[i].available;
-            currentMenu[i].available = newStatus;
+            newStatus = !currentMenu[i].usable;
+            currentMenu[i].usable = newStatus;
         } else {
-            newStatus = !currentMenu[i].children[k].available;
-            currentMenu[i].children[k].available = newStatus;
+            newStatus = !currentMenu[i].children[k].usable;
+            currentMenu[i].children[k].usable = newStatus;
         }
         dispatch({type: AuthoritySettingActionType.setMenuList, payload: currentMenu});
     } catch (err) {

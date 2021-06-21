@@ -24,8 +24,85 @@ export const DATE_PICKER_OPTION = {
     },
 };
 
+/**
+ * 单选下拉菜单样式
+ */
+export const REACT_SELECT_SEARCH_STYLE = {
+    // 整体容器
+    // container: styles => ({ ...styles,  border:'1px solid #ff0000'}),
+    // 控制器
+    control: (styles, {isFocused}) => ({
+        ...styles,
+        height: 'calc(40px)',
+        borderRadius: '0',
+        boxShadow: '0',
+        borderTop: '0',
+        borderLeft: '0',
+        borderRight: '0',
+        background: '#ffffff',
+        margin: "0 0 20px 0",
+        borderColor: isFocused ? '#3C3CC4' : '#ACACAC',
+        ':hover': {
+            borderColor: "#3C3CC4"
+        }
+    }),
+    // 下拉菜单和输入框距离
+    menu: styles => ({ ...styles, marginTop:'1px',zIndex: 10}),
+    // 指示器（删除/下拉）分隔符(竖线)
+    indicatorSeparator: styles => ({...styles, display: 'none'}),
+    // 检索输入框
+    input: styles => ({...styles, margin: '0', paddingTop: '0',paddingBottom: '0',height: 'calc(3rem)'}),
+    // 选中内容显示区域
+    valueContainer: styles => ({
+        ...styles,
+        paddingLeft: '0',
+        height: 'calc(3rem + 1px)'
+    })
+};
+
 // 用户类型
 export const USER_TYPES = [
     {value: 99, label: "管理员"},
     {value: 1, label: "普通用户"}
+];
+
+// 用于权限设定（包含所有机能设定）
+export const ALL_PAGE_LIST = [
+    {
+        "link": "/",
+        "label": "综合页面",
+        "icon": "mdi-cards-variant",
+        "children": [],
+        "usable": true
+    },
+    {
+        "label": "统计",
+        "icon": "mdi-chart-line",
+        "children": [
+            {
+                "link": "/user_statistic",
+                "name": "新增用户",
+                "icon": "mdi-chevron-right",
+                "usable": true
+            }
+        ]
+    },
+    {
+        "label": "系统设置",
+        "icon": "mdi-server",
+        "children": [
+            {
+                "link": "/user_manager",
+                "name": "用户管理",
+                "icon": "mdi-chevron-right",
+                "usable": true
+            },
+            {
+                "link": "/authority_setting",
+                "name": "权限设置",
+                "icon": "mdi-chevron-right",
+                "usable": true
+            }
+        ]
+    }
 ];

@@ -3,7 +3,7 @@ import Select from 'react-select';
 import {connect} from 'react-redux';
 
 import {AdminUserSettingActionType} from '../../types';
-import {NewAdminModal, SimpleModal} from '../index';
+import {SimpleModal} from '../index';
 
 import {
     Button,
@@ -18,7 +18,6 @@ import {
 import {makeStyles} from "@material-ui/core/styles";
 import Swal from "sweetalert2";
 const adminUserSettingAction = require('../../actions/main/AdminUserSettingAction');
-const newAdminModalAction = require('../../actions/modules/NewAdminModalAction');
 
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
