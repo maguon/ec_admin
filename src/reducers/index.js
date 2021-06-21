@@ -3,10 +3,12 @@ import {reducer as reduxFormReducer} from 'redux-form';
 import AppReducer from './layout/AppReducer';
 import LoginReducer from './login/LoginReducer';
 import MainPanelReducer from './main/MainPanelReducer';
+import AuthoritySettingReducer from './main/AuthoritySettingReducer';
 
 export default combineReducers({
     form: reduxFormReducer,
     AppReducer,
     LoginReducer,
-    MainPanelReducer
+    MainPanelReducer,
+    AuthoritySettingReducer
 });

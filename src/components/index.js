@@ -8,10 +8,11 @@ import Login from './login/Login';
 import Register from './login/Register';
 import ResetPassword from './login/ResetPassword';
 import MainPanel from './main/MainPanel';
+import AuthoritySetting from './main/AuthoritySetting';
 import ErrorPanel from './main/ErrorPanel';
 
 export {
     Header,Footer,Nav,AccountModal,SimpleModal,LoadProgree,
     Login,Register,ResetPassword,
-    MainPanel,ErrorPanel
+    MainPanel,ErrorPanel,AuthoritySetting
 }

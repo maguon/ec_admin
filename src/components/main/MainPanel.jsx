@@ -83,7 +83,7 @@ function MainPanel (props) {
                     </Grid>
                     <Grid item lg={4} sm={12} xs={12}>
                         <Paper className={classes.paper} elevation={3}>
-                            <TextField label="年份(始)" fullWidth={true} margin={'normal'} type="date"
+                            <TextField label="年份" fullWidth={true} margin={'normal'} type="date"
                                        value={mainPanelReducer.startDate} onChange={handleChangeTextDate}/>
                         </Paper>
                     </Grid>

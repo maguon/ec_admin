@@ -23,3 +23,9 @@ export const DATE_PICKER_OPTION = {
         weekdaysAbbrev: ['S', 'M', 'T', 'W', 'T', 'F', 'S']
     },
 };
+
+// 用户类型
+export const USER_TYPES = [
+    {value: 99, label: "管理员"},
+    {value: 1, label: "普通用户"}
+];
