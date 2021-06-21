@@ -6,7 +6,20 @@ import {AppBar,Typography,Container,Box,CssBaseline,Toolbar,useScrollTrigger} fr
 import PropTypes from 'prop-types';
 import {applyMiddleware, createStore, compose} from 'redux';
 import './App.css';
-import {Login,Register,ResetPassword,Header,Footer,Nav, MainPanel,AuthoritySetting, ErrorPanel,LoadProgree,AccountModal} from './components';
+import {
+    Login,
+    Register,
+    ResetPassword,
+    Header,
+    Footer,
+    Nav,
+    MainPanel,
+    AuthoritySetting,
+    ErrorPanel,
+    LoadProgree,
+    AccountModal,
+    AdminUserSetting,
+} from './components';
 import reducers from './reducers'
 
 const store = compose(
@@ -33,7 +46,9 @@ const routes = [
 const routesWithHeader = [
     {path: "/", exact: true,component: MainPanel},
     // 权限管理
-    {path: "/authority_setting", exact: true, component: AuthoritySetting}
+    {path: "/authority_setting", exact: true, component: AuthoritySetting},
+    //员工管理
+    {path: "/admin_user_setting", exact: true, component: AdminUserSetting},
 ];
 
 function App(props) {

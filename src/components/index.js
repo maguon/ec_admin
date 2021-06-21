@@ -10,9 +10,11 @@ import ResetPassword from './login/ResetPassword';
 import MainPanel from './main/MainPanel';
 import AuthoritySetting from './main/AuthoritySetting';
 import ErrorPanel from './main/ErrorPanel';
-
+import AdminUserSetting from "./main/AdminUserSetting";
+import NewAdminModal from "./modules/NewAdminModal";
 export {
     Header,Footer,Nav,AccountModal,SimpleModal,LoadProgree,
     Login,Register,ResetPassword,
-    MainPanel,ErrorPanel,AuthoritySetting
+    MainPanel,ErrorPanel,AuthoritySetting,
+    AdminUserSetting,NewAdminModal
 }
