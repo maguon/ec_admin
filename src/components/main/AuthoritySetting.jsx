@@ -6,7 +6,6 @@ import {
     Button,
     Divider,
     Grid,
-    Icon,
     IconButton,
     FormControlLabel,
     Checkbox,
@@ -23,8 +22,7 @@ const useStyles = makeStyles((theme) => ({
         width: `calc(100% - 50px)`,
         minWidth: 800,
         paddingLeft: 30,
-        paddingBottom: 60
-
+        paddingBottom: 50
     },
     // 标题样式
     pageTitle: {
@@ -51,22 +49,14 @@ const useStyles = makeStyles((theme) => ({
 
 // 权限设置
 function AuthoritySetting (props) {
-    const {authoritySettingReducer, changeConditionUserType, changeMenu, saveMenu} = props;
+    const {authoritySettingReducer, changeConditionUserType, changeMenu, getMenuList, saveMenu} = props;
     const classes = useStyles();
 
     useEffect(()=>{
         props.changeConditionUserType(sysConst.USER_TYPES[0]);
         props.changeCurrentUserType(sysConst.USER_TYPES[0]);
-        props.getMenuList();
+        getMenuList();
     },[]);
-
-    /**
-     * 查询菜单设定情况
-     */
-    const queryMenuList = () => {
-        props.getMenuList();
-    };
-
 
     return (
         <div className={classes.root}>
@@ -94,7 +84,7 @@ function AuthoritySetting (props) {
 
                 {/*查询按钮*/}
                 <Grid item xs={1}>
-                    <IconButton className={classes.addButton} onClick={queryMenuList}>
+                    <IconButton className={classes.addButton} onClick={getMenuList}>
                         <i className="mdi mdi-magnify mdi-24px" />
                     </IconButton>
                 </Grid>
@@ -115,7 +105,7 @@ function AuthoritySetting (props) {
                             <Grid item xs={3}>
                                 <FormControlLabel
                                     control={
-                                        <Checkbox color="primary" checked={item.available}
+                                        <Checkbox color="primary" checked={item.usable}
                                             onChange={() => {changeMenu(index, -1)}}
                                         />
                                     }
@@ -132,7 +122,7 @@ function AuthoritySetting (props) {
                                         <Grid item xs={3}>
                                             <FormControlLabel
                                                 control={
-                                                    <Checkbox color="primary" checked={menu.available}
+                                                    <Checkbox color="primary" checked={menu.usable}
                                                         onChange={() => {changeMenu(index, key)}}
                                                     />
                                                 }

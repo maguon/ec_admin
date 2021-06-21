@@ -14,17 +14,16 @@ export const getMenuList = () => async (dispatch, getState) => {
         let type = conditionUserType === null ? '' : conditionUserType.value;
 
         // 基本检索URL
-        let url = apiHost + '/api/admin/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/menuList?type=' + type;
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/menuList?type=' + type;
         const res = await httpUtil.httpGet(url);
 
         dispatch({type: AuthoritySettingActionType.setCurrentUserType, payload: conditionUserType});
         if (res.success) {
-            if (res.result[0].menu_list.length > 0) {
-                dispatch({type: AuthoritySettingActionType.setMenuList, payload: res.result[0].menu_list});
+            if (res.rows.length > 0) {
+                dispatch({type: AuthoritySettingActionType.setMenuList, payload: res.rows[0].menu_list});
             } else {
                 dispatch({type: AuthoritySettingActionType.setMenuList, payload: sysConst.ALL_PAGE_LIST});
             }
-            console.log('currentMenu', getState().AuthoritySettingReducer.currentMenu);
         } else if (!res.success) {
             Swal.fire('获取菜单权限信息失败', res.msg, 'warning');
         }
@@ -66,7 +65,7 @@ export const saveMenu = () => async (dispatch, getState) => {
             menu_list: currentMenu
         };
         // 基本url
-        let url = apiHost + '/api/admin/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + "/menuList";
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + "/menuList";
         let res = await httpUtil.httpPost(url, params);
 
         if (res.success) {
