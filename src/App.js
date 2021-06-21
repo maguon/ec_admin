@@ -42,7 +42,6 @@ function App(props) {
   return (
     <Provider store={store}>
         <Router hashType={"hashbang"}>
-            <div>
               <Switch>
               {routes.map((route, index) => (
                     <Route
@@ -55,9 +54,10 @@ function App(props) {
                 <Fragment>
                     <Header/>
                     <Toolbar/>
+                    <div className="main-body">
                     <Fragment>
-                      <Nav/> 
-                      <AccountModal/>           
+                      <Nav/>
+                      <AccountModal/>
                       {routesWithHeader.map((route, index) => (
                           <Route
                               key={index+10}
@@ -67,12 +67,11 @@ function App(props) {
                           />
                       ))}
                     </Fragment>
-                    
+                    </div>
                     <Footer/>
                 </Fragment>
               </Switch>
               <LoadProgree/>
-            </div>
         </Router>
     </Provider>
   )
