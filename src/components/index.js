@@ -1,6 +1,5 @@
 import Header from "./layout/Header";
 import Footer from "./layout/Footer";
-import Nav from "./layout/Nav";
 import Navigation from "./layout/Navigation";
 import AccountModal from "./layout/AccountModal";
 import SimpleModal from "./layout/SimpleModal";
@@ -15,7 +14,7 @@ import AdminUserSetting from "./main/AdminUserSetting";
 
 import NestedList from "./utils/NestedList";
 export {
-    Header,Footer,Nav,Navigation, AccountModal,SimpleModal,LoadProgree,
+    Header,Footer,Navigation, AccountModal,SimpleModal,LoadProgree,
     Login,Register,ResetPassword,
     MainPanel,ErrorPanel,AuthoritySetting,
     AdminUserSetting,

@@ -21,7 +21,10 @@ const useStyles = makeStyles((theme) => ({
     // 标题样式
     root: {
         width: `calc(100% - 50px)`,
-        paddingLeft: 30
+        minWidth: 800,
+        paddingLeft: 30,
+        paddingBottom: 60
+
     },
     // 标题样式
     pageTitle: {

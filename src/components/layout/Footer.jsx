@@ -1,5 +1,6 @@
 import React from 'react';
 import {Box, Typography, makeStyles} from "@material-ui/core";
+import {webName} from "../../config";
 
 const useStyles = makeStyles((theme) => ({
     footer: {
@@ -26,7 +27,7 @@ function Footer (props) {
     const classes = useStyles();
     return (
         <Box className={classes.footer}>
-            <Typography gutterBottom><span className={classes.footerProject}>鸿溧科技<span className={classes.footerVersion}>进销存管理系统1.0版</span></span></Typography>
+            <Typography gutterBottom><span className={classes.footerProject}>鸿溧科技<span className={classes.footerVersion}>{webName}1.0版</span></span></Typography>
         </Box>
     )
 }

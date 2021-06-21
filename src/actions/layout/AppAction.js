@@ -6,9 +6,6 @@ const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
 
-export const setShowDrawerFlag = (showDrawerFlag) =>  (dispatch)=>{
-    dispatch({type: AppActionType.showDrawer, payload: {showDrawerFlag}});
-};
 
 export const getCurrentUser = (params) => async (dispatch) => {
     try {
@@ -16,8 +13,12 @@ export const getCurrentUser = (params) => async (dispatch) => {
         const url = apiHost + '/api/admin/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/adminUser?adminUserId=' + params.userId;
 
+        console.log('url',url);
         // 发送 get 请求
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        console.log('res',res);
         if (res.success === true) {
             dispatch({type: AppActionType.setCurrentUser, payload: res.result[0]})
         } else if (res.success === false) {
@@ -29,21 +30,31 @@ export const getCurrentUser = (params) => async (dispatch) => {
 };
 export const getCurrentUserMenu = () => async (dispatch) => {
     try {
+        const userType = localUtil.getSessionItem(sysConst.LOGIN_USER_TYPE);
+        // admin用户 检索 URL
+        // const url = apiHost + '/api/admin/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/menuList?type=' + userType;
         // admin用户 检索 URL
         const url = apiHost + '/api/admin/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/menuList';
 
         // 发送 get 请求
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
-        console.log()
-        if (res.success === true) {
-            if (res.result[0].menu_list.length > 0) {
-                dispatch({type: AppActionType.setCurrentUserMenu, payload: res.result[0].menu_list})
-            } else {
-                dispatch({type: AppActionType.setCurrentUserMenu, payload: sysConst.ALL_PAGE_LIST});
-            }
-        } else if (res.success === false) {
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+
+
+        if (res.success) {
+            dispatch({type: AppActionType.setCurrentUserMenu, payload: sysConst.ALL_PAGE_LIST});
+
+            // if (res.result[0].menu_list.length > 0) {
+            //     dispatch({type: CommonActionType.getLoginUserMenu, payload: res.result[0].menu_list});
+            // } else {
+            //     dispatch({type: CommonActionType.getLoginUserMenu, payload: sysConst.ALL_PAGE_LIST});
+            //             // }
+
+        } else if (!res.success) {
             Swal.fire('查询失败', res.msg, 'warning');
         }
+
     } catch (err) {
         Swal.fire('操作失败', err.message, 'error');
     }

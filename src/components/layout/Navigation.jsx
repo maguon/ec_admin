@@ -57,13 +57,12 @@ const useStyles = makeStyles((theme) => ({
 
 function Navigation(props) {
     const classes = useStyles();
-    const {commonReducer, handleDrawerClose, drawerOpen} = props;
+    const {appReducer, handleDrawerClose, drawerOpen} = props;
 
-    console.log('commonReducer', commonReducer);
     // 取得头像，若不存在，则使用默认头像 TODO 后期修改
     let avatarUrl;
-    if (commonReducer.loginUserInfo && commonReducer.loginUserInfo.avatar_image) {
-        avatarUrl = "http://" + apiHost + "/api/image/" + commonReducer.loginUserInfo.avatar_image;
+    if (appReducer.currentUser && appReducer.currentUser.avatar_image) {
+        avatarUrl = "http://" + apiHost + "/api/image/" + appReducer.currentUser.avatar_image;
     } else {
         avatarUrl = "/assets/images/avatar.png"
     }
@@ -80,8 +79,8 @@ function Navigation(props) {
             <div className={classes.drawerHeader}>
                 <Grid container spacing={3}>
                     <Grid item xs={12}><Avatar src={avatarUrl} className={classes.avatar}/></Grid>
-                    <Grid item xs={12}>Name: {commonReducer.loginUserInfo.realname}</Grid>
-                    <Grid item xs={12}>Phone: {commonReducer.loginUserInfo.phone}</Grid>
+                    <Grid item xs={12}>Name: {appReducer.currentUser.realname}</Grid>
+                    <Grid item xs={12}>Phone: {appReducer.currentUser.phone}</Grid>
                 </Grid>
 
                 <IconButton onClick={handleDrawerClose}>
@@ -93,7 +92,7 @@ function Navigation(props) {
 
             {/* 抽屉下部分：导航列表 */}
             <List className={classes.menuList}>
-                {commonReducer.loginUserMenuList.map(function (item) {
+                {appReducer.currentUserMenu.map(function (item) {
                     return (
                         <div>
                             {/* 不含子菜单：直接使用ListItem */}
@@ -120,7 +119,7 @@ function Navigation(props) {
 
 const mapStateToProps = (state) => {
     return {
-        commonReducer: state.CommonReducer
+        appReducer: state.AppReducer
     }
 };
 

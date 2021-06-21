@@ -11,13 +11,12 @@ import {
     Toolbar,
     IconButton,
     Typography,
-    Icon,
 } from "@material-ui/core";
-import {CommonActionType, AppActionType} from "../../types";
+import {AppActionType} from "../../types";
 import {AccountModal} from "../index";
 import {webName} from "../../config";
 
-const commonAction = require('../../actions/layout/CommonAction');
+const appAction = require('../../actions/layout/AppAction');
 const httpHeaders = require('../../utils/HttpHeaders');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
@@ -75,7 +74,8 @@ const useStyles = makeStyles((theme) => ({
  * UI组件：主画面头部。
  */
 function Header(props) {
-    const {setShowLoadProgressFlag,setAccountModalOpenFlag} = props;
+    // 组件属性
+    const {logout, setAccountModalOpenFlag, drawerOpen, handleDrawerOpen} = props;
 
     useEffect(() => {
         const userId = localUtil.getSessionItem(sysConst.LOGIN_USER_ID);
@@ -85,50 +85,41 @@ function Header(props) {
         httpHeaders.set(sysConst.LOGIN_USER_ID, userId);
         httpHeaders.set(sysConst.LOGIN_USER_TYPE, userType);
         httpHeaders.set(sysConst.AUTH_TOKEN, token);
-        console.log('userId',userId);
-        console.log('userType',userType);
-        console.log('token',token);
 
         if (userId == null || userType == null || token == null) {
             window.location.href = '#!/login';
         } else {
-            props.getLoginUserInfo(userId);
-            props.getLoginUserMenu();
+            props.getLoginInfo(userId);
         }
     }, []);
 
+    const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+
     const handleMobileMenuOpen = (event) => {
-        props.setMobileMoreAnchorEl(event.currentTarget);
+        setMobileMoreAnchorEl(event.currentTarget);
     };
 
     const handleMobileMenuClose = (event) => {
-        props.setMobileMoreAnchorEl(null);
+        setMobileMoreAnchorEl(null);
     };
 
-    const openAccountModal =(f)=>(event)=>{
-        console.log(f)
-        setAccountModalOpenFlag(f)
-    }
-
-    // 组件属性
-    const {commonReducer, openEditLoginUserModal, logout, handleDrawerOpen, drawerOpen} = props;
     // 锚点
     const mobileMenuId = 'primary-menu-mobile';
     // 手机模式时，显示的菜单
     const renderMobileMenu = (
         <Menu
-            anchorEl={commonReducer.mobileMoreAnchorEl}
+            anchorEl={mobileMoreAnchorEl}
             anchorOrigin={{vertical: 'top', horizontal: 'right'}}
             id={mobileMenuId}
             keepMounted
             transformOrigin={{vertical: 'top', horizontal: 'right'}}
-            open={Boolean(commonReducer.mobileMoreAnchorEl)}
+            open={Boolean(mobileMoreAnchorEl)}
             onClose={handleMobileMenuClose}
         >
             {/* 用户信息 */}
             <MenuItem onClick={logout}>
                 <IconButton color="inherit">
-                    <Icon>account_circle</Icon>
+                    <i className="mdi mdi-account-circle mdi-36px"/>
                 </IconButton>
                 <p>Profile</p>
             </MenuItem>
@@ -136,7 +127,7 @@ function Header(props) {
             {/* 退出 */}
             <MenuItem onClick={logout}>
                 <IconButton color="inherit">
-                    <Icon>exit_to_app</Icon>
+                    <i className="mdi mdi-exit-to-app mdi-36px"/>
                 </IconButton>
                 <p>Logout</p>
             </MenuItem>
@@ -162,11 +153,12 @@ function Header(props) {
                         edge="start"
                         className={clsx(classes.menuButton, drawerOpen && classes.hide)}
                     >
-                        <i className="mdi mdi-menu mdi-36px" />
+                        <i className="mdi mdi-menu mdi-36px"/>
                     </IconButton>
 
                     {/* 项目标记 */}
-                    <Typography  variant="h6" noWrap><img style={{width:36,paddingTop:6}} src="/logo_reverse120.png" alt=""/></Typography>
+                    <Typography variant="h6" noWrap><img style={{width: 36, paddingTop: 6}} src="/logo_reverse120.png"
+                                                         alt=""/></Typography>
                     <Typography className={classes.title} variant="h6" noWrap>{webName}</Typography>
 
                     {/* 空白 */}
@@ -174,16 +166,18 @@ function Header(props) {
 
                     {/* 桌面模式，菜单 */}
                     <div className={classes.sectionDesktop}>
-                        <IconButton color="inherit"  component="span">
+                        <IconButton color="inherit" component="span">
                             <Badge badgeContent={4} color="secondary">
-                                <i className="mdi mdi-clipboard-list mdi-36px" />
+                                <i className="mdi mdi-clipboard-list mdi-36px"/>
                             </Badge>
                         </IconButton>
-                        <IconButton color="inherit"  component="span" onClick={()=>{setAccountModalOpenFlag(true)}}>
-                            <i className="mdi mdi-account-circle mdi-36px" />
+                        <IconButton color="inherit" component="span" onClick={() => {
+                            setAccountModalOpenFlag(true)
+                        }}>
+                            <i className="mdi mdi-account-circle mdi-36px"/>
                         </IconButton>
-                        <IconButton color="inherit"  component="span" onClick={logout}>
-                            <i className="mdi mdi-exit-to-app mdi-36px" />
+                        <IconButton color="inherit" component="span" onClick={logout}>
+                            <i className="mdi mdi-exit-to-app mdi-36px"/>
                         </IconButton>
                     </div>
 
@@ -196,7 +190,7 @@ function Header(props) {
                             onClick={handleMobileMenuOpen}
                             color="inherit"
                         >
-                            <Icon>more_vert</Icon>
+                            <i className="mdi mdi-dots-vertical mdi-36px"/>
                         </IconButton>
                     </div>
 
@@ -209,40 +203,21 @@ function Header(props) {
 }
 
 const mapStateToProps = (state) => {
-    return {
-        commonReducer: state.CommonReducer
-    }
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    // 设置抽屉状态
-    setDrawerOpen: (value) => {
-        dispatch(CommonActionType.setDrawerOpen(value))
-    },
-    // 设置工具栏 菜单状态
-    setMobileMoreAnchorEl: (value) => {
-        dispatch(CommonActionType.setMobileMoreAnchorEl(value))
-    },
-
     // 取得登录用户基本信息
-    getLoginUserInfo: (userId) => {
-        console.log('userId',userId);
-        dispatch(commonAction.getLoginUserInfo({userId: userId}))
+    getLoginInfo: (userId) => {
+        console.log('userId', userId);
+        dispatch(appAction.getCurrentUser({userId: userId}));
+        dispatch(appAction.getCurrentUserMenu());
     },
-    // 取得登录用户基本信息
-    getLoginUserMenu: () => {
-        dispatch(commonAction.getLoginUserMenu());
-    },
-    setAccountModalOpenFlag :(f) => {
+    setAccountModalOpenFlag: (f) => {
         dispatch(AppActionType.setAccountModalOpen(f))
-    },
-    // 修改密码
-    openEditLoginUserModal: () => {
     },
     // 退出
     logout: () => {
-        dispatch(CommonActionType.setMobileMoreAnchorEl(null));
-        dispatch(commonAction.logout());
+        dispatch(appAction.logout());
     }
 });
 
