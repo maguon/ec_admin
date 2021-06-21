@@ -6,58 +6,22 @@ import clsx from 'clsx';
 import {makeStyles,useTheme} from '@material-ui/core';
 import {applyMiddleware, createStore, compose} from 'redux';
 import reducers from './reducers'
-// 引入项目组件
-import {
-    // 登录画面
-    Login,
-    Register,
-    ResetPassword,
-
-    //主体 头部
-    Header,
-    // 主体 导航
-    Navigation,
-    // 主体 底部
-    Footer,
-    // 加载中组件
-    LoadProgree,
-
-    // 综合页面
-    MainPanel,
-    AuthoritySetting,
-
-
-} from './components';
+// 引入布局组件
+import {Header,Navigation,Footer,LoadProgree} from './components';
 
 const store = compose(
     applyMiddleware(ReduxThunk)
 )(createStore)(reducers, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
-
+// 路由
 const routes = require('../src/router/index');
-
-
 // 抽屉宽度
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
-    // 主体内容部分
     content: {
-//         height: calc(100% - 116px);
-// overflow-y: auto;
-// margin-top: 2px;
-// padding-top: 20px;
         flexGrow: 1,
-        padding: theme.spacing(3),
-        transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
         marginLeft: 0,
     },
     contentShift: {
-        transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
         marginLeft: drawerWidth,
     },
     contentHeader: {
@@ -65,8 +29,9 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         padding: theme.spacing(0, 1),
         ...theme.mixins.toolbar,
+        marginBottom: 20,
         justifyContent: 'flex-end',
-    },
+    }
 }));
 
 function App(props) {
