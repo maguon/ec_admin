@@ -1,4 +1,4 @@
-import {AuthoritySetting, Login, MainPanel, Register, ResetPassword} from "../components";
+import {AuthoritySetting,AdminUserSetting, Login, MainPanel, Register, ResetPassword} from "../components";
 
 export const routes = [
     // 登录画面
@@ -14,5 +14,8 @@ export const routesWithHeader = [
     // {path: "/user_statistic", exact: true, component: UserStatistic},
     //
     // 权限管理
-    {path: "/authority_setting", exact: true, component: AuthoritySetting}
+    {path: "/authority_setting", exact: true, component: AuthoritySetting},
+
+    //员工管理
+    {path: "/admin_user_setting", exact: true, component: AdminUserSetting},
 ];
