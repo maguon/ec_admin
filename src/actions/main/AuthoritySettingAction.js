@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
-import {AuthoritySettingActionType} from '../../types';
+import {AppActionType, AuthoritySettingActionType} from '../../types';
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
@@ -14,7 +14,10 @@ export const getMenuList = (conditionUserType) => async (dispatch, getState) => 
 
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/menuList?type=' + type;
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
 
         if (res.success) {
             dispatch({type: AuthoritySettingActionType.setCurrentUserType, payload: conditionUserType});
