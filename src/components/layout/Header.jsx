@@ -12,7 +12,6 @@ import {
     IconButton,
     Typography,
 } from "@material-ui/core";
-import {AppActionType} from "../../types";
 import {AccountModal} from "../index";
 import {webName} from "../../config";
 
@@ -75,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
  */
 function Header(props) {
     // 组件属性
-    const {logout, setAccountModalOpenFlag, drawerOpen, handleDrawerOpen} = props;
+    const {logout, drawerOpen, handleDrawerOpen} = props;
 
     useEffect(() => {
         const userId = localUtil.getSessionItem(sysConst.LOGIN_USER_ID);
@@ -93,14 +92,22 @@ function Header(props) {
         }
     }, []);
 
+    // 手机模式时,菜单属性
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
     const handleMobileMenuOpen = (event) => {
         setMobileMoreAnchorEl(event.currentTarget);
     };
-
     const handleMobileMenuClose = (event) => {
         setMobileMoreAnchorEl(null);
+    };
+
+    // 修改密码，属性
+    const [accountModalOpenFlag, setAccountModalOpenFlag] = React.useState(false);
+    const openAccountModal = (event) => {
+        setAccountModalOpenFlag(true);
+    };
+    const closeAccountModal = (event) => {
+        setAccountModalOpenFlag(false);
     };
 
     // 锚点
@@ -171,9 +178,7 @@ function Header(props) {
                                 <i className="mdi mdi-clipboard-list mdi-36px"/>
                             </Badge>
                         </IconButton>
-                        <IconButton color="inherit" component="span" onClick={() => {
-                            setAccountModalOpenFlag(true)
-                        }}>
+                        <IconButton color="inherit" component="span" onClick={openAccountModal}>
                             <i className="mdi mdi-account-circle mdi-36px"/>
                         </IconButton>
                         <IconButton color="inherit" component="span" onClick={logout}>
@@ -197,7 +202,8 @@ function Header(props) {
                 </Toolbar>
             </AppBar>
             {renderMobileMenu}
-            <AccountModal/>
+            {/* 修改密码模态 */}
+            <AccountModal openFlag={accountModalOpenFlag} closeAccountModal={closeAccountModal}/>
         </div>
     )
 }
@@ -212,9 +218,6 @@ const mapDispatchToProps = (dispatch) => ({
         console.log('userId', userId);
         dispatch(appAction.getCurrentUser({userId: userId}));
         dispatch(appAction.getCurrentUserMenu());
-    },
-    setAccountModalOpenFlag: (f) => {
-        dispatch(AppActionType.setAccountModalOpen(f))
     },
     // 退出
     logout: () => {

@@ -3,7 +3,6 @@ import {AppActionType} from '../../types';
 
 const initialState = {
     showLoadProgressFlag: false,
-    accountModalOpenFlag: false,
     currentUser: {},
     currentUserMenu: []
 };
@@ -26,12 +25,6 @@ export default handleActions({
         return {
             ...state,
             currentUserMenu: action.payload
-        }
-    },
-    [AppActionType.setAccountModalOpen]: (state, action) => {
-        return {
-            ...state,
-            accountModalOpenFlag: action.payload
         }
     }
 }, initialState);
