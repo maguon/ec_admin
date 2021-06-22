@@ -92,7 +92,7 @@ export const ALL_PAGE_LIST = [
         "icon": "mdi-server",
         "children": [
             {
-                "link": "/user_manager",
+                "link": "/admin_user_setting",
                 "name": "用户管理",
                 "icon": "mdi-chevron-right",
                 "usable": true
