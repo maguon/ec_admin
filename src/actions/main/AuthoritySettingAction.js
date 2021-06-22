@@ -7,18 +7,17 @@ const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
 
 // 系统设置 -> 权限设置 取得画面列表
-export const getMenuList = () => async (dispatch, getState) => {
+export const getMenuList = (conditionUserType) => async (dispatch, getState) => {
     try {
         // 检索条件：用户类型
-        let conditionUserType = getState().AuthoritySettingReducer.conditionUserType;
         let type = conditionUserType === null ? '' : conditionUserType.value;
 
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/menuList?type=' + type;
         const res = await httpUtil.httpGet(url);
 
-        dispatch({type: AuthoritySettingActionType.setCurrentUserType, payload: conditionUserType});
         if (res.success) {
+            dispatch({type: AuthoritySettingActionType.setCurrentUserType, payload: conditionUserType});
             if (res.rows.length > 0) {
                 dispatch({type: AuthoritySettingActionType.setMenuList, payload: res.rows[0].menu_list});
             } else {

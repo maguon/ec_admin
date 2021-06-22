@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Select from 'react-select';
 import {connect} from 'react-redux';
 import {AuthoritySettingActionType} from '../../types';
@@ -10,8 +10,8 @@ import {
     FormControlLabel,
     Checkbox,
     Typography,
+    makeStyles
 } from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles";
 
 const authoritySettingAction = require('../../actions/main/AuthoritySettingAction');
 const sysConst = require('../../utils/SysConst');
@@ -49,13 +49,12 @@ const useStyles = makeStyles((theme) => ({
 
 // 权限设置
 function AuthoritySetting (props) {
-    const {authoritySettingReducer, changeConditionUserType, changeMenu, getMenuList, saveMenu} = props;
+    const {authoritySettingReducer, changeMenu, getMenuList, saveMenu} = props;
     const classes = useStyles();
+    const [conditionUserType, setConditionUserType] = useState(sysConst.USER_TYPES[0]);
 
-    useEffect((props)=>{
-        props.changeConditionUserType(sysConst.USER_TYPES[0]);
-        props.changeCurrentUserType(sysConst.USER_TYPES[0]);
-        props.getMenuList();
+    useEffect(()=>{
+        getMenuList(conditionUserType);
     },[]);
 
     return (
@@ -72,8 +71,10 @@ function AuthoritySetting (props) {
                         <Select
                             inputId="conditionUserType"
                             options={sysConst.USER_TYPES}
-                            onChange={changeConditionUserType}
-                            value={authoritySettingReducer.conditionUserType}
+                            onChange={(value) => {
+                                setConditionUserType(value);
+                            }}
+                            value={conditionUserType}
                             isSearchable={false}
                             placeholder={"请选择"}
                             styles={sysConst.REACT_SELECT_SEARCH_STYLE}
@@ -84,7 +85,7 @@ function AuthoritySetting (props) {
 
                 {/*查询按钮*/}
                 <Grid item xs={1}>
-                    <IconButton className={classes.addButton} onClick={getMenuList}>
+                    <IconButton className={classes.addButton} onClick={() => {getMenuList(conditionUserType)}}>
                         <i className="mdi mdi-magnify mdi-24px" />
                     </IconButton>
                 </Grid>
@@ -99,13 +100,13 @@ function AuthoritySetting (props) {
 
                 {authoritySettingReducer.currentMenu.length > 0 && authoritySettingReducer.currentMenu.map(function (item, index) {
                     return (
-                        <Grid item container xs={12}>
+                        <Grid item container xs={12}  key={'no_child_container' + index}>
                             {/* 不含子菜单的样式 */}
                             {item.children.length === 0 &&
-                            <Grid item xs={3}>
-                                <FormControlLabel
+                            <Grid item xs={3}  key={'no_child_item' + index}>
+                                <FormControlLabel key={'no_child_FormControlLabel' + index}
                                     control={
-                                        <Checkbox color="primary" checked={item.usable}
+                                        <Checkbox color="primary" checked={item.usable} key={'no_child_checkbox' + index}
                                             onChange={() => {changeMenu(index, -1)}}
                                         />
                                     }
@@ -115,14 +116,14 @@ function AuthoritySetting (props) {
 
                             {/* 含子菜单的样式 */}
                             {item.children.length > 0 &&
-                            <Grid item container xs={12}>
-                                <Grid item xs={12}><b>{item.label}</b></Grid>
+                            <Grid item container xs={12} key={'has_child_container' + index}>
+                                <Grid item xs={12} key={'has_child_item' + index}><b>{item.label}</b></Grid>
                                 {item.children.map(function (menu, key) {
                                     return (
-                                        <Grid item xs={3}>
-                                            <FormControlLabel
+                                        <Grid item xs={3} key={'has_child_item' + index + key}>
+                                            <FormControlLabel key={'has_child_FormControlLabel' + index + key}
                                                 control={
-                                                    <Checkbox color="primary" checked={menu.usable}
+                                                    <Checkbox color="primary" checked={menu.usable} key={'has_child_checkbox' + index + key}
                                                         onChange={() => {changeMenu(index, key)}}
                                                     />
                                                 }
@@ -152,11 +153,8 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    getMenuList: () => {
-        dispatch(authoritySettingAction.getMenuList())
-    },
-    changeConditionUserType: (value) => {
-        dispatch(AuthoritySettingActionType.setConditionUserType(value))
+    getMenuList: (conditionUserType) => {
+        dispatch(authoritySettingAction.getMenuList(conditionUserType))
     },
     changeCurrentUserType: (value) => {
         dispatch(AuthoritySettingActionType.setCurrentUserType(value))
