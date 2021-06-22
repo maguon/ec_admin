@@ -70,9 +70,9 @@ function Navigation(props) {
     return (
         <Drawer
             className={classes.drawer}
-            variant="persistent"
             anchor="left"
             open={drawerOpen}
+            onClose={handleDrawerClose}
             classes={{paper: classes.drawerPaper}}
         >
             {/* 抽屉上部分：用户信息 */}
