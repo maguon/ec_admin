@@ -1,4 +1,4 @@
-import React ,{Fragment,useEffect,useState}from 'react';
+import React ,{useState}from 'react';
 import {connect} from 'react-redux';
 import {Button,FormControl,InputLabel,OutlinedInput,Grid} from '@material-ui/core';
 import {SimpleModal} from '../'

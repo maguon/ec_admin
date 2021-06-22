@@ -92,13 +92,13 @@ function Navigation(props) {
 
             {/* 抽屉下部分：导航列表 */}
             <List className={classes.menuList}>
-                {appReducer.currentUserMenu.map(function (item) {
+                {appReducer.currentUserMenu.map(function (item, index) {
                     return (
-                        <div>
+                        <div key={index}>
                             {/* 不含子菜单：直接使用ListItem */}
                             {item.children.length === 0 &&
                             <NavLink exact to={item.link} style={{textDecoration: 'none'}}>
-                                <ListItem button key={item.link} onClick={handleDrawerClose}>
+                                <ListItem button key={item.link + index} onClick={handleDrawerClose}>
                                     <ListItemIcon><i className={`mdi ${item.icon} mdi-24px`}/></ListItemIcon>
                                     <ListItemText primary={item.label} disableTypography={true}
                                                   className={classes.menuText}/>

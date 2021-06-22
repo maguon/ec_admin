@@ -3,7 +3,7 @@ import {Provider} from 'react-redux';
 import ReduxThunk from 'redux-thunk';
 import {HashRouter as Router, Route, Switch} from "react-router-dom";
 import clsx from 'clsx';
-import {makeStyles,useTheme} from '@material-ui/core';
+import {makeStyles} from '@material-ui/core';
 import {applyMiddleware, createStore, compose} from 'redux';
 import reducers from './reducers'
 // 引入布局组件
@@ -45,7 +45,6 @@ const useStyles = makeStyles((theme) => ({
 
 function App(props) {
     const classes = useStyles();
-    const theme = useTheme();
     const [drawerOpen, setOpen] = React.useState(false);
     const handleDrawerOpen = () => {
         setOpen(true);

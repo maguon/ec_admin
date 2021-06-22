@@ -3,8 +3,6 @@ import {MainPanelActionType} from '../../types';
 import {apiHost} from '../../config';
 
 const httpUtil = require('../../utils/HttpUtils');
-const localUtil = require('../../utils/LocalUtils');
-const sysConst = require('../../utils/SysConst');
 export const getTodayUserCount = () => async (dispatch) => {
     dispatch({type: MainPanelActionType.setTodayUserCount, payload: {}});
 };

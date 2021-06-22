@@ -52,10 +52,10 @@ function AuthoritySetting (props) {
     const {authoritySettingReducer, changeConditionUserType, changeMenu, getMenuList, saveMenu} = props;
     const classes = useStyles();
 
-    useEffect(()=>{
+    useEffect((props)=>{
         props.changeConditionUserType(sysConst.USER_TYPES[0]);
         props.changeCurrentUserType(sysConst.USER_TYPES[0]);
-        getMenuList();
+        props.getMenuList();
     },[]);
 
     return (
