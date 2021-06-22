@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Select from 'react-select';
 import {connect} from 'react-redux';
-import {AuthoritySettingActionType} from '../../types';
 import {
     Button,
     Divider,
@@ -9,9 +8,11 @@ import {
     IconButton,
     FormControlLabel,
     Checkbox,
+    TextField,
     Typography,
     makeStyles
 } from "@material-ui/core";
+import {SimpleModal} from '../'
 
 const authoritySettingAction = require('../../actions/main/AuthoritySettingAction');
 const sysConst = require('../../utils/SysConst');
@@ -49,12 +50,25 @@ const useStyles = makeStyles((theme) => ({
 
 // 权限设置
 function AuthoritySetting (props) {
-    const {authoritySettingReducer, changeMenu, getMenuList, saveMenu} = props;
+    const {authoritySettingReducer, changeMenu, getMenuList, getUserGroupList, addUserGroup, saveMenu} = props;
     const classes = useStyles();
-    const [conditionUserType, setConditionUserType] = useState(sysConst.USER_TYPES[0]);
+    const [conditionUserType, setConditionUserType] = useState(null);
+    // 模态状态
+    const [modalOpen, setModalOpen] = React.useState(false);
+    const openModal = (event) => {
+        setModalOpen(true);
+    };
+    const closeModal = (event) => {
+        setModalOpen(false);
+    };
+
+    // 模态页面属性
+    const [typeName, setTypeName] = React.useState('');
+    const [submitFlag, setSubmitFlag] = useState(false);
+    const [remarks, setRemarks] = useState('');
 
     useEffect(()=>{
-        getMenuList(conditionUserType);
+        getUserGroupList();
     },[]);
 
     return (
@@ -67,12 +81,13 @@ function AuthoritySetting (props) {
             <Grid container spacing={3}>
                 <Grid container item xs={11} spacing={3}>
                     <Grid item xs={6} sm={3}>
-                        <label htmlFor="conditionUserType" className={classes.selectLabel}>用户类型</label>
+                        <label htmlFor="conditionUserType" className={classes.selectLabel}>用户群组</label>
                         <Select
                             inputId="conditionUserType"
-                            options={sysConst.USER_TYPES}
+                            options={authoritySettingReducer.userGroupList}
                             onChange={(value) => {
                                 setConditionUserType(value);
+                                getMenuList(value);
                             }}
                             value={conditionUserType}
                             isSearchable={false}
@@ -85,8 +100,8 @@ function AuthoritySetting (props) {
 
                 {/*查询按钮*/}
                 <Grid item xs={1}>
-                    <IconButton className={classes.addButton} onClick={() => {getMenuList(conditionUserType)}}>
-                        <i className="mdi mdi-magnify mdi-24px" />
+                    <IconButton className={classes.addButton} onClick={()=>{openModal();setTypeName('');setRemarks('');setSubmitFlag(false)}}>
+                        <i className="mdi mdi-plus mdi-24px" />
                     </IconButton>
                 </Grid>
             </Grid>
@@ -142,6 +157,51 @@ function AuthoritySetting (props) {
                             onClick={saveMenu}>修改</Button>
                 </Grid>}
             </Grid>
+
+            {/* 模态：新增/修改 初中信息 */}
+            <SimpleModal
+                title="新增用户群组"
+                open={modalOpen}
+                onClose={closeModal}
+                showFooter={true}
+                footer={
+                    <>
+                        <Button variant="contained" color="primary" className={classes.modalButton} onClick={()=>{
+                            setSubmitFlag(true);
+                            if (typeName.length > 0) {
+                                addUserGroup(typeName, remarks);
+                                closeModal();
+                            }
+                        }}>确定</Button>
+                        <Button variant="contained" className={classes.modalButton} onClick={closeModal}>关闭</Button>
+                    </>
+                }
+            >
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <TextField fullWidth={true}
+                                   margin="normal"
+                                   label="用户群组名称"
+                                   onChange={(e) => {
+                                       setSubmitFlag(false);
+                                       setTypeName(e.target.value)
+                                   }}
+                                   error={typeName == "" && submitFlag}
+                                   helperText={typeName == "" && submitFlag  ? "用户群组名称不能为空" : ""}
+                                   value={typeName}
+                        />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        <TextField label="备注" fullWidth={true} margin="normal" multiline rows={4} variant="outlined"
+                                   onChange={(e) => {
+                                       setSubmitFlag(false);
+                                       setRemarks(e.target.value)
+                                   }}
+                                   value={remarks}/>
+                    </Grid>
+                </Grid>
+            </SimpleModal>
         </div>
     )
 }
@@ -156,8 +216,11 @@ const mapDispatchToProps = (dispatch) => ({
     getMenuList: (conditionUserType) => {
         dispatch(authoritySettingAction.getMenuList(conditionUserType))
     },
-    changeCurrentUserType: (value) => {
-        dispatch(AuthoritySettingActionType.setCurrentUserType(value))
+    getUserGroupList: (conditionUserType) => {
+        dispatch(authoritySettingAction.getUserGroupList())
+    },
+    addUserGroup: (typeName, remarks) => {
+        dispatch(authoritySettingAction.createUserGroup({typeName, remarks}))
     },
     changeMenu: (index, key) => {
         dispatch(authoritySettingAction.changeMenuList(index, key))

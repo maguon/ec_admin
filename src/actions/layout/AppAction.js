@@ -29,7 +29,7 @@ export const getCurrentUserMenu = () => async (dispatch) => {
     try {
         const userType = localUtil.getSessionItem(sysConst.LOGIN_USER_TYPE);
         // admin用户 检索 URL
-        const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/menuList?type=' + userType;
+        const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/typeMenu?typeId=' + userType;
 
         // 发送 get 请求
         dispatch({type: AppActionType.showLoadProgress, payload: true});
