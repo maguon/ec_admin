@@ -73,7 +73,7 @@ export const ALL_PAGE_LIST = [
         "label": "综合页面",
         "icon": "mdi-cards-variant",
         "children": [],
-        "usable": true
+        "usable": false
     },
     {
         "label": "统计",
@@ -83,7 +83,7 @@ export const ALL_PAGE_LIST = [
                 "link": "/user_statistic",
                 "name": "新增用户",
                 "icon": "mdi-chevron-right",
-                "usable": true
+                "usable": false
             }
         ]
     },
@@ -95,13 +95,13 @@ export const ALL_PAGE_LIST = [
                 "link": "/admin_user_setting",
                 "name": "用户管理",
                 "icon": "mdi-chevron-right",
-                "usable": true
+                "usable": false
             },
             {
                 "link": "/authority_setting",
                 "name": "权限设置",
                 "icon": "mdi-chevron-right",
-                "usable": true
+                "usable": false
             }
         ]
     }
