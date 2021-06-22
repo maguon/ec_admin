@@ -79,7 +79,7 @@ function Navigation(props) {
             <div className={classes.drawerHeader}>
                 <Grid container spacing={3}>
                     <Grid item xs={12}><Avatar src={avatarUrl} className={classes.avatar}/></Grid>
-                    <Grid item xs={12}>Name: {appReducer.currentUser.realname}</Grid>
+                    <Grid item xs={12}>Name: {appReducer.currentUser.user_name}</Grid>
                     <Grid item xs={12}>Phone: {appReducer.currentUser.phone}</Grid>
                 </Grid>
 

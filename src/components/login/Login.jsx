@@ -1,6 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import {Field, reduxForm} from 'redux-form';
+import {reduxForm} from 'redux-form';
 import { Link as RouterLink} from "react-router-dom";
 import {Box,Button,Container,Grid,Link,TextField,Typography} from '@material-ui/core';
 import { LoginActionType } from '../../types';
@@ -92,7 +92,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => ({
     login: (values) => {
-        console.log(values);
         dispatch(loginAction.login(values));
     },
     changeUsername:(e)=>{

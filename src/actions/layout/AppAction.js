@@ -9,8 +9,7 @@ const sysConst = require('../../utils/SysConst');
 export const getCurrentUser = (params) => async (dispatch) => {
     try {
         // admin用户 检索 URL
-        const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/user?id=' + params.userId;
+        const url = apiHost + '/api/user?id=' + params.userId;
 
         // 发送 get 请求
         dispatch({type: AppActionType.showLoadProgress, payload: true});
