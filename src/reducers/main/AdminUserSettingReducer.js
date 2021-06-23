@@ -2,6 +2,12 @@ import {handleActions} from 'redux-actions';
 import {AdminUserSettingActionType} from '../../types';
 
 const initialState = {
+    // 开始位置
+    start: 0,
+    // 每页数量
+    size: 11,
+    // 检索结果数量
+    dataSize: 0,
     // 检索条件：电话
     conditionPhone: '',
     // 检索条件：用户名称
@@ -11,7 +17,12 @@ const initialState = {
     // 检索条件：状态
     conditionStatus: null,
     // 员工列表
-    adminArray: []
+    adminArray: [],
+
+    //详情
+    adminItem:[],
+
+    typeArray:[]
 
 };
 
@@ -20,6 +31,18 @@ export default handleActions({
         return {
             ...state,
             adminArray: action.payload
+        }
+    },
+    [AdminUserSettingActionType.setStartNumber]: (state, action) => {
+        return {
+            ...state,
+            start: action.payload
+        }
+    },
+    [AdminUserSettingActionType.setDataSize]: (state, action) => {
+        return {
+            ...state,
+            dataSize: action.payload
         }
     },
     [AdminUserSettingActionType.setConditionPhone]: (state, action) => {
@@ -46,4 +69,17 @@ export default handleActions({
             conditionStatus: action.payload
         }
     },
+    [AdminUserSettingActionType.setAdminItem]: (state, action) => {
+        return {
+            ...state,
+            adminItem: action.payload
+        }
+    },
+    [AdminUserSettingActionType.setTypeArray]: (state, action) => {
+        return {
+            ...state,
+            typeArray: action.payload
+        }
+    },
+
 }, initialState)

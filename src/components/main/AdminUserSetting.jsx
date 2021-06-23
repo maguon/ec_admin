@@ -1,4 +1,3 @@
-import Swal from "sweetalert2";
 import React, {useEffect,useState}from 'react';
 import Select from 'react-select';
 import {connect} from 'react-redux';
@@ -10,7 +9,6 @@ import {
     Button,
     Divider,
     Grid,
-    IconButton,
     Typography,
     Paper,
     TextField,
@@ -21,14 +19,12 @@ import {
     TableCell,
     TableBody,
 } from "@material-ui/core";
+import Fab from '@material-ui/core/Fab';
+import Switch from '@material-ui/core/Switch';
 import {makeStyles} from "@material-ui/core/styles";
-
 const adminUserSettingAction = require('../../actions/main/AdminUserSettingAction');
-
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
-
-
 const useStyles = makeStyles((theme) => ({
     // 标题样式
     root: {
@@ -46,71 +42,90 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: 15,
         background: '#7179e6'
     },
-    getButton: {
-        width: 56,
-        height: 56,
-        borderRadius: '50%',
-        backgroundColor: '#7179e6',
-        marginTop:'13px',
-        marginLeft:'30px'
-    },
-    addButton: {
-        width: 56,
-        height: 56,
-        borderRadius: '50%',
-        backgroundColor: '#3C3CC4',
-        marginTop:'13px',
-    },
     selectLabel: {
         fontSize: 10,
         color: 'grey'
     },
-    zIndex:{
-        modal:'1000'
-    },
+
     select: {
         width: '100%',
         marginTop:'16px'
     },
-
+    button:{
+        margin:'15px',
+        float:'right'
+    }
 }));
 
 //员工管理
 function AdminUserSetting (props) {
-    const [modalOpen, setModalOpen] = React.useState(false);
-    const {adminUserSettingReducer, changeConditionPhone,changeConditionUsername,changeConditionStatus,changeConditionGender} = props;
-    const classes = useStyles();
-
-    const {addAdminUserSetting,deleteUser} = props;
-
-    const [addAdminUser, setAddAdminUser] = useState("");
-    const [addAdminPhone, setAddAdminPhone] = useState("");
-    const [addPassword, setAddPassword] = useState("");
-    const [addGender, setAddGender] = useState("");
+    const [modalOpen, setModalOpen] = useState(false);
+    const [adminUser, setAdminUser] = useState("");
+    const [type, setType] = useState("");
+    const [adminPhone, setAdminPhone] = useState("");
+    const [password, setPassword] = useState("");
+    const [gender, setGender] = useState("1");
     const [submitFlag, setSubmitFlag] = useState(false);
+    const {adminUserSettingReducer, changeConditionPhone,changeConditionUsername,changeConditionStatus,changeConditionGender,changePutStatus} = props;
+    const classes = useStyles();
+    const {adminUserSetting,putAminUserSetting,deleteUser,putUser} = props;
+    const [modalPage, setModalPage] = useState("");
+    const [id, setId] = useState("");
+    const [status, setStatus] = useState("");
 
     useEffect(()=>{
+        props.setStartNumber(0);
         props.changeConditionUsername('');
         props.changeConditionPhone('');
         props.changeConditionGender (null);
         props.changeConditionStatus(null);
         props.getAdminList();
+        props.adminUserTypeSetting();
     },[]);
 
-    const addModelUser =() =>{
-        setModalOpen(false);
-        setTimeout(()=>{
-            Swal.fire("操作成功","","success")
-        },1000);
-
+    //初始添加模态框值
+    const handleAddOpen =(user) =>{
+        setModalOpen(true);
+        //console.log('', user);
+        if (user == null) {
+            setModalPage('new');
+            setAdminUser('');
+            setType('1032');
+            setAdminPhone('');
+            setPassword('');
+            setGender('1');
+        } else {
+            setModalPage('edit');
+            setAdminUser(user.user_name);
+            setType('1032');
+            setAdminPhone(user.phone);
+            setGender(user.gender);
+            setId(user.id);
+            setStatus(user.status);
+        }
     }
+
     /**
      * 查询菜单设定情况
      */
     const queryAdminList = () => {
         props.getAdminList();
     };
+    /**
+     * 上一页
+     */
+    const preBtn = () => {
+        props.setStartNumber(props.adminUserSettingReducer.start - (props.adminUserSettingReducer.size - 1));
+        props.getAdminList();
+    };
 
+    /**
+     * 下一页
+     */
+    const nextBtn = () => {
+        props.setStartNumber(props.adminUserSettingReducer.start + (props.adminUserSettingReducer.size - 1));
+        props.getAdminList();
+    };
 
     return (
         <div className={classes.root}>
@@ -168,16 +183,16 @@ function AdminUserSetting (props) {
                 </Grid>
                 {/*查询按钮*/}
                 <Grid item xs={1}>
-                    <IconButton className={classes.getButton} onClick={queryAdminList}>
+                    <Fab color="primary" aria-label="add"  onClick={queryAdminList}>
                         <i className="mdi mdi-magnify mdi-24px"/>
-                    </IconButton>
+                    </Fab>
                 </Grid>
 
                 {/*添加按钮*/}
                 <Grid item xs={1}>
-                    <IconButton className={classes.addButton} onClick={()=>{setModalOpen(true)}}>
+                    <Fab color="primary" aria-label="add" onClick={()=>{handleAddOpen(null)}}>
                         <i className="mdi mdi-plus mdi-24px" />
-                    </IconButton>
+                    </Fab>
                 </Grid>
             </Grid>
 
@@ -197,13 +212,26 @@ function AdminUserSetting (props) {
                         <TableBody>
                             {adminUserSettingReducer.adminArray.length > 0 && adminUserSettingReducer.adminArray.map((row) => (
                                 <TableRow key={row.id}>
-                                    <TableCell align="center">{row.phone}</TableCell>
+                                    <TableCell align="center" >{row.phone}</TableCell>
                                     <TableCell align="center">{row.user_name}</TableCell>
                                     <TableCell align="center">{commonUtil.getJsonValue(sysConst.GENDER, row.gender)}</TableCell>
                                     <TableCell align="center">{commonUtil.getJsonValue(sysConst.USE_FLAG, row.status)}</TableCell>
                                     <TableCell align="center">
-                                        <i className="mdi mdi-close purple-font pointer margin-right10" onClick={() => {deleteUser(row.id)}}> </i>
-                                        <i className="mdi mdi-table-search purple-font margin-left10"> </i>
+                                        <Switch
+                                            checked={row.status==1}
+                                            onChange={(e)=>{
+                                                changePutStatus(row.status,row.id)
+                                            }}
+                                            name="状态"
+                                            color='primary'
+                                            inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                        />
+                                       {/* <i className="mdi mdi-close purple-font pointer margin-right10" onClick={() => {deleteUser(row.id)}}> </i>*/}
+                                        <i className="mdi mdi-table-search purple-font margin-left10" onClick={() =>
+                                        {putUser(row.id);
+                                            handleAddOpen(row);
+                                         //setPutModalOpen(true)
+                                        }}> </i>
                                     </TableCell>
                                 </TableRow>))}
                             { adminUserSettingReducer.adminArray.length === 0 &&
@@ -211,23 +239,44 @@ function AdminUserSetting (props) {
                             }
                         </TableBody>
                     </Table>
+
+                    {adminUserSettingReducer.dataSize >= adminUserSettingReducer.size &&
+                    <Button className={classes.button} variant="contained" color="primary"  onClick={nextBtn}>
+                        下一页
+                    </Button>}
+                    {adminUserSettingReducer.start > 0 && adminUserSettingReducer.dataSize > 0 &&
+                    <Button className={classes.button} variant="contained" color="primary" onClick={preBtn}>
+                        上一页
+                    </Button>}
+
                 </TableContainer>
             </Grid>
 
-
-            {/*添加用户信息*/}
+            {/*添加或修改用户信息*/}
             <SimpleModal
-                title="新增用户信息"
+                title={modalPage=='new' ? "新增用户信息" : "修改用户信息"}
                 open={modalOpen}
                 showFooter={true}
                 footer={
                     <>
-                        <Button variant="contained" onClick={() => {
+                        {status==0&&modalPage=='edit'?'':  <Button variant="contained" onClick={() => {
                             setSubmitFlag(true);
-                            addAdminUserSetting(addAdminUser, addAdminPhone,addPassword,addGender,1,0)
+                            setModalOpen(adminUser==''||gender==''||type==''?true:false)
+                            putAminUserSetting(adminUser,gender,type,id)
                         }}  color="primary">
                             确定
-                        </Button>
+                        </Button>}
+
+
+                        {modalPage=='new'&&status==null?
+                            <Button variant="contained" onClick={() => {
+                                setSubmitFlag(true);
+                                setModalOpen(adminUser==''|| adminPhone==''||password==''||gender==''||type==''?true:false)
+                                adminUserSetting(adminUser, adminPhone,password,gender,type,1)
+                            }}  color="primary">
+                                确定
+                            </Button>:''}
+
                         <Button onClick={()=>{setModalOpen(false)}} color="primary" autoFocus>
                             取消
                         </Button>
@@ -235,34 +284,58 @@ function AdminUserSetting (props) {
                 }
             >
                 <Grid  container spacing={3}>
-                    <Grid item xs={6} sm={6}>
+                    <Grid item xs={modalPage=='new' ? 4 : 6} sm={modalPage=='new' ? 4 : 6}>
                         <TextField fullWidth
                             margin='normal'
                             label="用户姓名"
                             variant="outlined"
                             onChange={(e)=>{
                                setSubmitFlag(false);
-                               setAddAdminUser(e.target.value)
+                               setAdminUser(e.target.value)
                             }}
-                            error={addAdminUser == "" && submitFlag}
-                            helperText={addAdminUser == "" && submitFlag  ? "用户姓名不能为空" : ""}
-                            value={addAdminUser}
+                            error={adminUser == "" && submitFlag}
+                            helperText={adminUser == "" && submitFlag  ? "用户姓名不能为空" : ""}
+                            value={adminUser}
 
                         />
                     </Grid>
-                    <Grid item xs={6} sm={6}>
+                    <Grid item xs={modalPage=='new' ? 4 : 6} sm={modalPage=='new' ? 4 : 6}>
+                        <TextField className={classes.select}
+                                   select
+                                   label="用户群组"
+                                   onChange={(e)=>{
+                                       setSubmitFlag(false);
+                                       setType(e.target.value)
+                                   }}
+                                   value={type}
+                                   SelectProps={{
+                                       native: true,
+                                   }}
+                                   error={type == ""&& submitFlag}
+                                   helperText={type == "" && submitFlag  ? "用户群组不能为空" : ""}
+                                   variant="outlined"
+                        >
+                            {adminUserSettingReducer.typeArray.map((option) => (
+                                <option key={option.id} value={option.id}>
+                                    {option.type_name}
+                                </option>
+                            ))}
+                        </TextField>
+                    </Grid>
+                    <Grid item xs={modalPage=='new' ? 4 : 6} sm={modalPage=='new' ? 4 : 6}>
                         <TextField className={classes.select}
                             select
                             label="性别"
                             onChange={(e)=>{
                                setSubmitFlag(false);
-                               setAddGender(e.target.value)
+                               setGender(e.target.value)
                             }}
-                            value={addGender}
+                            value={gender}
                             SelectProps={{
                                 native: true,
                             }}
-                            helperText={addGender == "" && submitFlag  ? "性别不能为空" : ""}
+                           error={gender == ""&& submitFlag}
+                            helperText={gender == "" && submitFlag  ? "性别不能为空" : ""}
                             variant="outlined"
                         >
                             {sysConst.GENDER.map((option) => (
@@ -272,23 +345,24 @@ function AdminUserSetting (props) {
                             ))}
                         </TextField>
                     </Grid>
-                    <Grid item xs={6} sm={6}>
-                        <TextField fullWidth
+                    <Grid item xs={modalPage=='new' ? 6 : 6} sm={modalPage=='new' ? 6 : 6}>
+                        <TextField fullWidth maxLength="11" minLength='11'
                                    margin='normal'
+                                   disabled={modalPage=='new'?false:true}
                                    label="手机"
                                    variant="outlined"
                                    onChange={(e)=>{
                                        setSubmitFlag(false);
-                                       setAddAdminPhone(e.target.value)
+                                       setAdminPhone(e.target.value)
                                    }}
-                                   error={addAdminPhone == "" && submitFlag}
-                                   helperText={addAdminPhone == "" && submitFlag  ? "手机不能为空" : ""}
-                                   value={addAdminPhone}
+                                   error={adminPhone == "" && submitFlag&&adminPhone!=="11"}
+                                   helperText={adminPhone == "" && submitFlag  ? "手机不能为空" : ""}
+                                   value={adminPhone}
 
                         />
                     </Grid>
-                    <Grid item xs={6} sm={6}>
-                        <TextField fullWidth
+                    {modalPage=='new' ?  <Grid item xs={6} sm={6}>
+                        <TextField fullWidth maxLength="20"
                                    label="密码"
                                    margin="normal"
                                    name="password"
@@ -296,13 +370,14 @@ function AdminUserSetting (props) {
                                    variant="outlined"
                                    onChange={(e) => {
                                        setSubmitFlag(false);
-                                       setAddPassword(e.target.value)
+                                       setPassword(e.target.value)
                                    }}
-                                   error={addPassword == "" && submitFlag}
-                                   helperText={addPassword == "" && submitFlag  ? "密码不能为空" : ""}
-                                   value={addPassword}
+                                   error={password == "" && submitFlag&& password<5}
+                                   helperText={password == "" && submitFlag  ? "密码不能为空" : ""}
+                                   value={password}
                         />
-                    </Grid>
+                    </Grid> : ''}
+
                 </Grid>
             </SimpleModal>
         </div>
@@ -317,14 +392,17 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => ({
     //添加员工
-    addAdminUserSetting: (userName, phone,password,gender,status,type) => {
-        if (userName.length > 0 && phone.length > 0 && password.length > 0 && gender.length > 0) {
-            dispatch(adminUserSettingAction.addAdminUserSetting({userName, phone,password,gender,status,type}));
+    adminUserSetting: (userName, phone,password,gender,type,status) => {
+        if (userName.length > 0 && phone.length > 0 && password.length > 0) {
+            dispatch(adminUserSettingAction.adminUserSetting({userName, phone,password,gender,type,status}));
         }
     },
     //获取列表
     getAdminList: () => {
         dispatch(adminUserSettingAction.getAdminList())
+    },
+    setStartNumber: (start) => {
+        dispatch(AdminUserSettingActionType.setStartNumber(start))
     },
     changeConditionUsername: (value) => {
         dispatch(AdminUserSettingActionType.setConditionUserName(value))
@@ -338,11 +416,26 @@ const mapDispatchToProps = (dispatch) => ({
     changeConditionStatus: (value) => {
         dispatch(AdminUserSettingActionType.setConditionStatus(value))
     },
-
-    //删除员工信息
+  /*  //删除员工信息
     deleteUser: (id) => {
         dispatch(adminUserSettingAction.deleteUser(id))
+    },*/
+    //修改员工信息(获取初始值)
+    putUser:(id) => {
+        dispatch(adminUserSettingAction.putUser(id))
     },
+    putAminUserSetting: (userName, gender,type,id) => {
+        if (userName.length > 0 && gender.length > 0) {
+            dispatch(adminUserSettingAction.putAminUserSetting({userName, gender,type},id));
+        }
+    },
+    adminUserTypeSetting:() =>{
+        dispatch(adminUserSettingAction.adminUserTypeSetting())
+    },
+    //修改状态
+    changePutStatus:(flag,id) =>{
+        dispatch(adminUserSettingAction.changePutStatus(flag,id))
+    }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdminUserSetting)

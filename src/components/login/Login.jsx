@@ -25,8 +25,7 @@ const validate = values => {
 
 const Login = (props) => {
     const {login,submitting,handleSubmit,initialValues} = props;
-    console.log(initialValues);
-    const [userName, setUserName] = useState("1999999999");
+    const [userName, setUserName] = useState("18888");
     const [password, setPassword] = useState("");
     const [submitFlag, setSubmitFlag] = useState(false);
     return (
@@ -42,7 +41,7 @@ const Login = (props) => {
                 <Typography color="textPrimary" variant="h2" align="center"><img style={{paddingTop: 6}} src="/logo120.png" alt=""/></Typography>
                 <Typography color="textPrimary" variant="h2" align="center">{webName}</Typography>
                 <form onSubmit={handleSubmit(login)}>
-                    <Field type="text" label="用户名" component={FormTextInput} value={userName}  name="userName" />
+                    <Field type="text" label="用户名" component={FormTextInput}   name="userName" />
                     <Field type="password" label="密码" component={FormTextInput}  name="password" />
                     <Box sx={{py: 2}}>
                         <Button color="primary" fullWidth size="large" type="submit"
@@ -78,7 +77,9 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    login: (userName, password) => {
+    login: (values) => {
+        console.log("lgoin")
+        const {userName,password} = values;
         if (userName.length > 0 && password.length > 0) {
             dispatch(loginAction.login({userName, password}));
         }

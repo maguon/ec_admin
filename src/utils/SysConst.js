@@ -65,7 +65,17 @@ export const USER_TYPES = [
     {value: 99, label: "管理员"},
     {value: 1, label: "普通用户"}
 ];
+// 性别
+export const GENDER = [
+    {value: 0, label: "女"},
+    {value: 1, label: "男"}
+];
 
+// 可用/停用 标记
+export const USE_FLAG = [
+    {value: 0, label: "停用"},
+    {value: 1, label: "可用"}
+];
 // 用于权限设定（包含所有机能设定）
 export const ALL_PAGE_LIST = [
     {

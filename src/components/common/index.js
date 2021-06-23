@@ -1,5 +1,5 @@
 import {TextField} from '@material-ui/core';
-export const  FormTextInput = ({ input, label, type,value, meta: { touched, error, invalid } }) => (
+export const  FormTextInput = ({ input, label, type, meta: { touched, error, invalid } }) => (
     <TextField
         type={type}
         label={label}
@@ -8,7 +8,6 @@ export const  FormTextInput = ({ input, label, type,value, meta: { touched, erro
         variant="outlined"
         margin="normal"
         fullWidth={true}
-        value={value}
         {...input}
     />
 );
