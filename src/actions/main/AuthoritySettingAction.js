@@ -40,7 +40,7 @@ export const getMenuList = (conditionUserType) => async (dispatch, getState) => 
 
         if (res.success) {
             if (res.rows.length > 0){
-                dispatch({type: AuthoritySettingActionType.setCurrentUserType, payload: res.rows[0].remarks});
+                dispatch({type: AuthoritySettingActionType.setCurrentRemark, payload: res.rows[0].remarks});
                 if (res.rows[0].menu_list.length > 0) {
                     dispatch({type: AuthoritySettingActionType.setMenuList, payload: res.rows[0].menu_list});
                 } else {
@@ -96,13 +96,16 @@ export const changeMenuList = (i , k) => async (dispatch, getState) => {
 // 系统设置 -> 权限设置 保存权限
 export const saveMenu = (currentUserType) => async (dispatch, getState) => {
     try {
+        // 备注
+        const remarks = getState().AuthoritySettingReducer.currentRemark;
         // 当前权限菜单
         const currentMenu = getState().AuthoritySettingReducer.currentMenu;
 
         const params = {
             id: currentUserType === null ? '' : currentUserType.value,
             typeName: currentUserType === null ? '' : currentUserType.label,
-            menuList: currentMenu
+            menuList: currentMenu,
+            remarks: remarks
         };
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + "/typeMenu";

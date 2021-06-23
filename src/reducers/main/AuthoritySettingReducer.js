@@ -5,7 +5,7 @@ const initialState = {
     // 当前用户群组列表
     userGroupList: [],
     // 当前用户类型
-    currentUserType: null,
+    currentRemark: '',
     // 当前画面菜单
     currentMenu: []
 };
@@ -27,10 +27,10 @@ export default handleActions({
             userGroupList: userGroupList
         }
     },
-    [AuthoritySettingActionType.setCurrentUserType]: (state, action) => {
+    [AuthoritySettingActionType.setCurrentRemark]: (state, action) => {
         return {
             ...state,
-            currentUserType: action.payload
+            currentRemark: action.payload
         }
     }
 }, initialState)

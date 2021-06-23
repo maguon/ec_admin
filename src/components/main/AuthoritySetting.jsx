@@ -13,6 +13,8 @@ import {
     makeStyles
 } from "@material-ui/core";
 import {SimpleModal} from '../'
+import {AuthoritySettingActionType} from "../../types";
+
 
 const authoritySettingAction = require('../../actions/main/AuthoritySettingAction');
 const sysConst = require('../../utils/SysConst');
@@ -44,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
 
 // 权限设置
 function AuthoritySetting (props) {
-    const {authoritySettingReducer, changeMenu, getMenuList, getUserGroupList, addUserGroup, saveMenu} = props;
+    const {authoritySettingReducer, changeMenu, setCurrentRemark, getMenuList, getUserGroupList, addUserGroup, saveMenu} = props;
     const classes = useStyles();
     const [conditionUserType, setConditionUserType] = useState(null);
     // 模态状态
@@ -91,6 +93,18 @@ function AuthoritySetting (props) {
                             isClearable={false}
                         />
                     </Grid>
+
+                    <Grid item xs={6} sm={3}>
+                        <TextField fullWidth={true}
+                                   margin="normal"
+                                   InputLabelProps={{ shrink: true }}
+                                   label="备注"
+                                   onChange={(e) => {
+                                       setCurrentRemark(e.target.value)
+                                   }}
+                                   value={authoritySettingReducer.currentRemark}
+                        />
+                    </Grid>
                 </Grid>
 
                 {/*查询按钮*/}
@@ -104,7 +118,7 @@ function AuthoritySetting (props) {
             {/* 主体 */}
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <b>当前权限：</b>{authoritySettingReducer.currentUserType}
+                    <b>当前权限：</b>
                 </Grid>
 
                 {authoritySettingReducer.currentMenu.length > 0 && authoritySettingReducer.currentMenu.map(function (item, index) {
@@ -211,6 +225,9 @@ const mapDispatchToProps = (dispatch) => ({
     },
     getUserGroupList: (conditionUserType) => {
         dispatch(authoritySettingAction.getUserGroupList())
+    },
+    setCurrentRemark: (value) => {
+        dispatch(AuthoritySettingActionType.setCurrentRemark(value))
     },
     addUserGroup: (typeName, remarks) => {
         dispatch(authoritySettingAction.createUserGroup({typeName, remarks}))
