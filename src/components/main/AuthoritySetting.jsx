@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import Select from 'react-select';
 import {connect} from 'react-redux';
 import {
     Button,
@@ -14,10 +13,9 @@ import {
 } from "@material-ui/core";
 import {SimpleModal} from '../'
 import {AuthoritySettingActionType} from "../../types";
-
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const authoritySettingAction = require('../../actions/main/AuthoritySettingAction');
-const sysConst = require('../../utils/SysConst');
 
 const useStyles = makeStyles((theme) => ({
     // 标题样式
@@ -48,11 +46,17 @@ const useStyles = makeStyles((theme) => ({
 function AuthoritySetting (props) {
     const {authoritySettingReducer, changeMenu, setCurrentRemark, getMenuList, getUserGroupList, addUserGroup, saveMenu} = props;
     const classes = useStyles();
+    useEffect(()=>{
+        getUserGroupList();
+    },[]);
+
     const [conditionUserType, setConditionUserType] = useState(null);
     // 模态状态
     const [modalOpen, setModalOpen] = React.useState(false);
     const openModal = (event) => {
         setModalOpen(true);
+        setHasError(false);
+        setErrors({});
     };
     const closeModal = (event) => {
         setModalOpen(false);
@@ -60,12 +64,25 @@ function AuthoritySetting (props) {
 
     // 模态页面属性
     const [typeName, setTypeName] = React.useState('');
-    const [submitFlag, setSubmitFlag] = useState(false);
     const [remarks, setRemarks] = useState('');
+    const [hasError, setHasError] = useState(false);
+    const [errors, setErrors] = useState({});
 
     useEffect(()=>{
         getUserGroupList();
     },[]);
+
+    const submitModal = (event) => {
+        setHasError(false);
+        if (!typeName) {
+            errors.typeName = '请输入用户群组名称';
+            setErrors(errors);
+            setHasError(true);
+        } else {
+            addUserGroup(typeName, remarks);
+            closeModal();
+        }
+    };
 
     return (
         <div className={classes.root}>
@@ -76,29 +93,26 @@ function AuthoritySetting (props) {
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
                 <Grid container item xs={11} spacing={3}>
-                    <Grid item xs={6} sm={3}>
-                        <label htmlFor="conditionUserType" className={classes.selectLabel}>用户群组</label>
-                        <Select
-                            inputId="conditionUserType"
-                            options={authoritySettingReducer.userGroupList}
-                            onChange={(value) => {
-                                setConditionUserType(value);
-                                getMenuList(value);
-                            }}
-                            value={conditionUserType}
-                            isSearchable={false}
-                            placeholder={"请选择"}
-                            noOptionsMessage={() => "暂无选项"}
-                            styles={sysConst.REACT_SELECT_SEARCH_STYLE}
-                            isClearable={false}
+                    <Grid item xs={3}>
+                        <Autocomplete fullWidth={true}
+                                      id="condition-user-type"
+                                      disableClearable={true}
+                                      options={authoritySettingReducer.userGroupList}
+                                      getOptionLabel={(option) => option.label}
+                                      onChange={(event, value) => {
+                                          setConditionUserType(value);
+                                          getMenuList(value);
+                                      }}
+                                      value={conditionUserType}
+                                      renderInput={(params) => <TextField {...params} label="用户群组" variant="outlined"/>}
                         />
                     </Grid>
 
-                    <Grid item xs={6} sm={3}>
+                    <Grid item xs={6}>
                         <TextField fullWidth={true}
-                                   margin="normal"
                                    InputLabelProps={{ shrink: true }}
                                    label="备注"
+                                   variant="outlined"
                                    onChange={(e) => {
                                        setCurrentRemark(e.target.value)
                                    }}
@@ -107,9 +121,9 @@ function AuthoritySetting (props) {
                     </Grid>
                 </Grid>
 
-                {/*查询按钮*/}
+                {/* 新增用户群组 */}
                 <Grid item xs={1}>
-                    <Fab color="primary" aria-label="add" onClick={()=>{openModal();setTypeName('');setRemarks('');setSubmitFlag(false)}}>
+                    <Fab color="primary" aria-label="add" onClick={()=>{openModal();setTypeName('');setRemarks('');}}>
                         <i className="mdi mdi-plus mdi-24px" />
                     </Fab>
                 </Grid>
@@ -173,13 +187,7 @@ function AuthoritySetting (props) {
                 showFooter={true}
                 footer={
                     <>
-                        <Button variant="contained" color="primary" onClick={()=>{
-                            setSubmitFlag(true);
-                            if (typeName.length > 0) {
-                                addUserGroup(typeName, remarks);
-                                closeModal();
-                            }
-                        }}>确定</Button>
+                        <Button variant="contained" color="primary" onClick={submitModal}>确定</Button>
                         <Button variant="contained" onClick={closeModal}>关闭</Button>
                     </>
                 }
@@ -190,11 +198,12 @@ function AuthoritySetting (props) {
                                    margin="normal"
                                    label="用户群组名称"
                                    onChange={(e) => {
-                                       setSubmitFlag(false);
+                                       setErrors({});
+                                       setHasError(false);
                                        setTypeName(e.target.value)
                                    }}
-                                   error={typeName == "" && submitFlag}
-                                   helperText={typeName == "" && submitFlag  ? "用户群组名称不能为空" : ""}
+                                   error={hasError}
+                                   helperText={errors.typeName}
                                    value={typeName}
                         />
                     </Grid>
@@ -202,7 +211,6 @@ function AuthoritySetting (props) {
                     <Grid item xs={12}>
                         <TextField label="备注" fullWidth={true} margin="normal" multiline rows={4} variant="outlined"
                                    onChange={(e) => {
-                                       setSubmitFlag(false);
                                        setRemarks(e.target.value)
                                    }}
                                    value={remarks}/>
