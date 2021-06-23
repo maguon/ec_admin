@@ -5,6 +5,7 @@ import LoginReducer from './login/LoginReducer';
 import MainPanelReducer from './main/MainPanelReducer';
 import AuthoritySettingReducer from './main/AuthoritySettingReducer';
 import AdminUserSettingReducer from "./main/AdminUserSettingReducer";
+import AppSettingReducer from "./main/AppSettingReducer";
 
 export default combineReducers({
     form: reduxFormReducer,
@@ -13,4 +14,5 @@ export default combineReducers({
     MainPanelReducer,
     AuthoritySettingReducer,
     AdminUserSettingReducer,
+    AppSettingReducer,
 });

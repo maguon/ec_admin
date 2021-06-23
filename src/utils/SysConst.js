@@ -76,6 +76,15 @@ export const USE_FLAG = [
     {value: 0, label: "停用"},
     {value: 1, label: "可用"}
 ];
+
+
+// 系统类型(1-安卓 2-苹果)
+export const SYSTEM_TYPE = [
+    {value: 1, label: "安卓"},
+    {value: 2, label: "苹果"}
+];
+
+
 // 用于权限设定（包含所有机能设定）
 export const ALL_PAGE_LIST = [
     {
