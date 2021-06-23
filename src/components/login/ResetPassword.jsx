@@ -1,4 +1,4 @@
-import React ,{useState,useEffect}from 'react';
+import React ,{useState}from 'react';
 import { Link as RouterLink} from "react-router-dom";
 import {Box,Button,Container,Grid,Link,TextField,Typography} from '@material-ui/core';
 import {connect} from 'react-redux';
@@ -19,9 +19,6 @@ const ResetPassword =(props)=> {
             setValidation(()=>{let {userName,...res} = validation;return res;})
         }
     }
-    /*useEffect(()=>{
-        validate();
-    },[userName])*/
     return (
 
         <>
