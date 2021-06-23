@@ -1,17 +1,34 @@
 import React, {useState} from 'react';
 import {connect} from 'react-redux';
 import {Link as RouterLink} from "react-router-dom";
-import {Box, Button, Container, Grid, Link, TextField, Typography} from '@material-ui/core';
+import {Box, Button, Container, Grid, Link, TextField,Typography} from '@material-ui/core';
+import {Field, reduxForm} from 'redux-form';
 import {webName} from "../../config";
+import {FormTextInput} from "../common/index";
 
 const loginAction = require('../../actions/login/LoginAction');
 
+const validate = values => {
+    const errors = {}
+    if (!values.userName) {
+        errors.userName = '请输入手机号'
+    } else if (values.userName.length != 11) {
+        errors.userName = '请输入正确的手机号码'
+    }
+    if (!values.password) {
+        errors.password = '请输入密码'
+    } else if (values.password.length <6) {
+        errors.password = '密码至少6位'
+    }
+    return errors
+}
+
 const Login = (props) => {
-    const {login} = props;
-    const [userName, setUserName] = useState("");
+    const {login,submitting,handleSubmit,initialValues} = props;
+    console.log(initialValues);
+    const [userName, setUserName] = useState("1999999999");
     const [password, setPassword] = useState("");
     const [submitFlag, setSubmitFlag] = useState(false);
-
     return (
         <Box sx={{
             backgroundColor: 'background.default',
@@ -24,41 +41,18 @@ const Login = (props) => {
             <Container maxWidth="sm" style={{paddingTop: 80}}>
                 <Typography color="textPrimary" variant="h2" align="center"><img style={{paddingTop: 6}} src="/logo120.png" alt=""/></Typography>
                 <Typography color="textPrimary" variant="h2" align="center">{webName}</Typography>
-                <TextField fullWidth
-                           label="用户名"
-                           margin="normal"
-                           name="userName"
-                           variant="outlined"
-                           onChange={(e) => {
-                               setSubmitFlag(false);
-                               setUserName(e.target.value)
-                           }}
-                           error={userName == "" && submitFlag}
-                           helperText={userName == "" && submitFlag  ? "用户名不能为空" : ""}
-                           value={userName}
-                />
-                <TextField fullWidth
-                           label="密码"
-                           margin="normal"
-                           name="password"
-                           type="password"
-                           variant="outlined"
-                           onChange={(e) => {
-                               setSubmitFlag(false);
-                               setPassword(e.target.value)
-                           }}
-                           error={password == "" && submitFlag}
-                           helperText={password == "" && submitFlag  ? "密码不能为空" : ""}
-                           value={password}
-                />
-                <Box sx={{py: 2}}>
-                    <Button color="primary" fullWidth size="large" type="button" onClick={() => {
-                        setSubmitFlag(true);
-                        login(userName, password)
-                    }} variant="contained" endIcon={<i className="mdi mdi-login"/>}>
-                        登陆
-                    </Button>
-                </Box>
+                <form onSubmit={handleSubmit(login)}>
+                    <Field type="text" label="用户名" component={FormTextInput} value={userName}  name="userName" />
+                    <Field type="password" label="密码" component={FormTextInput}  name="password" />
+                    <Box sx={{py: 2}}>
+                        <Button color="primary" fullWidth size="large" type="submit"
+                                disabled={submitting}
+                                variant="contained" endIcon={<i className="mdi mdi-login"/>}>
+                            登陆
+                        </Button>
+                    </Box>
+                </form>
+
 
                 <Grid container spacing={3}>
                     <Grid item xs={6}>
@@ -77,8 +71,10 @@ const Login = (props) => {
     )
 };
 
-const mapStateToProps = () => {
-    return {}
+const mapStateToProps = (state) => {
+    return {
+        initialValues: {userName:state.LoginReducer.userName,password:state.LoginReducer.password}
+    }
 };
 
 const mapDispatchToProps = (dispatch) => ({
@@ -89,4 +85,9 @@ const mapDispatchToProps = (dispatch) => ({
     }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(
+    reduxForm({
+            form: 'loginForm',
+            validate
+        }
+    )(Login));
