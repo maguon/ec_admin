@@ -3,6 +3,7 @@ import {Provider} from 'react-redux';
 import ReduxThunk from 'redux-thunk';
 import {HashRouter as Router, Route, Switch} from "react-router-dom";
 import clsx from 'clsx';
+import './App.css';
 import {makeStyles} from '@material-ui/core';
 import {applyMiddleware, createStore, compose} from 'redux';
 import reducers from './reducers'
