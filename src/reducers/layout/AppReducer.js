@@ -9,7 +9,6 @@ const initialState = {
 
 export default handleActions({
     [AppActionType.showLoadProgress]: (state, action) => {
-        console.log(action)
         return {
             ...state,
             showLoadProgressFlag: action.payload

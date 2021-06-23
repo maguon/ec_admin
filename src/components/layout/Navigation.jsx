@@ -11,7 +11,6 @@ import {
     Grid,
     Avatar,
     Divider,
-    IconButton,
     List,
     ListItem,
     ListItemIcon,
@@ -31,11 +30,6 @@ const useStyles = makeStyles((theme) => ({
     drawerPaper: {
         width: drawerWidth,
     },
-    drawerHeader: {
-        display: 'flex',
-        alignItems: 'center',
-        padding: theme.spacing(0, 1)
-    },
     // 用户头像
     avatar: {
         width: 128,
@@ -48,10 +42,6 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.background.paper,
         position: 'relative',
         overflow: 'auto',
-    },
-    // 菜单默认字体
-    menuText: {
-        color: "black",
     },
 }));
 
@@ -76,17 +66,14 @@ function Navigation(props) {
             classes={{paper: classes.drawerPaper}}
         >
             {/* 抽屉上部分：用户信息 */}
-            <div className={classes.drawerHeader}>
-                <Grid container spacing={3}>
-                    <Grid item xs={12}><Avatar src={avatarUrl} className={classes.avatar}/></Grid>
-                    <Grid item xs={12}>Name: {appReducer.currentUser.user_name}</Grid>
-                    <Grid item xs={12}>Phone: {appReducer.currentUser.phone}</Grid>
+            <Grid container spacing={3}>
+                <Grid item xs={12} style={{marginLeft: 54}}>
+                    <Avatar src={avatarUrl} className={classes.avatar}/>
                 </Grid>
-
-                <IconButton onClick={handleDrawerClose}>
-                    <i className={`mdi mdi-chevron-left mdi-24px`}/>
-                </IconButton>
-            </div>
+                <Grid item xs={12} style={{textAlign: 'center'}}>{appReducer.currentUser.user_name}
+                </Grid>
+                <Grid item xs={12} style={{textAlign: 'center'}}>{appReducer.currentUser.phone}</Grid>
+            </Grid>
             {/* 分割线 */}
             <Divider style={{marginTop: 20}}/>
 
@@ -101,7 +88,7 @@ function Navigation(props) {
                                 <ListItem button key={item.link + index} onClick={handleDrawerClose}>
                                     <ListItemIcon><i className={`mdi ${item.icon} mdi-24px`}/></ListItemIcon>
                                     <ListItemText primary={item.label} disableTypography={true}
-                                                  className={classes.menuText}/>
+                                                  style={{color: 'black'}}/>
                                 </ListItem>
                             </NavLink>}
 
