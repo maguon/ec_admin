@@ -11,9 +11,11 @@ const initialState = {
     // 检索条件：电话
     conditionPhone: '',
     // 检索条件：用户名称
-    conditionUserName: '',
+    conditionRealName: '',
     // 检索条件：性别
     conditionGender:null,
+    //检索条件：用户群组
+    conditionType:null,
     // 检索条件：状态
     conditionStatus: null,
     // 员工列表
@@ -51,10 +53,16 @@ export default handleActions({
             conditionPhone: action.payload
         }
     },
-    [AdminUserSettingActionType.setConditionUserName]: (state, action) => {
+    [AdminUserSettingActionType.setConditionRealName]: (state, action) => {
         return {
             ...state,
-            conditionUserName: action.payload
+            conditionRealName: action.payload
+        }
+    },
+    [AdminUserSettingActionType.setConditionType]: (state, action) => {
+        return {
+            ...state,
+            conditionType: action.payload
         }
     },
     [AdminUserSettingActionType.setConditionGender]: (state, action) => {

@@ -16,23 +16,25 @@ export const getAdminList = () => async (dispatch, getState) => {
         // 检索条件：手机
         const conditionPhone = getState().AdminUserSettingReducer.conditionPhone;
         // 检索条件：用户名称
-        const conditionUserName = getState().AdminUserSettingReducer.conditionUserName;
+        const conditionrealName = getState().AdminUserSettingReducer.conditionrealName;
+        //
+        const conditionType = getState().AdminUserSettingReducer.conditionType;
         // 检索条件：性别
         const conditionGender = getState().AdminUserSettingReducer.conditionGender;
         // 检索条件：状态
         const conditionStatus = getState().AdminUserSettingReducer.conditionStatus;
 
         // 基本检索URL
-        let url = apiHost + '/api/user?' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'&start=' + start + '&size=' + size;
-
+        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/user?start=' + start + '&size=' + size;
         // 检索条件
         let conditionsObj = {
             // 检索条件：电话
             phone: conditionPhone,
             // 检索条件：用户名称
-            userName: conditionUserName,
+            realName: conditionrealName,
+            // 检索条件：用户群组
+            type: conditionType === null ? '' : conditionType.value,
             // 检索条件：性别
-            /*gender: conditionGender,*/
             gender: conditionGender === null ? '' : conditionGender.value,
             // 检索条件：状态
             status: conditionStatus === null ? '' : conditionStatus.value
@@ -51,6 +53,7 @@ export const getAdminList = () => async (dispatch, getState) => {
          Swal.fire('操作失败', err.message, 'error');
     }
 };
+
 //群组查找
 export const adminUserTypeSetting = (params) => async (dispatch) => {
     try {
@@ -70,7 +73,7 @@ export const adminUserTypeSetting = (params) => async (dispatch) => {
 // 系统设置 -> 员工管理 添加员工
 export const adminUserSetting = (params) => async (dispatch) => {
     try {
-        const res = await httpUtil.httpPost(apiHost + '/api/user', params);
+        const res = await httpUtil.httpPost(apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/user', params);
         if (res.success === true) {
             params=[];
             dispatch(getAdminList());
@@ -117,7 +120,7 @@ export const deleteUser = (id) => async (dispatch) => {
 export const putUser = (id) => async (dispatch) => {
     try {
         // 基本检索URL
-        let url = apiHost + '/api/user?id='+ id;
+        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/user?id='+ id;
         const res = await httpUtil.httpGet(url);
         if (res.success === true) {
             if (res.rows.length > 0) {
@@ -132,7 +135,7 @@ export const putUser = (id) => async (dispatch) => {
 };
 
 export const putAminUserSetting = (params,id) => async (dispatch) => {
-    console.log(params,11111,id)
+    console.log(params)
     try {
         const res = await httpUtil.httpPut(apiHost + '/api/user/'+id, params);
         if (res.success === true) {
@@ -146,7 +149,6 @@ export const putAminUserSetting = (params,id) => async (dispatch) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
-
 
 
 //修改状态

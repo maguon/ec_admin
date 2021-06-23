@@ -1,10 +1,8 @@
 import React, {useEffect,useState}from 'react';
 import Select from 'react-select';
 import {connect} from 'react-redux';
-
 import {AdminUserSettingActionType} from '../../types';
 import {SimpleModal} from '../index';
-
 import {
     Button,
     Divider,
@@ -66,7 +64,7 @@ function AdminUserSetting (props) {
     const [password, setPassword] = useState("");
     const [gender, setGender] = useState("1");
     const [submitFlag, setSubmitFlag] = useState(false);
-    const {adminUserSettingReducer, changeConditionPhone,changeConditionUsername,changeConditionStatus,changeConditionGender,changePutStatus} = props;
+    const {adminUserSettingReducer, changeConditionPhone,changeConditionrealName,changeConditionStatus,changeConditionGender,changeConditionType,changePutStatus} = props;
     const classes = useStyles();
     const {adminUserSetting,putAminUserSetting,deleteUser,putUser} = props;
     const [modalPage, setModalPage] = useState("");
@@ -75,9 +73,10 @@ function AdminUserSetting (props) {
 
     useEffect(()=>{
         props.setStartNumber(0);
-        props.changeConditionUsername('');
+        props.changeConditionRealName('');
         props.changeConditionPhone('');
         props.changeConditionGender (null);
+        props.changeConditionType(null);
         props.changeConditionStatus(null);
         props.getAdminList();
         props.adminUserTypeSetting();
@@ -86,7 +85,6 @@ function AdminUserSetting (props) {
     //初始添加模态框值
     const handleAddOpen =(user) =>{
         setModalOpen(true);
-        //console.log('', user);
         if (user == null) {
             setModalPage('new');
             setAdminUser('');
@@ -96,7 +94,7 @@ function AdminUserSetting (props) {
             setGender('1');
         } else {
             setModalPage('edit');
-            setAdminUser(user.user_name);
+            setAdminUser(user.real_name);
             setType('1032');
             setAdminPhone(user.phone);
             setGender(user.gender);
@@ -104,7 +102,6 @@ function AdminUserSetting (props) {
             setStatus(user.status);
         }
     }
-
     /**
      * 查询菜单设定情况
      */
@@ -150,12 +147,28 @@ function AdminUserSetting (props) {
                             fullWidth={true}
                             margin={'normal'}
                             label="用户姓名"
-                            value={adminUserSettingReducer.conditionUserName}
-                            onChange={(e)=>changeConditionUsername(e.target.value)}
+                            value={adminUserSettingReducer.conditionrealName}
+                            onChange={(e)=>changeConditionrealName(e.target.value)}
                         />
                     </Grid>
-                    <Grid item lg={3} sm={3} xs={3}>
-                        <label htmlFor="conditionUserType" className={classes.selectLabel}>性别</label>
+                    <Grid item xs={2} sm={2}>
+                        <label htmlFor="conditionType" className={classes.selectLabel}>用户群组</label>
+                        <Select
+                            inputId="conditionType"
+                            value={adminUserSettingReducer.conditionType}
+                            options={
+                                adminUserSettingReducer.typeArray.map((option) => (
+                                {value:option.id,label:option.type_name}
+                            ))}
+                            onChange={changeConditionType}
+                            isSearchable={false}
+                            placeholder={"请选择"}
+                            styles={sysConst.REACT_SELECT_SEARCH_STYLE}
+                            isClearable={false}
+                        />
+                    </Grid>
+                    <Grid item lg={2} sm={2}>
+                        <label htmlFor="conditionUserGender" className={classes.selectLabel}>性别</label>
                         <Select
                             inputId="conditionGender"
                             options={sysConst.GENDER}
@@ -167,7 +180,7 @@ function AdminUserSetting (props) {
                             isClearable={false}
                         />
                     </Grid>
-                    <Grid item lg={3} sm={3} xs={3}>
+                    <Grid item lg={2} sm={2}>
                         <label htmlFor="conditionStatus" className={classes.selectLabel}>状态</label>
                         <Select
                             inputId="conditionStatus"
@@ -204,6 +217,7 @@ function AdminUserSetting (props) {
                             <TableRow style={{height:60}}>
                                 <TableCell align="center">手机</TableCell>
                                 <TableCell align="center">用户名称</TableCell>
+                                <TableCell align="center">用户群组</TableCell>
                                 <TableCell align="center">性别</TableCell>
                                 <TableCell align="center">状态</TableCell>
                                 <TableCell align="center">操作</TableCell>
@@ -213,7 +227,8 @@ function AdminUserSetting (props) {
                             {adminUserSettingReducer.adminArray.length > 0 && adminUserSettingReducer.adminArray.map((row) => (
                                 <TableRow key={row.id}>
                                     <TableCell align="center" >{row.phone}</TableCell>
-                                    <TableCell align="center">{row.user_name}</TableCell>
+                                    <TableCell align="center">{row.real_name}</TableCell>
+                                    <TableCell align="center">{row.type_name}</TableCell>
                                     <TableCell align="center">{commonUtil.getJsonValue(sysConst.GENDER, row.gender)}</TableCell>
                                     <TableCell align="center">{commonUtil.getJsonValue(sysConst.USE_FLAG, row.status)}</TableCell>
                                     <TableCell align="center">
@@ -235,7 +250,7 @@ function AdminUserSetting (props) {
                                     </TableCell>
                                 </TableRow>))}
                             { adminUserSettingReducer.adminArray.length === 0 &&
-                                <TableRow > <TableCell align="center" colSpan="5">暂无数据</TableCell></TableRow>
+                                <TableRow > <TableCell align="center" colSpan="6">暂无数据</TableCell></TableRow>
                             }
                         </TableBody>
                     </Table>
@@ -259,16 +274,16 @@ function AdminUserSetting (props) {
                 showFooter={true}
                 footer={
                     <>
-                        {status==0&&modalPage=='edit'?'':  <Button variant="contained" onClick={() => {
+                        {status!==0&&modalPage=='edit'? <Button variant="contained" onClick={() => {
                             setSubmitFlag(true);
                             setModalOpen(adminUser==''||gender==''||type==''?true:false)
                             putAminUserSetting(adminUser,gender,type,id)
                         }}  color="primary">
                             确定
-                        </Button>}
+                        </Button>:'' }
 
 
-                        {modalPage=='new'&&status==null?
+                        {modalPage=='new'?
                             <Button variant="contained" onClick={() => {
                                 setSubmitFlag(true);
                                 setModalOpen(adminUser==''|| adminPhone==''||password==''||gender==''||type==''?true:false)
@@ -284,68 +299,7 @@ function AdminUserSetting (props) {
                 }
             >
                 <Grid  container spacing={3}>
-                    <Grid item xs={modalPage=='new' ? 4 : 6} sm={modalPage=='new' ? 4 : 6}>
-                        <TextField fullWidth
-                            margin='normal'
-                            label="用户姓名"
-                            variant="outlined"
-                            onChange={(e)=>{
-                               setSubmitFlag(false);
-                               setAdminUser(e.target.value)
-                            }}
-                            error={adminUser == "" && submitFlag}
-                            helperText={adminUser == "" && submitFlag  ? "用户姓名不能为空" : ""}
-                            value={adminUser}
-
-                        />
-                    </Grid>
-                    <Grid item xs={modalPage=='new' ? 4 : 6} sm={modalPage=='new' ? 4 : 6}>
-                        <TextField className={classes.select}
-                                   select
-                                   label="用户群组"
-                                   onChange={(e)=>{
-                                       setSubmitFlag(false);
-                                       setType(e.target.value)
-                                   }}
-                                   value={type}
-                                   SelectProps={{
-                                       native: true,
-                                   }}
-                                   error={type == ""&& submitFlag}
-                                   helperText={type == "" && submitFlag  ? "用户群组不能为空" : ""}
-                                   variant="outlined"
-                        >
-                            {adminUserSettingReducer.typeArray.map((option) => (
-                                <option key={option.id} value={option.id}>
-                                    {option.type_name}
-                                </option>
-                            ))}
-                        </TextField>
-                    </Grid>
-                    <Grid item xs={modalPage=='new' ? 4 : 6} sm={modalPage=='new' ? 4 : 6}>
-                        <TextField className={classes.select}
-                            select
-                            label="性别"
-                            onChange={(e)=>{
-                               setSubmitFlag(false);
-                               setGender(e.target.value)
-                            }}
-                            value={gender}
-                            SelectProps={{
-                                native: true,
-                            }}
-                           error={gender == ""&& submitFlag}
-                            helperText={gender == "" && submitFlag  ? "性别不能为空" : ""}
-                            variant="outlined"
-                        >
-                            {sysConst.GENDER.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </TextField>
-                    </Grid>
-                    <Grid item xs={modalPage=='new' ? 6 : 6} sm={modalPage=='new' ? 6 : 6}>
+                    <Grid item xs={modalPage=='new' ? 12 : 6} sm={modalPage=='new' ? 12 : 6}>
                         <TextField fullWidth maxLength="11" minLength='11'
                                    margin='normal'
                                    disabled={modalPage=='new'?false:true}
@@ -358,6 +312,21 @@ function AdminUserSetting (props) {
                                    error={adminPhone == "" && submitFlag&&adminPhone!=="11"}
                                    helperText={adminPhone == "" && submitFlag  ? "手机不能为空" : ""}
                                    value={adminPhone}
+
+                        />
+                    </Grid>
+                    <Grid item xs={6} sm={6}>
+                        <TextField fullWidth
+                                   margin='normal'
+                                   label="用户姓名"
+                                   variant="outlined"
+                                   onChange={(e)=>{
+                                       setSubmitFlag(false);
+                                       setAdminUser(e.target.value)
+                                   }}
+                                   error={(adminUser == ''||adminUser == null) && submitFlag}
+                                   helperText={(adminUser == ''||adminUser == null) && submitFlag  ? "用户姓名不能为空" : ""}
+                                   value={adminUser}
 
                         />
                     </Grid>
@@ -377,6 +346,49 @@ function AdminUserSetting (props) {
                                    value={password}
                         />
                     </Grid> : ''}
+                    <Grid item xs={6} sm={6}>
+                        <TextField className={classes.select}
+                                   select
+                                   label="用户群组"
+                                   onChange={(e)=>{
+                                       setSubmitFlag(false);
+                                       setType(e.target.value)
+                                   }}
+                                   value={type}
+                                   SelectProps={{
+                                       native: true,
+                                   }}
+                                   variant="outlined"
+                        >
+                            {adminUserSettingReducer.typeArray.map((option) => (
+                                <option key={option.id} value={option.id}>
+                                    {option.type_name}
+                                </option>
+                            ))}
+                        </TextField>
+                    </Grid>
+                    <Grid item xs={6} sm={6}>
+                        <TextField className={classes.select}
+                            select
+                            label="性别"
+                            onChange={(e)=>{
+                               setSubmitFlag(false);
+                               setGender(e.target.value)
+                            }}
+                            value={gender}
+                            SelectProps={{
+                                native: true,
+                            }}
+                            variant="outlined"
+                        >
+                            {sysConst.GENDER.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </TextField>
+                    </Grid>
+
 
                 </Grid>
             </SimpleModal>
@@ -392,9 +404,9 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => ({
     //添加员工
-    adminUserSetting: (userName, phone,password,gender,type,status) => {
-        if (userName.length > 0 && phone.length > 0 && password.length > 0) {
-            dispatch(adminUserSettingAction.adminUserSetting({userName, phone,password,gender,type,status}));
+    adminUserSetting: (realName, phone,password,gender,type,status) => {
+        if (realName.length > 0 && phone.length > 0 && password.length > 0) {
+            dispatch(adminUserSettingAction.adminUserSetting({realName, phone,password,gender,type,status}));
         }
     },
     //获取列表
@@ -404,14 +416,17 @@ const mapDispatchToProps = (dispatch) => ({
     setStartNumber: (start) => {
         dispatch(AdminUserSettingActionType.setStartNumber(start))
     },
-    changeConditionUsername: (value) => {
-        dispatch(AdminUserSettingActionType.setConditionUserName(value))
+    changeConditionRealName: (value) => {
+        dispatch(AdminUserSettingActionType.setConditionRealName(value))
     },
     changeConditionPhone: (value) => {
         dispatch(AdminUserSettingActionType.setConditionPhone(value))
     },
     changeConditionGender: (value) => {
         dispatch(AdminUserSettingActionType.setConditionGender(value))
+    },
+    changeConditionType: (value) => {
+        dispatch(AdminUserSettingActionType.setConditionType(value))
     },
     changeConditionStatus: (value) => {
         dispatch(AdminUserSettingActionType.setConditionStatus(value))
@@ -424,11 +439,13 @@ const mapDispatchToProps = (dispatch) => ({
     putUser:(id) => {
         dispatch(adminUserSettingAction.putUser(id))
     },
-    putAminUserSetting: (userName, gender,type,id) => {
-        if (userName.length > 0 && gender.length > 0) {
-            dispatch(adminUserSettingAction.putAminUserSetting({userName, gender,type},id));
+    //修改员工信息
+    putAminUserSetting: (realName, gender,type,id) => {
+        if (realName.length > 0) {
+            dispatch(adminUserSettingAction.putAminUserSetting({realName, gender,type},id));
         }
     },
+    //群组查找
     adminUserTypeSetting:() =>{
         dispatch(adminUserSettingAction.adminUserTypeSetting())
     },
