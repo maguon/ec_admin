@@ -39,11 +39,13 @@ export const getMenuList = (conditionUserType) => async (dispatch, getState) => 
         dispatch({type: AppActionType.showLoadProgress, payload: false});
 
         if (res.success) {
-            dispatch({type: AuthoritySettingActionType.setCurrentUserType, payload: conditionUserType});
-            if (res.rows[0].menu_list.length > 0) {
-                dispatch({type: AuthoritySettingActionType.setMenuList, payload: res.rows[0].menu_list});
-            } else {
-                dispatch({type: AuthoritySettingActionType.setMenuList, payload: sysConst.ALL_PAGE_LIST});
+            if (res.rows.length > 0){
+                dispatch({type: AuthoritySettingActionType.setCurrentUserType, payload: res.rows[0].remarks});
+                if (res.rows[0].menu_list.length > 0) {
+                    dispatch({type: AuthoritySettingActionType.setMenuList, payload: res.rows[0].menu_list});
+                } else {
+                    dispatch({type: AuthoritySettingActionType.setMenuList, payload: JSON.parse(JSON.stringify(sysConst.ALL_PAGE_LIST))});
+                }
             }
         } else if (!res.success) {
             Swal.fire('获取菜单权限信息失败', res.msg, 'warning');
@@ -92,10 +94,8 @@ export const changeMenuList = (i , k) => async (dispatch, getState) => {
 };
 
 // 系统设置 -> 权限设置 保存权限
-export const saveMenu = () => async (dispatch, getState) => {
+export const saveMenu = (currentUserType) => async (dispatch, getState) => {
     try {
-        // 当前权限
-        const currentUserType = getState().AuthoritySettingReducer.currentUserType;
         // 当前权限菜单
         const currentMenu = getState().AuthoritySettingReducer.currentMenu;
 

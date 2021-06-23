@@ -5,11 +5,11 @@ import {
     Button,
     Divider,
     Grid,
-    IconButton,
     FormControlLabel,
     Checkbox,
     TextField,
     Typography,
+    Fab,
     makeStyles
 } from "@material-ui/core";
 import {SimpleModal} from '../'
@@ -35,12 +35,6 @@ const useStyles = makeStyles((theme) => ({
         height: 1,
         marginBottom: 15,
         background: '#7179e6'
-    },
-    addButton: {
-        width: 56,
-        height: 56,
-        borderRadius: '50%',
-        backgroundColor: '#7179e6'
     },
     selectLabel: {
         fontSize: 10,
@@ -92,6 +86,7 @@ function AuthoritySetting (props) {
                             value={conditionUserType}
                             isSearchable={false}
                             placeholder={"请选择"}
+                            noOptionsMessage={() => "暂无选项"}
                             styles={sysConst.REACT_SELECT_SEARCH_STYLE}
                             isClearable={false}
                         />
@@ -100,18 +95,17 @@ function AuthoritySetting (props) {
 
                 {/*查询按钮*/}
                 <Grid item xs={1}>
-                    <IconButton className={classes.addButton} onClick={()=>{openModal();setTypeName('');setRemarks('');setSubmitFlag(false)}}>
+                    <Fab color="primary" aria-label="add" onClick={()=>{openModal();setTypeName('');setRemarks('');setSubmitFlag(false)}}>
                         <i className="mdi mdi-plus mdi-24px" />
-                    </IconButton>
+                    </Fab>
                 </Grid>
             </Grid>
 
             {/* 主体 */}
             <Grid container spacing={2}>
-                {authoritySettingReducer.currentUserType != null &&
                 <Grid item xs={12}>
-                    <b>当前权限：{authoritySettingReducer.currentUserType.label}</b>
-                </Grid>}
+                    <b>当前权限：</b>{authoritySettingReducer.currentUserType}
+                </Grid>
 
                 {authoritySettingReducer.currentMenu.length > 0 && authoritySettingReducer.currentMenu.map(function (item, index) {
                     return (
@@ -153,8 +147,7 @@ function AuthoritySetting (props) {
                 })}
                 {authoritySettingReducer.currentMenu.length > 0 &&
                 <Grid item xs={12}>
-                    <Button variant="contained" color="primary" className={classes.modalButton}
-                            onClick={saveMenu}>修改</Button>
+                    <Button variant="contained" color="primary" onClick={()=>{saveMenu(conditionUserType)}}>修改</Button>
                 </Grid>}
             </Grid>
 
@@ -166,14 +159,14 @@ function AuthoritySetting (props) {
                 showFooter={true}
                 footer={
                     <>
-                        <Button variant="contained" color="primary" className={classes.modalButton} onClick={()=>{
+                        <Button variant="contained" color="primary" onClick={()=>{
                             setSubmitFlag(true);
                             if (typeName.length > 0) {
                                 addUserGroup(typeName, remarks);
                                 closeModal();
                             }
                         }}>确定</Button>
-                        <Button variant="contained" className={classes.modalButton} onClick={closeModal}>关闭</Button>
+                        <Button variant="contained" onClick={closeModal}>关闭</Button>
                     </>
                 }
             >
@@ -225,8 +218,8 @@ const mapDispatchToProps = (dispatch) => ({
     changeMenu: (index, key) => {
         dispatch(authoritySettingAction.changeMenuList(index, key))
     },
-    saveMenu: () => {
-        dispatch(authoritySettingAction.saveMenu())
+    saveMenu: (conditionUserType) => {
+        dispatch(authoritySettingAction.saveMenu(conditionUserType))
     }
 });
 
