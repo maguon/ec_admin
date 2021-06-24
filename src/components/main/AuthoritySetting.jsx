@@ -46,17 +46,19 @@ const useStyles = makeStyles((theme) => ({
 function AuthoritySetting (props) {
     const {authoritySettingReducer, changeMenu, setCurrentRemark, getMenuList, getUserGroupList, addUserGroup, saveMenu} = props;
     const classes = useStyles();
+
     useEffect(()=>{
         getUserGroupList();
     },[]);
 
+    // 检索条件
     const [conditionUserType, setConditionUserType] = useState(null);
     // 模态状态
     const [modalOpen, setModalOpen] = React.useState(false);
     const openModal = (event) => {
         setModalOpen(true);
-        setHasError(false);
-        setErrors({});
+        // 清楚check内容
+        setValidation({});
     };
     const closeModal = (event) => {
         setModalOpen(false);
@@ -65,20 +67,18 @@ function AuthoritySetting (props) {
     // 模态页面属性
     const [typeName, setTypeName] = React.useState('');
     const [remarks, setRemarks] = useState('');
-    const [hasError, setHasError] = useState(false);
-    const [errors, setErrors] = useState({});
-
-    useEffect(()=>{
-        getUserGroupList();
-    },[]);
-
-    const submitModal = (event) => {
-        setHasError(false);
+    const [validation,setValidation] = useState({});
+    const validate = ()=>{
+        const validateObj ={};
         if (!typeName) {
-            errors.typeName = '请输入用户群组名称';
-            setErrors(errors);
-            setHasError(true);
-        } else {
+            validateObj.typeName ='请输入用户群组名称';
+        }
+        setValidation(validateObj);
+        return Object.keys(validateObj).length
+    };
+    const submitModal = (event) => {
+        const errorCount = validate();
+        if(errorCount==0){
             addUserGroup(typeName, remarks);
             closeModal();
         }
@@ -195,26 +195,20 @@ function AuthoritySetting (props) {
             >
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <TextField fullWidth={true}
-                                   margin="normal"
-                                   label="用户群组名称"
+                        <TextField fullWidth={true} margin="dense" variant="outlined" label="用户群组名称" value={typeName}
                                    onChange={(e) => {
-                                       setErrors({});
-                                       setHasError(false);
                                        setTypeName(e.target.value)
                                    }}
-                                   error={hasError}
-                                   helperText={errors.typeName}
-                                   value={typeName}
+                                   error={validation.typeName&&validation.typeName!=''}
+                                   helperText={validation.typeName}
                         />
                     </Grid>
 
                     <Grid item xs={12}>
-                        <TextField label="备注" fullWidth={true} margin="normal" multiline rows={4} variant="outlined"
+                        <TextField fullWidth={true} margin="dense" variant="outlined" label="备注" multiline rows={4} value={remarks}
                                    onChange={(e) => {
                                        setRemarks(e.target.value)
-                                   }}
-                                   value={remarks}/>
+                                   }}/>
                     </Grid>
                 </Grid>
             </SimpleModal>
@@ -232,8 +226,9 @@ const mapDispatchToProps = (dispatch) => ({
     getMenuList: (conditionUserType) => {
         dispatch(authoritySettingAction.getMenuList(conditionUserType))
     },
-    getUserGroupList: (conditionUserType) => {
-        dispatch(authoritySettingAction.getUserGroupList())
+    getUserGroupList: () => {
+        dispatch(authoritySettingAction.getUserGroupList());
+        dispatch(AuthoritySettingActionType.setMenuList([]))
     },
     setCurrentRemark: (value) => {
         dispatch(AuthoritySettingActionType.setCurrentRemark(value))
