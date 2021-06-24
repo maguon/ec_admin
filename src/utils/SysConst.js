@@ -115,13 +115,13 @@ export const ALL_PAGE_LIST = [
         "icon": "mdi-chart-line",
         "children": [
             {
-                "link": "/product_statistic",
+                "link": "/category_manager",
                 "name": "商品分类",
                 "icon": "mdi-chevron-right",
                 "usable": true
             },
             {
-                "link": "/user_statistic",
+                "link": "/brand_manager",
                 "name": "品牌",
                 "icon": "mdi-chevron-right",
                 "usable": true
