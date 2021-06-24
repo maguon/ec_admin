@@ -104,7 +104,7 @@ function AuthoritySetting (props) {
                                           getMenuList(value);
                                       }}
                                       value={conditionUserType}
-                                      renderInput={(params) => <TextField {...params} label="用户群组" variant="outlined"/>}
+                                      renderInput={(params) => <TextField {...params} label="用户群组" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
 
@@ -112,6 +112,7 @@ function AuthoritySetting (props) {
                         <TextField fullWidth={true}
                                    InputLabelProps={{ shrink: true }}
                                    label="备注"
+                                   margin="dense"
                                    variant="outlined"
                                    onChange={(e) => {
                                        setCurrentRemark(e.target.value)
@@ -123,7 +124,7 @@ function AuthoritySetting (props) {
 
                 {/* 新增用户群组 */}
                 <Grid item xs={1}>
-                    <Fab color="primary" aria-label="add" onClick={()=>{openModal();setTypeName('');setRemarks('');}}>
+                    <Fab color="primary" aria-label="add" size="small" onClick={()=>{openModal();setTypeName('');setRemarks('');}}>
                         <i className="mdi mdi-plus mdi-24px" />
                     </Fab>
                 </Grid>
