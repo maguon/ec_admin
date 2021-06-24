@@ -22,9 +22,9 @@ const styles = (theme) => ({
 });
 
 const DialogTitle = withStyles(styles)((props) => {
-    const {children, classes, width, ...other} = props;
+    const {children, classes, ...other} = props;
     return (
-        <MuiDialogTitle disableTypography className={classes.root} style={{width: width}} {...other}>
+        <MuiDialogTitle disableTypography className={classes.root} {...other}>
             <Typography variant="h6">{children}</Typography>
         </MuiDialogTitle>
     );
@@ -47,7 +47,7 @@ const DialogActions = withStyles((theme) => ({
 
 export default function SimpleModal(props) {
     const [open, setOpen] = React.useState(false);
-    const {title, children, footer, width, ...other} = props;
+    const {title, children, footer, maxWidth, ...other} = props;
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -55,9 +55,9 @@ export default function SimpleModal(props) {
         setOpen(false);
     };
     return (
-        <Dialog aria-labelledby="customized-dialog-title" open={props.open} onClose={props.onClose}>
+        <Dialog aria-labelledby="customized-dialog-title" open={props.open} onClose={props.onClose} maxWidth={maxWidth}>
 
-            <DialogTitle id="customized-dialog-title" width={width}>
+            <DialogTitle id="customized-dialog-title">
                 {props.title}
             </DialogTitle>
 
