@@ -46,68 +46,54 @@ export const getAppList = (params) => async (dispatch, getState) => {
 };
 
 export const changeStatus = (id, status, condition) => async (dispatch, getState) => {
-    Swal.fire({
-        title: status === 1 ? "确定停用该数据？" : "确定重新启用该数据？",
-        text: "",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "确定",
-        cancelButtonText:"取消"
-    }).then(async (value) => {
-        if (value.isConfirmed) {
-            // 状态
-            let newStatus;
-            if (status === 0) {
-                newStatus = 1
-            } else {
-                newStatus = 0
-            }
-
-            // 状态
-            let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-                + '/app/' + id + '/status?status=' + newStatus;
-            const res = await httpUtil.httpPut(url, {});
-            if (res.success) {
-                Swal.fire("修改成功", "", "success");
-                // 刷新列表
-                dispatch(getAppList({
-                    conditionDeviceType: condition.conditionDeviceType,
-                    conditionStatus: condition.conditionStatus,
-                    dataStart: getState().AppSettingReducer.appData.start
-                }));
-            } else if (!res.success) {
-                Swal.fire("修改失败", res.msg, "warning");
-            }
+    try {
+        // 状态
+        let newStatus;
+        if (status === 0) {
+            newStatus = 1
+        } else {
+            newStatus = 0
         }
-    });
+
+        // 状态
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/app/' + id + '/status?status=' + newStatus;
+        const res = await httpUtil.httpPut(url, {});
+        if (res.success) {
+            Swal.fire("修改成功", "", "success");
+            // 刷新列表
+            dispatch(getAppList({
+                conditionDeviceType: condition.conditionDeviceType,
+                conditionStatus: condition.conditionStatus,
+                dataStart: getState().AppSettingReducer.appData.start
+            }));
+        } else if (!res.success) {
+            Swal.fire("修改失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
 };
 
 export const deleteApp = (id, condition) => async (dispatch, getState) => {
-    Swal.fire({
-        title: "确定删除该App版本",
-        text: "",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "确定",
-        cancelButtonText:"取消"
-    }).then(async (value) => {
-        if (value.isConfirmed) {
-            const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-                + '/app/' + id + '/del';
-            const res = await httpUtil.httpDelete(url, {});
-            if (res.success) {
-                Swal.fire("删除成功", "", "success");
-                // 刷新列表
-                dispatch(getAppList({
-                    conditionDeviceType: condition.conditionDeviceType,
-                    conditionStatus: condition.conditionStatus,
-                    dataStart: getState().AppSettingReducer.appData.start
-                }));
-            } else if (!res.success) {
-                Swal.fire('删除失败', res.msg, 'warning');
-            }
+    try {
+        const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/app/' + id + '/del';
+        const res = await httpUtil.httpDelete(url, {});
+        if (res.success) {
+            Swal.fire("删除成功", "", "success");
+            // 刷新列表
+            dispatch(getAppList({
+                conditionDeviceType: condition.conditionDeviceType,
+                conditionStatus: condition.conditionStatus,
+                dataStart: getState().AppSettingReducer.appData.start
+            }));
+        } else if (!res.success) {
+            Swal.fire('删除失败', res.msg, 'warning');
         }
-    });
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
 };
 
 export const saveModalData = (modalData, condition) => async (dispatch, getState) => {

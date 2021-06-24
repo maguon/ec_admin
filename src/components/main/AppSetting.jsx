@@ -21,6 +21,7 @@ import {
 
 // 引入Dialog
 import {SimpleModal} from "../index";
+import Swal from "sweetalert2";
 
 const appSettingAction = require('../../actions/main/AppSettingAction');
 const sysConst = require('../../utils/SysConst');
@@ -448,10 +449,32 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(appSettingAction.getAppList({conditionDeviceType, conditionStatus, dataStart}))
     },
     changeStatus: (id, status, conditionDeviceType, conditionStatus) => {
-        dispatch(appSettingAction.changeStatus(id, status, {conditionDeviceType, conditionStatus}));
+        Swal.fire({
+            title: status === 1 ? "确定停用该数据？" : "确定重新启用该数据？",
+            text: "",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "确定",
+            cancelButtonText:"取消"
+        }).then(async (value) => {
+            if (value.isConfirmed) {
+                dispatch(appSettingAction.changeStatus(id, status, {conditionDeviceType, conditionStatus}));
+            }
+        });
     },
     deleteApp: (id, conditionDeviceType, conditionStatus) => {
-        dispatch(appSettingAction.deleteApp(id, {conditionDeviceType, conditionStatus}));
+        Swal.fire({
+            title: "确定删除该App版本",
+            text: "",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "确定",
+            cancelButtonText:"取消"
+        }).then(async (value) => {
+            if (value.isConfirmed) {
+                dispatch(appSettingAction.deleteApp(id, {conditionDeviceType, conditionStatus}));
+            }
+        });
     },
     saveModalData: (pageType, uid, appType, deviceType, forceUpdate, version, versionNum, minVersionNum, url, remark, conditionDeviceType, conditionStatus) => {
         dispatch(appSettingAction.saveModalData({
