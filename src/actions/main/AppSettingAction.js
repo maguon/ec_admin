@@ -3,48 +3,51 @@ import {apiHost} from '../../config';
 import {AppSettingActionType} from '../../types';
 
 const httpUtil = require('../../utils/HttpUtils');
+const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
 
-export const getHighSchoolList = (dataStart) => async (dispatch, getState) => {
+export const getAppList = (params) => async (dispatch, getState) => {
     try {
         // 检索条件：开始位置
-        const start = dataStart;
+        const start = params.dataStart;
         // 检索条件：每页数量
-        const size = getState().AppSettingReducer.highSchool.size;
-        // 检索条件：学校名称
-        const conditionName = getState().AppSettingReducer.conditionName.trim();
-        // 检索条件：学校性质
-        const conditionType = getState().AppSettingReducer.conditionType;
+        const size = getState().AppSettingReducer.appData.size;
+        // 检索条件：系统类型
+        const deviceType = params.conditionDeviceType;
+        // 检索条件：状态
+        const status = params.conditionStatus;
 
         // 基本检索URL
-        let url = apiHost + '/api/highSchool?start=' + start + '&size=' + size;
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/app?start=' + start + '&size=' + size;
 
         // 检索条件
         let conditionsObj = {
-            name: conditionName,
-            type: conditionType === null ? '' : conditionType.value
+            deviceType: deviceType,
+            status: status
         };
         let conditions = httpUtil.objToUrl(conditionsObj);
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
+
         const res = await httpUtil.httpGet(url);
-        let highSchool = getState().AppSettingReducer.highSchool;
-        if (res.success === true) {
-            highSchool.start = start;
-            highSchool.dataSize = res.result.length;
-            highSchool.dataList = res.result.slice(0, size - 1);
-            dispatch({type: AppSettingActionType.setHighSchool, payload: highSchool});
-        } else if (res.success === false) {
-            Swal.fire("获取高中列表信息失败", res.msg, "warning");
+        let appData = getState().AppSettingReducer.appData;
+        if (res.success) {
+            appData.start = start;
+            appData.dataSize = res.rows.length;
+            appData.dataList = res.rows.slice(0, size - 1);
+            dispatch({type: AppSettingActionType.setAppData, payload: appData});
+        } else if (!res.success) {
+            Swal.fire("获取App系统列表信息失败", res.msg, "warning");
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }
 };
 
-export const changeHighSchoolStatus = (id, status) => async (dispatch, getState) => {
+export const changeStatus = (id, status, condition) => async (dispatch, getState) => {
     Swal.fire({
-        title: status === 0 ? "确定停用该数据？" : "确定重新启用该数据？",
+        title: status === 1 ? "确定停用该数据？" : "确定重新启用该数据？",
         text: "",
         icon: "warning",
         showCancelButton: true,
@@ -53,103 +56,91 @@ export const changeHighSchoolStatus = (id, status) => async (dispatch, getState)
     }).then(async (value) => {
         if (value.isConfirmed) {
             // 状态
-            const url = apiHost + '/api/highSchool/' + id + '/status';
-            const res = await httpUtil.httpPut(url, {status: status});
-            if (res.success === true) {
+            let newStatus;
+            if (status === 0) {
+                newStatus = 1
+            } else {
+                newStatus = 0
+            }
+
+            // 状态
+            let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+                + '/app/' + id + '/status?status=' + newStatus;
+            const res = await httpUtil.httpPut(url, {});
+            if (res.success) {
                 Swal.fire("修改成功", "", "success");
                 // 刷新列表
-                dispatch(getHighSchoolList(getState().AppSettingReducer.highSchool.start));
-            } else if (res.success === false) {
+                dispatch(getAppList({
+                    conditionDeviceType: condition.conditionDeviceType,
+                    conditionStatus: condition.conditionStatus,
+                    dataStart: getState().AppSettingReducer.appData.start
+                }));
+            } else if (!res.success) {
                 Swal.fire("修改失败", res.msg, "warning");
             }
         }
     });
 };
 
-// 初期数据
-export const initModalData = (data) => async (dispatch, getState) => {
-    // 取得 modal 数据
-    let modalData = getState().AppSettingReducer.modalData;
-
-    // 新建 / 修改
-    if (data == null) {
-        // 新增 区分
-        modalData.pageType = 'new';
-        // 唯一键
-        modalData.uid = -1;
-        // 学校性质
-        modalData.type = null;
-        // 学校代码
-        modalData.code = '';
-        // 学校名称
-        modalData.name = '';
-        // 招生起始年
-        modalData.startYear = '';
-        // 学校地址
-        modalData.address = '';
-        // 备注
-        modalData.remark = '';
-    } else {
-        let selectedType = {
-            value: data.type,
-            label: sysConst.HIGH_SCHOOL_TYPE[data.type - 1].label
-        };
-        // 修改 区分
-        modalData.pageType = 'edit';
-        // 唯一键
-        modalData.uid = data.uid;
-        // 学校性质
-        modalData.type = selectedType;
-        // 学校代码
-        modalData.code = data.code;
-        // 学校名称
-        modalData.name = data.hs_name;
-        // 招生起始年
-        modalData.startYear = data.start_year;
-        // 学校地址
-        modalData.address = data.address;
-        // 备注
-        modalData.remark = data.remark;
-    }
-    dispatch({type: AppSettingActionType.setModalData, payload: modalData});
-    dispatch({type: AppSettingActionType.setModalOpen, payload: true});
+export const deleteApp = (id, condition) => async (dispatch, getState) => {
+    Swal.fire({
+        title: "确定删除该App版本",
+        text: "",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "确定",
+        cancelButtonText:"取消"
+    }).then(async (value) => {
+        if (value.isConfirmed) {
+            const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+                + '/app/' + id + '/del';
+            const res = await httpUtil.httpDelete(url, {});
+            if (res.success) {
+                Swal.fire("删除成功", "", "success");
+                // 刷新列表
+                dispatch(getAppList({
+                    conditionDeviceType: condition.conditionDeviceType,
+                    conditionStatus: condition.conditionStatus,
+                    dataStart: getState().AppSettingReducer.appData.start
+                }));
+            } else if (!res.success) {
+                Swal.fire('删除失败', res.msg, 'warning');
+            }
+        }
+    });
 };
 
-export const saveModalData = () => async (dispatch, getState) => {
+export const saveModalData = (modalData, condition) => async (dispatch, getState) => {
     try {
-        // 模态数据
-        let modalData = getState().AppSettingReducer.modalData;
-
-        // 判断
-        if (modalData.type == null || modalData.name == '' || modalData.address == '') {
-            Swal.fire("请输入必要信息", "", "warning");
+        const params = {
+            appType: modalData.appType,
+            deviceType: modalData.deviceType,
+            version: modalData.version,
+            versionNum: modalData.versionNum,
+            minVersionNum: modalData.minVersionNum,
+            forceUpdate: modalData.forceUpdate,
+            url: modalData.url,
+            remarks: modalData.remark
+        };
+        // 基本url
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/app';
+        let res;
+        if (modalData.pageType === 'new') {
+            res = await httpUtil.httpPost(url, params);
         } else {
-            const params = {
-                code: modalData.code,
-                name: modalData.name,
-                type: modalData.type == null ? '' : modalData.type.value,
-                address: modalData.address,
-                startYear: modalData.startYear,
-                remark: modalData.remark
-            };
-            // 基本url
-            let url = apiHost + '/api/highSchool';
-            let res;
-            if (modalData.pageType === 'new') {
-                res = await httpUtil.httpPost(url, params);
-            } else {
-                url = url + '/' + modalData.uid;
-                res = await httpUtil.httpPut(url, params);
-            }
-            if (res.success === true) {
-                Swal.fire("保存成功", "", "success");
-                // 关闭模态
-                dispatch({type: AppSettingActionType.setModalOpen, payload: false});
-                // 刷新列表
-                dispatch(getHighSchoolList(getState().AppSettingReducer.highSchool.start));
-            } else if (res.success === false) {
-                Swal.fire("保存失败", res.msg, "warning");
-            }
+            url = url + '/' + modalData.uid;
+            res = await httpUtil.httpPut(url, params);
+        }
+        if (res.success) {
+            Swal.fire("保存成功", "", "success");
+            // 刷新列表
+            dispatch(getAppList({
+                conditionDeviceType: condition.conditionDeviceType,
+                conditionStatus: condition.conditionStatus,
+                dataStart: getState().AppSettingReducer.appData.start
+            }));
+        } else if (!res.success) {
+            Swal.fire("保存失败", res.msg, "warning");
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");

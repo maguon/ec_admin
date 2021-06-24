@@ -7,17 +7,12 @@ const initialState = {
         // 开始位置
         start: 0,
         // 每页数量
-        size: 6,
+        size: 11,
         // 检索结果数量
         dataSize: 0,
         // 数据列表
         dataList: []
     },
-    // 检索条件：系统
-    conditionDeviceType: null,
-    // 检索条件：状态
-    conditionStatus: null,
-
     // 检索条件：模态状态
     modalOpen: false,
     // 检索结果
@@ -26,18 +21,22 @@ const initialState = {
         pageType: '',
         // 唯一键
         uid : -1,
-        // 学校性质
-        type: null,
-        // 学校代码
-        code: '',
-        // 学校名称
-        name: '',
-        // 招生起始年
-        startYear: 0,
-        // 学校地址
-        address: '',
+        // App类型
+        appType: null,
+        // 系统类型
+        deviceType: null,
+        // 强制更新
+        forceUpdate: null,
+        // 版本号
+        version: '',
+        // 版本序号
+        versionNum: 0,
+        // 最低版本号
+        minVersionNum: 0,
+        // 下载地址
+        url: '',
         // 备注
-        remark: ''
+        remarks: ''
     }
 };
 
@@ -46,18 +45,6 @@ export default handleActions({
         return {
             ...state,
             appData: action.payload
-        }
-    },
-    [AppSettingActionType.setConditionDeviceType]: (state, action) => {
-        return {
-            ...state,
-            conditionDeviceType: action.payload
-        }
-    },
-    [AppSettingActionType.setConditionStatus]: (state, action) => {
-        return {
-            ...state,
-            conditionStatus: action.payload
         }
     },
     [AppSettingActionType.setModalOpen]: (state, action) => {

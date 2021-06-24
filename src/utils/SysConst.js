@@ -60,11 +60,6 @@ export const REACT_SELECT_SEARCH_STYLE = {
     })
 };
 
-// 用户类型
-export const USER_TYPES = [
-    {value: 99, label: "管理员"},
-    {value: 1, label: "普通用户"}
-];
 // 性别
 export const GENDER = [
     {value: 0, label: "女"},
@@ -77,13 +72,22 @@ export const USE_FLAG = [
     {value: 1, label: "可用"}
 ];
 
+// 系统类型(1-进销存管理系统 )
+export const APP_TYPE = [
+    {value: 1, label: "进销存管理系统"},
+];
 
 // 系统类型(1-安卓 2-苹果)
-export const SYSTEM_TYPE = [
+export const DEVICE_TYPE = [
     {value: 1, label: "安卓"},
     {value: 2, label: "苹果"}
 ];
 
+// 强制更新(0-非强制更新 1-强制更新)
+export const FORCE_UPDATE = [
+    {value: 0, label: "否"},
+    {value: 1, label: "是"}
+];
 
 // 用于权限设定（包含所有机能设定）
 export const ALL_PAGE_LIST = [
@@ -92,7 +96,7 @@ export const ALL_PAGE_LIST = [
         "label": "综合页面",
         "icon": "mdi-cards-variant",
         "children": [],
-        "usable": false
+        "usable": true
     },
     {
         "label": "统计",
@@ -102,7 +106,7 @@ export const ALL_PAGE_LIST = [
                 "link": "/user_statistic",
                 "name": "新增用户",
                 "icon": "mdi-chevron-right",
-                "usable": false
+                "usable": true
             }
         ]
     },
@@ -114,13 +118,19 @@ export const ALL_PAGE_LIST = [
                 "link": "/admin_user_setting",
                 "name": "用户管理",
                 "icon": "mdi-chevron-right",
-                "usable": false
+                "usable": true
+            },
+            {
+                "link": "/app_setting",
+                "name": "App系统",
+                "icon": "mdi-chevron-right",
+                "usable": true
             },
             {
                 "link": "/authority_setting",
                 "name": "权限设置",
                 "icon": "mdi-chevron-right",
-                "usable": false
+                "usable": true
             }
         ]
     }
