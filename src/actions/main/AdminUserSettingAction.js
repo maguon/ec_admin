@@ -7,45 +7,32 @@ const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
 
 // 系统设置 -> 员工管理 取得画面列表
-export const getAdminList = () => async (dispatch, getState) => {
+export const getUserList = (params) => async (dispatch, getState) => {
+
     try {
         // 检索条件：开始位置
         const start = getState().AdminUserSettingReducer.start;
         // 检索条件：每页数量
         const size = getState().AdminUserSettingReducer.size;
-        // 检索条件：手机
-        const conditionPhone = getState().AdminUserSettingReducer.conditionPhone;
-        // 检索条件：用户名称
-        const conditionrealName = getState().AdminUserSettingReducer.conditionrealName;
-        //
-        const conditionType = getState().AdminUserSettingReducer.conditionType;
-        // 检索条件：性别
-        const conditionGender = getState().AdminUserSettingReducer.conditionGender;
-        // 检索条件：状态
-        const conditionStatus = getState().AdminUserSettingReducer.conditionStatus;
 
         // 基本检索URL
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/user?start=' + start + '&size=' + size;
         // 检索条件
-        let conditionsObj = {
-            // 检索条件：电话
-            phone: conditionPhone,
-            // 检索条件：用户名称
-            realName: conditionrealName,
-            // 检索条件：用户群组
-            type: conditionType === null ? '' : conditionType.value,
-            // 检索条件：性别
-            gender: conditionGender === null ? '' : conditionGender.value,
-            // 检索条件：状态
-            status: conditionStatus === null ? '' : conditionStatus.value
-        };
-        let conditions = httpUtil.objToUrl(conditionsObj);
+        if(params==undefined){
+            params=''
+        }else {
+            params.gender=(params.gender==-1?'': params.gender);
+            params.type=(params.type==-1?'': params.type);
+            params.status=(params.status==-1?'': params.status);
+        }
+
+        let conditions = httpUtil.objToUrl(params);
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
         const res = await httpUtil.httpGet(url);
         if (res.success === true) {
             dispatch({type: AdminUserSettingActionType.setDataSize, payload: res.rows.length});
-            dispatch({type: AdminUserSettingActionType.getAdminList, payload: res.rows.slice(0, size - 1)});
+            dispatch({type: AdminUserSettingActionType.getUserList, payload: res.rows.slice(0, size - 1)});
         } else if (res.success === false) {
              Swal.fire('获取管理员列表信息失败', res.msg, 'warning');
         }
@@ -55,7 +42,7 @@ export const getAdminList = () => async (dispatch, getState) => {
 };
 
 //群组查找
-export const adminUserTypeSetting = (params) => async (dispatch) => {
+export const getUserTypeList = (params) => async (dispatch) => {
     try {
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/typeMenu';
         const res = await httpUtil.httpGet(url);
@@ -69,14 +56,13 @@ export const adminUserTypeSetting = (params) => async (dispatch) => {
     }
 };
 
-
 // 系统设置 -> 员工管理 添加员工
-export const adminUserSetting = (params) => async (dispatch) => {
+export const addUserItem = (params) => async (dispatch) => {
     try {
         const res = await httpUtil.httpPost(apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/user', params);
         if (res.success === true) {
             params=[];
-            dispatch(getAdminList());
+            dispatch(getUserList());
             Swal.fire("增加成功", "", "success");
         } else if (res.success === false) {
             Swal.fire('保存失败', res.msg, 'warning');
@@ -86,38 +72,8 @@ export const adminUserSetting = (params) => async (dispatch) => {
     }
 };
 
-/*//系统设置 -> 员工管理 删除员工信息
-export const deleteUser = (id) => async (dispatch) => {
-    Swal.fire({
-        title: "确定删除该员工信息？",
-        text: "",
-        icon: "warning",
-        confirmButtonText:'确定',
-        cancelButtonText: "取消",
-    }).then(async function(isConfirm) {
-        try {
-            //判断 是否 点击的 确定按钮
-            if (isConfirm.value) {
-                const url = apiHost + '/api/user/' + id;
-                const res = await httpUtil.httpDelete(url, {});
-                if (res.success === true) {
-                    Swal.fire("删除成功", "", "success");
-                    dispatch(getAdminList());
-                } else if (res.success === false) {
-                    Swal.fire('删除失败', res.msg, 'warning');
-                }
-            }
-            else {
-                Swal.fire('删除失败', "",'warning');
-            }
-        } catch (e) {
-            alert(e);
-        }
-    })
-};*/
-
 //系统设置 -> 员工管理  修改员工信息
-export const putUser = (id) => async (dispatch) => {
+export const updateUser = (id) => async (dispatch) => {
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/user?id='+ id;
@@ -134,13 +90,12 @@ export const putUser = (id) => async (dispatch) => {
     }
 };
 
-export const putAminUserSetting = (params,id) => async (dispatch) => {
-    console.log(params)
+export const updateUserItem = (params,id) => async (dispatch) => {
     try {
         const res = await httpUtil.httpPut(apiHost + '/api/user/'+id, params);
         if (res.success === true) {
             params=[];
-            dispatch(getAdminList());
+            dispatch(getUserList());
             Swal.fire("修改成功", "", "success");
         } else if (res.success === false) {
             Swal.fire('修改失败', res.msg, 'warning');
@@ -150,9 +105,8 @@ export const putAminUserSetting = (params,id) => async (dispatch) => {
     }
 };
 
-
 //修改状态
-export const changePutStatus =(status,id)  => async (dispatch) => {
+export const changeStatus =(status,id)  => async (dispatch) => {
     Swal.fire({
         title: status === 1 ? "确定停用该员工？" : "确定重新启用该员工？",
         text: "",
@@ -171,12 +125,11 @@ export const changePutStatus =(status,id)  => async (dispatch) => {
                     newStatus = 0
                 }
 
-                const url = apiHost + '/api/user/' + id
-                    + '/status?status=' +newStatus;
+                const url = apiHost + '/api/user/' + id + '/status?status=' +newStatus;
                 const res = await httpUtil.httpPut(url);
                 if (res.success === true) {
-                    dispatch(getAdminList());
-                    dispatch(putUser(id));
+                    dispatch(updateUser(id));
+                    dispatch(getUserList());
                     Swal.fire("修改成功", "", "success");
                 } else if (res.success === false) {
                     Swal.fire('修改失败', res.msg, 'warning');
@@ -188,3 +141,33 @@ export const changePutStatus =(status,id)  => async (dispatch) => {
 
     });
 }
+
+/*//系统设置 -> 员工管理 删除员工信息
+export const deleteUser = (id) => async (dispatch) => {
+    Swal.fire({
+        title: "确定删除该员工信息？",
+        text: "",
+        icon: "warning",
+        confirmButtonText:'确定',
+        cancelButtonText: "取消",
+    }).then(async function(isConfirm) {
+        try {
+            //判断 是否 点击的 确定按钮
+            if (isConfirm.value) {
+                const url = apiHost + '/api/user/' + id;
+                const res = await httpUtil.httpDelete(url, {});
+                if (res.success === true) {
+                    Swal.fire("删除成功", "", "success");
+                    dispatch(getUserList());
+                } else if (res.success === false) {
+                    Swal.fire('删除失败', res.msg, 'warning');
+                }
+            }
+            else {
+                Swal.fire('删除失败', "",'warning');
+            }
+        } catch (e) {
+            alert(e);
+        }
+    })
+};*/
