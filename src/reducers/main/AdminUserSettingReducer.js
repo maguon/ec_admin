@@ -8,28 +8,16 @@ const initialState = {
     size: 11,
     // 检索结果数量
     dataSize: 0,
-    // 检索条件：电话
-    conditionPhone: '',
-    // 检索条件：用户名称
-    conditionRealName: '',
-    // 检索条件：性别
-    conditionGender:null,
-    //检索条件：用户群组
-    conditionType:null,
-    // 检索条件：状态
-    conditionStatus: null,
     // 员工列表
     adminArray: [],
-
     //详情
     adminItem:[],
-
     typeArray:[]
 
 };
 
 export default handleActions({
-    [AdminUserSettingActionType.getAdminList]: (state, action) => {
+    [AdminUserSettingActionType.getUserList]: (state, action) => {
         return {
             ...state,
             adminArray: action.payload
@@ -45,36 +33,6 @@ export default handleActions({
         return {
             ...state,
             dataSize: action.payload
-        }
-    },
-    [AdminUserSettingActionType.setConditionPhone]: (state, action) => {
-        return {
-            ...state,
-            conditionPhone: action.payload
-        }
-    },
-    [AdminUserSettingActionType.setConditionRealName]: (state, action) => {
-        return {
-            ...state,
-            conditionRealName: action.payload
-        }
-    },
-    [AdminUserSettingActionType.setConditionType]: (state, action) => {
-        return {
-            ...state,
-            conditionType: action.payload
-        }
-    },
-    [AdminUserSettingActionType.setConditionGender]: (state, action) => {
-        return {
-            ...state,
-            conditionGender: action.payload
-        }
-    },
-    [AdminUserSettingActionType.setConditionStatus]: (state, action) => {
-        return {
-            ...state,
-            conditionStatus: action.payload
         }
     },
     [AdminUserSettingActionType.setAdminItem]: (state, action) => {
