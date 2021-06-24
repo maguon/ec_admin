@@ -12,13 +12,14 @@ import AuthoritySetting from './main/AuthoritySetting';
 import ErrorPanel from './main/ErrorPanel';
 import AdminUserSetting from "./main/AdminUserSetting";
 import AppSetting from "./main/AppSetting";
+import CategoryManager from "./main/CategoryManager";
 
 import NestedList from "./utils/NestedList";
 export {
     Header,Footer,Navigation, AccountModal,SimpleModal,LoadProgree,
     Login,Register,ResetPassword,
     MainPanel,ErrorPanel,AuthoritySetting,
-    AdminUserSetting,AppSetting,
+    AdminUserSetting,AppSetting,CategoryManager,
 
     NestedList
 }

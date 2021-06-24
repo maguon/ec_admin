@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function AppSetting(props) {
+function CategoryManager(props) {
     const {appSettingReducer, changeStatus, deleteApp, saveModalData} = props;
     const classes = useStyles();
 
@@ -469,4 +469,4 @@ const mapDispatchToProps = (dispatch) => ({
     }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(AppSetting)
+export default connect(mapStateToProps, mapDispatchToProps)(CategoryManager)
