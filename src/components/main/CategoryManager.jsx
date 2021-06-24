@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
-import { makeStyles, Grid, Icon, IconButton } from "@material-ui/core";
+import {makeStyles, Grid, Icon, IconButton, FormControlLabel, Checkbox} from "@material-ui/core";
 
 import TreeView from "@material-ui/lab/TreeView";
 import TreeItem from "@material-ui/lab/TreeItem";
@@ -38,18 +38,25 @@ const useStyles = makeStyles((theme) => ({
 // 权限设置
 function CategoryManager (props) {
     const {categoryManagerReducer, getCategoryList, getCategorySubList} = props;
-
     const classes = useStyles();
+
+    useEffect(()=>{
+        getCategoryList();
+    },[]);
+
+
     const [expanded, setExpanded] = React.useState([]);
     const [selected, setSelected] = React.useState([]);
 
     const handleToggle = (event, nodeIds) => {
         setExpanded(nodeIds);
+        getCategorySubList(nodeIds);
         console.log("handleToggle", nodeIds);
     };
 
     const handleSelect = (event, nodeIds) => {
         setSelected(nodeIds);
+        getCategorySubList(nodeIds);
         console.log("handleSelect", nodeIds);
     };
 
@@ -68,17 +75,50 @@ function CategoryManager (props) {
             onNodeToggle={handleToggle}
             onNodeSelect={handleSelect}
         >
+            {categoryManagerReducer.categoryList.map(function (item, index) {
+                return (
+                    <TreeItem
+                        key={'category' + item.id}
+                        nodeId={item.id}
+                        label={item.category_name}
+                        onLabelClick={clickIcon}
+                    >
+                        {categoryManagerReducer.categorySubList.map(function (sub, i) {
+                            return (
+                                <TreeItem
+                                    key={'category_sub' + sub.id}
+                                    nodeId={sub.id}
+                                    label={sub.category_sub_name}
+                                    onLabelClick={clickIcon}
+                                />
+                            )
+                        })}
+                    </TreeItem>
+                )
+            })}
+
+
             <TreeItem
                 nodeId="1"
-                label={'temp'}
+                label={
+                    <Grid container spacing={2}>
+                        <Grid item sm={6}>
+                            sdf
+                        </Grid>
+                        <Grid item sm={6}>
+                            <IconButton>
+                                <Icon>add</Icon>
+                            </IconButton>
+                        </Grid>
+                    </Grid>
+                }
                 onLabelClick={clickIcon}
             >
                 <TreeItem nodeId="2" label="Calendar" />
                 <TreeItem nodeId="3" label="Chrome" />
                 <TreeItem nodeId="4" label="Webstorm" />
             </TreeItem>
-            <TreeItem nodeId="5" label="Documents"
-                      onLabelClick={clickIcon}>
+            <TreeItem nodeId="5" label="Documents">
                 <TreeItem nodeId="6" label="Material-UI" />
             </TreeItem>
         </TreeView>
