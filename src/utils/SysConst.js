@@ -125,6 +125,12 @@ export const ALL_PAGE_LIST = [
                 "name": "品牌",
                 "icon": "mdi-chevron-right",
                 "usable": true
+            },
+            {
+                "link": "/supplier_manager",
+                "name": "供应商",
+                "icon": "mdi-chevron-right",
+                "usable": true
             }
         ]
     },
