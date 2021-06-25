@@ -19,7 +19,7 @@ import {
 } from "@material-ui/core";
 import Fab from '@material-ui/core/Fab';
 import Switch from '@material-ui/core/Switch';
-import {makeStyles} from "@material-ui/core/styles";
+import {withStyles,makeStyles} from "@material-ui/core/styles";
 const adminUserSettingAction = require('../../actions/main/AdminUserSettingAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
@@ -57,7 +57,14 @@ const useStyles = makeStyles((theme) => ({
         float:'right'
     }
 }));
+const StyledTableCell = withStyles((theme) => ({
+    head: {
+        fontWeight:'bold',
+        background:'#F7F6F9',
+        borderTop: '2px solid #D4D4D4'
 
+    }
+}))(TableCell);
 //员工管理
 function AdminUserSetting (props) {
     const {adminUserSettingReducer,changeStatus,updateUser} = props;
@@ -329,12 +336,12 @@ function AdminUserSetting (props) {
                     <Table  size={'small'} aria-label="a dense table">
                         <TableHead >
                             <TableRow style={{height:60}}>
-                                <TableCell align="center">手机</TableCell>
-                                <TableCell align="center">用户名称</TableCell>
-                                <TableCell align="center">用户群组</TableCell>
-                                <TableCell align="center">性别</TableCell>
-                                <TableCell align="center">状态</TableCell>
-                                <TableCell align="center">操作</TableCell>
+                                <StyledTableCell align="center">手机</StyledTableCell>
+                                <StyledTableCell align="center">用户名称</StyledTableCell>
+                                <StyledTableCell align="center">用户群组</StyledTableCell>
+                                <StyledTableCell align="center">性别</StyledTableCell>
+                                <StyledTableCell align="center">状态</StyledTableCell>
+                                <StyledTableCell align="center">操作</StyledTableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
