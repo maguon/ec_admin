@@ -60,8 +60,7 @@ const useStyles = makeStyles((theme) => ({
 
 //员工管理
 function AdminUserSetting (props) {
-    const {adminUserSettingReducer,changeStatus} = props;
-    const {updateUser,deleteUser} = props;
+    const {adminUserSettingReducer,changeStatus,updateUser} = props;
     const classes = useStyles();
     //查询条件
     const [paramPhone,setParamPhone]=useState("");
@@ -545,10 +544,6 @@ const mapDispatchToProps = (dispatch) => ({
     changeStatus:(flag,id) =>{
         dispatch(adminUserSettingAction.changeStatus(flag,id))
     }
-    /*  //删除员工信息
-    deleteUser: (id) => {
-        dispatch(adminUserSettingAction.deleteUser(id))
-    },*/
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdminUserSetting)

@@ -19,9 +19,8 @@ const initialState = {
     adminArray: [],
     //详情
     adminItem:[],
+
     typeArray:[],
-
-
 };
 
 export default handleActions({

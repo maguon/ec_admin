@@ -5,7 +5,6 @@ import {AdminUserSettingActionType} from '../../types';
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
-export const condition={};
 
 // 系统设置 -> 员工管理 取得画面列表
 export const getUserList = (params) => async (dispatch, getState) => {
@@ -118,33 +117,3 @@ export const changeStatus =(status,id)  => async (dispatch) => {
         Swal.fire('修改失败', res.msg, 'warning');
     }
 }
-
-/*//系统设置 -> 员工管理 删除员工信息
-export const deleteUser = (id) => async (dispatch) => {
-    Swal.fire({
-        title: "确定删除该员工信息？",
-        text: "",
-        icon: "warning",
-        confirmButtonText:'确定',
-        cancelButtonText: "取消",
-    }).then(async function(isConfirm) {
-        try {
-            //判断 是否 点击的 确定按钮
-            if (isConfirm.value) {
-                const url = apiHost + '/api/user/' + id;
-                const res = await httpUtil.httpDelete(url, {});
-                if (res.success === true) {
-                    Swal.fire("删除成功", "", "success");
-                    dispatch(getUserList());
-                } else if (res.success === false) {
-                    Swal.fire('删除失败', res.msg, 'warning');
-                }
-            }
-            else {
-                Swal.fire('删除失败', "",'warning');
-            }
-        } catch (e) {
-            alert(e);
-        }
-    })
-};*/
