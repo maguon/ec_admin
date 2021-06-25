@@ -7,7 +7,7 @@ import CategoryManagerReducer from './main/CategoryManagerReducer';
 import AuthoritySettingReducer from './main/AuthoritySettingReducer';
 import AdminUserSettingReducer from "./main/AdminUserSettingReducer";
 import AppSettingReducer from "./main/AppSettingReducer";
-
+import SupplierManagerReducer from './main/SupplierManagerReducer';
 export default combineReducers({
     form: reduxFormReducer,
     AppReducer,
@@ -17,4 +17,5 @@ export default combineReducers({
     AuthoritySettingReducer,
     AdminUserSettingReducer,
     AppSettingReducer,
+    SupplierManagerReducer
 });
