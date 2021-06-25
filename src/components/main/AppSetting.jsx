@@ -37,6 +37,11 @@ const useStyles = makeStyles((theme) => ({
     tableRow: {
         padding: 5,
     },
+    head: {
+        fontWeight:'bold',
+        background:'#F7F6F9',
+        borderTop: '2px solid #D4D4D4'
+    }
 }));
 
 function AppSetting(props) {
@@ -46,27 +51,27 @@ function AppSetting(props) {
     useEffect(() => {
         // 不是detail页面返回，清空检索条件
         let dataStart = props.appSettingReducer.appData.start;
-        props.getAppList(conditionDeviceType, conditionStatus, dataStart);
+        props.getAppList(paramDeviceType, paramStatus, dataStart);
     }, []);
 
     // 检索条件
-    const [conditionDeviceType, setConditionDeviceType] = React.useState(null);
-    const [conditionStatus, setConditionStatus] = React.useState(null);
+    const [paramDeviceType, setParamDeviceType] = React.useState(null);
+    const [paramStatus, setParamStatus] = React.useState(null);
 
     // 查询列表
     const queryAppList = () => {
         // 默认第一页
-        props.getAppList(conditionDeviceType, conditionStatus, 0);
+        props.getAppList(paramDeviceType, paramStatus, 0);
     };
 
     // 上一页
     const getPrePage = () => {
-        props.getAppList(conditionDeviceType, conditionStatus, props.appSettingReducer.appData.start - (props.appSettingReducer.appData.size - 1));
+        props.getAppList(paramDeviceType, paramStatus, props.appSettingReducer.appData.start - (props.appSettingReducer.appData.size - 1));
     };
 
     // 下一页
     const getNextPage = () => {
-        props.getAppList(conditionDeviceType, conditionStatus, props.appSettingReducer.appData.start + (props.appSettingReducer.appData.size - 1));
+        props.getAppList(paramDeviceType, paramStatus, props.appSettingReducer.appData.start + (props.appSettingReducer.appData.size - 1));
     };
 
     // 模态属性
@@ -160,7 +165,7 @@ function AppSetting(props) {
     const submitModal= ()=>{
         const errorCount = validate();
         if(errorCount==0){
-            saveModalData(pageType, uid, appType, deviceType, forceUpdate, version, versionNum, minVersionNum, url, remark, conditionDeviceType, conditionStatus);
+            saveModalData(pageType, uid, appType, deviceType, forceUpdate, version, versionNum, minVersionNum, url, remark, paramDeviceType, paramStatus);
             setModalOpen(false);
         }
     };
@@ -181,9 +186,9 @@ function AppSetting(props) {
                                 label="系统"
                                 labelId="device-type-select-outlined-label"
                                 id="device-type-select-outlined"
-                                value={conditionDeviceType}
+                                value={paramDeviceType}
                                 onChange={(event, value) => {
-                                    setConditionDeviceType(event.target.value);
+                                    setParamDeviceType(event.target.value);
                                 }}
                             >
                                 <MenuItem value="">请选择</MenuItem>
@@ -195,14 +200,14 @@ function AppSetting(props) {
                     </Grid>
                     <Grid item xs={6} sm={3}>
                         <FormControl variant="outlined" fullWidth={true} margin="dense">
-                            <InputLabel id="conditionStatus-select-outlined-label">状态</InputLabel>
+                            <InputLabel id="status-select-outlined-label">状态</InputLabel>
                             <Select
                                 label="状态"
                                 labelId="status-select-outlined-label"
                                 id="status-select-outlined"
-                                value={conditionStatus}
+                                value={paramStatus}
                                 onChange={(event, value) => {
-                                    setConditionStatus(event.target.value);
+                                    setParamStatus(event.target.value);
                                 }}
                             >
                                 <MenuItem value="">请选择</MenuItem>
@@ -234,14 +239,14 @@ function AppSetting(props) {
                 <Table stickyHeader aria-label="sticky table" style={{minWidth: 650}}>
                     <TableHead>
                         <TableRow>
-                            <TableCell padding="default" align="center">App类型</TableCell>
-                            <TableCell padding="default" align="center">系统类型</TableCell>
-                            <TableCell padding="default" align="left">版本号</TableCell>
-                            <TableCell padding="default" align="left">版本序号</TableCell>
-                            <TableCell padding="default" align="left">最低版本号</TableCell>
-                            <TableCell padding="default" align="center">强制更新</TableCell>
-                            <TableCell padding="default" align="center">状态</TableCell>
-                            <TableCell padding="default" align="center">操作</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">App类型</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">系统类型</TableCell>
+                            <TableCell padding="default" className={classes.head} align="left">版本号</TableCell>
+                            <TableCell padding="default" className={classes.head} align="left">版本序号</TableCell>
+                            <TableCell padding="default" className={classes.head} align="left">最低版本号</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">强制更新</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">状态</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">操作</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -263,7 +268,7 @@ function AppSetting(props) {
                                     <Switch
                                         checked={row.status==1}
                                         onChange={(e)=>{
-                                            changeStatus(row.id, row.status, conditionDeviceType, conditionStatus)
+                                            changeStatus(row.id, row.status, paramDeviceType, paramStatus)
                                         }}
                                         name="状态"
                                         color='primary'
@@ -272,7 +277,7 @@ function AppSetting(props) {
 
                                     {/* 删除按钮 */}
                                     <IconButton color="primary" edge="start" onClick={() => {
-                                        deleteApp(row.id, conditionDeviceType, conditionStatus)
+                                        deleteApp(row.id, paramDeviceType, paramStatus)
                                     }}>
                                         <i className="mdi mdi-close mdi-24px"/>
                                     </IconButton>
@@ -445,10 +450,10 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    getAppList: (conditionDeviceType, conditionStatus, dataStart) => {
-        dispatch(appSettingAction.getAppList({conditionDeviceType, conditionStatus, dataStart}))
+    getAppList: (paramDeviceType, paramStatus, dataStart) => {
+        dispatch(appSettingAction.getAppList({paramDeviceType, paramStatus, dataStart}))
     },
-    changeStatus: (id, status, conditionDeviceType, conditionStatus) => {
+    changeStatus: (id, status, paramDeviceType, paramStatus) => {
         Swal.fire({
             title: status === 1 ? "确定停用该数据？" : "确定重新启用该数据？",
             text: "",
@@ -458,11 +463,11 @@ const mapDispatchToProps = (dispatch) => ({
             cancelButtonText:"取消"
         }).then(async (value) => {
             if (value.isConfirmed) {
-                dispatch(appSettingAction.changeStatus(id, status, {conditionDeviceType, conditionStatus}));
+                dispatch(appSettingAction.changeStatus(id, status, {paramDeviceType, paramStatus}));
             }
         });
     },
-    deleteApp: (id, conditionDeviceType, conditionStatus) => {
+    deleteApp: (id, paramDeviceType, paramStatus) => {
         Swal.fire({
             title: "确定删除该App版本",
             text: "",
@@ -472,11 +477,11 @@ const mapDispatchToProps = (dispatch) => ({
             cancelButtonText:"取消"
         }).then(async (value) => {
             if (value.isConfirmed) {
-                dispatch(appSettingAction.deleteApp(id, {conditionDeviceType, conditionStatus}));
+                dispatch(appSettingAction.deleteApp(id, {paramDeviceType, paramStatus}));
             }
         });
     },
-    saveModalData: (pageType, uid, appType, deviceType, forceUpdate, version, versionNum, minVersionNum, url, remark, conditionDeviceType, conditionStatus) => {
+    saveModalData: (pageType, uid, appType, deviceType, forceUpdate, version, versionNum, minVersionNum, url, remark, paramDeviceType, paramStatus) => {
         dispatch(appSettingAction.saveModalData({
             pageType,
             uid,
@@ -488,7 +493,7 @@ const mapDispatchToProps = (dispatch) => ({
             minVersionNum,
             url,
             remark
-        }, {conditionDeviceType, conditionStatus}));
+        }, {paramDeviceType, paramStatus}));
     }
 });
 
