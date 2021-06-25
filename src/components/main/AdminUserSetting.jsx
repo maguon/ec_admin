@@ -99,7 +99,6 @@ function AdminUserSetting (props) {
     //验证()
     const [validation,setValidation] = useState({});
     useEffect(()=>{
-
     },[adminUserPhone,adminUsername,password]);
     const validate = ()=>{
         const validateObj ={}
@@ -142,7 +141,7 @@ function AdminUserSetting (props) {
         }else{
         }
     }
-    const swalStatus= (status,id,paramPhone,paramRealName,paramType,paramGender,paramStatus)=>{
+    const swalStatus= (status,id)=>{
         Swal.fire({
             title: status === 1 ? "确定停用该员工？" : "确定重新启用该员工？",
             text: "",
@@ -150,7 +149,7 @@ function AdminUserSetting (props) {
             confirmButtonText:'确定',
             cancelButtonText: "取消",
         }).then(async function (isConfirm) {
-            changeStatus(status,id,paramPhone,paramRealName,paramType,paramGender,paramStatus)
+            changeStatus(status,id)
         })
     }
     // 关闭模态
@@ -363,7 +362,7 @@ function AdminUserSetting (props) {
                                     </TableCell>
                                 </TableRow>))}
                             { adminUserSettingReducer.adminArray.length === 0 &&
-                                <TableRow > <TableCell align="center" colSpan="6">暂无数据</TableCell></TableRow>
+                                <TableRow style={{height:60}}> <TableCell align="center" colSpan="6">暂无数据</TableCell></TableRow>
                             }
                         </TableBody>
                     </Table>
