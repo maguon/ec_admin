@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config/index';
-import {AdminUserSettingActionType} from '../../types';
+import {AdminUserSettingActionType, AppActionType} from '../../types';
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
@@ -21,9 +21,11 @@ export const getUserList = (params) => async (dispatch, getState) => {
         // 基本检索URL
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/user?size=' + size;
         let conditions = httpUtil.objToUrl(paramsObj);
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
         const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true) {
             dispatch({type: AdminUserSettingActionType.setUserListDataSize, payload: res.rows.length});
             dispatch({type: AdminUserSettingActionType.getUserList, payload: res.rows.slice(0, size - 1)});

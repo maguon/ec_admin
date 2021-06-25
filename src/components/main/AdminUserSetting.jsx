@@ -359,7 +359,7 @@ function AdminUserSetting (props) {
                                             color='primary'
                                             inputProps={{ 'aria-label': 'secondary checkbox' }}
                                         />
-                                      <IconButton size="small" color="primary" onClick={() => {getUserById(row.id);handleAddOpen(row);}}><i className="mdi mdi-table-search purple-font margin-left10"
+                                      <IconButton size="primary" color="primary" onClick={() => {getUserById(row.id);handleAddOpen(row);}}><i className="mdi mdi-table-search purple-font margin-left10"
                                         > </i>
                                       </IconButton>
                                     </TableCell>
