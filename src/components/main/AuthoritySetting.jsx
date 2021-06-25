@@ -35,10 +35,6 @@ const useStyles = makeStyles((theme) => ({
         height: 1,
         marginBottom: 15,
         background: '#7179e6'
-    },
-    selectLabel: {
-        fontSize: 10,
-        color: 'grey'
     }
 }));
 
@@ -52,7 +48,7 @@ function AuthoritySetting (props) {
     },[]);
 
     // 检索条件
-    const [conditionUserType, setConditionUserType] = useState(null);
+    const [currentUserType, setCurrentUserType] = useState(null);
     // 模态状态
     const [modalOpen, setModalOpen] = React.useState(false);
     const openModal = (event) => {
@@ -100,10 +96,10 @@ function AuthoritySetting (props) {
                                       options={authoritySettingReducer.userGroupList}
                                       getOptionLabel={(option) => option.label}
                                       onChange={(event, value) => {
-                                          setConditionUserType(value);
+                                          setCurrentUserType(value);
                                           getMenuList(value);
                                       }}
-                                      value={conditionUserType}
+                                      value={currentUserType}
                                       renderInput={(params) => <TextField {...params} label="用户群组" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
@@ -176,7 +172,7 @@ function AuthoritySetting (props) {
                 })}
                 {authoritySettingReducer.currentMenu.length > 0 &&
                 <Grid item xs={12}>
-                    <Button variant="contained" color="primary" onClick={()=>{saveMenu(conditionUserType)}}>修改</Button>
+                    <Button variant="contained" color="primary" onClick={()=>{saveMenu(currentUserType)}}>修改</Button>
                 </Grid>}
             </Grid>
 
@@ -223,8 +219,8 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    getMenuList: (conditionUserType) => {
-        dispatch(authoritySettingAction.getMenuList(conditionUserType))
+    getMenuList: (currentUserType) => {
+        dispatch(authoritySettingAction.getMenuList(currentUserType))
     },
     getUserGroupList: () => {
         dispatch(authoritySettingAction.getUserGroupList());
@@ -239,8 +235,8 @@ const mapDispatchToProps = (dispatch) => ({
     changeMenu: (index, key) => {
         dispatch(authoritySettingAction.changeMenuList(index, key))
     },
-    saveMenu: (conditionUserType) => {
-        dispatch(authoritySettingAction.saveMenu(conditionUserType))
+    saveMenu: (currentUserType) => {
+        dispatch(authoritySettingAction.saveMenu(currentUserType))
     }
 });
 
