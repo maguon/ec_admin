@@ -67,7 +67,7 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell);
 //员工管理
 function AdminUserSetting (props) {
-    const {adminUserSettingReducer,changeStatus,updateUser} = props;
+    const {adminUserSettingReducer,updateUserStatusInfo,getUserById} = props;
     const classes = useStyles();
     //查询条件
     const [paramPhone,setParamPhone]=useState("");
@@ -83,6 +83,8 @@ function AdminUserSetting (props) {
     const [password, setPassword] = useState("");
     const [gender, setGender] = useState("1");
     const [pageNumber,setPageNumber] = useState(0);
+
+    const [validation,setValidation] = useState({});
     //判断新增还是修改
     const [modalCreateFlag, setModalCreateFlag] = useState(false);
     //详情获取id
@@ -103,9 +105,6 @@ function AdminUserSetting (props) {
     },[paramRealName,paramStatus,paramPhone,paramType,paramGender,pageNumber])
 
     //验证()
-    const [validation,setValidation] = useState({});
-    useEffect(()=>{
-    },[adminUserPhone,adminUsername,password]);
     const validate = ()=>{
         const validateObj ={}
         if(modalCreateFlag==true){
@@ -134,20 +133,18 @@ function AdminUserSetting (props) {
     const addUser= ()=>{
         const errorCount = validate();
         if(errorCount==0){
-            props.addUserItem(adminUsername, adminUserPhone,password,gender,type,1,paramPhone,paramRealName,paramType,paramGender,paramStatus);
+            props.addUser(adminUsername, adminUserPhone,password,gender,type,1);
             setModalOpenFlag(false);
-        }else{
         }
     }
     const setUser= ()=>{
         const errorCount = validate();
         if(errorCount==0){
-            props.updateUserItem(adminUsername, gender,type,id,paramPhone,paramRealName,paramType,paramGender,paramStatus);
+            props.updateUserInfo(adminUsername, gender,type,id);
             setModalOpenFlag(false);
-        }else{
         }
     }
-    const swalStatus= (status,id)=>{
+    const updateUserStatus= (status,id)=>{
         Swal.fire({
             title: status === 1 ? "确定停用该员工？" : "确定重新启用该员工？",
             text: "",
@@ -155,7 +152,7 @@ function AdminUserSetting (props) {
             confirmButtonText:'确定',
             cancelButtonText: "取消",
         }).then(async function (isConfirm) {
-            changeStatus(status,id)
+            updateUserStatusInfo(status,id)
         })
     }
     // 关闭模态
@@ -356,13 +353,13 @@ function AdminUserSetting (props) {
                                         <Switch
                                             checked={row.status==1}
                                             onChange={(e)=>{
-                                                swalStatus(row.status,row.id,paramPhone,paramRealName,paramType,paramGender,paramStatus)
+                                                updateUserStatus(row.status,row.id)
                                             }}
                                             name="状态"
                                             color='primary'
                                             inputProps={{ 'aria-label': 'secondary checkbox' }}
                                         />
-                                      <IconButton size="small" color="primary" onClick={() => {updateUser(row.id);handleAddOpen(row);}}><i className="mdi mdi-table-search purple-font margin-left10"
+                                      <IconButton size="small" color="primary" onClick={() => {getUserById(row.id);handleAddOpen(row);}}><i className="mdi mdi-table-search purple-font margin-left10"
                                         > </i>
                                       </IconButton>
                                     </TableCell>
@@ -527,9 +524,9 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(adminUserSettingAction.getUserTypeList())
     },
     //添加员工
-    addUserItem: (realName, phone,password,gender,type,status) => {
+    addUser: (realName, phone,password,gender,type,status) => {
         if (realName.length > 0 && phone.length > 0 && password.length > 0) {
-            dispatch(adminUserSettingAction.addUserItem({realName, phone,password,gender,type,status}));
+            dispatch(adminUserSettingAction.addUser({realName, phone,password,gender,type,status}));
         }
     },
     //获取列表
@@ -538,18 +535,18 @@ const mapDispatchToProps = (dispatch) => ({
 
     },
     //修改员工信息(获取初始值)
-    updateUser:(id) => {
-        dispatch(adminUserSettingAction.updateUser(id))
+    getUserById:(id) => {
+        dispatch(adminUserSettingAction.getUserById(id))
     },
     //修改员工信息
-    updateUserItem: (realName, gender,type,id) => {
+    updateUserInfo: (realName, gender,type,id) => {
         if (realName.length > 0) {
-            dispatch(adminUserSettingAction.updateUserItem({realName, gender,type},id))
+            dispatch(adminUserSettingAction.updateUserInfo({realName, gender,type},id))
         }
     },
     //修改状态
-    changeStatus:(flag,id) =>{
-        dispatch(adminUserSettingAction.changeStatus(flag,id))
+    updateUserStatusInfo:(flag,id) =>{
+        dispatch(adminUserSettingAction.updateUserStatus(flag,id))
     }
 });
 

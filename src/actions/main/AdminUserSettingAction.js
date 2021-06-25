@@ -51,7 +51,7 @@ export const getUserTypeList = (params) => async (dispatch) => {
 };
 
 // 系统设置 -> 员工管理 添加员工
-export const addUserItem = (params) => async (dispatch) => {
+export const addUser = (params) => async (dispatch) => {
     try {
         const res = await httpUtil.httpPost(apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/user', params);
         if (res.success === true) {
@@ -66,7 +66,7 @@ export const addUserItem = (params) => async (dispatch) => {
 };
 
 //系统设置 -> 员工管理  修改员工信息
-export const updateUser = (id) => async (dispatch) => {
+export const getUserById = (id) => async (dispatch) => {
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/user?id='+ id;
@@ -83,11 +83,10 @@ export const updateUser = (id) => async (dispatch) => {
     }
 };
 
-export const updateUserItem = (params,id) => async (dispatch) => {
+export const updateUserInfo = (params,id) => async (dispatch) => {
     try {
         const res = await httpUtil.httpPut(apiHost + '/api/user/'+id, params);
         if (res.success === true) {
-            params=[];
             dispatch(getUserList());
             Swal.fire("修改成功", "", "success");
         } else if (res.success === false) {
@@ -99,7 +98,7 @@ export const updateUserItem = (params,id) => async (dispatch) => {
 };
 
 //修改状态
-export const changeStatus =(status,id)  => async (dispatch) => {
+export const updateUserStatus =(status,id)  => async (dispatch) => {
     // 状态
     let newStatus = 0;
     if (status === 0) {
@@ -110,7 +109,6 @@ export const changeStatus =(status,id)  => async (dispatch) => {
     const url = apiHost + '/api/user/' + id + '/status?status=' + newStatus;
     const res = await httpUtil.httpPut(url);
     if (res.success === true) {
-        dispatch(updateUser(id));
         dispatch(getUserList());
         Swal.fire("修改成功", "", "success");
     } else if (res.success === false) {
