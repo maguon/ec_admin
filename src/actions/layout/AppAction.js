@@ -4,6 +4,7 @@ import {apiHost} from '../../config';
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
+const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 
 export const getCurrentUser = (params) => async (dispatch) => {
@@ -38,9 +39,9 @@ export const getCurrentUserMenu = () => async (dispatch) => {
 
         if (res.success) {
             if (res.rows.length > 0) {
-                dispatch({type: AppActionType.setCurrentUserMenu, payload: res.rows[0].menu_list});
+                dispatch({type: AppActionType.setCurrentUserMenu, payload: commonUtil.objToMap(res.rows[0].menu_list)});
             } else {
-                dispatch({type: AppActionType.setCurrentUserMenu, payload: sysConst.ALL_PAGE_LIST});
+                dispatch({type: AppActionType.setCurrentUserMenu, payload: new Map()});
             }
         } else if (!res.success) {
             Swal.fire('查询失败', res.msg, 'warning');

@@ -4,6 +4,7 @@ import {AppActionType, AuthoritySettingActionType} from '../../types';
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
+const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 
 // 系统设置 -> 权限设置 取得用户群组列表
@@ -30,7 +31,7 @@ export const getUserGroupList = () => async (dispatch, getState) => {
 export const getMenuList = (conditionUserType) => async (dispatch, getState) => {
     try {
         // 检索条件：用户类型
-        let type = conditionUserType === null ? '' : conditionUserType.value;
+        let type = conditionUserType === null ? '-1' : conditionUserType.value;
 
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/typeMenu?typeId=' + type;
@@ -41,11 +42,10 @@ export const getMenuList = (conditionUserType) => async (dispatch, getState) => 
         if (res.success) {
             if (res.rows.length > 0){
                 dispatch({type: AuthoritySettingActionType.setCurrentRemark, payload: res.rows[0].remarks});
-                if (res.rows[0].menu_list.length > 0) {
-                    dispatch({type: AuthoritySettingActionType.setMenuList, payload: res.rows[0].menu_list});
-                } else {
-                    dispatch({type: AuthoritySettingActionType.setMenuList, payload: JSON.parse(JSON.stringify(sysConst.ALL_PAGE_LIST))});
-                }
+                dispatch({type: AuthoritySettingActionType.setMenuList, payload: commonUtil.objToMap(res.rows[0].menu_list)});
+            }else {
+                dispatch({type: AuthoritySettingActionType.setCurrentRemark, payload: ''});
+                dispatch({type: AuthoritySettingActionType.setMenuList, payload: new Map()});
             }
         } else if (!res.success) {
             Swal.fire('获取菜单权限信息失败', res.msg, 'warning');
@@ -61,8 +61,8 @@ export const createUserGroup = (params) => async (dispatch, getState) => {
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + "/typeMenu";
         let res = await httpUtil.httpPost(url, params);
-
         if (res.success) {
+            // 更新select框 数据
             dispatch(getUserGroupList());
             Swal.fire("保存成功", "", "success");
         } else if (!res.success) {
@@ -74,20 +74,16 @@ export const createUserGroup = (params) => async (dispatch, getState) => {
 };
 
 // 系统设置 -> 权限设置 修改权限设置
-export const changeMenuList = (i , k) => async (dispatch, getState) => {
+export const changeMenuList = (key, checked) => async (dispatch, getState) => {
     try {
         // 当前权限菜单
-        const currentMenu = getState().AuthoritySettingReducer.currentMenu;
-
-        let newStatus;
-        if (k === -1) {
-            newStatus = !currentMenu[i].usable;
-            currentMenu[i].usable = newStatus;
+        let menuMap = getState().AuthoritySettingReducer.currentMenu;
+        if (checked) {
+            menuMap.set(key,{"usable": true});
         } else {
-            newStatus = !currentMenu[i].children[k].usable;
-            currentMenu[i].children[k].usable = newStatus;
+            menuMap.delete(key);
         }
-        dispatch({type: AuthoritySettingActionType.setMenuList, payload: currentMenu});
+        dispatch({type: AuthoritySettingActionType.setMenuList, payload: menuMap});
     } catch (err) {
         Swal.fire('操作失败', err.message, 'error');
     }
@@ -104,7 +100,7 @@ export const saveMenu = (currentUserType) => async (dispatch, getState) => {
         const params = {
             id: currentUserType === null ? '' : currentUserType.value,
             typeName: currentUserType === null ? '' : currentUserType.label,
-            menuList: currentMenu,
+            menuList: commonUtil.mapToObj(currentMenu),
             remarks: remarks
         };
         // 基本url

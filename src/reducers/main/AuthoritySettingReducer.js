@@ -7,7 +7,7 @@ const initialState = {
     // 当前用户类型
     currentRemark: '',
     // 当前画面菜单
-    currentMenu: []
+    currentMenu: new Map()
 };
 
 export default handleActions({

@@ -16,6 +16,7 @@ import {AuthoritySettingActionType} from "../../types";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const authoritySettingAction = require('../../actions/main/AuthoritySettingAction');
+const sysConst = require('../../utils/SysConst');
 
 const useStyles = makeStyles((theme) => ({
     // 标题样式
@@ -40,15 +41,23 @@ const useStyles = makeStyles((theme) => ({
 
 // 权限设置
 function AuthoritySetting (props) {
-    const {authoritySettingReducer, changeMenu, setCurrentRemark, getMenuList, getUserGroupList, addUserGroup, saveMenu} = props;
+    const {authoritySettingReducer, getUserGroupList, getMenuList, setCurrentRemark, changeMenuChk, addUserGroup, saveMenu} = props;
     const classes = useStyles();
 
+    // 执行1次，取得 用户群组列表 （填充select）
     useEffect(()=>{
         getUserGroupList();
+        setCurrentRemark('');
     },[]);
 
-    // 检索条件
+    // 头部条件：用户群组
     const [currentUserType, setCurrentUserType] = useState(null);
+
+    // 变更select内容时触发，取得当前群组的 权限结构
+    useEffect(()=>{
+        getMenuList(currentUserType);
+    },[currentUserType]);
+
     // 模态状态
     const [modalOpen, setModalOpen] = React.useState(false);
     const openModal = (event) => {
@@ -97,7 +106,6 @@ function AuthoritySetting (props) {
                                       getOptionLabel={(option) => option.label}
                                       onChange={(event, value) => {
                                           setCurrentUserType(value);
-                                          getMenuList(value);
                                       }}
                                       value={currentUserType}
                                       renderInput={(params) => <TextField {...params} label="用户群组" margin="dense" variant="outlined"/>}
@@ -131,8 +139,7 @@ function AuthoritySetting (props) {
                 <Grid item xs={12}>
                     <b>当前权限：</b>
                 </Grid>
-
-                {authoritySettingReducer.currentMenu.length > 0 && authoritySettingReducer.currentMenu.map(function (item, index) {
+                {currentUserType != null && sysConst.ALL_PAGE_LIST.map(function (item, index) {
                     return (
                         <Grid item container xs={12}  key={'no_child_container' + index}>
                             {/* 不含子菜单的样式 */}
@@ -140,8 +147,9 @@ function AuthoritySetting (props) {
                             <Grid item xs={3}  key={'no_child_item' + index}>
                                 <FormControlLabel key={'no_child_FormControlLabel' + index}
                                     control={
-                                        <Checkbox color="primary" checked={item.usable} key={'no_child_checkbox' + index}
-                                            onChange={() => {changeMenu(index, -1)}}
+                                        <Checkbox color="primary" key={'no_child_checkbox' + index}
+                                                  checked={authoritySettingReducer.currentMenu.size>0 && authoritySettingReducer.currentMenu.has(item.link)}
+                                            onChange={(e) => {changeMenuChk(e, item.link)}}
                                         />
                                     }
                                     label={item.label}
@@ -157,8 +165,9 @@ function AuthoritySetting (props) {
                                         <Grid item xs={3} key={'has_child_item' + index + key}>
                                             <FormControlLabel key={'has_child_FormControlLabel' + index + key}
                                                 control={
-                                                    <Checkbox color="primary" checked={menu.usable} key={'has_child_checkbox' + index + key}
-                                                        onChange={() => {changeMenu(index, key)}}
+                                                    <Checkbox color="primary" key={'has_child_checkbox' + index + key}
+                                                              checked={authoritySettingReducer.currentMenu.size>0 && authoritySettingReducer.currentMenu.has(menu.link)}
+                                                        onChange={(e) => {changeMenuChk(e, menu.link)}}
                                                     />
                                                 }
                                                 label={menu.name}
@@ -170,7 +179,7 @@ function AuthoritySetting (props) {
                         </Grid>
                     )
                 })}
-                {authoritySettingReducer.currentMenu.length > 0 &&
+                {currentUserType != null &&
                 <Grid item xs={12}>
                     <Button variant="contained" color="primary" onClick={()=>{saveMenu(currentUserType)}}>修改</Button>
                 </Grid>}
@@ -220,7 +229,9 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => ({
     getMenuList: (currentUserType) => {
-        dispatch(authoritySettingAction.getMenuList(currentUserType))
+        if (currentUserType != null) {
+            dispatch(authoritySettingAction.getMenuList(currentUserType))
+        }
     },
     getUserGroupList: () => {
         dispatch(authoritySettingAction.getUserGroupList());
@@ -232,8 +243,8 @@ const mapDispatchToProps = (dispatch) => ({
     addUserGroup: (typeName, remarks) => {
         dispatch(authoritySettingAction.createUserGroup({typeName, remarks}))
     },
-    changeMenu: (index, key) => {
-        dispatch(authoritySettingAction.changeMenuList(index, key))
+    changeMenuChk: (event, key) => {
+        dispatch(authoritySettingAction.changeMenuList(key, event.target.checked))
     },
     saveMenu: (currentUserType) => {
         dispatch(authoritySettingAction.saveMenu(currentUserType))

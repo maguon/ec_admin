@@ -215,7 +215,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
     // 取得登录用户基本信息
     getLoginInfo: (userId) => {
-        console.log('userId', userId);
         dispatch(appAction.getCurrentUser({userId: userId}));
         dispatch(appAction.getCurrentUserMenu());
     },

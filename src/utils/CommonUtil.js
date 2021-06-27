@@ -8,6 +8,7 @@ export const getJsonValue = (original, key) => {
    }
    return ret;
 };
+
 /**
  * 在本地进行文件保存
  * @param  {String} data     要保存到本地的文件数据
@@ -22,3 +23,19 @@ export const getJsonValue = (original, key) => {
     event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
     save_link.dispatchEvent(event);
 };
+
+export function mapToObj(strMap){
+   let obj= Object.create(null);
+   for (let[key,value] of strMap) {
+      obj[key] = value;
+   }
+   return obj;
+}
+
+export function objToMap(obj){
+   let strMap = new Map();
+   for (let k of Object.keys(obj)) {
+      strMap.set(k,obj[k]);
+   }
+   return strMap;
+}
