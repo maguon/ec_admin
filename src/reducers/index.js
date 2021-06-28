@@ -5,6 +5,7 @@ import LoginReducer from './login/LoginReducer';
 import MainPanelReducer from './main/MainPanelReducer';
 import CategoryManagerReducer from './main/CategoryManagerReducer';
 import BrandManagerReducer from './main/BrandManagerReducer';
+import ProductManagerReducer from './main/ProductManagerReducer';
 import AuthoritySettingReducer from './main/AuthoritySettingReducer';
 import AdminUserSettingReducer from "./main/AdminUserSettingReducer";
 import AppSettingReducer from "./main/AppSettingReducer";
@@ -17,6 +18,7 @@ export default combineReducers({
     MainPanelReducer,
     CategoryManagerReducer,
     BrandManagerReducer,
+    ProductManagerReducer,
     AuthoritySettingReducer,
     AdminUserSettingReducer,
     AppSettingReducer,
