@@ -1,9 +1,9 @@
 import {handleActions} from 'redux-actions';
-import {AppSettingActionType} from '../../types';
+import {ProductManagerActionType} from '../../types';
 
 const initialState = {
     // 检索结果
-    appData: {
+    productData: {
         // 开始位置
         start: 0,
         // 每页数量
@@ -13,47 +13,61 @@ const initialState = {
         // 数据列表
         dataList: []
     },
-    // 检索条件：模态状态
-    modalOpen: false,
+    // 检索条件
+    queryParams: {
+        category: null,
+        categorySub: null,
+        brand: null,
+        brandModel: null,
+        product: null,
+        standardType: null,
+        status: null
+    },
     // 检索结果
     modalData: {
         // 新增 / 修改 区分
         pageType: '',
         // 唯一键
         uid : -1,
-        // App类型
-        appType: null,
-        // 系统类型
-        deviceType: null,
-        // 强制更新
-        forceUpdate: null,
-        // 版本号
-        version: '',
-        // 版本序号
-        versionNum: 0,
-        // 最低版本号
-        minVersionNum: 0,
-        // 下载地址
-        url: '',
+
+        // 商品分类
+        categoryType: null,
+        // 商品子分类
+        categorySubType: null,
+        // 品牌
+        brandType: null,
+        // 品牌型号
+        brandModelType: null,
+        // 商品名称
+        productName: '',
+        // 商品别名
+        productSName: '',
+        // 序列号
+        productSerial: '',
+        // 产地
+        productAddress: '',
+        // 标准类型（标准、非标准）
+        standardType: null,
+        // 单位
+        unitName:  '',
+        // 单价
+        price: 0,
+        // 图片
+        image: '',
+        // "barcode": "string",
         // 备注
-        remarks: ''
+        remark: ''
     }
 };
 
 export default handleActions({
-    [AppSettingActionType.setAppData]: (state, action) => {
+    [ProductManagerActionType.setProductData]: (state, action) => {
         return {
             ...state,
-            appData: action.payload
+            productData: action.payload
         }
     },
-    [AppSettingActionType.setModalOpen]: (state, action) => {
-        return {
-            ...state,
-            modalOpen: action.payload
-        }
-    },
-    [AppSettingActionType.setModalData]: (state, action) => {
+    [ProductManagerActionType.setModalData]: (state, action) => {
         return {
             ...state,
             modalData: action.payload

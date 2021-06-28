@@ -49,7 +49,6 @@ function AppSetting(props) {
     const classes = useStyles();
 
     useEffect(() => {
-        // 不是detail页面返回，清空检索条件
         let dataStart = props.appSettingReducer.appData.start;
         props.getAppList(paramDeviceType, paramStatus, dataStart);
     }, []);

@@ -72,6 +72,12 @@ export const USE_FLAG = [
     {value: 1, label: "可用"}
 ];
 
+// 标准类型
+export const STANDARD_TYPE = [
+    {value: 0, label: "非标准"},
+    {value: 1, label: "标准"}
+];
+
 // 系统类型(1-进销存管理系统 )
 export const APP_TYPE = [
     {value: 1, label: "进销存管理系统"},
@@ -139,7 +145,7 @@ export const ALL_PAGE_LIST = [
             },
             {
                 "link": "/product_manager",
-                "name": "商品分类",
+                "name": "商品",
                 "icon": "mdi-chevron-right",
                 "usable": false
             },

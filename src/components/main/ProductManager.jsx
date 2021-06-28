@@ -22,8 +22,11 @@ import {
 // 引入Dialog
 import {SimpleModal} from "../index";
 import Swal from "sweetalert2";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import {AuthoritySettingActionType} from "../../types";
 
-const appSettingAction = require('../../actions/main/AppSettingAction');
+const productManagerAction = require('../../actions/main/ProductManagerAction');
+const commonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
@@ -44,34 +47,35 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function AppSetting(props) {
-    const {appSettingReducer, changeStatus, deleteApp, saveModalData} = props;
+function ProductManager(props) {
+    const {productManagerReducer, commonReducer, changeStatus, saveModalData} = props;
     const classes = useStyles();
 
     useEffect(() => {
-        // 不是detail页面返回，清空检索条件
-        let dataStart = props.appSettingReducer.appData.start;
-        props.getAppList(paramDeviceType, paramStatus, dataStart);
+        // 取得画面 select控件，基础数据
+        props.getBaseSelectList();
+        let dataStart = props.productManagerReducer.productData.start;
+        props.getProductList(dataStart);
     }, []);
 
     // 检索条件
-    const [paramDeviceType, setParamDeviceType] = React.useState(null);
-    const [paramStatus, setParamStatus] = React.useState(null);
+    const [paramCategory, setParamCategory] = React.useState(null);
+    const [paramCategorySub, setParamCategorySub] = React.useState(null);
 
     // 查询列表
-    const queryAppList = () => {
+    const queryProductList = () => {
         // 默认第一页
-        props.getAppList(paramDeviceType, paramStatus, 0);
+        props.getProductList(0);
     };
 
     // 上一页
     const getPrePage = () => {
-        props.getAppList(paramDeviceType, paramStatus, props.appSettingReducer.appData.start - (props.appSettingReducer.appData.size - 1));
+        props.getProductList(props.productManagerReducer.productData.start - (props.productManagerReducer.productData.size - 1));
     };
 
     // 下一页
     const getNextPage = () => {
-        props.getAppList(paramDeviceType, paramStatus, props.appSettingReducer.appData.start + (props.appSettingReducer.appData.size - 1));
+        props.getProductList(props.productManagerReducer.productData.start + (props.productManagerReducer.productData.size - 1));
     };
 
     // 模态属性
@@ -165,7 +169,7 @@ function AppSetting(props) {
     const submitModal= ()=>{
         const errorCount = validate();
         if(errorCount==0){
-            saveModalData(pageType, uid, appType, deviceType, forceUpdate, version, versionNum, minVersionNum, url, remark, paramDeviceType, paramStatus);
+            saveModalData(pageType, uid, appType, deviceType, forceUpdate, version, versionNum, minVersionNum, url, remark);
             setModalOpen(false);
         }
     };
@@ -173,55 +177,39 @@ function AppSetting(props) {
     return (
         <div className={classes.root}>
             {/* 标题部分 */}
-            <Typography gutterBottom className={classes.title}>App系统</Typography>
+            <Typography gutterBottom className={classes.title}>商品</Typography>
             <Divider light className={classes.divider}/>
 
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
                 <Grid container item xs={10} spacing={3}>
-                    <Grid item xs={6} sm={3}>
-                        <FormControl variant="outlined" fullWidth={true} margin="dense">
-                            <InputLabel id="device-type-select-outlined-label">系统</InputLabel>
-                            <Select
-                                label="系统"
-                                labelId="device-type-select-outlined-label"
-                                id="device-type-select-outlined"
-                                value={paramDeviceType}
-                                onChange={(event, value) => {
-                                    setParamDeviceType(event.target.value);
-                                }}
-                            >
-                                <MenuItem value="">请选择</MenuItem>
-                                {sysConst.DEVICE_TYPE.map((item, index) => (
-                                    <MenuItem value={item.value}>{item.label}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+                    <Grid item xs={3}>
+                        <Autocomplete id="condition-category" fullWidth={true}
+                                      options={commonReducer.categoryList}
+                                      getOptionLabel={(option) => option.label}
+                                      onChange={(event, value) => {
+                                          setParamCategory(value);
+                                      }}
+                                      value={paramCategory}
+                                      renderInput={(params) => <TextField {...params} label="商品分类" margin="dense" variant="outlined"/>}
+                        />
                     </Grid>
-                    <Grid item xs={6} sm={3}>
-                        <FormControl variant="outlined" fullWidth={true} margin="dense">
-                            <InputLabel id="status-select-outlined-label">状态</InputLabel>
-                            <Select
-                                label="状态"
-                                labelId="status-select-outlined-label"
-                                id="status-select-outlined"
-                                value={paramStatus}
-                                onChange={(event, value) => {
-                                    setParamStatus(event.target.value);
-                                }}
-                            >
-                                <MenuItem value="">请选择</MenuItem>
-                                {sysConst.USE_FLAG.map((item, index) => (
-                                    <MenuItem value={item.value}>{item.label}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+                    <Grid item xs={3}>
+                        <Autocomplete id="condition-category-sub" fullWidth={true}
+                                      options={commonReducer.categorySubList}
+                                      getOptionLabel={(option) => option.label}
+                                      onChange={(event, value) => {
+                                          setParamCategorySub(value);
+                                      }}
+                                      value={paramCategorySub}
+                                      renderInput={(params) => <TextField {...params} label="商品子分类" margin="dense" variant="outlined"/>}
+                        />
                     </Grid>
                 </Grid>
 
                 {/*查询按钮*/}
                 <Grid item xs={1}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={queryAppList}>
+                    <Fab color="primary" aria-label="add" size="small" onClick={queryProductList}>
                         <i className="mdi mdi-magnify mdi-24px"/>
                     </Fab>
                 </Grid>
@@ -239,48 +227,39 @@ function AppSetting(props) {
                 <Table stickyHeader aria-label="sticky table" style={{minWidth: 650}}>
                     <TableHead>
                         <TableRow>
-                            <TableCell padding="default" className={classes.head} align="center">App类型</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">系统类型</TableCell>
-                            <TableCell padding="default" className={classes.head} align="left">版本号</TableCell>
-                            <TableCell padding="default" className={classes.head} align="left">版本序号</TableCell>
-                            <TableCell padding="default" className={classes.head} align="left">最低版本号</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">强制更新</TableCell>
+                            <TableCell padding="default" className={classes.head} align="left">商品名称</TableCell>
+                            <TableCell padding="default" className={classes.head} align="left">商品别名</TableCell>
+                            <TableCell padding="default" className={classes.head} align="left">序列号</TableCell>
+                            <TableCell padding="default" className={classes.head} align="left">产地</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">标准类型</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">单位</TableCell>
+                            <TableCell padding="default" className={classes.head} align="right">售价</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">状态</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">操作</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {appSettingReducer.appData.dataList.map((row) => (
+                        {productManagerReducer.productData.dataList.map((row) => (
                             <TableRow className={classes.tableRow}>
+                                <TableCell padding="none" align="left">{row.product_name}</TableCell>
+                                <TableCell padding="none" align="left">{row.product_s_name}</TableCell>
+                                <TableCell padding="none" align="left">{row.product_serial}</TableCell>
+                                <TableCell padding="none" align="left">{row.product_address}</TableCell>
                                 <TableCell padding="none"
-                                           align="center">{commonUtil.getJsonValue(sysConst.APP_TYPE, row.app_type)}</TableCell>
-                                <TableCell padding="none"
-                                           align="center">{commonUtil.getJsonValue(sysConst.DEVICE_TYPE, row.device_type)}</TableCell>
-                                <TableCell padding="none" align="left">{row.version}</TableCell>
-                                <TableCell padding="none" align="left">{row.version_num}</TableCell>
-                                <TableCell padding="none" align="left">{row.min_version_num}</TableCell>
-                                <TableCell padding="none"
-                                           align="center">{commonUtil.getJsonValue(sysConst.FORCE_UPDATE, row.force_update)}</TableCell>
+                                           align="center">{commonUtil.getJsonValue(sysConst.STANDARD_TYPE, row.standard_type)}</TableCell>
+                                <TableCell padding="none" align="center">{row.unit_name}</TableCell>
+                                <TableCell padding="none" align="right">{row.price}</TableCell>
                                 <TableCell padding="none"
                                            align="center">{commonUtil.getJsonValue(sysConst.USE_FLAG, row.status)}</TableCell>
                                 <TableCell padding="none" align="center">
                                     {/* 停用/可用 状态 */}
                                     <Switch
                                         checked={row.status==1}
-                                        onChange={(e)=>{
-                                            changeStatus(row.id, row.status, paramDeviceType, paramStatus)
-                                        }}
+                                        onChange={(e)=>{changeStatus(row.id, row.status)}}
                                         name="状态"
                                         color='primary'
                                         inputProps={{ 'aria-label': 'secondary checkbox' }}
                                     />
-
-                                    {/* 删除按钮 */}
-                                    <IconButton color="primary" edge="start" onClick={() => {
-                                        deleteApp(row.id, paramDeviceType, paramStatus)
-                                    }}>
-                                        <i className="mdi mdi-close mdi-24px"/>
-                                    </IconButton>
 
                                     {/* 编辑按钮 */}
                                     <IconButton color="primary" edge="start" onClick={() => {initModal(row)}}>
@@ -290,7 +269,7 @@ function AppSetting(props) {
                             </TableRow>
                         ))}
 
-                        {appSettingReducer.appData.dataList.length === 0 &&
+                        {productManagerReducer.productData.dataList.length === 0 &&
                         <TableRow>
                             <TableCell colSpan={8} style={{textAlign: 'center'}}>暂无数据</TableCell>
                         </TableRow>
@@ -301,9 +280,9 @@ function AppSetting(props) {
 
             {/* 上下页按钮 */}
             <Box style={{textAlign: 'right', marginTop: 20}}>
-                {appSettingReducer.appData.start > 0 && appSettingReducer.appData.dataSize > 0 &&
+                {productManagerReducer.productData.start > 0 && productManagerReducer.productData.dataSize > 0 &&
                 <Button variant="contained" color="primary" style={{marginRight: 20}} onClick={getPrePage}>上一页</Button>}
-                {appSettingReducer.appData.dataSize >= appSettingReducer.appData.size &&
+                {productManagerReducer.productData.dataSize >= productManagerReducer.productData.size &&
                 <Button variant="contained" color="primary" onClick={getNextPage}>下一页</Button>}
             </Box>
 
@@ -445,15 +424,26 @@ function AppSetting(props) {
 
 const mapStateToProps = (state) => {
     return {
-        appSettingReducer: state.AppSettingReducer
+        productManagerReducer: state.ProductManagerReducer,
+        commonReducer: state.CommonReducer
     }
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    getAppList: (paramDeviceType, paramStatus, dataStart) => {
-        dispatch(appSettingAction.getAppList({paramDeviceType, paramStatus, dataStart}))
+    // 取得画面 select控件，基础数据
+    getBaseSelectList: () => {
+        dispatch(commonAction.getCategoryList());
+        dispatch(commonAction.getCategorySubList(''));
+        dispatch(commonAction.getBrandList());
+        dispatch(commonAction.getBrandModelList(''));
     },
-    changeStatus: (id, status, paramDeviceType, paramStatus) => {
+    getProductList: (dataStart) => {
+        dispatch(productManagerAction.getProductList({dataStart}))
+    },
+
+
+
+    changeStatus: (id, status) => {
         Swal.fire({
             title: status === 1 ? "确定停用该数据？" : "确定重新启用该数据？",
             text: "",
@@ -463,26 +453,12 @@ const mapDispatchToProps = (dispatch) => ({
             cancelButtonText:"取消"
         }).then(async (value) => {
             if (value.isConfirmed) {
-                dispatch(appSettingAction.changeStatus(id, status, {paramDeviceType, paramStatus}));
+                dispatch(productManagerAction.changeStatus(id, status));
             }
         });
     },
-    deleteApp: (id, paramDeviceType, paramStatus) => {
-        Swal.fire({
-            title: "确定删除该App版本",
-            text: "",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "确定",
-            cancelButtonText:"取消"
-        }).then(async (value) => {
-            if (value.isConfirmed) {
-                dispatch(appSettingAction.deleteApp(id, {paramDeviceType, paramStatus}));
-            }
-        });
-    },
-    saveModalData: (pageType, uid, appType, deviceType, forceUpdate, version, versionNum, minVersionNum, url, remark, paramDeviceType, paramStatus) => {
-        dispatch(appSettingAction.saveModalData({
+    saveModalData: (pageType, uid, appType, deviceType, forceUpdate, version, versionNum, minVersionNum, url, remark) => {
+        dispatch(productManagerAction.saveModalData({
             pageType,
             uid,
             appType,
@@ -493,8 +469,8 @@ const mapDispatchToProps = (dispatch) => ({
             minVersionNum,
             url,
             remark
-        }, {paramDeviceType, paramStatus}));
+        }));
     }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(AppSetting)
+export default connect(mapStateToProps, mapDispatchToProps)(ProductManager)

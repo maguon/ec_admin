@@ -1,5 +1,5 @@
 import {createAction} from 'redux-actions';
 
-export const setAppData = createAction('SET_APP_DATA');
-export const setModalOpen = createAction('SET_APP_SETTING_MODAL_OPEN');
-export const setModalData = createAction('SET_APP_SETTING_MODAL_DATA');
+export const setProductData = createAction('SET_PRODUCT_LIST_DATA');
+export const setQueryParams = createAction('SET_PRODUCT_LIST_QUERY_PARAMS');
+export const setModalData = createAction('SET_PRODUCT_LIST_MODAL_DATA');
