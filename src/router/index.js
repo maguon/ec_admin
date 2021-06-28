@@ -1,6 +1,6 @@
 import {
     Login, Register, ResetPassword,
-    MainPanel, CategoryManager,BrandManager,ProductManager,SupplierManager,SupplierManagerDetail,
+    MainPanel, CategoryManager,BrandManager,ProductManager,Supplier,SupplierDetail,
     AdminUserSetting, AppSetting, AuthoritySetting
 } from "../components";
 
@@ -25,8 +25,8 @@ export const routesWithHeader = [
     {path: "/product_manager", exact: true, component: ProductManager},
 
     //供应商
-    {path: "/supplier_manager", exact: true, component: SupplierManager},
-    {path: "/supplier_manager/:id",exact: true,component: SupplierManagerDetail},
+    {path: "/supplier", exact: true, component: Supplier},
+    {path: "/supplier/:id",exact: true,component: SupplierDetail},
     //员工管理
     {path: "/admin_user_setting", exact: true, component: AdminUserSetting},
     // App系统
