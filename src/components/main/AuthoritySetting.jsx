@@ -21,9 +21,7 @@ const sysConst = require('../../utils/SysConst');
 const useStyles = makeStyles((theme) => ({
     // 标题样式
     root: {
-        width: `calc(100% - 50px)`,
         minWidth: 800,
-        paddingLeft: 30,
         paddingBottom: 50
     },
     // 标题样式
