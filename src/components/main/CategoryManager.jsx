@@ -54,6 +54,7 @@ function CategoryManager (props) {
     const [pageType, setPageType] = React.useState('');
     const [pageTitle, setPageTitle] = React.useState('');
     const [uid, setUid] = React.useState(-1);
+    const [parent, setParent] = React.useState('');
     const [categoryId, setCategoryId] = React.useState('');
     const [categoryName, setCategoryName] = React.useState('');
     const [remark, setRemark] = useState('');
@@ -61,12 +62,12 @@ function CategoryManager (props) {
     const validate = ()=>{
         const validateObj ={};
         if (!categoryName) {
-            validateObj.categoryName ='请输入用户商品名称';
+            validateObj.categoryName ='请输入商品名称';
         }
         setValidation(validateObj);
         return Object.keys(validateObj).length
     };
-    const submitModal = (event) => {
+    const submitModal = () => {
         const errorCount = validate();
         if(errorCount==0){
             saveModalData(pageType, uid, categoryId, categoryName, remark);
@@ -96,14 +97,16 @@ function CategoryManager (props) {
                 break;
             case "sub_new":
                 setPageTitle('新增商品子类');
-                setCategoryId(data.category_name + '-' + data.id);
+                setParent(data.category_name + '-' + data.id);
+                setCategoryId(data.id);
                 setCategoryName('');
                 setRemark('');
                 break;
             case "sub_edit":
                 setPageTitle('修改商品子类');
                 setUid(data.id);
-                setCategoryId(data.category_name + '-' + data.category_id);
+                setParent(data.category_name + '-' + data.category_id);
+                setCategoryId(data.category_id);
                 setCategoryName(data.category_sub_name);
                 setRemark(data.remark);
                 break;
@@ -148,6 +151,7 @@ function CategoryManager (props) {
                 {categoryManagerReducer.categoryList.map(function (item, index) {
                     return (
                         <TreeItem
+                            key={'category' + item.id}
                             nodeId={'' + item.id}
                             label={<div>{item.category_name}
                                 <IconButton color="primary" onClick={()=>{initModal('edit', item)}} size="small">
@@ -163,7 +167,7 @@ function CategoryManager (props) {
                             {item.sub && item.sub.map(function (child) {
                                 return (
                                     <TreeItem
-                                        // key={'category_sub' + child.id}
+                                        key={'category-sub' + child.id}
                                         nodeId={'_' + child.id}
                                         label={<div>{child.category_sub_name}
                                             <IconButton color="primary" onClick={()=>{initModal('sub_edit',child)}} size="small">
@@ -192,7 +196,7 @@ function CategoryManager (props) {
                 }
             >
                 <Grid container spacing={2}>
-                    {(pageType!='new' && pageType!='edit') && <Grid item xs={12}>商品分类：{categoryId}</Grid>}
+                    {(pageType!='new' && pageType!='edit') && <Grid item xs={12}>商品分类：{parent}</Grid>}
                     <Grid item xs={12}>
                         <TextField fullWidth={true} margin="dense" variant="outlined" label={(pageType!='new' && pageType!='edit') ? "商品子类名称" : "商品分类名称"} value={categoryName}
                                    onChange={(e) => {
