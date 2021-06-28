@@ -1,46 +1,46 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
-import {AppActionType, CategoryManagerActionType} from '../../types';
+import {AppActionType, BrandManagerActionType} from '../../types';
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
 
-export const getCategoryList = () => async (dispatch, getState) => {
+export const getBrandList = () => async (dispatch, getState) => {
     try {
         // 基本检索URL
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/category';
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/brand';
 
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
 
         if (res.success) {
-            dispatch({type: CategoryManagerActionType.setCategoryList, payload: res.rows});
+            dispatch({type: BrandManagerActionType.setBrandList, payload: res.rows});
             res.rows.forEach((item) => {
-                dispatch(getCategorySubList(item.id));
+                dispatch(getBrandModelList(item.id));
             });
         } else if (!res.success) {
-            Swal.fire('获取商品分类信息失败', res.msg, 'warning');
+            Swal.fire('获取品牌信息失败', res.msg, 'warning');
         }
     } catch (err) {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
 
-export const getCategorySubList = (categoryId) => async (dispatch, getState) => {
+export const getBrandModelList = (brandId) => async (dispatch, getState) => {
     try {
         // 基本检索URL
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/categorySub?categoryId=' + categoryId;
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/brandModel?brandId=' + brandId;
 
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
 
         if (res.success) {
-            dispatch({type: CategoryManagerActionType.setCategorySubList, payload: res.rows});
+            dispatch({type: BrandManagerActionType.setBrandModelList, payload: res.rows});
         } else if (!res.success) {
-            Swal.fire('获取商品子类信息失败', res.msg, 'warning');
+            Swal.fire('获取品牌型号信息失败', res.msg, 'warning');
         }
     } catch (err) {
         Swal.fire('操作失败', err.message, 'error');
@@ -50,13 +50,13 @@ export const getCategorySubList = (categoryId) => async (dispatch, getState) => 
 export const saveModalData = (modalData) => async (dispatch, getState) => {
     try {
         const params = {
-            categoryName: modalData.categoryName,
+            brandName: modalData.brandName,
             remark: modalData.remark
         };
 
         const paramsSub = {
-            categoryId: modalData.categoryId,
-            categorySubName: modalData.categoryName,
+            brandId: modalData.brandId,
+            brandModelName: modalData.brandName,
             remark: modalData.remark
         };
 
@@ -64,19 +64,19 @@ export const saveModalData = (modalData) => async (dispatch, getState) => {
         let res;
         switch (modalData.pageType) {
             case "new":
-                url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/category';
+                url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/brand';
                 res = await httpUtil.httpPost(url, params);
                 break;
             case "edit":
-                url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/category/' + modalData.uid;
+                url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/brand/' + modalData.uid;
                 res = await httpUtil.httpPut(url, params);
                 break;
             case "sub_new":
-                url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/categorySub';
+                url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/brandModel';
                 res = await httpUtil.httpPost(url, paramsSub);
                 break;
             case "sub_edit":
-                url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/categorySub/' + modalData.uid;
+                url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/brandModel/' + modalData.uid;
                 res = await httpUtil.httpPut(url, paramsSub);
                 break;
             default:
@@ -86,7 +86,7 @@ export const saveModalData = (modalData) => async (dispatch, getState) => {
         if (res.success) {
             Swal.fire("保存成功", "", "success");
             // 刷新页面
-            dispatch(getCategoryList());
+            dispatch(getBrandList());
         } else if (!res.success) {
             Swal.fire("保存失败", res.msg, "warning");
         }

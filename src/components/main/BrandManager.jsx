@@ -13,7 +13,7 @@ import {SimpleModal} from '../'
 import TreeItem from "@material-ui/lab/TreeItem";
 import TreeView from "@material-ui/lab/TreeView";
 
-const categoryManagerAction = require('../../actions/main/CategoryManagerAction');
+const brandManagerAction = require('../../actions/main/BrandManagerAction');
 
 const useStyles = makeStyles((theme) => ({
     // 标题样式
@@ -35,13 +35,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // 权限设置
-function CategoryManager (props) {
-    const {categoryManagerReducer, getCategoryList, getCategorySubList, saveModalData} = props;
+function BrandManager (props) {
+    const {brandManagerReducer, getBrandList, getBrandModelList, saveModalData} = props;
     const classes = useStyles();
 
     // 执行1次，取得数结构
     useEffect(()=>{
-        getCategoryList();
+        getBrandList();
     },[]);
 
     // 模态状态
@@ -54,22 +54,23 @@ function CategoryManager (props) {
     const [pageType, setPageType] = React.useState('');
     const [pageTitle, setPageTitle] = React.useState('');
     const [uid, setUid] = React.useState(-1);
-    const [categoryId, setCategoryId] = React.useState('');
-    const [categoryName, setCategoryName] = React.useState('');
+    const [parent, setParent] = React.useState('');
+    const [brandId, setBrandId] = React.useState('');
+    const [brandName, setBrandName] = React.useState('');
     const [remark, setRemark] = useState('');
     const [validation,setValidation] = useState({});
     const validate = ()=>{
         const validateObj ={};
-        if (!categoryName) {
-            validateObj.categoryName ='请输入用户商品名称';
+        if (!brandName) {
+            validateObj.brandName ='请输入名称';
         }
         setValidation(validateObj);
         return Object.keys(validateObj).length
     };
-    const submitModal = (event) => {
+    const submitModal = () => {
         const errorCount = validate();
         if(errorCount==0){
-            saveModalData(pageType, uid, categoryId, categoryName, remark);
+            saveModalData(pageType, uid, brandId, brandName, remark);
             closeModal();
         }
     };
@@ -84,27 +85,29 @@ function CategoryManager (props) {
         // 新建 / 修改
         switch (pageType) {
             case "new":
-                setPageTitle('新增商品分类');
-                setCategoryName('');
+                setPageTitle('新增品牌');
+                setBrandName('');
                 setRemark('');
                 break;
             case "edit":
-                setPageTitle('修改商品分类');
+                setPageTitle('修改品牌');
                 setUid(data.id);
-                setCategoryName(data.category_name);
+                setBrandName(data.brand_name);
                 setRemark(data.remark);
                 break;
             case "sub_new":
-                setPageTitle('新增商品子类');
-                setCategoryId(data.category_name + '-' + data.id);
-                setCategoryName('');
+                setPageTitle('新增品牌型号');
+                setParent(data.brand_name + '-' + data.id);
+                setBrandId(data.id);
+                setBrandName('');
                 setRemark('');
                 break;
             case "sub_edit":
-                setPageTitle('修改商品子类');
+                setPageTitle('修改品牌型号');
                 setUid(data.id);
-                setCategoryId(data.category_name + '-' + data.category_id);
-                setCategoryName(data.category_sub_name);
+                setParent(data.brand_name + '-' + data.brand_id);
+                setBrandId(data.brand_id);
+                setBrandName(data.brand_model_name);
                 setRemark(data.remark);
                 break;
             default:
@@ -119,13 +122,13 @@ function CategoryManager (props) {
 
     const clickLabel = (event, nodeIds) => {
         event.preventDefault();
-        getCategorySubList(nodeIds);
+        getBrandModelList(nodeIds);
     };
 
     return (
         <div className={classes.root}>
             {/* 标题部分 */}
-            <Typography gutterBottom className={classes.pageTitle}>商品分类</Typography>
+            <Typography gutterBottom className={classes.pageTitle}>品牌</Typography>
             <Divider light className={classes.pageDivider}/>
 
             <Grid container spacing={3}>
@@ -145,11 +148,12 @@ function CategoryManager (props) {
                 expanded={expanded}
                 onNodeToggle={handleToggle}
             >
-                {categoryManagerReducer.categoryList.map(function (item, index) {
+                {brandManagerReducer.brandList.map(function (item) {
                     return (
                         <TreeItem
+                            key={'brand' + item.id}
                             nodeId={'' + item.id}
-                            label={<div>{item.category_name}
+                            label={<div>{item.brand_name}
                                 <IconButton color="primary" onClick={()=>{initModal('edit', item)}} size="small">
                                     <i className="mdi mdi-pencil mdi-12px" style={{marginLeft: 20}} />
                                 </IconButton>
@@ -163,9 +167,9 @@ function CategoryManager (props) {
                             {item.sub && item.sub.map(function (child) {
                                 return (
                                     <TreeItem
-                                        // key={'category_sub' + child.id}
+                                        key={'brand-model' + child.id}
                                         nodeId={'_' + child.id}
-                                        label={<div>{child.category_sub_name}
+                                        label={<div>{child.brand_model_name}
                                             <IconButton color="primary" onClick={()=>{initModal('sub_edit',child)}} size="small">
                                                 <i className="mdi mdi-pencil mdi-12px" style={{marginLeft: 20}} />
                                             </IconButton>
@@ -192,14 +196,14 @@ function CategoryManager (props) {
                 }
             >
                 <Grid container spacing={2}>
-                    {(pageType!='new' && pageType!='edit') && <Grid item xs={12}>商品分类：{categoryId}</Grid>}
+                    {(pageType!='new' && pageType!='edit') && <Grid item xs={12}>品牌：{parent}</Grid>}
                     <Grid item xs={12}>
-                        <TextField fullWidth={true} margin="dense" variant="outlined" label={(pageType!='new' && pageType!='edit') ? "商品子类名称" : "商品分类名称"} value={categoryName}
+                        <TextField fullWidth={true} margin="dense" variant="outlined" label={(pageType!='new' && pageType!='edit') ? "品牌型号名称" : "品牌名称"} value={brandName}
                                    onChange={(e) => {
-                                       setCategoryName(e.target.value)
+                                       setBrandName(e.target.value)
                                    }}
-                                   error={validation.categoryName&&validation.categoryName!=''}
-                                   helperText={validation.categoryName}
+                                   error={validation.brandName&&validation.brandName!=''}
+                                   helperText={validation.brandName}
                         />
                     </Grid>
 
@@ -217,20 +221,20 @@ function CategoryManager (props) {
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        categoryManagerReducer: state.CategoryManagerReducer,
+        brandManagerReducer: state.BrandManagerReducer,
     }
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    getCategoryList: () => {
-        dispatch(categoryManagerAction.getCategoryList())
+    getBrandList: () => {
+        dispatch(brandManagerAction.getBrandList())
     },
-    getCategorySubList: (categoryId) => {
-        dispatch(categoryManagerAction.getCategorySubList(categoryId))
+    getBrandModelList: (brandId) => {
+        dispatch(brandManagerAction.getBrandModelList(brandId))
     },
-    saveModalData: (pageType, uid, categoryId, categoryName, remark) => {
-        dispatch(categoryManagerAction.saveModalData({pageType, uid, categoryId, categoryName, remark}))
+    saveModalData: (pageType, uid, brandId, brandName, remark) => {
+        dispatch(brandManagerAction.saveModalData({pageType, uid, brandId, brandName, remark}))
     }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(CategoryManager)
+export default connect(mapStateToProps, mapDispatchToProps)(BrandManager)

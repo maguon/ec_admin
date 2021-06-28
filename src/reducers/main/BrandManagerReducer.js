@@ -1,30 +1,30 @@
 import {handleActions} from 'redux-actions';
-import {CategoryManagerActionType} from '../../types';
+import {BrandManagerActionType} from '../../types';
 
 const initialState = {
-    categoryList: []
+    brandList: []
 };
 
 export default handleActions({
-    [CategoryManagerActionType.setCategoryList]: (state, action) => {
+    [BrandManagerActionType.setBrandList]: (state, action) => {
         return {
             ...state,
-            categoryList: action.payload
+            brandList: action.payload
         }
     },
-    [CategoryManagerActionType.setCategorySubList]: (state, action) => {
-        let categoryList = state.categoryList;
+    [BrandManagerActionType.setBrandModelList]: (state, action) => {
+        let brandList = state.brandList;
         if (action.payload && action.payload.length > 0) {
-            for (let i = 0; i < categoryList.length; i++) {
-                if (categoryList[i].id == action.payload[0].category_id) {
-                    categoryList[i].sub = action.payload;
+            for (let i = 0; i < brandList.length; i++) {
+                if (brandList[i].id == action.payload[0].brand_id) {
+                    brandList[i].sub = action.payload;
                     break;
                 }
             }
         }
         return {
             ...state,
-            categoryList: categoryList
+            brandList: brandList
         }
     }
 }, initialState)
