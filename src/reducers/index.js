@@ -1,6 +1,7 @@
 import {combineReducers} from 'redux'
 import {reducer as reduxFormReducer} from 'redux-form';
 import AppReducer from './layout/AppReducer';
+import CommonReducer from './layout/CommonReducer';
 import LoginReducer from './login/LoginReducer';
 import MainPanelReducer from './main/MainPanelReducer';
 import CategoryManagerReducer from './main/CategoryManagerReducer';
@@ -14,6 +15,7 @@ import SupplierManagerDetailReducer from './main/SupplierManagerDetailReducer'
 export default combineReducers({
     form: reduxFormReducer,
     AppReducer,
+    CommonReducer,
     LoginReducer,
     MainPanelReducer,
     CategoryManagerReducer,

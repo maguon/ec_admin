@@ -1,4 +1,5 @@
 import * as AppActionType from './layout/AppActionType';
+import * as CommonActionType from './layout/CommonActionType';
 import * as LoginActionType from './login/LoginActionType';
 import * as MainPanelActionType from './main/MainPanelActionType'
 import * as CategoryManagerActionType from './main/CategoryManagerActionType'
@@ -12,6 +13,7 @@ import * as SupplierManagerDetailActionType from './main/SupplierManagerDetailAc
 
 export {
     AppActionType,
+    CommonActionType,
     LoginActionType,
     MainPanelActionType,
     CategoryManagerActionType,
