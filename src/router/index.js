@@ -1,6 +1,6 @@
 import {
     Login, Register, ResetPassword,
-    MainPanel, CategoryManager,SupplierManager,
+    MainPanel, CategoryManager,SupplierManager,SupplierManagerDetail,
     AdminUserSetting, AppSetting, AuthoritySetting
 } from "../components";
 
@@ -22,8 +22,7 @@ export const routesWithHeader = [
 
     //供应商
     {path: "/supplier_manager", exact: true, component: SupplierManager},
-
-
+    {path: "/supplier_manager/:id",exact: true,component: SupplierManagerDetail},
     //员工管理
     {path: "/admin_user_setting", exact: true, component: AdminUserSetting},
     // App系统

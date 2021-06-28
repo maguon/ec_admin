@@ -89,6 +89,17 @@ export const FORCE_UPDATE = [
     {value: 1, label: "是"}
 ];
 
+//供应商类型
+export const SUPPLIER_TYPE = [
+    {value: 1, label: "对内供应商"},
+    {value: 2, label: "对外供应商"}
+];
+
+//结算类型
+export const SETTLE_TYPE = [
+    {value: 1, label: "月结"},
+    {value: 2, label: "非月结"}
+];
 // 用于权限设定（包含所有机能设定）
 export const ALL_PAGE_LIST = [
     {
