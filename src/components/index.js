@@ -13,6 +13,7 @@ import ErrorPanel from './main/ErrorPanel';
 import AdminUserSetting from "./main/AdminUserSetting";
 import AppSetting from "./main/AppSetting";
 import CategoryManager from "./main/CategoryManager";
+import BrandManager from "./main/BrandManager";
 import SupplierManager from './main/SupplierManager';
 import SupplierManagerDetail from './main/SupplierManagerDetail'
 import NestedList from "./utils/NestedList";
@@ -20,7 +21,7 @@ export {
     Header,Footer,Navigation, AccountModal,SimpleModal,LoadProgree,
     Login,Register,ResetPassword,
     MainPanel,ErrorPanel,AuthoritySetting,
-    AdminUserSetting,AppSetting,CategoryManager,SupplierManager,SupplierManagerDetail,
+    AdminUserSetting,AppSetting,CategoryManager,BrandManager,SupplierManager,SupplierManagerDetail,
 
     NestedList
 }
