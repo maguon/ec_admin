@@ -8,8 +8,8 @@ import * as ProductManagerActionType from './main/ProductManagerActionType'
 import * as AuthoritySettingActionType from './main/AuthoritySettingActionType'
 import * as AdminUserSettingActionType from "./main/AdminUserSettingActionType";
 import * as AppSettingActionType from "./main/AppSettingActionType";
-import * as SupplierManagerActionType from './main/SupplierManagerActionType';
-import * as SupplierManagerDetailActionType from './main/SupplierManagerDetailActionType'
+import * as SupplierActionType from './main/SupplierActionType';
+import * as SupplierDetailActionType from './main/SupplierDetailActionType'
 
 export {
     AppActionType,
@@ -19,8 +19,8 @@ export {
     CategoryManagerActionType,
     BrandManagerActionType,
     ProductManagerActionType,
-    SupplierManagerActionType,
-    SupplierManagerDetailActionType,
+    SupplierActionType,
+    SupplierDetailActionType,
     AuthoritySettingActionType,
     AdminUserSettingActionType,
     AppSettingActionType

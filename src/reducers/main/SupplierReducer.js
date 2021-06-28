@@ -1,5 +1,5 @@
 import {handleActions} from 'redux-actions';
-import {SupplierManagerActionType} from '../../types';
+import {SupplierActionType} from '../../types';
 const initialState = {
     //查询条件
     queryObj:{
@@ -16,19 +16,19 @@ const initialState = {
 };
 
 export default handleActions({
-    [SupplierManagerActionType.setSupplierQueryObj]: (state, action) => {
+    [SupplierActionType.setSupplierQueryObj]: (state, action) => {
         return {
             ...state,
             queryObj: action.payload
         }
     },
-    [SupplierManagerActionType.getSupplierList]: (state, action) => {
+    [SupplierActionType.getSupplierList]: (state, action) => {
         return {
             ...state,
             supplierArray: action.payload
         }
     },
-    [SupplierManagerActionType.setSupplierListDataSize]: (state, action) => {
+    [SupplierActionType.setSupplierListDataSize]: (state, action) => {
         return {
             ...state,
             dataSize: action.payload

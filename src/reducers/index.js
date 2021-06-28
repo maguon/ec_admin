@@ -10,8 +10,8 @@ import ProductManagerReducer from './main/ProductManagerReducer';
 import AuthoritySettingReducer from './main/AuthoritySettingReducer';
 import AdminUserSettingReducer from "./main/AdminUserSettingReducer";
 import AppSettingReducer from "./main/AppSettingReducer";
-import SupplierManagerReducer from './main/SupplierManagerReducer';
-import SupplierManagerDetailReducer from './main/SupplierManagerDetailReducer'
+import SupplierReducer from './main/SupplierReducer';
+import SupplierDetailReducer from './main/SupplierDetailReducer'
 export default combineReducers({
     form: reduxFormReducer,
     AppReducer,
@@ -24,6 +24,6 @@ export default combineReducers({
     AuthoritySettingReducer,
     AdminUserSettingReducer,
     AppSettingReducer,
-    SupplierManagerReducer,
-    SupplierManagerDetailReducer
+    SupplierReducer,
+    SupplierDetailReducer
 });

@@ -1,6 +1,6 @@
 import React, {useEffect,useState}from 'react';
 import {connect} from 'react-redux';
-import {SupplierManagerActionType} from '../../types';
+import {SupplierActionType} from '../../types';
 import {SimpleModal} from '../index';
 import {
     Button,
@@ -20,7 +20,7 @@ import Fab from '@material-ui/core/Fab';
 import {withStyles,makeStyles} from "@material-ui/core/styles";
 import {Link, useParams} from "react-router-dom";
 import Swal from "sweetalert2";
-const SupplierManagerAction = require('../../actions/main/SupplierManagerAction');
+const SupplierAction = require('../../actions/main/SupplierAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const useStyles = makeStyles((theme) => ({
@@ -69,10 +69,9 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell);
 
 //供应商
-function SupplierManager (props){
-    const {supplierManagerReducer,updateSupplierStatusInfo,deleteSupplier} = props;
+function Supplier (props){
+    const {supplierReducer,deleteSupplier} = props;
     const classes = useStyles();
-    const {supplierId} = useParams();
     //查询条件
     const [paramSupplierName,setParamSupplierName]=useState("");
     const [paramSupplierType,setParamSupplierType]=useState("-1");
@@ -183,21 +182,21 @@ function SupplierManager (props){
 
     //上一页
     const getPreSupplierList = () => {
-        setPageNumber(pageNumber- (props.supplierManagerReducer.size-1));
+        setPageNumber(pageNumber- (props.supplierReducer.size-1));
         props.setSupplierQueryObj({
             supplierName:paramSupplierName,
             supplierType :paramSupplierType,
-            start :pageNumber- (props.supplierManagerReducer.size-1)})
+            start :pageNumber- (props.supplierReducer.size-1)})
         props.getSupplierList();
     };
 
     //下一页
     const getNextSupplierList = () => {
-        setPageNumber(pageNumber+ (props.supplierManagerReducer.size-1));
+        setPageNumber(pageNumber+ (props.supplierReducer.size-1));
         props.setSupplierQueryObj({
             supplierName:paramSupplierName,
             supplierType :paramSupplierType,
-            start :pageNumber+ (props.supplierManagerReducer.size-1)})
+            start :pageNumber+ (props.supplierReducer.size-1)})
         props.getSupplierList();
     };
     return(
@@ -276,7 +275,7 @@ function SupplierManager (props){
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {supplierManagerReducer.supplierArray.length > 0 &&supplierManagerReducer.supplierArray.map((row) => (
+                            {supplierReducer.supplierArray.length > 0 &&supplierReducer.supplierArray.map((row) => (
                                 <TableRow key={row.id}>
                                     <TableCell align="center" >{row.supplier_name}</TableCell>
                                     <TableCell align="center" >{commonUtil.getJsonValue(sysConst.SUPPLIER_TYPE,row.supplier_type)}</TableCell>
@@ -295,23 +294,23 @@ function SupplierManager (props){
                                         </IconButton>
 
                                         <IconButton color="primary" edge="start">
-                                            <Link to={{pathname: '/supplier_manager/' + row.id}}>
+                                            <Link to={{pathname: '/supplier/' + row.id}}>
                                                 <i className="mdi mdi-table-search purple-font margin-left10"> </i>
                                             </Link>
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>))}
-                            {supplierManagerReducer.supplierArray.length === 0 &&
+                            {supplierReducer.supplierArray.length === 0 &&
                             <TableRow style={{height:60}}> <TableCell align="center" colSpan="9">暂无数据</TableCell></TableRow>
                             }
                         </TableBody>
                     </Table>
 
-                    {supplierManagerReducer.dataSize >=supplierManagerReducer.size &&
+                    {supplierReducer.dataSize >=supplierReducer.size &&
                     <Button className={classes.button} variant="contained" color="primary"  onClick={getNextSupplierList}>
                         下一页
                     </Button>}
-                    {supplierManagerReducer.queryObj.start > 0 &&supplierManagerReducer.dataSize > 0 &&
+                    {supplierReducer.queryObj.start > 0 &&supplierReducer.dataSize > 0 &&
                     <Button className={classes.button} variant="contained" color="primary" onClick={getPreSupplierList}>
                         上一页
                     </Button>}
@@ -582,17 +581,17 @@ function SupplierManager (props){
 }
 const mapStateToProps = (state, ownProps) => {
     return {
-        supplierManagerReducer: state.SupplierManagerReducer
+        supplierReducer: state.SupplierReducer
     }
 };
 
 const mapDispatchToProps = (dispatch) => ({
     setSupplierQueryObj:(queryObj) =>{
-        dispatch(SupplierManagerActionType.setSupplierQueryObj(queryObj))
+        dispatch(SupplierActionType.setSupplierQueryObj(queryObj))
     },
     //获取列表
     getSupplierList: () => {
-        dispatch(SupplierManagerAction.getSupplierList())
+        dispatch(SupplierAction.getSupplierList())
     },
     //添加供应商
     addSupplier: (supplierName, supplierType,contactName,email,tel,mobile,fax,address,invoiceTitle,invoiceBank,invoiceBankSer,invoiceAddress,settleType,settleMonthDay,remark) => {
@@ -600,13 +599,13 @@ const mapDispatchToProps = (dispatch) => ({
             if(settleType==-1){
                 settleType=''
             }
-            dispatch(SupplierManagerAction.addSupplier({supplierName, supplierType,contactName,email,tel,mobile,fax,address,invoiceTitle,invoiceBank,invoiceBankSer,invoiceAddress,settleType,settleMonthDay,remark}));
+            dispatch(SupplierAction.addSupplier({supplierName, supplierType,contactName,email,tel,mobile,fax,address,invoiceTitle,invoiceBank,invoiceBankSer,invoiceAddress,settleType,settleMonthDay,remark}));
         }
     },
     //删除供应商
     deleteSupplier:(id) =>{
-        dispatch(SupplierManagerAction.deleteSupplier(id))
+        dispatch(SupplierAction.deleteSupplier(id))
     }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(SupplierManager)
+export default connect(mapStateToProps, mapDispatchToProps)(Supplier)

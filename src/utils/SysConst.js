@@ -144,7 +144,7 @@ export const ALL_PAGE_LIST = [
                 "usable": false
             },
             {
-                "link": "/supplier_manager",
+                "link": "/supplier",
                 "name": "供应商",
                 "icon": "mdi-chevron-right",
                 "usable": false

@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config/index';
-import {SupplierManagerActionType, AppActionType} from '../../types';
+import {SupplierActionType, AppActionType} from '../../types';
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
@@ -9,9 +9,9 @@ const sysConst = require('../../utils/SysConst');
 export const getSupplierList = (params) => async (dispatch, getState) => {
     try {
         // 检索条件：每页数量
-        const size = getState().SupplierManagerReducer.size;
+        const size = getState().SupplierReducer.size;
         // 检索条件
-        const paramsObj=getState().SupplierManagerReducer.queryObj;
+        const paramsObj=getState().SupplierReducer.queryObj;
 
         paramsObj.status = paramsObj.status==-1?'': paramsObj.status;
         paramsObj.supplierType = paramsObj.supplierType==-1?'': paramsObj.supplierType;
@@ -25,8 +25,8 @@ export const getSupplierList = (params) => async (dispatch, getState) => {
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true) {
-            dispatch({type: SupplierManagerActionType.setSupplierListDataSize, payload: res.rows.length});
-            dispatch({type: SupplierManagerActionType.getSupplierList, payload: res.rows.slice(0, size - 1)});
+            dispatch({type: SupplierActionType.setSupplierListDataSize, payload: res.rows.length});
+            dispatch({type: SupplierActionType.getSupplierList, payload: res.rows.slice(0, size - 1)});
         } else if (res.success === false) {
             Swal.fire('获取管理员列表信息失败', res.msg, 'warning');
         }
