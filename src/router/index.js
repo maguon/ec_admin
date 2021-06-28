@@ -1,6 +1,6 @@
 import {
     Login, Register, ResetPassword,
-    MainPanel, CategoryManager,SupplierManager,SupplierManagerDetail,
+    MainPanel, CategoryManager,BrandManager,SupplierManager,SupplierManagerDetail,
     AdminUserSetting, AppSetting, AuthoritySetting
 } from "../components";
 
@@ -19,6 +19,8 @@ export const routesWithHeader = [
 
     // 商品分类
     {path: "/category_manager", exact: true, component: CategoryManager},
+    // 品牌
+    {path: "/brand_manager", exact: true, component: BrandManager},
 
     //供应商
     {path: "/supplier_manager", exact: true, component: SupplierManager},
