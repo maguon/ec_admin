@@ -32,7 +32,7 @@ export default function NestedList(props) {
                     {item.children.map(function (menu) {
                         return (
                             <NavLink exact to={menu.link} style={{textDecoration: 'none'}}>
-                                <ListItem button className={classes.nested} onClick={handleDrawerClose}>
+                                <ListItem button className={classes.nested} onClick={handleDrawerClose} key={'second-' + menu.link}>
                                     <ListItemIcon><i className={`mdi ${menu.icon} mdi-24px`}/></ListItemIcon>
                                     <ListItemText primary={menu.name} disableTypography={true}
                                                   className={classes.menuText}/>
