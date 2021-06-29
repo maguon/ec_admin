@@ -15,13 +15,13 @@ const initialState = {
     },
     // 检索条件
     queryParams: {
-        category: null,
-        categorySub: null,
-        brand: null,
-        brandModel: null,
-        product: null,
-        standardType: null,
-        status: null
+        paramCategory: null,
+        paramCategorySub: null,
+        paramBrand: null,
+        paramBrandModel: null,
+        paramProduct: null,
+        paramStandardType: null,
+        paramStatus: null
     },
     // 检索结果
     modalData: {
@@ -65,6 +65,12 @@ export default handleActions({
         return {
             ...state,
             productData: action.payload
+        }
+    },
+    [ProductManagerActionType.setQueryParams]: (state, action) => {
+        return {
+            ...state,
+            queryParams: action.payload
         }
     },
     [ProductManagerActionType.setModalData]: (state, action) => {

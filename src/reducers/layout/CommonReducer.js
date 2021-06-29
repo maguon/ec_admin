@@ -6,47 +6,38 @@ const initialState = {
     categorySubList: [],
     brandList: [],
     brandModelList: [],
+    productList: [],
 };
 
 export default handleActions({
     [CommonActionType.setCategoryList]: (state, action) => {
-        let categoryList = [];
-        action.payload.forEach((item) => {
-            categoryList.push({value: item.id, label: item.category_name})
-        });
         return {
             ...state,
-            categoryList: categoryList
+            categoryList: action.payload
         }
     },
     [CommonActionType.setCategorySubList]: (state, action) => {
-        let categorySubList = [];
-        action.payload.forEach((item) => {
-            categorySubList.push({value: item.id, label: item.category_sub_name})
-        });
         return {
             ...state,
-            categorySubList: categorySubList
+            categorySubList: action.payload
         }
     },
     [CommonActionType.setBrandList]: (state, action) => {
-        let brandList = [];
-        action.payload.forEach((item) => {
-            brandList.push({value: item.id, label: item.brand_name})
-        });
         return {
             ...state,
-            brandList: brandList
+            brandList: action.payload
         }
     },
     [CommonActionType.setBrandModelList]: (state, action) => {
-        let brandModelList = [];
-        action.payload.forEach((item) => {
-            brandModelList.push({value: item.id, label: item.brand_model_name})
-        });
         return {
             ...state,
-            brandModelList: brandModelList
+            brandModelList: action.payload
+        }
+    },
+    [CommonActionType.setProductList]: (state, action) => {
+        return {
+            ...state,
+            productList: action.payload
         }
     },
 }, initialState);

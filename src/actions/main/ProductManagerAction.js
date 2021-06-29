@@ -7,6 +7,7 @@ const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
 
 export const getProductList = (params) => async (dispatch, getState) => {
+    console.log('getProductList',params)
     try {
         // 检索条件：开始位置
         const start = params.dataStart;
@@ -14,23 +15,25 @@ export const getProductList = (params) => async (dispatch, getState) => {
         const size = getState().ProductManagerReducer.productData.size;
         // 检索条件
         const queryParams = getState().ProductManagerReducer.queryParams;
+        // ,,,,,,
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/product?start=' + start + '&size=' + size;
         // 检索条件
         let conditionsObj = {
-            categoryId: queryParams.category === null ? '' : queryParams.category.value,
-            categorySubId: queryParams.categorySub === null ? '' : queryParams.categorySub.value,
-            brandId: queryParams.brand === null ? '' : queryParams.brand.value,
-            brandModelId: queryParams.brandModel === null ? '' : queryParams.brandModel.value,
-            productId: queryParams.product === null ? '' : queryParams.product.value,
-            standardType: queryParams.standardType === null ? '' : queryParams.standardType.value,
-            status: queryParams.status === null ? '' : queryParams.status.value,
+            categoryId: queryParams.paramCategory == null ? '' : queryParams.paramCategory.id,
+            categorySubId: queryParams.paramCategorySub == null ? '' : queryParams.paramCategorySub.id,
+            brandId: queryParams.paramBrand === null ? '' : queryParams.paramBrand.id,
+            brandModelId: queryParams.paramBrandModel == null ? '' : queryParams.paramBrandModel.id,
+            productId: queryParams.paramProduct == null ? '' : queryParams.paramProduct.id,
+            standardType: queryParams.paramStandardType == null ? '' : queryParams.paramStandardType,
+            status: queryParams.paramStatus == null ? '' : queryParams.paramStatus,
         };
         let conditions = httpUtil.objToUrl(conditionsObj);
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
 
+        console.log('',url);
         const res = await httpUtil.httpGet(url);
         let productData = getState().ProductManagerReducer.productData;
         if (res.success) {
@@ -77,17 +80,21 @@ export const changeStatus = (id, status) => async (dispatch, getState) => {
 export const saveModalData = (modalData) => async (dispatch, getState) => {
     try {
         const params = {
-            appType: modalData.appType,
-            deviceType: modalData.deviceType,
-            version: modalData.version,
-            versionNum: modalData.versionNum,
-            minVersionNum: modalData.minVersionNum,
-            forceUpdate: modalData.forceUpdate,
-            url: modalData.url,
-            remarks: modalData.remark
+            categoryId: modalData.category.id,
+            categorySubId: modalData.categorySub.id,
+            brandId: modalData.brand.id,
+            brandModelId: modalData.brandModel.id,
+            productName: modalData.productName,
+            productSName: modalData.productSName,
+            productSerial: modalData.productSerial,
+            productAddress: modalData.productAddress,
+            unitName: modalData.unitName,
+            price: modalData.price,
+            standardType: modalData.standardType,
+            remark: modalData.remark
         };
         // 基本url
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/app';
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/product';
         let res;
         if (modalData.pageType === 'new') {
             res = await httpUtil.httpPost(url, params);
