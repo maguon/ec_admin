@@ -130,18 +130,34 @@ function DataDictionary(props){
                         <Table  size={'small'} aria-label="a dense table">
                             <TableHead>
                                 <TableRow style={{height:60}}>
+                                    <StyledTableCell align="center">类目ID</StyledTableCell>
+                                    <StyledTableCell align="center">类目名称</StyledTableCell>
+                                    <StyledTableCell align="center">二级类目ID</StyledTableCell>
+                                    <StyledTableCell align="center">二级类目名称</StyledTableCell>
+                                    <StyledTableCell align="center">品牌ID</StyledTableCell>
+                                    <StyledTableCell align="center">品牌名称</StyledTableCell>
+                                    <StyledTableCell align="center">型号ID</StyledTableCell>
+                                    <StyledTableCell align="center">型号名称</StyledTableCell>
                                     <StyledTableCell align="center">商品ID</StyledTableCell>
-                                    <StyledTableCell align="center">名称</StyledTableCell>
+                                    <StyledTableCell align="center">商品名称</StyledTableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {dataDictionaryReducer.productArray.length > 0 &&dataDictionaryReducer.productArray.map((row) => (
                                     <TableRow key={row.id}>
+                                        <TableCell align="center" >{row.category_id}</TableCell>
+                                        <TableCell align="center" >{row.category_name}</TableCell>
+                                        <TableCell align="center" >{row.category_sub_id}</TableCell>
+                                        <TableCell align="center" >{row.category_sub_name}</TableCell>
+                                        <TableCell align="center" >{row.brand_id}</TableCell>
+                                        <TableCell align="center" >{row.brand_name}</TableCell>
+                                        <TableCell align="center" >{row.brand_model_id}</TableCell>
+                                        <TableCell align="center" >{row.brand_model_name}</TableCell>
                                         <TableCell align="center" >{row.id}</TableCell>
                                         <TableCell align="center" >{row.product_name}</TableCell>
                                     </TableRow>))}
                                 {dataDictionaryReducer.productArray.length === 0 &&
-                                <TableRow style={{height:60}}><TableCell align="center" colSpan="2">暂无数据</TableCell></TableRow>
+                                <TableRow style={{height:60}}><TableCell align="center" colSpan="10">暂无数据</TableCell></TableRow>
                                 }
                             </TableBody>
                         </Table>
