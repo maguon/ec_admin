@@ -16,9 +16,13 @@ export const getCurrentUser = (params) => async (dispatch) => {
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-        if (res.success === true) {
-            dispatch({type: AppActionType.setCurrentUser, payload: res.rows[0]})
-        } else if (res.success === false) {
+        if (res.success) {
+            if (res.rows.length > 0) {
+                dispatch({type: AppActionType.setCurrentUser, payload: res.rows[0]})
+            } else {
+                window.location.href = '#!/login';
+            }
+        } else if (!res.success) {
             Swal.fire('查询失败', res.msg, 'warning');
         }
     } catch (err) {
