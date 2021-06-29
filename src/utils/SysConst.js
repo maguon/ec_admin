@@ -132,6 +132,12 @@ export const ALL_PAGE_LIST = [
         "icon": "mdi-chart-line",
         "children": [
             {
+                "link": "/purchase",
+                "name": "采购",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
+            {
                 "link": "/category_manager",
                 "name": "商品分类",
                 "icon": "mdi-chevron-right",
@@ -156,6 +162,13 @@ export const ALL_PAGE_LIST = [
                 "usable": false
             }
         ]
+    },
+    {
+        "link": "/data_dictionary",
+        "label": "数据字典",
+        "icon": "mdi-book-multiple",
+        "children": [],
+        "usable": false
     },
     {
         "label": "系统设置",

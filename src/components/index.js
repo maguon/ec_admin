@@ -17,7 +17,9 @@ import BrandManager from "./main/BrandManager";
 import ProductManager from "./main/ProductManager";
 import ProductManagerDetail from "./main/ProductManagerDetail";
 import Supplier from './main/Supplier';
-import SupplierDetail from './main/SupplierDetail'
+import SupplierDetail from './main/SupplierDetail';
+import Purchase from './main/Purchase';
+import DataDictionary from  './main/DataDictionary';
 import NestedList from "./utils/NestedList";
 
 export {
@@ -41,6 +43,7 @@ export {
     ProductManagerDetail,
     Supplier,
     SupplierDetail,
-
+    Purchase,
+    DataDictionary,
     NestedList
 }

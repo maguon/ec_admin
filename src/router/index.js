@@ -1,7 +1,7 @@
 import {
     Login, Register, ResetPassword,
-    MainPanel, CategoryManager,BrandManager,ProductManager,ProductManagerDetail,Supplier,SupplierDetail,
-    AdminUserSetting, AppSetting, AuthoritySetting
+    MainPanel, CategoryManager, BrandManager, ProductManager, ProductManagerDetail, Supplier, SupplierDetail, Purchase,
+    AdminUserSetting, AppSetting, AuthoritySetting, DataDictionary
 } from "../components";
 
 export const routes = [
@@ -18,6 +18,10 @@ export const routesWithHeader = [
     // {path: "/user_statistic", exact: true, component: DemoStatistic},
 
     // 商品分类
+
+    //采购
+    {path: "/purchase", exact: true, component: Purchase},
+
     {path: "/category_manager", exact: true, component: CategoryManager},
     // 品牌
     {path: "/brand_manager", exact: true, component: BrandManager},
@@ -27,7 +31,9 @@ export const routesWithHeader = [
 
     //供应商
     {path: "/supplier", exact: true, component: Supplier},
-    {path: "/supplier/:id",exact: true,component: SupplierDetail},
+    {path: "/supplier/:supplier_id",exact: true,component: SupplierDetail},
+
+    {path: "/data_dictionary", exact: true, component: DataDictionary},
     //员工管理
     {path: "/admin_user_setting", exact: true, component: AdminUserSetting},
     // App系统

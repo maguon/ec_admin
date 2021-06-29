@@ -12,7 +12,9 @@ import AuthoritySettingReducer from './main/AuthoritySettingReducer';
 import AdminUserSettingReducer from "./main/AdminUserSettingReducer";
 import AppSettingReducer from "./main/AppSettingReducer";
 import SupplierReducer from './main/SupplierReducer';
-import SupplierDetailReducer from './main/SupplierDetailReducer'
+import SupplierDetailReducer from './main/SupplierDetailReducer';
+import PurchaseReducer from './main/PurchaseReducer';
+import DataDictionaryReducer from './main/DataDictionaryReducer'
 export default combineReducers({
     form: reduxFormReducer,
     AppReducer,
@@ -27,5 +29,7 @@ export default combineReducers({
     AdminUserSettingReducer,
     AppSettingReducer,
     SupplierReducer,
-    SupplierDetailReducer
+    SupplierDetailReducer,
+    PurchaseReducer,
+    DataDictionaryReducer
 });
