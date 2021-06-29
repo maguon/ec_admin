@@ -5,6 +5,7 @@ import * as MainPanelActionType from './main/MainPanelActionType'
 import * as CategoryManagerActionType from './main/CategoryManagerActionType'
 import * as BrandManagerActionType from './main/BrandManagerActionType'
 import * as ProductManagerActionType from './main/ProductManagerActionType'
+import * as ProductManagerDetailActionType from './main/ProductManagerDetailActionType'
 import * as AuthoritySettingActionType from './main/AuthoritySettingActionType'
 import * as AdminUserSettingActionType from "./main/AdminUserSettingActionType";
 import * as AppSettingActionType from "./main/AppSettingActionType";
@@ -19,6 +20,7 @@ export {
     CategoryManagerActionType,
     BrandManagerActionType,
     ProductManagerActionType,
+    ProductManagerDetailActionType,
     SupplierActionType,
     SupplierDetailActionType,
     AuthoritySettingActionType,

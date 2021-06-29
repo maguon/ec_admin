@@ -16,7 +16,7 @@ import {
     Typography,
     Divider,
     Select,Switch,
-    Button, Fab, FormControl, InputLabel, MenuItem,FormHelperText, makeStyles
+    Button, Fab, FormControl, InputLabel, MenuItem, makeStyles
 } from "@material-ui/core";
 
 // 引入Dialog
@@ -24,6 +24,7 @@ import {SimpleModal} from "../index";
 import Swal from "sweetalert2";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {CommonActionType, ProductManagerActionType} from "../../types";
+import {Link} from "react-router-dom";
 
 const productManagerAction = require('../../actions/main/ProductManagerAction');
 const commonAction = require('../../actions/layout/CommonAction');
@@ -84,18 +85,18 @@ function ProductManager(props) {
     const [paramStatus, setParamStatus] = React.useState(null);
 
     const refreshSubOptions = () => {
-        console.log('paramCategory',paramCategory);
         // 商品分类有选择时，取得商品子分类， 否则清空
         if (paramCategory != null) {
             props.getCategorySubList(paramCategory.id);
+            setParamCategorySub(null);
         } else {
             props.setCategorySubList([]);
             setParamCategorySub(null);
         }
-        console.log('paramBrand',paramBrand);
         // 品牌有选择时，取得品牌型号， 否则清空
         if (paramBrand != null) {
             props.getBrandModelList(paramBrand.id);
+            setParamBrandModel(null);
         } else {
             props.setBrandModelList([]);
             setParamBrandModel(null);
@@ -106,27 +107,29 @@ function ProductManager(props) {
         refreshSubOptions();
         // 商品分类/品牌 有1个选择时，取得商品列表，否则清空
         if (paramCategory != null || paramBrand != null) {
-
             let params = {
                 categoryId: paramCategory != null ? paramCategory.id : '',
                 categorySubId: paramCategorySub != null ? paramCategorySub.id : '',
                 brandId: paramBrand != null ? paramBrand.id : '',
                 brandModelId: paramBrandModel != null ? paramBrandModel.id : ''
             };
-            console.log('',params);
             props.getCommonProductList(params);
+            setParamProduct(null);
         } else {
             props.setCommonProductList([]);
             setParamProduct(null);
         }
     };
 
+    // 保存检索条件
     useEffect(() => {
-        // 保存检索条件
         props.setQueryParams({paramCategory,paramCategorySub,paramBrand,paramBrandModel,paramProduct,paramStandardType,paramStatus});
+    }, [paramCategory,paramCategorySub,paramBrand,paramBrandModel,paramProduct,paramStandardType,paramStatus]);
+
+    useEffect(() => {
         // 根据不同情况：刷新 【商品子分类】【品牌型号】【商品】的Options 选项
         refreshSelectOptions();
-    }, [paramCategory,paramCategorySub,paramBrand,paramBrandModel,paramProduct,paramStandardType,paramStatus]);
+    }, [paramCategory,paramBrand]);
 
     // 模态属性
     const [modalOpen, setModalOpen] = React.useState(false);
@@ -168,46 +171,26 @@ function ProductManager(props) {
     const [remark, setRemark] = React.useState('');
 
     //初始添加模态框值
-    const initModal =(data) =>{
+    const initModal =() =>{
         // 清楚check内容
         setValidation({});
         // 清空商品子分类
         props.setCategorySubList([]);
         // 清空品牌型号
         props.setBrandModelList([]);
-
-        // 新建 / 修改
-        if (data == null) {
-            setPageType('new');
-            setCategory(null);
-            setCategorySub(null);
-            setBrand(null);
-            setBrandModel(null);
-            setProductName('');
-            setProductSName('');
-            setProductAddress('');
-            setProductSerial('');
-            setUnitName('');
-            setPrice('0');
-            setStandardType(1);
-            setRemark('');
-        } else {
-            setPageType('edit');
-            setUid(data.id);
-            setCategory({id: data.category_id, category_name : data.category_name});
-            setCategorySub({id: data.category_sub_id, category_sub_name : data.category_sub_name});
-            setBrand({id: data.brand_id, brand_name : data.brand_name});
-            setBrandModel({id: data.brand_model_id, brand_model_name : data.brand_model_name});
-            setProductName(data.product_name);
-            setProductSName(data.product_s_name);
-            setProductAddress(data.product_address);
-            setProductSerial(data.product_serial);
-            setUnitName(data.unit_name);
-            setPrice(data.price);
-            setStandardType(data.standard_type);
-            setRemark(data.remark);
-            console.log('standardType',standardType);
-        }
+        setPageType('new');
+        setCategory(null);
+        setCategorySub(null);
+        setBrand(null);
+        setBrandModel(null);
+        setProductName('');
+        setProductSName('');
+        setProductAddress('');
+        setProductSerial('');
+        setUnitName('');
+        setPrice('0');
+        setStandardType(1);
+        setRemark('');
         // 设定模态打开
         setModalOpen(true);
     };
@@ -242,11 +225,6 @@ function ProductManager(props) {
     const submitModal= ()=>{
         const errorCount = validate();
         if(errorCount==0){
-            console.log('category',category);
-            console.log('categorySub',categorySub);
-            console.log('brand',brand);
-            console.log('brandModel',brandModel);
-
             saveModalData(pageType, uid, category, categorySub, brand, brandModel, productName, productSName, productAddress, productSerial, unitName, price, standardType, remark);
             setModalOpen(false);
         }
@@ -365,14 +343,14 @@ function ProductManager(props) {
 
                 {/*查询按钮*/}
                 <Grid item xs={1}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={queryProductList}>
+                    <Fab color="primary" aria-label="add" size="small" onClick={queryProductList} style={{marginTop: 50}}>
                         <i className="mdi mdi-magnify mdi-24px"/>
                     </Fab>
                 </Grid>
 
                 {/*追加按钮*/}
                 <Grid item xs={1}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={() => {initModal(null)}}>
+                    <Fab color="primary" aria-label="add" size="small" onClick={() => {initModal()}} style={{marginTop: 50}}>
                         <i className="mdi mdi-plus mdi-24px"/>
                     </Fab>
                 </Grid>
@@ -383,10 +361,12 @@ function ProductManager(props) {
                 <Table stickyHeader aria-label="sticky table" style={{minWidth: 650}}>
                     <TableHead>
                         <TableRow>
+                            <TableCell padding="default" className={classes.head} align="center">商品分类</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">商品子分类</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">品牌</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">品牌型号</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">商品名称</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">商品别名</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">序列号</TableCell>
-                            <TableCell padding="default" className={classes.head} align="left">产地</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">标准类型</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">单位</TableCell>
                             <TableCell padding="default" className={classes.head} align="right">售价</TableCell>
@@ -397,10 +377,12 @@ function ProductManager(props) {
                     <TableBody>
                         {productManagerReducer.productData.dataList.map((row) => (
                             <TableRow className={classes.tableRow}>
+                                <TableCell padding="none" align="center">{row.category_name}</TableCell>
+                                <TableCell padding="none" align="center">{row.category_sub_name}</TableCell>
+                                <TableCell padding="none" align="center">{row.brand_name}</TableCell>
+                                <TableCell padding="none" align="center">{row.brand_model_name}</TableCell>
                                 <TableCell padding="none" align="center">{row.product_name}</TableCell>
-                                <TableCell padding="none" align="center">{row.product_s_name}</TableCell>
                                 <TableCell padding="none" align="center">{row.product_serial}</TableCell>
-                                <TableCell padding="none" align="left">{row.product_address}</TableCell>
                                 <TableCell padding="none"
                                            align="center">{commonUtil.getJsonValue(sysConst.STANDARD_TYPE, row.standard_type)}</TableCell>
                                 <TableCell padding="none" align="center">{row.unit_name}</TableCell>
@@ -418,16 +400,19 @@ function ProductManager(props) {
                                     />
 
                                     {/* 编辑按钮 */}
-                                    <IconButton color="primary" edge="start" onClick={() => {initModal(row)}}>
-                                        <i className="mdi mdi-table-search mdi-24px"/>
+                                    <IconButton color="primary" edge="start">
+                                        <Link to={{pathname: '/product/' + row.id}}>
+                                            <i className="mdi mdi-table-search mdi-24px"/>
+                                        </Link>
                                     </IconButton>
+
                                 </TableCell>
                             </TableRow>
                         ))}
 
                         {productManagerReducer.productData.dataList.length === 0 &&
                         <TableRow>
-                            <TableCell colSpan={8} style={{textAlign: 'center'}}>暂无数据</TableCell>
+                            <TableCell colSpan={11} style={{textAlign: 'center'}}>暂无数据</TableCell>
                         </TableRow>
                         }
                     </TableBody>
@@ -445,7 +430,7 @@ function ProductManager(props) {
             {/* 模态：新增/修改 高中信息 */}
             <SimpleModal
                 maxWidth={'sm'}
-                title={pageType === 'edit' ? '修改商品' : '新增商品'}
+                title="新增商品"
                 open={modalOpen}
                 onClose={closeModal}
                 showFooter={true}

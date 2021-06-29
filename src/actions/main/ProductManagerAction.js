@@ -7,7 +7,6 @@ const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
 
 export const getProductList = (params) => async (dispatch, getState) => {
-    console.log('getProductList',params)
     try {
         // 检索条件：开始位置
         const start = params.dataStart;
@@ -33,7 +32,6 @@ export const getProductList = (params) => async (dispatch, getState) => {
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
 
-        console.log('',url);
         const res = await httpUtil.httpGet(url);
         let productData = getState().ProductManagerReducer.productData;
         if (res.success) {
@@ -61,7 +59,7 @@ export const changeStatus = (id, status) => async (dispatch, getState) => {
 
         // 状态
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/app/' + id + '/status?status=' + newStatus;
+            + '/product/' + id + '/status?status=' + newStatus;
         const res = await httpUtil.httpPut(url, {});
         if (res.success) {
             Swal.fire("修改成功", "", "success");

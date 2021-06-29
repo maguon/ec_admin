@@ -15,15 +15,32 @@ import AppSetting from "./main/AppSetting";
 import CategoryManager from "./main/CategoryManager";
 import BrandManager from "./main/BrandManager";
 import ProductManager from "./main/ProductManager";
+import ProductManagerDetail from "./main/ProductManagerDetail";
 import Supplier from './main/Supplier';
 import SupplierDetail from './main/SupplierDetail'
 import NestedList from "./utils/NestedList";
 
 export {
-    Header, Footer, Navigation, AccountModal, SimpleModal, LoadProgree,
-    Login, Register, ResetPassword,
-    MainPanel, ErrorPanel, AuthoritySetting,
-    AdminUserSetting, AppSetting, CategoryManager, BrandManager, ProductManager, Supplier, SupplierDetail,
+    Header,
+    Footer,
+    Navigation,
+    AccountModal,
+    SimpleModal,
+    LoadProgree,
+    Login,
+    Register,
+    ResetPassword,
+    MainPanel,
+    ErrorPanel,
+    AuthoritySetting,
+    AdminUserSetting,
+    AppSetting,
+    CategoryManager,
+    BrandManager,
+    ProductManager,
+    ProductManagerDetail,
+    Supplier,
+    SupplierDetail,
 
     NestedList
 }
