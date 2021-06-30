@@ -54,8 +54,8 @@ function AppSetting(props) {
     }, []);
 
     // 检索条件
-    const [paramDeviceType, setParamDeviceType] = React.useState(null);
-    const [paramStatus, setParamStatus] = React.useState(null);
+    const [paramDeviceType, setParamDeviceType] = React.useState('');
+    const [paramStatus, setParamStatus] = React.useState('');
 
     // 查询列表
     const queryAppList = () => {
@@ -192,7 +192,7 @@ function AppSetting(props) {
                             >
                                 <MenuItem value="">请选择</MenuItem>
                                 {sysConst.DEVICE_TYPE.map((item, index) => (
-                                    <MenuItem value={item.value}>{item.label}</MenuItem>
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
@@ -211,7 +211,7 @@ function AppSetting(props) {
                             >
                                 <MenuItem value="">请选择</MenuItem>
                                 {sysConst.USE_FLAG.map((item, index) => (
-                                    <MenuItem value={item.value}>{item.label}</MenuItem>
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
@@ -250,7 +250,7 @@ function AppSetting(props) {
                     </TableHead>
                     <TableBody>
                         {appSettingReducer.appData.dataList.map((row) => (
-                            <TableRow className={classes.tableRow}>
+                            <TableRow className={classes.tableRow} key={'table-row-' + row.id}>
                                 <TableCell padding="none"
                                            align="center">{commonUtil.getJsonValue(sysConst.APP_TYPE, row.app_type)}</TableCell>
                                 <TableCell padding="none"
@@ -343,7 +343,7 @@ function AppSetting(props) {
                                 error={validation.appType&&validation.appType!=''}
                             >
                                 {sysConst.APP_TYPE.map((item, index) => (
-                                    <MenuItem value={item.value}>{item.label}</MenuItem>
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
                                 ))}
                             </Select>
                             {(validation.appType&&validation.appType!='') && <FormHelperText style={{color: 'red'}}>{validation.appType}</FormHelperText>}
@@ -363,7 +363,7 @@ function AppSetting(props) {
                                 error={validation.deviceType&&validation.deviceType!=''}
                             >
                                 {sysConst.DEVICE_TYPE.map((item, index) => (
-                                    <MenuItem value={item.value}>{item.label}</MenuItem>
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
                                 ))}
                             </Select>
                             {(validation.deviceType&&validation.deviceType!='') && <FormHelperText style={{color: 'red'}}>{validation.deviceType}</FormHelperText>}
@@ -383,7 +383,7 @@ function AppSetting(props) {
                                 error={validation.forceUpdate&&validation.forceUpdate!=''}
                             >
                                 {sysConst.FORCE_UPDATE.map((item, index) => (
-                                    <MenuItem value={item.value}>{item.label}</MenuItem>
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
                                 ))}
                             </Select>
                             {(validation.forceUpdate&&validation.forceUpdate!='') && <FormHelperText style={{color: 'red'}}>{validation.forceUpdate}</FormHelperText>}

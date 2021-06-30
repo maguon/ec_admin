@@ -74,8 +74,8 @@ function ProductManager(props) {
     const [paramBrand, setParamBrand] = React.useState(null);
     const [paramBrandModel, setParamBrandModel] = React.useState(null);
     // const [paramProduct, setParamProduct] = React.useState(null);
-    const [paramStandardType, setParamStandardType] = React.useState(null);
-    const [paramStatus, setParamStatus] = React.useState(null);
+    const [paramStandardType, setParamStandardType] = React.useState('');
+    const [paramStatus, setParamStatus] = React.useState('');
 
     useEffect(() => {
         if (!fromDetail) {
@@ -83,8 +83,8 @@ function ProductManager(props) {
             setParamCategorySub(null);
             setParamBrand(null);
             setParamBrandModel(null);
-            setParamStandardType(null);
-            setParamStatus(null);
+            setParamStandardType('');
+            setParamStatus('');
             props.setQueryParams({paramCategory,paramCategorySub,paramBrand,paramBrandModel,paramStandardType,paramStatus});
         } else {
             setParamCategory(productManagerReducer.queryParams.paramCategory);
@@ -349,7 +349,7 @@ function ProductManager(props) {
                             >
                                 <MenuItem value="">请选择</MenuItem>
                                 {sysConst.STANDARD_TYPE.map((item, index) => (
-                                    <MenuItem value={item.value}>{item.label}</MenuItem>
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
@@ -369,7 +369,7 @@ function ProductManager(props) {
                             >
                                 <MenuItem value="">请选择</MenuItem>
                                 {sysConst.USE_FLAG.map((item, index) => (
-                                    <MenuItem value={item.value}>{item.label}</MenuItem>
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
@@ -411,7 +411,7 @@ function ProductManager(props) {
                     </TableHead>
                     <TableBody>
                         {productManagerReducer.productData.dataList.map((row) => (
-                            <TableRow className={classes.tableRow}>
+                            <TableRow className={classes.tableRow} key={row.id}>
                                 <TableCell padding="none" align="center">{row.category_name}</TableCell>
                                 <TableCell padding="none" align="center">{row.category_sub_name}</TableCell>
                                 <TableCell padding="none" align="center">{row.brand_name}</TableCell>
@@ -594,7 +594,7 @@ function ProductManager(props) {
                                 }}
                             >
                                 {sysConst.STANDARD_TYPE.map((item, index) => (
-                                    <MenuItem value={item.value}>{item.label}</MenuItem>
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>

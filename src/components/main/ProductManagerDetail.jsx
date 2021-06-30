@@ -44,10 +44,9 @@ function ProductManagerDetail(props) {
         if (!productManagerDetailReducer.productInfo.brand_model.id) {
             validateObj.brand_model ='请选择品牌型号';
         }
-
-        if (!productManagerDetailReducer.productInfo.product_name) {
-            validateObj.product_name ='请输入商品名称';
-        }
+        // if (!productManagerDetailReducer.productInfo.product_name) {
+        //     validateObj.product_name ='请输入商品名称';
+        // }
         if (!productManagerDetailReducer.productInfo.price) {
             validateObj.price ='请输入售价';
         }
@@ -138,13 +137,13 @@ function ProductManagerDetail(props) {
                 </Grid>
 
                 <Grid item sm={6}>
-                    <TextField label="商品名称" fullWidth={true} margin="dense" variant="outlined"
+                    <TextField label="商品名称" fullWidth={true} margin="dense" variant="outlined" disabled
                                value={productManagerDetailReducer.productInfo.product_name}
                                onChange={(e) => {
                                    dispatch(ProductManagerDetailActionType.setProductInfo({name: "product_name", value: e.target.value}))
                                }}
-                        error={validation.product_name&&validation.product_name!=''}
-                        helperText={validation.product_name}
+                        // error={validation.product_name&&validation.product_name!=''}
+                        // helperText={validation.product_name}
                     />
                 </Grid>
                 <Grid item sm={6}>
@@ -183,10 +182,9 @@ function ProductManagerDetail(props) {
                             onChange={(e, value) => {
                                 dispatch(ProductManagerDetailActionType.setProductInfo({name: "standard_type",value: e.target.value}))
                             }}
-                            SelectProps={{native: true}}
                         >
                             {sysConst.STANDARD_TYPE.map((item, index) => (
-                                <MenuItem value={item.value}>{item.label}</MenuItem>
+                                <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>

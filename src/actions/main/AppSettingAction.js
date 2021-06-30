@@ -13,9 +13,9 @@ export const getAppList = (params) => async (dispatch, getState) => {
         // 检索条件：每页数量
         const size = getState().AppSettingReducer.appData.size;
         // 检索条件：系统类型
-        const deviceType = params.conditionDeviceType;
+        const deviceType = params.paramDeviceType;
         // 检索条件：状态
-        const status = params.conditionStatus;
+        const status = params.paramStatus;
 
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
@@ -63,8 +63,8 @@ export const changeStatus = (id, status, condition) => async (dispatch, getState
             Swal.fire("修改成功", "", "success");
             // 刷新列表
             dispatch(getAppList({
-                conditionDeviceType: condition.conditionDeviceType,
-                conditionStatus: condition.conditionStatus,
+                paramDeviceType: condition.paramDeviceType,
+                paramStatus: condition.paramStatus,
                 dataStart: getState().AppSettingReducer.appData.start
             }));
         } else if (!res.success) {
@@ -84,8 +84,8 @@ export const deleteApp = (id, condition) => async (dispatch, getState) => {
             Swal.fire("删除成功", "", "success");
             // 刷新列表
             dispatch(getAppList({
-                conditionDeviceType: condition.conditionDeviceType,
-                conditionStatus: condition.conditionStatus,
+                paramDeviceType: condition.paramDeviceType,
+                paramStatus: condition.paramStatus,
                 dataStart: getState().AppSettingReducer.appData.start
             }));
         } else if (!res.success) {
@@ -121,8 +121,8 @@ export const saveModalData = (modalData, condition) => async (dispatch, getState
             Swal.fire("保存成功", "", "success");
             // 刷新列表
             dispatch(getAppList({
-                conditionDeviceType: condition.conditionDeviceType,
-                conditionStatus: condition.conditionStatus,
+                paramDeviceType: condition.paramDeviceType,
+                paramStatus: condition.paramStatus,
                 dataStart: getState().AppSettingReducer.appData.start
             }));
         } else if (!res.success) {

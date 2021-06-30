@@ -78,7 +78,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => ({
     login: (values) => {
-        console.log("lgoin")
         const {userName,password} = values;
         if (userName.length > 0 && password.length > 0) {
             dispatch(loginAction.login({userName, password}));

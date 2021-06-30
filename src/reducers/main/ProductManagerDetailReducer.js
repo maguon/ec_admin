@@ -20,7 +20,7 @@ const initialState = {
         // 产地
         product_address: '',
         // 标准类型（标准、非标准）
-        standard_type: null,
+        standard_type: '',
         // 单位
         unit_name: '',
         // 单价

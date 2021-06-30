@@ -26,7 +26,6 @@ export const getCategoryList = () => async (dispatch) => {
 };
 
 export const getCategorySubList = (categoryId) => async (dispatch) => {
-    console.log('categoryId',categoryId);
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/categorySub?categoryId=' + categoryId;
@@ -66,7 +65,6 @@ export const getBrandList = () => async (dispatch) => {
 
 export const getBrandModelList = (brandId) => async (dispatch) => {
     try {
-        console.log('brandId',brandId);
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/brandModel?brandId=' + brandId;
 
@@ -86,7 +84,6 @@ export const getBrandModelList = (brandId) => async (dispatch) => {
 
 export const getProductList = (queryParams) => async (dispatch) => {
     try {
-        console.log('queryParams',queryParams);
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/product?1=1';
 
@@ -100,7 +97,6 @@ export const getProductList = (queryParams) => async (dispatch) => {
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
 
-        console.log('',url);
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
