@@ -462,7 +462,7 @@ function ProductManager(props) {
                 <Button variant="contained" color="primary" onClick={getNextPage}>下一页</Button>}
             </Box>
 
-            {/* 模态：新增/修改 高中信息 */}
+            {/* 模态：新增/修改 */}
             <SimpleModal
                 maxWidth={'sm'}
                 title="新增商品"

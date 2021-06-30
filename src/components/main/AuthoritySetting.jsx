@@ -17,24 +17,15 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const authoritySettingAction = require('../../actions/main/AuthoritySettingAction');
 const sysConst = require('../../utils/SysConst');
-
+const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
     // 标题样式
     root: {
         minWidth: 800,
         paddingBottom: 50
     },
-    // 标题样式
-    pageTitle: {
-        color: '#3C3CC4',
-        fontSize: 20,
-        fontWeight: 'bold'
-    },
-    pageDivider: {
-        height: 1,
-        marginBottom: 15,
-        background: '#7179e6'
-    }
+    title: customTheme.pageTitle,
+    divider: customTheme.pageDivider,
 }));
 
 // 权限设置
@@ -90,8 +81,8 @@ function AuthoritySetting (props) {
     return (
         <div className={classes.root}>
             {/* 标题部分 */}
-            <Typography gutterBottom className={classes.pageTitle}>权限设置</Typography>
-            <Divider light className={classes.pageDivider}/>
+            <Typography gutterBottom className={classes.title}>权限设置</Typography>
+            <Divider light className={classes.divider}/>
 
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
@@ -183,7 +174,7 @@ function AuthoritySetting (props) {
                 </Grid>}
             </Grid>
 
-            {/* 模态：新增/修改 初中信息 */}
+            {/* 模态：新增/修改 */}
             <SimpleModal
                 title="新增用户群组"
                 open={modalOpen}

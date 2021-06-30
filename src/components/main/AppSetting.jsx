@@ -313,7 +313,7 @@ function AppSetting(props) {
             {/*<MenuItem value="1280">lg</MenuItem>*/}
             {/*<MenuItem value="full">xl</MenuItem>*/}
 
-            {/* 模态：新增/修改 高中信息 */}
+            {/* 模态：新增/修改 */}
             <SimpleModal
                 maxWidth={'sm'}
                 title={pageType === 'edit' ? '修改App' : '新增App'}

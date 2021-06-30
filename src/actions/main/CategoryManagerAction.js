@@ -47,28 +47,28 @@ export const getCategorySubList = (categoryId) => async (dispatch, getState) => 
     }
 };
 
-export const saveModalData = (modalData) => async (dispatch, getState) => {
+export const saveCategoryData = (categoryData) => async (dispatch, getState) => {
     try {
         const params = {
-            categoryName: modalData.categoryName,
-            remark: modalData.remark
+            categoryName: categoryData.categoryName,
+            remark: categoryData.remark
         };
 
         const paramsSub = {
-            categoryId: modalData.categoryId,
-            categorySubName: modalData.categoryName,
-            remark: modalData.remark
+            categoryId: categoryData.categoryId,
+            categorySubName: categoryData.categoryName,
+            remark: categoryData.remark
         };
 
         let url;
         let res;
-        switch (modalData.pageType) {
+        switch (categoryData.pageType) {
             case "new":
                 url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/category';
                 res = await httpUtil.httpPost(url, params);
                 break;
             case "edit":
-                url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/category/' + modalData.uid;
+                url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/category/' + categoryData.uid;
                 res = await httpUtil.httpPut(url, params);
                 break;
             case "sub_new":
@@ -76,7 +76,7 @@ export const saveModalData = (modalData) => async (dispatch, getState) => {
                 res = await httpUtil.httpPost(url, paramsSub);
                 break;
             case "sub_edit":
-                url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/categorySub/' + modalData.uid;
+                url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/categorySub/' + categoryData.uid;
                 res = await httpUtil.httpPut(url, paramsSub);
                 break;
             default:

@@ -14,29 +14,17 @@ import TreeItem from "@material-ui/lab/TreeItem";
 import TreeView from "@material-ui/lab/TreeView";
 
 const brandManagerAction = require('../../actions/main/BrandManagerAction');
-
+const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
-    // 标题样式
-    root: {
-        minWidth: 800,
-        paddingBottom: 50
+    root:{
+        marginBottom: 20,
     },
-    // 标题样式
-    pageTitle: {
-        color: '#3C3CC4',
-        fontSize: 20,
-        fontWeight: 'bold'
-    },
-    pageDivider: {
-        height: 1,
-        marginBottom: 15,
-        background: '#7179e6'
-    }
+    title: customTheme.pageTitle,
+    divider: customTheme.pageDivider,
 }));
 
-// 权限设置
 function BrandManager (props) {
-    const {brandManagerReducer, getBrandList, getBrandModelList, saveModalData} = props;
+    const {brandManagerReducer, getBrandList, getBrandModelList, saveBrandData} = props;
     const classes = useStyles();
 
     // 执行1次，取得数结构
@@ -46,7 +34,7 @@ function BrandManager (props) {
 
     // 模态状态
     const [modalOpen, setModalOpen] = React.useState(false);
-    const closeModal = (event) => {
+    const closeModal = () => {
         setModalOpen(false);
     };
 
@@ -70,7 +58,7 @@ function BrandManager (props) {
     const submitModal = () => {
         const errorCount = validate();
         if(errorCount==0){
-            saveModalData(pageType, uid, brandId, brandName, remark);
+            saveBrandData(pageType, uid, brandId, brandName, remark);
             closeModal();
         }
     };
@@ -128,8 +116,8 @@ function BrandManager (props) {
     return (
         <div className={classes.root}>
             {/* 标题部分 */}
-            <Typography gutterBottom className={classes.pageTitle}>品牌</Typography>
-            <Divider light className={classes.pageDivider}/>
+            <Typography gutterBottom className={classes.title}>品牌</Typography>
+            <Divider light className={classes.divider}/>
 
             <Grid container spacing={3}>
                 <Grid item xs={11}> </Grid>
@@ -182,7 +170,7 @@ function BrandManager (props) {
                 })}
             </TreeView>
 
-            {/* 模态：新增/修改 初中信息 */}
+            {/* 模态：新增/修改 */}
             <SimpleModal
                 title={pageTitle}
                 open={modalOpen}
@@ -219,7 +207,7 @@ function BrandManager (props) {
     )
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
     return {
         brandManagerReducer: state.BrandManagerReducer,
     }
@@ -232,8 +220,8 @@ const mapDispatchToProps = (dispatch) => ({
     getBrandModelList: (brandId) => {
         dispatch(brandManagerAction.getBrandModelList(brandId))
     },
-    saveModalData: (pageType, uid, brandId, brandName, remark) => {
-        dispatch(brandManagerAction.saveModalData({pageType, uid, brandId, brandName, remark}))
+    saveBrandData: (pageType, uid, brandId, brandName, remark) => {
+        dispatch(brandManagerAction.saveBrandData({pageType, uid, brandId, brandName, remark}))
     }
 });
 

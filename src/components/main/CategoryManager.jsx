@@ -15,28 +15,17 @@ import TreeView from "@material-ui/lab/TreeView";
 
 const categoryManagerAction = require('../../actions/main/CategoryManagerAction');
 
+const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
-    // 标题样式
-    root: {
-        minWidth: 800,
-        paddingBottom: 50
+    root:{
+        marginBottom: 20,
     },
-    // 标题样式
-    pageTitle: {
-        color: '#3C3CC4',
-        fontSize: 20,
-        fontWeight: 'bold'
-    },
-    pageDivider: {
-        height: 1,
-        marginBottom: 15,
-        background: '#7179e6'
-    }
+    title: customTheme.pageTitle,
+    divider: customTheme.pageDivider,
 }));
 
-// 权限设置
 function CategoryManager (props) {
-    const {categoryManagerReducer, getCategoryList, getCategorySubList, saveModalData} = props;
+    const {categoryManagerReducer, getCategoryList, getCategorySubList, saveCategoryData} = props;
     const classes = useStyles();
 
     // 执行1次，取得数结构
@@ -46,7 +35,7 @@ function CategoryManager (props) {
 
     // 模态状态
     const [modalOpen, setModalOpen] = React.useState(false);
-    const closeModal = (event) => {
+    const closeModal = () => {
         setModalOpen(false);
     };
 
@@ -70,7 +59,7 @@ function CategoryManager (props) {
     const submitModal = () => {
         const errorCount = validate();
         if(errorCount==0){
-            saveModalData(pageType, uid, categoryId, categoryName, remark);
+            saveCategoryData(pageType, uid, categoryId, categoryName, remark);
             closeModal();
         }
     };
@@ -128,8 +117,8 @@ function CategoryManager (props) {
     return (
         <div className={classes.root}>
             {/* 标题部分 */}
-            <Typography gutterBottom className={classes.pageTitle}>商品分类</Typography>
-            <Divider light className={classes.pageDivider}/>
+            <Typography gutterBottom className={classes.title}>商品分类</Typography>
+            <Divider light className={classes.divider}/>
 
             <Grid container spacing={3}>
                 <Grid item xs={11}> </Grid>
@@ -182,7 +171,7 @@ function CategoryManager (props) {
                 })}
             </TreeView>
 
-            {/* 模态：新增/修改 初中信息 */}
+            {/* 模态：新增/修改 */}
             <SimpleModal
                 title={pageTitle}
                 open={modalOpen}
@@ -219,7 +208,7 @@ function CategoryManager (props) {
     )
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
     return {
         categoryManagerReducer: state.CategoryManagerReducer,
     }
@@ -232,8 +221,8 @@ const mapDispatchToProps = (dispatch) => ({
     getCategorySubList: (categoryId) => {
         dispatch(categoryManagerAction.getCategorySubList(categoryId))
     },
-    saveModalData: (pageType, uid, categoryId, categoryName, remark) => {
-        dispatch(categoryManagerAction.saveModalData({pageType, uid, categoryId, categoryName, remark}))
+    saveCategoryData: (pageType, uid, categoryId, categoryName, remark) => {
+        dispatch(categoryManagerAction.saveCategoryData({pageType, uid, categoryId, categoryName, remark}))
     }
 });
 

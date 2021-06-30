@@ -6,7 +6,7 @@ const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
 
-export const getBrandList = () => async (dispatch, getState) => {
+export const getBrandList = () => async (dispatch) => {
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/brand';
@@ -28,7 +28,7 @@ export const getBrandList = () => async (dispatch, getState) => {
     }
 };
 
-export const getBrandModelList = (brandId) => async (dispatch, getState) => {
+export const getBrandModelList = (brandId) => async (dispatch) => {
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/brandModel?brandId=' + brandId;
@@ -47,28 +47,28 @@ export const getBrandModelList = (brandId) => async (dispatch, getState) => {
     }
 };
 
-export const saveModalData = (modalData) => async (dispatch, getState) => {
+export const saveBrandData = (brandData) => async (dispatch) => {
     try {
         const params = {
-            brandName: modalData.brandName,
-            remark: modalData.remark
+            brandName: brandData.brandName,
+            remark: brandData.remark
         };
 
         const paramsSub = {
-            brandId: modalData.brandId,
-            brandModelName: modalData.brandName,
-            remark: modalData.remark
+            brandId: brandData.brandId,
+            brandModelName: brandData.brandName,
+            remark: brandData.remark
         };
 
         let url;
         let res;
-        switch (modalData.pageType) {
+        switch (brandData.pageType) {
             case "new":
                 url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/brand';
                 res = await httpUtil.httpPost(url, params);
                 break;
             case "edit":
-                url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/brand/' + modalData.uid;
+                url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/brand/' + brandData.uid;
                 res = await httpUtil.httpPut(url, params);
                 break;
             case "sub_new":
@@ -76,7 +76,7 @@ export const saveModalData = (modalData) => async (dispatch, getState) => {
                 res = await httpUtil.httpPost(url, paramsSub);
                 break;
             case "sub_edit":
-                url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/brandModel/' + modalData.uid;
+                url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/brandModel/' + brandData.uid;
                 res = await httpUtil.httpPut(url, paramsSub);
                 break;
             default:
