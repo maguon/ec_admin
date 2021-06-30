@@ -17,6 +17,7 @@ import BrandManager from "./main/BrandManager";
 import Storage from "./main/Storage";
 import ProductManager from "./main/ProductManager";
 import ProductManagerDetail from "./main/ProductManagerDetail";
+import StorageProduct from "./main/StorageProduct";
 import Supplier from './main/Supplier';
 import SupplierDetail from './main/SupplierDetail';
 import Purchase from './main/Purchase';
@@ -43,6 +44,7 @@ export {
     Storage,
     ProductManager,
     ProductManagerDetail,
+    StorageProduct,
     Supplier,
     SupplierDetail,
     Purchase,

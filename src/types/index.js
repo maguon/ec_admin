@@ -6,6 +6,7 @@ import * as CategoryManagerActionType from './main/CategoryManagerActionType'
 import * as BrandManagerActionType from './main/BrandManagerActionType'
 import * as StorageActionType from './main/StorageActionType'
 import * as ProductManagerActionType from './main/ProductManagerActionType'
+import * as StorageProductActionType from './main/StorageProductActionType'
 import * as ProductManagerDetailActionType from './main/ProductManagerDetailActionType'
 import * as AuthoritySettingActionType from './main/AuthoritySettingActionType'
 import * as AdminUserSettingActionType from "./main/AdminUserSettingActionType";
@@ -23,6 +24,7 @@ export {
     BrandManagerActionType,
     StorageActionType,
     ProductManagerActionType,
+    StorageProductActionType,
     ProductManagerDetailActionType,
     SupplierActionType,
     SupplierDetailActionType,

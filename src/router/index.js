@@ -1,6 +1,6 @@
 import {
     Login, Register, ResetPassword,
-    MainPanel, CategoryManager, BrandManager, Storage, ProductManager, ProductManagerDetail, Supplier, SupplierDetail, Purchase,
+    MainPanel, CategoryManager, BrandManager, Storage, StorageProduct, ProductManager, ProductManagerDetail, Supplier, SupplierDetail, Purchase,
     AdminUserSetting, AppSetting, AuthoritySetting, DataDictionary
 } from "../components";
 
@@ -32,6 +32,8 @@ export const routesWithHeader = [
     /** 仓库管理 */
     // 仓库设置
     {path: "/storage", exact: true, component: Storage},
+    // 库存商品
+    {path: "/storage_product", exact: true, component: StorageProduct},
 
     /** 数据字典 */
     {path: "/data_dictionary", exact: true, component: DataDictionary},
