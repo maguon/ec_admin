@@ -14,6 +14,7 @@ import AdminUserSetting from "./main/AdminUserSetting";
 import AppSetting from "./main/AppSetting";
 import CategoryManager from "./main/CategoryManager";
 import BrandManager from "./main/BrandManager";
+import Storage from "./main/Storage";
 import ProductManager from "./main/ProductManager";
 import ProductManagerDetail from "./main/ProductManagerDetail";
 import Supplier from './main/Supplier';
@@ -39,6 +40,7 @@ export {
     AppSetting,
     CategoryManager,
     BrandManager,
+    Storage,
     ProductManager,
     ProductManagerDetail,
     Supplier,

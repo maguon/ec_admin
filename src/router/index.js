@@ -1,6 +1,6 @@
 import {
     Login, Register, ResetPassword,
-    MainPanel, CategoryManager, BrandManager, ProductManager, ProductManagerDetail, Supplier, SupplierDetail, Purchase,
+    MainPanel, CategoryManager, BrandManager, Storage, ProductManager, ProductManagerDetail, Supplier, SupplierDetail, Purchase,
     AdminUserSetting, AppSetting, AuthoritySetting, DataDictionary
 } from "../components";
 
@@ -12,34 +12,35 @@ export const routes = [
 ];
 
 export const routesWithHeader = [
-    // 默认打开画面 - 暂定综合页面
+    /** 综合页面 */
     {path: "/", exact: true, component: MainPanel},
-    // 统计
-    // {path: "/user_statistic", exact: true, component: DemoStatistic},
 
-    // 商品分类
-
+    /** 采购管理 */
     //采购
     {path: "/purchase", exact: true, component: Purchase},
-
+    // 商品分类
     {path: "/category_manager", exact: true, component: CategoryManager},
     // 品牌
     {path: "/brand_manager", exact: true, component: BrandManager},
     // 商品
     {path: "/product_manager", exact: true, component: ProductManager},
     {path: "/product_manager/:id", exact: true, component: ProductManagerDetail},
-
     //供应商
     {path: "/supplier", exact: true, component: Supplier},
     {path: "/supplier/:supplier_id",exact: true,component: SupplierDetail},
 
+    /** 仓库管理 */
+    // 仓库设置
+    {path: "/storage", exact: true, component: Storage},
+
+    /** 数据字典 */
     {path: "/data_dictionary", exact: true, component: DataDictionary},
+
+    /** 系统设置 */
     //员工管理
     {path: "/admin_user_setting", exact: true, component: AdminUserSetting},
     // App系统
     {path: "/app_setting", exact: true, component: AppSetting},
-
-
     // 权限管理
     {path: "/authority_setting", exact: true, component: AuthoritySetting}
 ];

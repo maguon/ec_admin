@@ -164,6 +164,18 @@ export const ALL_PAGE_LIST = [
         ]
     },
     {
+        "label": "仓库管理",
+        "icon": "mdi-chart-line",
+        "children": [
+            {
+                "link": "/storage",
+                "name": "仓库设置",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            }
+        ]
+    },
+    {
         "link": "/data_dictionary",
         "label": "数据字典",
         "icon": "mdi-book-multiple",
