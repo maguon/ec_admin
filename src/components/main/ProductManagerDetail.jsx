@@ -7,9 +7,12 @@ import {
     Grid,
     Typography,
     TextField,
-    IconButton,
+    IconButton, AppBar, Tab,
     FormControl, InputLabel, Select, MenuItem, makeStyles
 } from "@material-ui/core";
+import TabContext from '@material-ui/lab/TabContext';
+import TabList from '@material-ui/lab/TabList';
+import TabPanel from '@material-ui/lab/TabPanel';
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {CommonActionType, ProductManagerDetailActionType} from '../../types';
 
@@ -61,6 +64,12 @@ function ProductManagerDetail(props) {
         }
     };
 
+    // TAB 页面
+    const [tabValue, setTabValue] = React.useState('base');
+    const changeTab = (event, newValue) => {
+        setTabValue(newValue);
+    };
+
     return (
         <div className={classes.root}>
             {/* 标题部分 */}
@@ -70,154 +79,169 @@ function ProductManagerDetail(props) {
                         <i className="mdi mdi-arrow-left-bold"></i>
                     </IconButton>
                 </Link>
-                商品- 详情
+                商品 - <span>{productManagerDetailReducer.productInfo.product_name}（{productManagerDetailReducer.productInfo.id}）</span>
             </Typography>
             <Divider light className={classes.divider}/>
 
-            <Grid container spacing={2}>
-                <Grid item sm={6}>
-                    <Autocomplete id="condition-category" fullWidth={true} disableClearable={true}
-                                  options={commonReducer.categoryList}
-                                  getOptionLabel={(option) => option.category_name}
-                                  onChange={(event, value) => {
-                                      // 将当前选中值 赋值 reducer
-                                      dispatch(ProductManagerDetailActionType.setProductInfo({name: "category", value: {id: value.id, category_name: value.category_name}}));
-                                      // 清空 商品子分类
-                                      dispatch(ProductManagerDetailActionType.setProductInfo({name: "category_sub", value: {}}));
-                                      // 根据选择内容，刷新 商品子分类 列表
-                                      props.getCategorySubList(value.id);
-                                  }}
-                                  value={productManagerDetailReducer.productInfo.category}
-                                  renderInput={(params) => <TextField {...params} label="商品分类" margin="dense" variant="outlined"/>}
-                    />
-                </Grid>
-                <Grid item sm={6}>
-                    <Autocomplete id="condition-category-sub" fullWidth={true} disableClearable={true}
-                                  options={commonReducer.categorySubList}
-                                  noOptionsText="无选项"
-                                  getOptionLabel={(option) => option.category_sub_name}
-                                  onChange={(event, value) => {
-                                      dispatch(ProductManagerDetailActionType.setProductInfo({name: "category_sub", value: {id: value.id, category_sub_name: value.category_sub_name}}));
-                                  }}
-                                  value={productManagerDetailReducer.productInfo.category_sub}
-                                  renderInput={(params) => <TextField {...params} label="商品子分类" margin="dense" variant="outlined"
-                                                                      error={validation.category_sub&&validation.category_sub!=''}
-                                                                      helperText={validation.category_sub}/>}
-                    />
-                </Grid>
-                <Grid item sm={6}>
-                    <Autocomplete id="condition-brand" fullWidth={true} disableClearable={true}
-                                  options={commonReducer.brandList}
-                                  getOptionLabel={(option) => option.brand_name}
-                                  onChange={(event, value) => {
-                                      // 将当前选中值 赋值 reducer
-                                      dispatch(ProductManagerDetailActionType.setProductInfo({name: "brand", value: {id: value.id, brand_name: value.brand_name}}));
-                                      // 清空 商品子分类
-                                      dispatch(ProductManagerDetailActionType.setProductInfo({name: "brand_model", value: {}}));
-                                      // 根据选择内容，刷新 商品子分类 列表
-                                      props.getBrandModelList(value.id);
-                                  }}
-                                  value={productManagerDetailReducer.productInfo.brand}
-                                  renderInput={(params) => <TextField {...params} label="品牌" margin="dense" variant="outlined"/>}
-                    />
-                </Grid>
-                <Grid item sm={6}>
-                    <Autocomplete id="condition-brand-model" fullWidth={true} disableClearable={true}
-                                  options={commonReducer.brandModelList}
-                                  noOptionsText="无选项"
-                                  getOptionLabel={(option) => option.brand_model_name}
-                                  onChange={(e, value) => {
-                                      dispatch(ProductManagerDetailActionType.setProductInfo({name: "brand_model", value: {id: value.id, brand_model_name: value.brand_model_name}}));
-                                  }}
-                                  value={productManagerDetailReducer.productInfo.brand_model}
-                                  renderInput={(params) => <TextField {...params} label="品牌型号" margin="dense" variant="outlined"
-                                                                      error={validation.brand_model&&validation.brand_model!=''}
-                                                                      helperText={validation.brand_model}/>}
-                    />
-                </Grid>
+            <TabContext value={tabValue}>
+                <AppBar position="static" color="default">
+                    <TabList onChange={changeTab} indicatorColor="primary" variant="fullWidth" textColor="primary">
+                        <Tab label="基本信息" value="base" />
+                        <Tab label="采购记录" value="2" />
+                        <Tab label="库存" value="3" />
+                    </TabList>
+                </AppBar>
 
-                <Grid item sm={6}>
-                    <TextField label="商品名称" fullWidth={true} margin="dense" variant="outlined" disabled
-                               value={productManagerDetailReducer.productInfo.product_name}
-                               onChange={(e) => {
-                                   dispatch(ProductManagerDetailActionType.setProductInfo({name: "product_name", value: e.target.value}))
-                               }}
-                        // error={validation.product_name&&validation.product_name!=''}
-                        // helperText={validation.product_name}
-                    />
-                </Grid>
-                <Grid item sm={6}>
-                    <TextField label="商品别名" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                               value={productManagerDetailReducer.productInfo.product_s_name}
-                               onChange={(e) => {
-                                   dispatch(ProductManagerDetailActionType.setProductInfo({name: "product_s_name",value: e.target.value}))
-                               }}
-                    />
-                </Grid>
-                <Grid item sm={6}>
-                    <TextField label="产地" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                               value={productManagerDetailReducer.productInfo.product_address}
-                               onChange={(e) => {
-                                   dispatch(ProductManagerDetailActionType.setProductInfo({name: "product_address",value: e.target.value}))
-                               }}
-                    />
-                </Grid>
+                <TabPanel value="base">
+                    <Grid container spacing={2}>
+                        <Grid item sm={6}>
+                            <Autocomplete id="condition-category" fullWidth={true} disableClearable={true}
+                                          options={commonReducer.categoryList}
+                                          getOptionLabel={(option) => option.category_name}
+                                          onChange={(event, value) => {
+                                              // 将当前选中值 赋值 reducer
+                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "category", value: {id: value.id, category_name: value.category_name}}));
+                                              // 清空 商品子分类
+                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "category_sub", value: {}}));
+                                              // 根据选择内容，刷新 商品子分类 列表
+                                              props.getCategorySubList(value.id);
+                                          }}
+                                          value={productManagerDetailReducer.productInfo.category}
+                                          renderInput={(params) => <TextField {...params} label="商品分类" margin="dense" variant="outlined"/>}
+                            />
+                        </Grid>
+                        <Grid item sm={6}>
+                            <Autocomplete id="condition-category-sub" fullWidth={true} disableClearable={true}
+                                          options={commonReducer.categorySubList}
+                                          noOptionsText="无选项"
+                                          getOptionLabel={(option) => option.category_sub_name}
+                                          onChange={(event, value) => {
+                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "category_sub", value: {id: value.id, category_sub_name: value.category_sub_name}}));
+                                          }}
+                                          value={productManagerDetailReducer.productInfo.category_sub}
+                                          renderInput={(params) => <TextField {...params} label="商品子分类" margin="dense" variant="outlined"
+                                                                              error={validation.category_sub&&validation.category_sub!=''}
+                                                                              helperText={validation.category_sub}/>}
+                            />
+                        </Grid>
+                        <Grid item sm={6}>
+                            <Autocomplete id="condition-brand" fullWidth={true} disableClearable={true}
+                                          options={commonReducer.brandList}
+                                          getOptionLabel={(option) => option.brand_name}
+                                          onChange={(event, value) => {
+                                              // 将当前选中值 赋值 reducer
+                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "brand", value: {id: value.id, brand_name: value.brand_name}}));
+                                              // 清空 商品子分类
+                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "brand_model", value: {}}));
+                                              // 根据选择内容，刷新 商品子分类 列表
+                                              props.getBrandModelList(value.id);
+                                          }}
+                                          value={productManagerDetailReducer.productInfo.brand}
+                                          renderInput={(params) => <TextField {...params} label="品牌" margin="dense" variant="outlined"/>}
+                            />
+                        </Grid>
+                        <Grid item sm={6}>
+                            <Autocomplete id="condition-brand-model" fullWidth={true} disableClearable={true}
+                                          options={commonReducer.brandModelList}
+                                          noOptionsText="无选项"
+                                          getOptionLabel={(option) => option.brand_model_name}
+                                          onChange={(e, value) => {
+                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "brand_model", value: {id: value.id, brand_model_name: value.brand_model_name}}));
+                                          }}
+                                          value={productManagerDetailReducer.productInfo.brand_model}
+                                          renderInput={(params) => <TextField {...params} label="品牌型号" margin="dense" variant="outlined"
+                                                                              error={validation.brand_model&&validation.brand_model!=''}
+                                                                              helperText={validation.brand_model}/>}
+                            />
+                        </Grid>
 
-                <Grid item sm={6}>
-                    <TextField label="序列号" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                               value={productManagerDetailReducer.productInfo.product_serial}
-                               onChange={(e) => {
-                                   dispatch(ProductManagerDetailActionType.setProductInfo({name: "product_serial",value: e.target.value}))
-                               }}
-                    />
-                </Grid>
-                <Grid item sm={3}>
-                    <FormControl variant="outlined" fullWidth={true} margin="dense">
-                        <InputLabel id="standard-select-outlined-label" shrink>标准类型</InputLabel>
-                        <Select
-                            label="标准类型"
-                            labelId="standard-select-outlined-label"
-                            id="standard-select-outlined"
-                            value={productManagerDetailReducer.productInfo.standard_type}
-                            onChange={(e, value) => {
-                                dispatch(ProductManagerDetailActionType.setProductInfo({name: "standard_type",value: e.target.value}))
-                            }}
-                        >
-                            {sysConst.STANDARD_TYPE.map((item, index) => (
-                                <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Grid>
-                <Grid item sm={3}>
-                    <TextField label="单位" fullWidth={true} margin="dense" variant="outlined"
-                               value={productManagerDetailReducer.productInfo.unit_name}
-                               onChange={(e) => {
-                                   dispatch(ProductManagerDetailActionType.setProductInfo({name: "unit_name",value: e.target.value}))
-                               }}
-                    />
-                </Grid>
-                <Grid item sm={3}>
-                    <TextField label="售价" fullWidth={true} margin="dense" variant="outlined" type="number"
-                               value={productManagerDetailReducer.productInfo.price}
-                               onChange={(e) => {
-                                   dispatch(ProductManagerDetailActionType.setProductInfo({name: "price",value: e.target.value}))
-                               }}
-                        error={validation.price&&validation.price!=''}
-                        helperText={validation.price}
-                    />
-                </Grid>
+                        <Grid item sm={6}>
+                            <TextField label="商品名称" fullWidth={true} margin="dense" variant="outlined" disabled
+                                       value={productManagerDetailReducer.productInfo.product_name}
+                                       onChange={(e) => {
+                                           dispatch(ProductManagerDetailActionType.setProductInfo({name: "product_name", value: e.target.value}))
+                                       }}
+                                // error={validation.product_name&&validation.product_name!=''}
+                                // helperText={validation.product_name}
+                            />
+                        </Grid>
+                        <Grid item sm={6}>
+                            <TextField label="商品别名" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
+                                       value={productManagerDetailReducer.productInfo.product_s_name}
+                                       onChange={(e) => {
+                                           dispatch(ProductManagerDetailActionType.setProductInfo({name: "product_s_name",value: e.target.value}))
+                                       }}
+                            />
+                        </Grid>
+                        <Grid item sm={6}>
+                            <TextField label="产地" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
+                                       value={productManagerDetailReducer.productInfo.product_address}
+                                       onChange={(e) => {
+                                           dispatch(ProductManagerDetailActionType.setProductInfo({name: "product_address",value: e.target.value}))
+                                       }}
+                            />
+                        </Grid>
 
-                <Grid item xs={12}>
-                    <TextField label="备注" fullWidth={true} margin="dense" variant="outlined" multiline rows={2}
-                               value={productManagerDetailReducer.productInfo.remark}
-                               onChange={(e) => {
-                                   dispatch(ProductManagerDetailActionType.setProductInfo({name: "remark",value: e.target.value}))
-                               }}
-                    />
-                </Grid>
-                <Grid item xs={12}><Button variant="contained" color="primary" style={{float:'right'}} onClick={updateProduct}>修改</Button></Grid>
-            </Grid>
+                        <Grid item sm={6}>
+                            <TextField label="序列号" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
+                                       value={productManagerDetailReducer.productInfo.product_serial}
+                                       onChange={(e) => {
+                                           dispatch(ProductManagerDetailActionType.setProductInfo({name: "product_serial",value: e.target.value}))
+                                       }}
+                            />
+                        </Grid>
+                        <Grid item sm={3}>
+                            <FormControl variant="outlined" fullWidth={true} margin="dense">
+                                <InputLabel id="standard-select-outlined-label" shrink>标准类型</InputLabel>
+                                <Select
+                                    label="标准类型"
+                                    labelId="standard-select-outlined-label"
+                                    id="standard-select-outlined"
+                                    value={productManagerDetailReducer.productInfo.standard_type}
+                                    onChange={(e, value) => {
+                                        dispatch(ProductManagerDetailActionType.setProductInfo({name: "standard_type",value: e.target.value}))
+                                    }}
+                                >
+                                    {sysConst.STANDARD_TYPE.map((item, index) => (
+                                        <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item sm={3}>
+                            <TextField label="单位" fullWidth={true} margin="dense" variant="outlined"
+                                       value={productManagerDetailReducer.productInfo.unit_name}
+                                       onChange={(e) => {
+                                           dispatch(ProductManagerDetailActionType.setProductInfo({name: "unit_name",value: e.target.value}))
+                                       }}
+                            />
+                        </Grid>
+                        <Grid item sm={3}>
+                            <TextField label="售价" fullWidth={true} margin="dense" variant="outlined" type="number"
+                                       value={productManagerDetailReducer.productInfo.price}
+                                       onChange={(e) => {
+                                           dispatch(ProductManagerDetailActionType.setProductInfo({name: "price",value: e.target.value}))
+                                       }}
+                                       error={validation.price&&validation.price!=''}
+                                       helperText={validation.price}
+                            />
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            <TextField label="备注" fullWidth={true} margin="dense" variant="outlined" multiline rows={4}
+                                       value={productManagerDetailReducer.productInfo.remark}
+                                       onChange={(e) => {
+                                           dispatch(ProductManagerDetailActionType.setProductInfo({name: "remark",value: e.target.value}))
+                                       }}
+                            />
+                        </Grid>
+                        <Grid item xs={12}><Button variant="contained" color="primary" style={{float:'right'}} onClick={updateProduct}>修改</Button></Grid>
+                    </Grid>
+                </TabPanel>
+
+                <TabPanel value="2">Item Two</TabPanel>
+                <TabPanel value="3">Item Three</TabPanel>
+            </TabContext>
         </div>
     )
 }
