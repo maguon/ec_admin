@@ -14,7 +14,6 @@ export const getProductList = (params) => async (dispatch, getState) => {
         const size = getState().ProductManagerReducer.productData.size;
         // 检索条件
         const queryParams = getState().ProductManagerReducer.queryParams;
-        // ,,,,,,
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/product?start=' + start + '&size=' + size;
@@ -93,13 +92,7 @@ export const saveModalData = (modalData) => async (dispatch, getState) => {
         };
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/product';
-        let res;
-        if (modalData.pageType === 'new') {
-            res = await httpUtil.httpPost(url, params);
-        } else {
-            url = url + '/' + modalData.uid;
-            res = await httpUtil.httpPut(url, params);
-        }
+        let res = await httpUtil.httpPost(url, params);
         if (res.success) {
             Swal.fire("保存成功", "", "success");
             // 刷新列表

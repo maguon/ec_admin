@@ -1,6 +1,6 @@
-import React, {useEffect}from 'react';
-import {connect,useDispatch} from 'react-redux';
-import {SupplierDetailActionType} from '../../types';
+import React, {useEffect, useState} from 'react';
+import {connect, useDispatch} from 'react-redux';
+import {Link, useParams} from "react-router-dom";
 import {
     Button,
     Divider,
@@ -8,357 +8,254 @@ import {
     Typography,
     TextField,
     IconButton,
-    AppBar,
-    Tab,
-    Tabs,
+    FormControl, InputLabel, Select, MenuItem, makeStyles
 } from "@material-ui/core";
-import TabContext from '@material-ui/lab/TabContext';
-import TabPanel from '@material-ui/lab/TabPanel';
-import {makeStyles} from "@material-ui/core/styles";
-import {Link, useParams} from "react-router-dom";
-const SupplierDetailAction = require('../../actions/main/SupplierDetailAction');
-const sysConst = require('../../utils/SysConst');
-const useStyles = makeStyles((theme) => ({
-    // 标题样式
-    root: {
-        width: `calc(100% - 50px)`,
-        paddingLeft: 30
-    },
-    // 标题样式
-    pageTitle: {
-        color: '#3C3CC4',
-        fontSize: 20,
-        fontWeight: 'bold'
-    },
-    pageDivider: {
-        height: 1,
-        marginBottom: 15,
-        background: '#7179e6'
-    },
-    selectLabel: {
-        fontSize: 10,
-        color: 'grey'
-    },
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import {CommonActionType, ProductManagerDetailActionType} from '../../types';
 
-    select: {
-        width: '100%',
-    },
-    selectCondition: {
-        width: '100%',
-    },
-    button:{
-        margin:'15px',
-        float:'right'
-    },
-    divider:{
-        margin:'20px 0'
-    },
-    updateButton:{
-        marginTop:'20px',
-        float:'right'
-    }
+const productManagerDetailAction = require('../../actions/main/ProductManagerDetailAction');
+const commonAction = require('../../actions/layout/CommonAction');
+const sysConst = require('../../utils/SysConst');
+const customTheme = require('../layout/Theme').customTheme;
+const useStyles = makeStyles((theme) => ({
+    root: { marginBottom: 20},
+    title: customTheme.pageTitle,
+    divider: customTheme.pageDivider
 }));
 
-//供应商---详情
-function SupplierDetail (props){
-    const {supplierDetailReducer,getSupplierInfo,updateSupplier} = props;
-    const dispatch = useDispatch();
+// 商品- 详情
+function ProductManagerDetail(props) {
+    const {productManagerDetailReducer, commonReducer, getProductInfo} = props;
     const classes = useStyles();
-    const [value, setValue] = React.useState('1');
+    const dispatch = useDispatch();
     const {id} = useParams();
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
-    useEffect(()=>{
-        getSupplierInfo(id);
-    },[]);
+    useEffect(() => {
+        props.getBaseSelectList();
+        getProductInfo(id);
+    }, []);
 
-    return(
+    // 校验
+    const [validation,setValidation] = useState({});
+    const validate = ()=>{
+        const validateObj ={};
+        if (!productManagerDetailReducer.productInfo.category_sub.id) {
+            validateObj.category_sub ='请选择商品子分类';
+        }
+        if (!productManagerDetailReducer.productInfo.brand_model.id) {
+            validateObj.brand_model ='请选择品牌型号';
+        }
+
+        if (!productManagerDetailReducer.productInfo.product_name) {
+            validateObj.product_name ='请输入商品名称';
+        }
+        if (!productManagerDetailReducer.productInfo.price) {
+            validateObj.price ='请输入售价';
+        }
+        setValidation(validateObj);
+        return Object.keys(validateObj).length
+    };
+
+    const updateProduct= ()=>{
+        const errorCount = validate();
+        if(errorCount==0){
+            props.updateProduct();
+        }
+    };
+
+    return (
         <div className={classes.root}>
             {/* 标题部分 */}
-            <Typography gutterBottom className={classes.pageTitle}>
-                <Link to={{pathname: '/supplier', state: {fromDetail: true}}}>
+            <Typography gutterBottom className={classes.title}>
+                <Link to={{pathname: '/product_manager', state: {fromDetail: true}}}>
                     <IconButton color="primary" edge="start">
                         <i className="mdi mdi-arrow-left-bold"></i>
                     </IconButton>
                 </Link>
-                供应商 - 详情
+                商品- 详情
             </Typography>
-            <div className={classes.pageDivider}></div>
+            <Divider light className={classes.divider}/>
 
-            {/*选项卡*/}
-            <div>
-                <TabContext value={value}>
-                    <AppBar position="static" color="default">
-                        <Tabs value={value}
-                              onChange={handleChange}
-                              indicatorColor="primary"
-                              textColor="primary"
-                              variant="fullWidth">
-                            <Tab label="供应商" value="1" />
-                            <Tab label="采购"   value="2" />
-                            <Tab label="退货"    value="3" />
-                        </Tabs>
-                    </AppBar>
-                    <TabPanel value='1'>
-                        <Grid  container spacing={3}>
-                            <Grid item xs>
-                                <TextField fullWidth
-                                           size="small"
-                                           name="supplierName"
-                                           type="text"
-                                           label="供应商名称"
-                                           variant="outlined"
-                                           onChange={(e)=>{
-                                               dispatch(SupplierDetailActionType.setSupplierInfo({name:"supplier_name",value:e.target.value}))
-                                           }}
-                                           value={supplierDetailReducer.supplierInfo.supplier_name}
+            <Grid container spacing={2}>
+                <Grid item sm={6}>
+                    <Autocomplete id="condition-category" fullWidth={true} disableClearable={true}
+                                  options={commonReducer.categoryList}
+                                  getOptionLabel={(option) => option.category_name}
+                                  onChange={(event, value) => {
+                                      // 将当前选中值 赋值 reducer
+                                      dispatch(ProductManagerDetailActionType.setProductInfo({name: "category", value: {id: value.id, category_name: value.category_name}}));
+                                      // 清空 商品子分类
+                                      dispatch(ProductManagerDetailActionType.setProductInfo({name: "category_sub", value: {}}));
+                                      // 根据选择内容，刷新 商品子分类 列表
+                                      props.getCategorySubList(value.id);
+                                  }}
+                                  value={productManagerDetailReducer.productInfo.category}
+                                  renderInput={(params) => <TextField {...params} label="商品分类" margin="dense" variant="outlined"/>}
+                    />
+                </Grid>
+                <Grid item sm={6}>
+                    <Autocomplete id="condition-category-sub" fullWidth={true} disableClearable={true}
+                                  options={commonReducer.categorySubList}
+                                  noOptionsText="无选项"
+                                  getOptionLabel={(option) => option.category_sub_name}
+                                  onChange={(event, value) => {
+                                      dispatch(ProductManagerDetailActionType.setProductInfo({name: "category_sub", value: {id: value.id, category_sub_name: value.category_sub_name}}));
+                                  }}
+                                  value={productManagerDetailReducer.productInfo.category_sub}
+                                  renderInput={(params) => <TextField {...params} label="商品子分类" margin="dense" variant="outlined"
+                                                                      error={validation.category_sub&&validation.category_sub!=''}
+                                                                      helperText={validation.category_sub}/>}
+                    />
+                </Grid>
+                <Grid item sm={6}>
+                    <Autocomplete id="condition-brand" fullWidth={true} disableClearable={true}
+                                  options={commonReducer.brandList}
+                                  getOptionLabel={(option) => option.brand_name}
+                                  onChange={(event, value) => {
+                                      // 将当前选中值 赋值 reducer
+                                      dispatch(ProductManagerDetailActionType.setProductInfo({name: "brand", value: {id: value.id, brand_name: value.brand_name}}));
+                                      // 清空 商品子分类
+                                      dispatch(ProductManagerDetailActionType.setProductInfo({name: "brand_model", value: {}}));
+                                      // 根据选择内容，刷新 商品子分类 列表
+                                      props.getBrandModelList(value.id);
+                                  }}
+                                  value={productManagerDetailReducer.productInfo.brand}
+                                  renderInput={(params) => <TextField {...params} label="品牌" margin="dense" variant="outlined"/>}
+                    />
+                </Grid>
+                <Grid item sm={6}>
+                    <Autocomplete id="condition-brand-model" fullWidth={true} disableClearable={true}
+                                  options={commonReducer.brandModelList}
+                                  noOptionsText="无选项"
+                                  getOptionLabel={(option) => option.brand_model_name}
+                                  onChange={(e, value) => {
+                                      dispatch(ProductManagerDetailActionType.setProductInfo({name: "brand_model", value: {id: value.id, brand_model_name: value.brand_model_name}}));
+                                  }}
+                                  value={productManagerDetailReducer.productInfo.brand_model}
+                                  renderInput={(params) => <TextField {...params} label="品牌型号" margin="dense" variant="outlined"
+                                                                      error={validation.brand_model&&validation.brand_model!=''}
+                                                                      helperText={validation.brand_model}/>}
+                    />
+                </Grid>
 
-                                />
-                            </Grid>
-                            <Grid item xs>
-                                <TextField className={classes.select}
-                                           size="small"
-                                           select
-                                           label="供应商类型"
-                                           name="supplierType"
-                                           type="text"
-                                           onChange={(e)=>{
-                                               dispatch(SupplierDetailActionType.setSupplierInfo({name:"supplier_type",value:e.target.value}))
-                                           }}
-                                           value={supplierDetailReducer.supplierInfo.supplier_type}
-                                           SelectProps={{
-                                               native: true,
-                                           }}
-                                           variant="outlined"
-                                >
-                                    {sysConst.SUPPLIER_TYPE.map((option) => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </TextField>
-                            </Grid>
-                        </Grid>
-                        <Divider className={classes.divider} variant="middle" />
-                        <Grid  container spacing={3}>
-                            <Grid item xs>
-                                <TextField fullWidth
-                                           size="small"
-                                           name="contactName"
-                                           type="text"
-                                           label="联系人姓名"
-                                           variant="outlined"
-                                           onChange={(e)=>{
-                                               dispatch(SupplierDetailActionType.setSupplierInfo({name:"contact_name",value:e.target.value}))
-                                           }}
-                                           value={supplierDetailReducer.supplierInfo.contact_name}
-                                />
-                            </Grid>
-                            <Grid item xs>
-                                <TextField fullWidth
-                                           size="small"
-                                           name="email"
-                                           type="text"
-                                           label="邮箱"
-                                           variant="outlined"
-                                           onChange={(e)=>{
-                                               dispatch(SupplierDetailActionType.setSupplierInfo({name:"email",value:e.target.value}))
-                                           }}
-                                           value={supplierDetailReducer.supplierInfo.email}
-                                />
-                            </Grid>
-                            <Grid item xs>
-                                <TextField fullWidth
-                                           size="small"
-                                           name="tel"
-                                           type="text"
-                                           label="电话"
-                                           variant="outlined"
-                                           onChange={(e)=>{
-                                               dispatch(SupplierDetailActionType.setSupplierInfo({name:'tel',value:e.target.value}))
-                                           }}
-                                           value={supplierDetailReducer.supplierInfo.tel}
-                                />
-                            </Grid>
-                            <Grid item xs>
-                                <TextField fullWidth
-                                           size="small"
-                                           name="mobile"
-                                           type="text"
-                                           label="手机"
-                                           variant="outlined"
-                                           onChange={(e)=>{
-                                               dispatch(SupplierDetailActionType.setSupplierInfo({name:'mobile',value:e.target.value}))
-                                           }}
-                                           value={supplierDetailReducer.supplierInfo.mobile}
-                                />
-                            </Grid>
-                            <Grid item xs>
-                                <TextField fullWidth
-                                           size="small"
-                                           name="fax"
-                                           type="text"
-                                           label="传真"
-                                           variant="outlined"
-                                           onChange={(e)=>{
-                                               dispatch(SupplierDetailActionType.setSupplierInfo({name:'fax',value:e.target.value}))
-                                           }}
-                                           value={supplierDetailReducer.supplierInfo.fax}
-                                />
-                            </Grid>
-                            <Grid item xs>
-                                <TextField fullWidth
-                                           size="small"
-                                           name="address"
-                                           type="text"
-                                           label="地址"
-                                           variant="outlined"
-                                           onChange={(e)=>{
-                                               dispatch(SupplierDetailActionType.setSupplierInfo({name:'address',value:e.target.value}))
-                                           }}
-                                           value={supplierDetailReducer.supplierInfo.address}
-                                />
-                            </Grid>
-                        </Grid>
-                        <Divider className={classes.divider} variant="middle" />
-                        <Grid  container spacing={3}>
-                            <Grid item xs>
-                                <TextField fullWidth
-                                           size="small"
-                                           name="invoiceTitle"
-                                           type="text"
-                                           label="公司抬头"
-                                           variant="outlined"
-                                           onChange={(e)=>{
-                                               dispatch(SupplierDetailActionType.setSupplierInfo({name:'invoice_title',value:e.target.value}))
-                                           }}
-                                           value={supplierDetailReducer.supplierInfo.invoice_title}
-                                />
-                            </Grid>
-                            <Grid item xs>
-                                <TextField fullWidth
-                                           size="small"
-                                           name="invoiceBank"
-                                           type="text"
-                                           label="开户行"
-                                           variant="outlined"
-                                           onChange={(e)=>{
-                                               dispatch(SupplierDetailActionType.setSupplierInfo({name:'invoice_bank',value:e.target.value}))
-                                           }}
-                                           value={supplierDetailReducer.supplierInfo.invoice_bank}
-                                />
-                            </Grid>
-                            <Grid item xs>
-                                <TextField fullWidth
-                                           size="small"
-                                           name="invoiceBankSer"
-                                           type="text"
-                                           label="开户账号"
-                                           variant="outlined"
-                                           onChange={(e)=>{
-                                               dispatch(SupplierDetailActionType.setSupplierInfo({name:'invoice_bank_ser',value:e.target.value}))
-                                           }}
-                                           value={supplierDetailReducer.supplierInfo.invoice_bank_ser}
-                                />
-                            </Grid>
-                            <Grid item xs>
-                                <TextField fullWidth
-                                           size="small"
-                                           name="invoiceAddress"
-                                           type="text"
-                                           label="开户地址"
-                                           variant="outlined"
-                                           onChange={(e)=>{
-                                               dispatch(SupplierDetailActionType.setSupplierInfo({name:'invoice_address',value:e.target.value}))
-                                           }}
-                                           value={supplierDetailReducer.supplierInfo.invoice_address}
-                                />
-                            </Grid>
-                        </Grid>
-                        <Divider className={classes.divider} variant="middle" />
-                        <Grid  container spacing={3}>
-                            <Grid item xs>
-                                <TextField className={classes.select}
-                                           size="small"
-                                           select
-                                           label="结算类型"
-                                           name="settleType"
-                                           type="text"
-                                           onChange={(e)=>{
-                                               dispatch(SupplierDetailActionType.setSupplierInfo({name:'settle_type',value:e.target.value}))
-                                           }}
-                                           value={supplierDetailReducer.supplierInfo.settle_type}
-                                           SelectProps={{
-                                               native: true,
-                                           }}
-                                           variant="outlined"
-                                >
-                                    <option key={1} value={0}>请选择 </option>
-                                    {sysConst.SETTLE_TYPE.map((option) => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </TextField>
-                            </Grid>
-                            <Grid item xs>
-                                <TextField fullWidth
-                                           size="small"
-                                           name="settleMonthDay"
-                                           type="number"
-                                           label="月结日期"
-                                           variant="outlined"
-                                           onChange={(e)=>{
-                                               dispatch(SupplierDetailActionType.setSupplierInfo({name:'settle_month_day',value:e.target.value}))
-                                           }}
-                                           value={supplierDetailReducer.supplierInfo.settle_month_day}
-                                />
-                            </Grid>
-                            <Grid item xs>
-                                <TextField fullWidth
-                                           size="small"
-                                           name="remark"
-                                           type="text"
-                                           label="备注"
-                                           variant="outlined"
-                                           onChange={(e)=>{
-                                               dispatch(SupplierDetailActionType.setSupplierInfo({name:'remark',value:e.target.value}))
-                                           }}
-                                           value={supplierDetailReducer.supplierInfo.remark}
-                                />
-                            </Grid>
-                        </Grid>
-                        <Button className={classes.updateButton} variant="contained" color="primary" onClick={updateSupplier}>
-                            修改
-                        </Button>
-                    </TabPanel>
-                    <TabPanel value='2'>
-                        Item Two
-                    </TabPanel>
-                    <TabPanel value='3'>
-                        Item Three
-                    </TabPanel>
-                </TabContext>
-            </div>
+                <Grid item sm={6}>
+                    <TextField label="商品名称" fullWidth={true} margin="dense" variant="outlined"
+                               value={productManagerDetailReducer.productInfo.product_name}
+                               onChange={(e) => {
+                                   dispatch(ProductManagerDetailActionType.setProductInfo({name: "product_name", value: e.target.value}))
+                               }}
+                        error={validation.product_name&&validation.product_name!=''}
+                        helperText={validation.product_name}
+                    />
+                </Grid>
+                <Grid item sm={6}>
+                    <TextField label="商品别名" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
+                               value={productManagerDetailReducer.productInfo.product_s_name}
+                               onChange={(e) => {
+                                   dispatch(ProductManagerDetailActionType.setProductInfo({name: "product_s_name",value: e.target.value}))
+                               }}
+                    />
+                </Grid>
+                <Grid item sm={6}>
+                    <TextField label="产地" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
+                               value={productManagerDetailReducer.productInfo.product_address}
+                               onChange={(e) => {
+                                   dispatch(ProductManagerDetailActionType.setProductInfo({name: "product_address",value: e.target.value}))
+                               }}
+                    />
+                </Grid>
+
+                <Grid item sm={6}>
+                    <TextField label="序列号" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
+                               value={productManagerDetailReducer.productInfo.product_serial}
+                               onChange={(e) => {
+                                   dispatch(ProductManagerDetailActionType.setProductInfo({name: "product_serial",value: e.target.value}))
+                               }}
+                    />
+                </Grid>
+                <Grid item sm={3}>
+                    <FormControl variant="outlined" fullWidth={true} margin="dense">
+                        <InputLabel id="standard-select-outlined-label" shrink>标准类型</InputLabel>
+                        <Select
+                            label="标准类型"
+                            labelId="standard-select-outlined-label"
+                            id="standard-select-outlined"
+                            value={productManagerDetailReducer.productInfo.standard_type}
+                            onChange={(e, value) => {
+                                dispatch(ProductManagerDetailActionType.setProductInfo({name: "standard_type",value: e.target.value}))
+                            }}
+                            SelectProps={{native: true}}
+                        >
+                            {sysConst.STANDARD_TYPE.map((item, index) => (
+                                <MenuItem value={item.value}>{item.label}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <Grid item sm={3}>
+                    <TextField label="单位" fullWidth={true} margin="dense" variant="outlined"
+                               value={productManagerDetailReducer.productInfo.unit_name}
+                               onChange={(e) => {
+                                   dispatch(ProductManagerDetailActionType.setProductInfo({name: "unit_name",value: e.target.value}))
+                               }}
+                    />
+                </Grid>
+                <Grid item sm={3}>
+                    <TextField label="售价" fullWidth={true} margin="dense" variant="outlined" type="number"
+                               value={productManagerDetailReducer.productInfo.price}
+                               onChange={(e) => {
+                                   dispatch(ProductManagerDetailActionType.setProductInfo({name: "price",value: e.target.value}))
+                               }}
+                        error={validation.price&&validation.price!=''}
+                        helperText={validation.price}
+                    />
+                </Grid>
+
+                <Grid item xs={12}>
+                    <TextField label="备注" fullWidth={true} margin="dense" variant="outlined" multiline rows={2}
+                               value={productManagerDetailReducer.productInfo.remark}
+                               onChange={(e) => {
+                                   dispatch(ProductManagerDetailActionType.setProductInfo({name: "remark",value: e.target.value}))
+                               }}
+                    />
+                </Grid>
+                <Grid item xs={12}><Button variant="contained" color="primary" style={{float:'right'}} onClick={updateProduct}>修改</Button></Grid>
+            </Grid>
         </div>
     )
-
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
     return {
-        supplierDetailReducer: state.SupplierDetailReducer
+        productManagerDetailReducer: state.ProductManagerDetailReducer,
+        commonReducer: state.CommonReducer
     }
 };
 
-const mapDispatchToProps = (dispatch,ownProps) => ({
-    getSupplierInfo: (id) => {
-        dispatch(SupplierDetailAction.getSupplierInfo(id));
+const mapDispatchToProps = (dispatch) => ({
+    // 取得画面 select控件，基础数据
+    getBaseSelectList: () => {
+        dispatch(commonAction.getCategoryList());
+        dispatch(commonAction.getBrandList());
     },
-    updateSupplier:()=>{
-        dispatch(SupplierDetailAction.updateSupplier());
+    // select控件，联动检索
+    getCategorySubList: (categoryId) => {
+        dispatch(commonAction.getCategorySubList(categoryId));
+    },
+    setCategorySubList: (value) => {
+        dispatch(CommonActionType.setCategorySubList(value));
+    },
+    getBrandModelList: (brandId) => {
+        dispatch(commonAction.getBrandModelList(brandId));
+    },
+    setBrandModelList: (value) => {
+        dispatch(CommonActionType.setBrandModelList(value));
+    },
+    getProductInfo: (id) => {
+        dispatch(productManagerDetailAction.getProductInfo(id));
+    },
+    updateProduct: () => {
+        dispatch(productManagerDetailAction.updateProduct());
     }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(SupplierDetail)
+export default connect(mapStateToProps, mapDispatchToProps)(ProductManagerDetail)

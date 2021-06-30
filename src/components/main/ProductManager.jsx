@@ -49,15 +49,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ProductManager(props) {
-    const {productManagerReducer, commonReducer, changeStatus, saveModalData} = props;
+    const {productManagerReducer, commonReducer, changeStatus, saveModalData, fromDetail} = props;
     const classes = useStyles();
-
-    useEffect(() => {
-        // 取得画面 select控件，基础数据
-        props.getBaseSelectList();
-        let dataStart = props.productManagerReducer.productData.start;
-        props.getProductList(dataStart);
-    }, []);
 
     // 查询列表
     const queryProductList = () => {
@@ -80,68 +73,111 @@ function ProductManager(props) {
     const [paramCategorySub, setParamCategorySub] = React.useState(null);
     const [paramBrand, setParamBrand] = React.useState(null);
     const [paramBrandModel, setParamBrandModel] = React.useState(null);
-    const [paramProduct, setParamProduct] = React.useState(null);
+    // const [paramProduct, setParamProduct] = React.useState(null);
     const [paramStandardType, setParamStandardType] = React.useState(null);
     const [paramStatus, setParamStatus] = React.useState(null);
 
-    const refreshSubOptions = () => {
-        // 商品分类有选择时，取得商品子分类， 否则清空
-        if (paramCategory != null) {
-            props.getCategorySubList(paramCategory.id);
+    useEffect(() => {
+        if (!fromDetail) {
+            setParamCategory(null);
             setParamCategorySub(null);
-        } else {
-            props.setCategorySubList([]);
-            setParamCategorySub(null);
-        }
-        // 品牌有选择时，取得品牌型号， 否则清空
-        if (paramBrand != null) {
-            props.getBrandModelList(paramBrand.id);
+            setParamBrand(null);
             setParamBrandModel(null);
+            setParamStandardType(null);
+            setParamStatus(null);
+            props.setQueryParams({paramCategory,paramCategorySub,paramBrand,paramBrandModel,paramStandardType,paramStatus});
         } else {
-            props.setBrandModelList([]);
-            setParamBrandModel(null);
+            setParamCategory(productManagerReducer.queryParams.paramCategory);
+            setParamCategorySub(productManagerReducer.queryParams.paramCategorySub);
+            setParamBrand(productManagerReducer.queryParams.paramBrand);
+            setParamBrandModel(productManagerReducer.queryParams.paramBrandModel);
+            setParamStandardType(productManagerReducer.queryParams.paramStandardType);
+            setParamStatus(productManagerReducer.queryParams.paramStatus);
         }
-    };
-    const refreshSelectOptions = () => {
-        // 刷新商品子分类,取得品牌型号 列表
-        refreshSubOptions();
-        // 商品分类/品牌 有1个选择时，取得商品列表，否则清空
-        if (paramCategory != null || paramBrand != null) {
-            let params = {
-                categoryId: paramCategory != null ? paramCategory.id : '',
-                categorySubId: paramCategorySub != null ? paramCategorySub.id : '',
-                brandId: paramBrand != null ? paramBrand.id : '',
-                brandModelId: paramBrandModel != null ? paramBrandModel.id : ''
-            };
-            props.getCommonProductList(params);
-            setParamProduct(null);
-        } else {
-            props.setCommonProductList([]);
-            setParamProduct(null);
-        }
-    };
+        // 取得画面 select控件，基础数据
+        props.getBaseSelectList();
+        let dataStart = props.productManagerReducer.productData.start;
+        props.getProductList(dataStart);
+    }, []);
+
+    // const refreshSubOptions = () => {
+    //     // 商品分类有选择时，取得商品子分类， 否则清空
+    //     if (paramCategory != null) {
+    //         props.getCategorySubList(paramCategory.id);
+    //         setParamCategorySub(null);
+    //     } else {
+    //         props.setCategorySubList([]);
+    //         setParamCategorySub(null);
+    //     }
+    //     // 品牌有选择时，取得品牌型号， 否则清空
+    //     if (paramBrand != null) {
+    //         props.getBrandModelList(paramBrand.id);
+    //         setParamBrandModel(null);
+    //     } else {
+    //         props.setBrandModelList([]);
+    //         setParamBrandModel(null);
+    //     }
+    // };
+    // const refreshSelectOptions = () => {
+    //     // 刷新商品子分类,取得品牌型号 列表
+    //     refreshSubOptions();
+    //     // 商品分类/品牌 有1个选择时，取得商品列表，否则清空
+    //     if (paramCategory != null || paramBrand != null) {
+    //         let params = {
+    //             categoryId: paramCategory != null ? paramCategory.id : '',
+    //             categorySubId: paramCategorySub != null ? paramCategorySub.id : '',
+    //             brandId: paramBrand != null ? paramBrand.id : '',
+    //             brandModelId: paramBrandModel != null ? paramBrandModel.id : ''
+    //         };
+    //         props.getCommonProductList(params);
+    //         setParamProduct(null);
+    //     } else {
+    //         props.setCommonProductList([]);
+    //         setParamProduct(null);
+    //     }
+    // };
 
     // 保存检索条件
     useEffect(() => {
-        props.setQueryParams({paramCategory,paramCategorySub,paramBrand,paramBrandModel,paramProduct,paramStandardType,paramStatus});
-    }, [paramCategory,paramCategorySub,paramBrand,paramBrandModel,paramProduct,paramStandardType,paramStatus]);
+        props.setQueryParams({paramCategory,paramCategorySub,paramBrand,paramBrandModel,paramStandardType,paramStatus});
+    }, [paramCategory,paramCategorySub,paramBrand,paramBrandModel,paramStandardType,paramStatus]);
 
     useEffect(() => {
-        // 根据不同情况：刷新 【商品子分类】【品牌型号】【商品】的Options 选项
-        refreshSelectOptions();
-    }, [paramCategory,paramBrand]);
+        // 商品分类有选择时，取得商品子分类， 否则清空
+        setParamCategorySub(null);
+        if (paramCategory != null) {
+            props.getCategorySubList(paramCategory.id);
+        } else {
+            props.setCategorySubList([]);
+        }
+    }, [paramCategory]);
+
+    useEffect(() => {
+        // 品牌有选择时，取得品牌型号， 否则清空
+        setParamBrandModel(null);
+        if (paramBrand != null) {
+            props.getBrandModelList(paramBrand.id);
+        } else {
+            props.setBrandModelList([]);
+        }
+    }, [paramBrand]);
 
     // 模态属性
     const [modalOpen, setModalOpen] = React.useState(false);
     // 关闭模态
     const closeModal = () => {
-        refreshSubOptions();
+        if (paramCategory != null) {
+            props.getCategorySubList(paramCategory.id);
+        } else {
+            props.setCategorySubList([]);
+        }
+        if (paramBrand != null) {
+            props.getBrandModelList(paramBrand.id);
+        } else {
+            props.setBrandModelList([]);
+        }
         setModalOpen(false);
     };
-    // 新增 区分
-    const [pageType, setPageType] = React.useState('');
-    // App Id
-    const [uid, setUid] = React.useState(-1);
 
     // 商品分类 *
     const [category, setCategory] = React.useState(null);
@@ -172,13 +208,12 @@ function ProductManager(props) {
 
     //初始添加模态框值
     const initModal =() =>{
-        // 清楚check内容
+        // 清空check内容
         setValidation({});
         // 清空商品子分类
         props.setCategorySubList([]);
         // 清空品牌型号
         props.setBrandModelList([]);
-        setPageType('new');
         setCategory(null);
         setCategorySub(null);
         setBrand(null);
@@ -225,7 +260,7 @@ function ProductManager(props) {
     const submitModal= ()=>{
         const errorCount = validate();
         if(errorCount==0){
-            saveModalData(pageType, uid, category, categorySub, brand, brandModel, productName, productSName, productAddress, productSerial, unitName, price, standardType, remark);
+            saveModalData(category, categorySub, brand, brandModel, productName, productSName, productAddress, productSerial, unitName, price, standardType, remark);
             setModalOpen(false);
         }
     };
@@ -239,7 +274,7 @@ function ProductManager(props) {
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
                 <Grid container item xs={10} spacing={3}>
-                    <Grid item xs={3}>
+                    <Grid item xs={2}>
                         <Autocomplete id="condition-category" fullWidth={true}
                                       options={commonReducer.categoryList}
                                       getOptionLabel={(option) => option.category_name}
@@ -250,7 +285,7 @@ function ProductManager(props) {
                                       renderInput={(params) => <TextField {...params} label="商品分类" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={2}>
                         <Autocomplete id="condition-category-sub" fullWidth={true}
                                       options={commonReducer.categorySubList}
                                       noOptionsText="无选项"
@@ -263,7 +298,7 @@ function ProductManager(props) {
                         />
                     </Grid>
 
-                    <Grid item xs={3}>
+                    <Grid item xs={2}>
                         <Autocomplete id="condition-brand" fullWidth={true}
                                       options={commonReducer.brandList}
                                       getOptionLabel={(option) => option.brand_name}
@@ -274,7 +309,7 @@ function ProductManager(props) {
                                       renderInput={(params) => <TextField {...params} label="品牌" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
-                    <Grid item xs={3}>
+                    <Grid item xs={2}>
                         <Autocomplete id="condition-brand-model" fullWidth={true}
                                       options={commonReducer.brandModelList}
                                       noOptionsText="无选项"
@@ -287,20 +322,20 @@ function ProductManager(props) {
                         />
                     </Grid>
 
-                    <Grid item xs={3}>
-                        <Autocomplete id="condition-product" fullWidth={true}
-                                      options={commonReducer.productList}
-                                      noOptionsText="无选项"
-                                      getOptionLabel={(option) => option.product_name}
-                                      onChange={(event, value) => {
-                                          setParamProduct(value);
-                                      }}
-                                      value={paramProduct}
-                                      renderInput={(params) => <TextField {...params} label="商品" margin="dense" variant="outlined"/>}
-                        />
-                    </Grid>
+                    {/*<Grid item xs={3}>*/}
+                    {/*    <Autocomplete id="condition-product" fullWidth={true}*/}
+                    {/*                  options={commonReducer.productList}*/}
+                    {/*                  noOptionsText="无选项"*/}
+                    {/*                  getOptionLabel={(option) => option.product_name}*/}
+                    {/*                  onChange={(event, value) => {*/}
+                    {/*                      setParamProduct(value);*/}
+                    {/*                  }}*/}
+                    {/*                  value={paramProduct}*/}
+                    {/*                  renderInput={(params) => <TextField {...params} label="商品" margin="dense" variant="outlined"/>}*/}
+                    {/*    />*/}
+                    {/*</Grid>*/}
 
-                    <Grid item xs={3}>
+                    <Grid item xs={2}>
                         <FormControl variant="outlined" fullWidth={true} margin="dense">
                             <InputLabel id="standard-type-select-outlined-label">标准类型</InputLabel>
                             <Select
@@ -320,7 +355,7 @@ function ProductManager(props) {
                         </FormControl>
                     </Grid>
 
-                    <Grid item xs={3}>
+                    <Grid item xs={2}>
                         <FormControl variant="outlined" fullWidth={true} margin="dense">
                             <InputLabel id="status-select-outlined-label">状态</InputLabel>
                             <Select
@@ -343,14 +378,14 @@ function ProductManager(props) {
 
                 {/*查询按钮*/}
                 <Grid item xs={1}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={queryProductList} style={{marginTop: 50}}>
+                    <Fab color="primary" aria-label="add" size="small" onClick={queryProductList}>
                         <i className="mdi mdi-magnify mdi-24px"/>
                     </Fab>
                 </Grid>
 
                 {/*追加按钮*/}
                 <Grid item xs={1}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={() => {initModal()}} style={{marginTop: 50}}>
+                    <Fab color="primary" aria-label="add" size="small" onClick={() => {initModal()}}>
                         <i className="mdi mdi-plus mdi-24px"/>
                     </Fab>
                 </Grid>
@@ -401,7 +436,7 @@ function ProductManager(props) {
 
                                     {/* 编辑按钮 */}
                                     <IconButton color="primary" edge="start">
-                                        <Link to={{pathname: '/product/' + row.id}}>
+                                        <Link to={{pathname: '/product_manager/' + row.id}}>
                                             <i className="mdi mdi-table-search mdi-24px"/>
                                         </Link>
                                     </IconButton>
@@ -442,7 +477,6 @@ function ProductManager(props) {
                 }
             >
                 <Grid container spacing={2}>
-                    {pageType === 'edit' && <Grid item sm={12}><Typography color="primary">商品编号：{uid}</Typography></Grid>}
                     <Grid item sm={6}>
                         <Autocomplete id="condition-category" fullWidth={true}
                                       options={commonReducer.categoryList}
@@ -596,10 +630,15 @@ function ProductManager(props) {
     )
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
+    let fromDetail = false;
+    if (typeof ownProps.location.state != 'undefined' && ownProps.location.state != null && ownProps.location.state.fromDetail) {
+        fromDetail = true;
+    }
     return {
         productManagerReducer: state.ProductManagerReducer,
-        commonReducer: state.CommonReducer
+        commonReducer: state.CommonReducer,
+        fromDetail: fromDetail
     }
 };
 
@@ -622,12 +661,12 @@ const mapDispatchToProps = (dispatch) => ({
     setBrandModelList: (value) => {
         dispatch(CommonActionType.setBrandModelList(value));
     },
-    getCommonProductList: (queryParams) => {
-        dispatch(commonAction.getProductList(queryParams));
-    },
-    setCommonProductList: (value) => {
-        dispatch(CommonActionType.setProductList(value));
-    },
+    // getCommonProductList: (queryParams) => {
+    //     dispatch(commonAction.getProductList(queryParams));
+    // },
+    // setCommonProductList: (value) => {
+    //     dispatch(CommonActionType.setProductList(value));
+    // },
 
     setQueryParams: (value) => {
         dispatch(ProductManagerActionType.setQueryParams(value));
@@ -649,9 +688,9 @@ const mapDispatchToProps = (dispatch) => ({
             }
         });
     },
-    saveModalData: (pageType, uid, category, categorySub, brand, brandModel, productName, productSName, productAddress, productSerial, unitName, price, standardType, remark) => {
+    saveModalData: (category, categorySub, brand, brandModel, productName, productSName, productAddress, productSerial, unitName, price, standardType, remark) => {
         dispatch(productManagerAction.saveModalData({
-            pageType, uid, category, categorySub, brand, brandModel, productName, productSName, productAddress, productSerial, unitName, price, standardType, remark
+            category, categorySub, brand, brandModel, productName, productSName, productAddress, productSerial, unitName, price, standardType, remark
         }));
     }
 });

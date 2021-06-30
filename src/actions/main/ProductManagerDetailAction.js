@@ -1,55 +1,60 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config/index';
-import {SupplierDetailActionType} from '../../types';
+import {ProductManagerDetailActionType} from '../../types';
+
+const commonAction = require('../../actions/layout/CommonAction');
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
 
-// 采购管理 -> 供应商 详情
-export const getSupplierInfo = (params) => async (dispatch, getState) => {
+export const getProductInfo = (productId) => async (dispatch) => {
     try {
         // 基本检索URL
-        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/supplier?supplierId='+params;
-        // 检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/product?productId=' + productId;
+
         const res = await httpUtil.httpGet(url);
-        if (res.success === true && res.rows.length>0) {
-            dispatch({type: SupplierDetailActionType.getSupplierInfo, payload: res.rows[0]});
-        } else if (res.success === false) {
-            Swal.fire('获取供应商信息失败', res.msg, 'warning');
+        if (res.success) {
+            if (res.rows.length > 0) {
+                dispatch({type: ProductManagerDetailActionType.getProductInfo, payload: res.rows[0]});
+                dispatch(commonAction.getCategorySubList(res.rows[0].category_id));
+                dispatch(commonAction.getBrandModelList(res.rows[0].brand_id));
+            } else {
+                dispatch({type: ProductManagerDetailActionType.getProductInfo, payload: {}});
+            }
+        } else if (!res.success) {
+            Swal.fire("获取商品信息失败", res.msg, "warning");
         }
     } catch (err) {
-        Swal.fire('操作失败', err.message, 'error');
+        Swal.fire("操作失败", err.message, "error");
     }
 };
 
-//采购管理 -> 供应商 修改
-export const updateSupplier = (params) => async (dispatch, getState) => {
+export const updateProduct = () => async (dispatch, getState) => {
     try {
-        const params = getState().SupplierDetailReducer.supplierInfo;
-        var paramsObj={
-            "remark":params.remark,
-            "supplierName": params.supplier_name,
-            "supplierType": params.supplier_type,
-            "contactName": params.contact_name,
-            "email": params.email,
-            "tel": params.tel,
-            "mobile": params.mobile,
-            "fax": params.fax,
-            "address": params.address,
-            "invoiceTitle":params.invoice_title,
-            "invoiceBank": params.invoice_bank,
-            "invoiceBankSer": params.invoice_bank_ser,
-            "invoiceAddress": params.invoice_address,
-            "settleType": params.settle_type,
-            "settleMonthDay": params.settle_month_day==''?0:params.settle_month_day
+        const productInfo = getState().ProductManagerDetailReducer.productInfo;
+        const params = {
+            categoryId: productInfo.category.id,
+            categorySubId: productInfo.category_sub.id,
+            brandId: productInfo.brand.id,
+            brandModelId: productInfo.brand_model.id,
+            productName: productInfo.product_name,
+            productSName: productInfo.product_s_name,
+            productSerial: productInfo.product_serial,
+            productAddress: productInfo.product_address,
+            unitName: productInfo.unit_name,
+            price: productInfo.price,
+            standardType: productInfo.standard_type,
+            remark: productInfo.remark
+        };
+        // 基本url
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/product/' + productInfo.id;
+        let res = await httpUtil.httpPut(url, params);
+        if (res.success) {
+            Swal.fire("保存成功", "", "success");
+        } else if (!res.success) {
+            Swal.fire("保存失败", res.msg, "warning");
         }
-        const res = await httpUtil.httpPut(apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/supplier/'+params.id, paramsObj);
-        if (res.success === true) {
-            Swal.fire("修改成功", "", "success");
-        } else if (res.success === false) {
-            Swal.fire('修改失败', res.msg, 'warning');
-        }
-    }catch (err) {
-        Swal.fire('操作失败', err.message, 'error');
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
     }
-}
+};
