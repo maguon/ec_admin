@@ -13,40 +13,29 @@ import {SimpleModal} from '../'
 import TreeItem from "@material-ui/lab/TreeItem";
 import TreeView from "@material-ui/lab/TreeView";
 
-const brandManagerAction = require('../../actions/main/BrandManagerAction');
+const storageAction = require('../../actions/main/StorageAction');
 
+const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
-    // 标题样式
-    root: {
-        minWidth: 800,
-        paddingBottom: 50
+    root:{
+        marginBottom: 20,
     },
-    // 标题样式
-    pageTitle: {
-        color: '#3C3CC4',
-        fontSize: 20,
-        fontWeight: 'bold'
-    },
-    pageDivider: {
-        height: 1,
-        marginBottom: 15,
-        background: '#7179e6'
-    }
+    title: customTheme.pageTitle,
+    divider: customTheme.pageDivider,
 }));
 
-// 权限设置
-function BrandManager (props) {
-    const {brandManagerReducer, getBrandList, getBrandModelList, saveModalData} = props;
+function Storage (props) {
+    const {storageReducer, getStorageList, getStorageAreaList, saveStorageData} = props;
     const classes = useStyles();
 
     // 执行1次，取得数结构
     useEffect(()=>{
-        getBrandList();
+        getStorageList();
     },[]);
 
     // 模态状态
     const [modalOpen, setModalOpen] = React.useState(false);
-    const closeModal = (event) => {
+    const closeModal = () => {
         setModalOpen(false);
     };
 
@@ -55,14 +44,14 @@ function BrandManager (props) {
     const [pageTitle, setPageTitle] = React.useState('');
     const [uid, setUid] = React.useState(-1);
     const [parent, setParent] = React.useState('');
-    const [brandId, setBrandId] = React.useState('');
-    const [brandName, setBrandName] = React.useState('');
+    const [storageId, setStorageId] = React.useState('');
+    const [storageName, setStorageName] = React.useState('');
     const [remark, setRemark] = useState('');
     const [validation,setValidation] = useState({});
     const validate = ()=>{
         const validateObj ={};
-        if (!brandName) {
-            validateObj.brandName ='请输入名称';
+        if (!storageName) {
+            validateObj.storageName ='请输入名称';
         }
         setValidation(validateObj);
         return Object.keys(validateObj).length
@@ -70,7 +59,7 @@ function BrandManager (props) {
     const submitModal = () => {
         const errorCount = validate();
         if(errorCount==0){
-            saveModalData(pageType, uid, brandId, brandName, remark);
+            saveStorageData(pageType, uid, storageId, storageName, remark);
             closeModal();
         }
     };
@@ -85,29 +74,29 @@ function BrandManager (props) {
         // 新建 / 修改
         switch (pageType) {
             case "new":
-                setPageTitle('新增品牌');
-                setBrandName('');
+                setPageTitle('新增仓库');
+                setStorageName('');
                 setRemark('');
                 break;
             case "edit":
-                setPageTitle('修改品牌');
+                setPageTitle('修改仓库');
                 setUid(data.id);
-                setBrandName(data.brand_name);
+                setStorageName(data.storage_name);
                 setRemark(data.remark);
                 break;
             case "sub_new":
-                setPageTitle('新增品牌型号');
-                setParent(data.brand_name + '-' + data.id);
-                setBrandId(data.id);
-                setBrandName('');
+                setPageTitle('新增仓库分区');
+                setParent(data.storage_name + '-' + data.id);
+                setStorageId(data.id);
+                setStorageName('');
                 setRemark('');
                 break;
             case "sub_edit":
-                setPageTitle('修改品牌型号');
+                setPageTitle('修改仓库分区');
                 setUid(data.id);
-                setParent(data.brand_name + '-' + data.brand_id);
-                setBrandId(data.brand_id);
-                setBrandName(data.brand_model_name);
+                setParent(data.storage_name + '-' + data.storage_id);
+                setStorageId(data.storage_id);
+                setStorageName(data.storage_area_name);
                 setRemark(data.remark);
                 break;
             default:
@@ -122,14 +111,14 @@ function BrandManager (props) {
 
     const clickLabel = (event, nodeIds) => {
         event.preventDefault();
-        getBrandModelList(nodeIds);
+        getStorageAreaList(nodeIds);
     };
 
     return (
         <div className={classes.root}>
             {/* 标题部分 */}
-            <Typography gutterBottom className={classes.pageTitle}>品牌</Typography>
-            <Divider light className={classes.pageDivider}/>
+            <Typography gutterBottom className={classes.title}>仓库设置</Typography>
+            <Divider light className={classes.divider}/>
 
             <Grid container spacing={3}>
                 <Grid item xs={11}> </Grid>
@@ -148,13 +137,13 @@ function BrandManager (props) {
                 expanded={expanded}
                 onNodeToggle={handleToggle}
             >
-                {brandManagerReducer.brandList.map(function (item) {
+                {storageReducer.storageList.map(function (item) {
                     return (
                         <TreeItem
-                            key={'brand' + item.id}
+                            key={'storage' + item.id}
                             nodeId={'' + item.id}
                             style={{marginLeft:80, width: '80%'}}
-                            label={<div>{item.brand_name}
+                            label={<div>{item.storage_name}
                                 <IconButton onClick={()=>{initModal('sub_new',item)}} size="small">
                                     <i className="mdi mdi-plus mdi-12px" style={{marginLeft: 8,color:'black'}} />
                                 </IconButton>
@@ -167,9 +156,9 @@ function BrandManager (props) {
                             {item.sub && item.sub.map(function (child) {
                                 return (
                                     <TreeItem
-                                        key={'brand-model' + child.id}
+                                        key={'storage-area' + child.id}
                                         nodeId={'_' + child.id}
-                                        label={<div>{child.brand_model_name}
+                                        label={<div>{child.storage_area_name}
                                             <IconButton color="primary" onClick={()=>{initModal('sub_edit',child)}} size="small">
                                                 <i className="mdi mdi-pencil mdi-12px" style={{marginLeft: 8, color:'black'}} />
                                             </IconButton>
@@ -182,7 +171,7 @@ function BrandManager (props) {
                 })}
             </TreeView>
 
-            {/* 模态：新增/修改 初中信息 */}
+            {/* 模态：新增/修改 */}
             <SimpleModal
                 title={pageTitle}
                 open={modalOpen}
@@ -196,14 +185,14 @@ function BrandManager (props) {
                 }
             >
                 <Grid container spacing={2}>
-                    {(pageType!='new' && pageType!='edit') && <Grid item xs={12}>品牌：{parent}</Grid>}
+                    {(pageType!='new' && pageType!='edit') && <Grid item xs={12}>仓库：{parent}</Grid>}
                     <Grid item xs={12}>
-                        <TextField fullWidth={true} margin="dense" variant="outlined" label={(pageType!='new' && pageType!='edit') ? "品牌型号名称" : "品牌名称"} value={brandName}
+                        <TextField fullWidth={true} margin="dense" variant="outlined" label={(pageType!='new' && pageType!='edit') ? "仓库分区名称" : "仓库名称"} value={storageName}
                                    onChange={(e) => {
-                                       setBrandName(e.target.value)
+                                       setStorageName(e.target.value)
                                    }}
-                                   error={validation.brandName&&validation.brandName!=''}
-                                   helperText={validation.brandName}
+                                   error={validation.storageName&&validation.storageName!=''}
+                                   helperText={validation.storageName}
                         />
                     </Grid>
 
@@ -219,22 +208,22 @@ function BrandManager (props) {
     )
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
     return {
-        brandManagerReducer: state.BrandManagerReducer,
+        storageReducer: state.StorageReducer,
     }
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    getBrandList: () => {
-        dispatch(brandManagerAction.getBrandList())
+    getStorageList: () => {
+        dispatch(storageAction.getStorageList())
     },
-    getBrandModelList: (brandId) => {
-        dispatch(brandManagerAction.getBrandModelList(brandId))
+    getStorageAreaList: (storageId) => {
+        dispatch(storageAction.getStorageAreaList(storageId))
     },
-    saveModalData: (pageType, uid, brandId, brandName, remark) => {
-        dispatch(brandManagerAction.saveModalData({pageType, uid, brandId, brandName, remark}))
+    saveStorageData: (pageType, uid, storageId, storageName, remark) => {
+        dispatch(storageAction.saveStorageData({pageType, uid, storageId, storageName, remark}))
     }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(BrandManager)
+export default connect(mapStateToProps, mapDispatchToProps)(Storage)

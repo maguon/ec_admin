@@ -2,29 +2,29 @@ import {handleActions} from 'redux-actions';
 import {StorageActionType} from '../../types';
 
 const initialState = {
-    brandList: []
+    storageList: []
 };
 
 export default handleActions({
-    [StorageActionType.setBrandList]: (state, action) => {
+    [StorageActionType.setStorageList]: (state, action) => {
         return {
             ...state,
-            brandList: action.payload
+            storageList: action.payload
         }
     },
-    [StorageActionType.setBrandModelList]: (state, action) => {
-        let brandList = state.brandList;
+    [StorageActionType.setStorageAreaList]: (state, action) => {
+        let storageList = state.storageList;
         if (action.payload && action.payload.length > 0) {
-            for (let i = 0; i < brandList.length; i++) {
-                if (brandList[i].id == action.payload[0].brand_id) {
-                    brandList[i].sub = action.payload;
+            for (let i = 0; i < storageList.length; i++) {
+                if (storageList[i].id == action.payload[0].storage_id) {
+                    storageList[i].sub = action.payload;
                     break;
                 }
             }
         }
         return {
             ...state,
-            brandList: brandList
+            storageList: storageList
         }
     }
 }, initialState)

@@ -1,4 +1,4 @@
 import {createAction} from 'redux-actions';
 
-export const setBrandList = createAction('SET_BRAND_LIST');
-export const setBrandModelList = createAction('SET_BRAND_MODEL_LIST');
+export const setStorageList = createAction('SET_STORAGE_LIST');
+export const setStorageAreaList = createAction('SET_STORAGE_AREA_LIST');
