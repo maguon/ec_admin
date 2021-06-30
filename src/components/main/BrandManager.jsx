@@ -153,13 +153,13 @@ function BrandManager (props) {
                         <TreeItem
                             key={'brand' + item.id}
                             nodeId={'' + item.id}
+                            style={{marginLeft:80, width: '80%'}}
                             label={<div>{item.brand_name}
-                                <IconButton color="primary" onClick={()=>{initModal('edit', item)}} size="small">
-                                    <i className="mdi mdi-pencil mdi-12px" style={{marginLeft: 20}} />
+                                <IconButton onClick={()=>{initModal('sub_new',item)}} size="small">
+                                    <i className="mdi mdi-plus mdi-12px" style={{marginLeft: 8,color:'black'}} />
                                 </IconButton>
-
-                                <IconButton color="primary" onClick={()=>{initModal('sub_new',item)}} size="small">
-                                    <i className="mdi mdi-plus mdi-12px" style={{marginLeft: 20}} />
+                                <IconButton onClick={()=>{initModal('edit', item)}} size="small">
+                                    <i className="mdi mdi-pencil mdi-12px" style={{marginLeft: 8, color:'black'}} />
                                 </IconButton>
                             </div>}
                             onLabelClick={(e) => {clickLabel(e, item.id)}}
@@ -171,7 +171,7 @@ function BrandManager (props) {
                                         nodeId={'_' + child.id}
                                         label={<div>{child.brand_model_name}
                                             <IconButton color="primary" onClick={()=>{initModal('sub_edit',child)}} size="small">
-                                                <i className="mdi mdi-pencil mdi-12px" style={{marginLeft: 20}} />
+                                                <i className="mdi mdi-pencil mdi-12px" style={{marginLeft: 8, color:'black'}} />
                                             </IconButton>
                                         </div>}
                                     />
