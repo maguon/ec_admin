@@ -118,6 +118,7 @@ function StorageProduct(props) {
                     <Grid item xs={3}>
                         <Autocomplete id="condition-storage-area" fullWidth
                                       options={commonReducer.storageAreaList}
+                                      noOptionsText="无选项"
                                       getOptionLabel={(option) => option.storage_area_name}
                                       onChange={(event, value) => {
                                           dispatch(StorageProductActionType.setQueryParams({name: "storageArea", value: value}));
