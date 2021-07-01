@@ -20,6 +20,7 @@ import Fab from '@material-ui/core/Fab';
 import {withStyles,makeStyles} from "@material-ui/core/styles";
 import {Link, useParams} from "react-router-dom";
 import Swal from "sweetalert2";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 const SupplierAction = require('../../actions/main/SupplierAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
@@ -73,8 +74,8 @@ function Supplier (props){
     const {supplierReducer,deleteSupplier} = props;
     const classes = useStyles();
     //查询条件
-    const [paramSupplierName,setParamSupplierName]=useState("");
-    const [paramSupplierType,setParamSupplierType]=useState("-1");
+    const [paramSupplierName,setParamSupplierName]=useState(null);
+    const [paramSupplierType,setParamSupplierType]=useState(null);
     const [pageNumber,setPageNumber] = useState(0);
 
     //添加供应商
@@ -144,7 +145,7 @@ function Supplier (props){
     useEffect(()=>{
         const queryObj = {
             supplierName:paramSupplierName,
-            supplierType :paramSupplierType,
+            supplierType :paramSupplierType!= null ?paramSupplierType.value:'',
             start :pageNumber
         };
         props.setSupplierQueryObj(queryObj);
@@ -159,7 +160,7 @@ function Supplier (props){
     const getSupplierArray =() =>{
         props.setSupplierQueryObj({
             supplierName:paramSupplierName,
-            supplierType :paramSupplierType,
+            supplierType :paramSupplierType!= null ?paramSupplierType.value:'',
             start :0})
         props.getSupplierList();
         setPageNumber(0);
@@ -185,7 +186,7 @@ function Supplier (props){
         setPageNumber(pageNumber- (props.supplierReducer.size-1));
         props.setSupplierQueryObj({
             supplierName:paramSupplierName,
-            supplierType :paramSupplierType,
+            supplierType :paramSupplierType!= null ?paramSupplierType.value:'',
             start :pageNumber- (props.supplierReducer.size-1)})
         props.getSupplierList();
     };
@@ -195,7 +196,7 @@ function Supplier (props){
         setPageNumber(pageNumber+ (props.supplierReducer.size-1));
         props.setSupplierQueryObj({
             supplierName:paramSupplierName,
-            supplierType :paramSupplierType,
+            supplierType :paramSupplierType!= null ?paramSupplierType.value:'',
             start :pageNumber+ (props.supplierReducer.size-1)})
         props.getSupplierList();
     };
@@ -209,19 +210,31 @@ function Supplier (props){
             <Grid container  spacing={3}>
                 <Grid container item xs={10} spacing={3}>
                     {/*供应商名称*/}
-                    <Grid item xs={6} sm={3}>
-                        <TextField
-                            fullWidth
-                            margin="dense"
-                            variant="outlined"
-                            label="供应商名称"
-                            value={paramSupplierName}
-                            onChange={(e)=>setParamSupplierName(e.target.value)}
+
+                    <Grid item xs={3}>
+                        <Autocomplete id="condition-category" fullWidth={true}
+                                      options={supplierReducer.supplierArray}
+                                      getOptionLabel={(option) => option.supplier_name}
+                                      onChange={(event, value) => {
+                                          setParamSupplierName(value);
+                                      }}
+                                      value={paramSupplierName}
+                                      renderInput={(params) => <TextField {...params} label="供应商名称" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
+
                     {/*供应商类型*/}
                     <Grid item  xs={6} sm={3}>
-                        <TextField className={classes.selectCondition}
+                        <Autocomplete id="condition-category" fullWidth={true}
+                                      options={sysConst.SUPPLIER_TYPE}
+                                      getOptionLabel={(option) => option.label}
+                                      onChange={(event, value) => {
+                                          setParamSupplierType(value);
+                                      }}
+                                      value={paramSupplierType}
+                                      renderInput={(params) => <TextField {...params} label="供应商类型" margin="dense" variant="outlined"/>}
+                        />
+                       {/* <TextField className={classes.selectCondition}
                                    select
                                    margin="dense"
                                    label="供应商类型"
@@ -238,7 +251,7 @@ function Supplier (props){
                                     {option.label}
                                 </option>
                             ))}
-                        </TextField>
+                        </TextField>*/}
                     </Grid>
                 </Grid>
 
@@ -263,7 +276,7 @@ function Supplier (props){
                     <Table  size={'small'} aria-label="a dense table">
                         <TableHead >
                             <TableRow style={{height:60}}>
-                                <StyledTableCell align="center">id</StyledTableCell>
+                                <StyledTableCell align="center">ID</StyledTableCell>
                                 <StyledTableCell align="center">名称</StyledTableCell>
                                 <StyledTableCell align="center">类型</StyledTableCell>
                                 <StyledTableCell align="center">联系人</StyledTableCell>
@@ -271,7 +284,7 @@ function Supplier (props){
                                 <StyledTableCell align="center">手机</StyledTableCell>
                                 <StyledTableCell align="center">传真</StyledTableCell>
                                 <StyledTableCell align="center">结算类型</StyledTableCell>
-                                <StyledTableCell align="center">状态</StyledTableCell>
+                               {/* <StyledTableCell align="center">状态</StyledTableCell>*/}
                                 <StyledTableCell align="center">操作</StyledTableCell>
                             </TableRow>
                         </TableHead>
@@ -286,7 +299,7 @@ function Supplier (props){
                                     <TableCell align="center" >{row.mobile}</TableCell>
                                     <TableCell align="center" >{row.fax}</TableCell>
                                     <TableCell align="center" >{commonUtil.getJsonValue(sysConst.SETTLE_TYPE,row.settle_type)}</TableCell>
-                                    <TableCell align="center">{commonUtil.getJsonValue(sysConst.USE_FLAG, row.status)}</TableCell>
+                                  {/*  <TableCell align="center">{commonUtil.getJsonValue(sysConst.USE_FLAG, row.status)}</TableCell>*/}
                                     <TableCell align="center">
                                         {/* 删除按钮 */}
                                        {/* <IconButton color="primary" edge="start" onClick={() => {

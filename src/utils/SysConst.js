@@ -122,6 +122,17 @@ export const PAYMENT_STATUS = [
     {value: 7, label: "已支付"}
 ];
 
+//退货退款状态
+export const REFUND_PAYMENT_STATUS = [
+    {value: 1, label: "未完成"},
+    {value: 7, label: "已完成"}
+];
+//退货状态
+export const REFUND_STATUS = [
+    {value: 1, label: "未完成"},
+    {value: 7, label: "已完成"}
+];
+
 //采购状态
 export const PURCHASE_STATUS = [
     {value: 1, label: "未处理"},

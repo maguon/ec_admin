@@ -45,7 +45,7 @@ export const addPurchaseInfo = (supplier,paramsItem,transferCostType,transferCos
             obj.productId= paramsItem[i].product.split('&')[0];
             obj.productName= paramsItem[i].product.split('&')[1];
             obj.unitCost= paramsItem[i].unitCost;
-            obj.purchaseCount= paramsItem[i].purchaseCount;
+            obj.purchaseCount= paramsItem[i].unitNumber;
             paramsPurchase.push(obj);
         }
         const params =  {

@@ -27,7 +27,7 @@ export const routesWithHeader = [
     {path: "/product_manager/:id", exact: true, component: ProductManagerDetail},
     //供应商
     {path: "/supplier", exact: true, component: Supplier},
-    {path: "/supplier/:supplier_id",exact: true,component: SupplierDetail},
+    {path: "/supplier/:id",exact: true,component: SupplierDetail},
 
     /** 仓库管理 */
     // 仓库设置

@@ -21,6 +21,40 @@ export const getSupplierInfo = (params) => async (dispatch, getState) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
+// 采购管理 -> 采购tab
+export const getPurchaseInfo = (params) => async (dispatch, getState) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/purchaseItem?supplierId='+params;
+        // 检索URL
+        const res = await httpUtil.httpGet(url);
+        if (res.success === true && res.rows.length>0) {
+            dispatch({type: SupplierDetailActionType.getPurchaseInfo, payload: res.rows.slice(0,10)});
+        } else if (res.success === false) {
+            Swal.fire('获取供应商信息失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire('操作失败', err.message, 'error');
+    }
+};
+
+// 采购管理 -> 退货tab
+export const getPurchaseRefundInfo = (params) => async (dispatch, getState) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/purchaseRefund';
+        // 检索URL
+        const res = await httpUtil.httpGet(url);
+        if (res.success === true && res.rows.length>0) {
+            dispatch({type: SupplierDetailActionType.getPurchaseRefundInfo, payload: res.rows.slice(0,10)});
+            console.log(res.rows.slice(0,10))
+        } else if (res.success === false) {
+            Swal.fire('获取供应商信息失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire('操作失败', err.message, 'error');
+    }
+};
 
 //采购管理 -> 供应商 修改
 export const updateSupplier = (params) => async (dispatch, getState) => {

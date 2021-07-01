@@ -10,12 +10,13 @@ import {
     IconButton,
     AppBar,
     Tab,
-    Tabs,
+    Tabs, TableContainer, Paper, Table, TableHead, TableRow, TableBody, TableCell,
 } from "@material-ui/core";
 import TabContext from '@material-ui/lab/TabContext';
 import TabPanel from '@material-ui/lab/TabPanel';
-import {makeStyles} from "@material-ui/core/styles";
+import {makeStyles, withStyles} from "@material-ui/core/styles";
 import {Link, useParams} from "react-router-dom";
+const commonUtil = require('../../utils/CommonUtil');
 const SupplierDetailAction = require('../../actions/main/SupplierDetailAction');
 const sysConst = require('../../utils/SysConst');
 const useStyles = makeStyles((theme) => ({
@@ -58,16 +59,29 @@ const useStyles = makeStyles((theme) => ({
         float:'right'
     }
 }));
+const StyledTableCell = withStyles((theme) => ({
+    head: {
+        fontWeight:'bold',
+        background:'#F7F6F9',
+        borderTop: '2px solid #D4D4D4'
 
+    }
+}))(TableCell);
 //供应商---详情
 function SupplierDetail (props){
-    const {supplierDetailReducer,getSupplierInfo,updateSupplier} = props;
+    const {supplierDetailReducer,getSupplierInfo,updateSupplier,getPurchaseInfo,getPurchaseRefundInfo} = props;
     const dispatch = useDispatch();
     const classes = useStyles();
     const [value, setValue] = React.useState('1');
     const {id} = useParams();
     const handleChange = (event, newValue) => {
         setValue(newValue);
+        if(newValue=='2'){
+            getPurchaseInfo(supplierDetailReducer.supplierInfo.id);
+        }
+        if(newValue=='3'){
+            getPurchaseRefundInfo();
+        }
     };
     useEffect(()=>{
         getSupplierInfo(id);
@@ -82,7 +96,7 @@ function SupplierDetail (props){
                         <i className="mdi mdi-arrow-left-bold"></i>
                     </IconButton>
                 </Link>
-                供应商 - 详情
+                供应商 - {supplierDetailReducer.supplierInfo.supplier_name}({supplierDetailReducer.supplierInfo.id})
             </Typography>
             <div className={classes.pageDivider}></div>
 
@@ -97,7 +111,7 @@ function SupplierDetail (props){
                               variant="fullWidth">
                             <Tab label="供应商" value="1" />
                             <Tab label="采购"   value="2" />
-                            <Tab label="退货"    value="3" />
+                            <Tab label="退货"   value="3" />
                         </Tabs>
                     </AppBar>
                     <TabPanel value='1'>
@@ -334,10 +348,80 @@ function SupplierDetail (props){
                         </Button>
                     </TabPanel>
                     <TabPanel value='2'>
-                        Item Two
+                        <Grid container spacing={2}>
+                            <TableContainer component={Paper} style={{marginTop:40}}>
+                                <Table  size={'small'} aria-label="a dense table">
+                                    <TableHead >
+                                        <TableRow style={{height:60}}>
+                                            <StyledTableCell align="center">商品名称</StyledTableCell>
+                                            <StyledTableCell align="center">商品单价</StyledTableCell>
+                                            <StyledTableCell align="center">商品数量</StyledTableCell>
+                                            <StyledTableCell align="center">商品总价</StyledTableCell>
+                                            <StyledTableCell align="center">仓储状态</StyledTableCell>
+                                            <StyledTableCell align="center">支付状态</StyledTableCell>
+                                            <StyledTableCell align="center">下单时间</StyledTableCell>
+                                            <StyledTableCell align="center">状态</StyledTableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {supplierDetailReducer.purchaseInfo.length > 0 &&supplierDetailReducer.purchaseInfo.map((row) => (
+                                            <TableRow key={row.id}>
+                                                <TableCell align="center" >{row.product_name}</TableCell>
+                                                <TableCell align="center" >{row.unit_cost}</TableCell>
+                                                <TableCell align="center" >{row.purchase_count}</TableCell>
+                                                <TableCell align="center" >{row.total_cost}</TableCell>
+                                                <TableCell align="center" >{commonUtil.getJsonValue(sysConst.STORAGE_STATUS, row.storage_status)}</TableCell>
+                                                <TableCell align="center" >{commonUtil.getJsonValue(sysConst.PAYMENT_STATUS, row.payment_status)}</TableCell>
+                                                <TableCell align="center" >{commonUtil.getDateTime(row.created_on)}</TableCell>
+                                                <TableCell align="center" >{commonUtil.getJsonValue(sysConst.PURCHASE_STATUS, row.status)}</TableCell>
+                                            </TableRow>))}
+                                        {supplierDetailReducer.purchaseInfo.length === 0 &&
+                                        <TableRow style={{height:60}}><TableCell align="center" colSpan="8">暂无数据</TableCell></TableRow>
+                                        }
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Grid>
                     </TabPanel>
                     <TabPanel value='3'>
-                        Item Three
+                        <Grid container spacing={2}>
+                            <TableContainer component={Paper} style={{marginTop:40}}>
+                                <Table  size={'small'} aria-label="a dense table">
+                                    <TableHead >
+                                        <TableRow style={{height:60}}>
+                                            <StyledTableCell align="center">ID</StyledTableCell>
+                                            <StyledTableCell align="center">商品名称</StyledTableCell>
+                                            <StyledTableCell align="center">退款状态</StyledTableCell>
+                                            <StyledTableCell align="center">退货单价</StyledTableCell>
+                                            <StyledTableCell align="center">退货数量</StyledTableCell>
+                                            <StyledTableCell align="center">退款总价</StyledTableCell>
+                                            <StyledTableCell align="center">运费支付方式</StyledTableCell>
+                                            <StyledTableCell align="center">运费</StyledTableCell>
+                                            <StyledTableCell align="center">退货盈亏</StyledTableCell>
+                                            <StyledTableCell align="center">状态</StyledTableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {supplierDetailReducer.purchaseRefundInfo.length > 0 &&supplierDetailReducer.purchaseRefundInfo.map((row) => (
+                                            <TableRow key={row.id}>
+                                                <TableCell align="center" >{row.id}</TableCell>
+                                                <TableCell align="center" >{row.product_name}</TableCell>
+                                                <TableCell align="center" >{commonUtil.getJsonValue(sysConst.REFUND_PAYMENT_STATUS, row.payment_status)}</TableCell>
+                                                <TableCell align="center" >{row.refund_unit_cost}</TableCell>
+                                                <TableCell align="center" >{row.refund_count}</TableCell>
+                                                <TableCell align="center" >{row.total_cost}</TableCell>
+                                                <TableCell align="center" >{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE,row.transfer_cost_type)}</TableCell>
+                                                <TableCell align="center" >{row.transfer_cost}</TableCell>
+                                                <TableCell align="center" >{row.refund_profile}</TableCell>
+                                                <TableCell align="center" >{commonUtil.getJsonValue(sysConst.REFUND_STATUS,row.status)}</TableCell>
+                                            </TableRow>))}
+                                        {supplierDetailReducer.purchaseRefundInfo.length === 0 &&
+                                        <TableRow style={{height:60}}><TableCell align="center" colSpan="11">暂无数据</TableCell></TableRow>
+                                        }
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Grid>
                     </TabPanel>
                 </TabContext>
             </div>
@@ -358,6 +442,12 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
     },
     updateSupplier:()=>{
         dispatch(SupplierDetailAction.updateSupplier());
+    },
+    getPurchaseInfo: (id) => {
+        dispatch(SupplierDetailAction.getPurchaseInfo(id));
+    },
+    getPurchaseRefundInfo: () => {
+        dispatch(SupplierDetailAction.getPurchaseRefundInfo());
     }
 });
 

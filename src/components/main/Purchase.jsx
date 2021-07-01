@@ -408,7 +408,7 @@ function Purchase (props){
                         <Table  size={'small'} aria-label="a dense table">
                             <TableHead >
                                 <TableRow style={{height:60}}>
-                                    <StyledTableCell align="center">id</StyledTableCell>
+                                    <StyledTableCell align="center">ID</StyledTableCell>
                                     <StyledTableCell align="center">供应商</StyledTableCell>
                                     <StyledTableCell align="center">开始时间</StyledTableCell>
                                     <StyledTableCell align="center">结束时间</StyledTableCell>

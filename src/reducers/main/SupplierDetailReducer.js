@@ -3,6 +3,7 @@ import {SupplierDetailActionType} from '../../types';
 const initialState = {
     // 供应商
     supplierInfo: {
+        id:'',
         supplier_name:'',
         supplier_type:0,
         contact_name:'',
@@ -18,7 +19,9 @@ const initialState = {
         settle_type:0,
         settle_month_day:0,
         remark:''
-    }
+    },
+    purchaseInfo:[],
+    purchaseRefundInfo:[]
 };
 
 export default handleActions({
@@ -35,5 +38,19 @@ export default handleActions({
             ...state,
             supplierInfo: supplierObj
         }
-    }
+    },
+
+    [SupplierDetailActionType.getPurchaseInfo]: (state, action) => {
+        return {
+            ...state,
+            purchaseInfo: action.payload
+        }
+    },
+    [SupplierDetailActionType.getPurchaseRefundInfo]: (state, action) => {
+        return {
+            ...state,
+            purchaseRefundInfo: action.payload
+        }
+    },
+
 }, initialState)
