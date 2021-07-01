@@ -7,14 +7,27 @@ import {
     Grid,
     Typography,
     TextField,
-    IconButton, AppBar, Tab,
-    FormControl, InputLabel, Select, MenuItem, makeStyles
+    IconButton,
+    AppBar,
+    Tab,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    makeStyles,
+    Paper,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody,
+    TableContainer
 } from "@material-ui/core";
 import TabContext from '@material-ui/lab/TabContext';
 import TabList from '@material-ui/lab/TabList';
 import TabPanel from '@material-ui/lab/TabPanel';
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import {CommonActionType, ProductManagerDetailActionType} from '../../types';
+import {ProductManagerDetailActionType} from '../../types';
 
 const productManagerDetailAction = require('../../actions/main/ProductManagerDetailAction');
 const commonAction = require('../../actions/layout/CommonAction');
@@ -28,13 +41,13 @@ const useStyles = makeStyles((theme) => ({
 
 // 商品- 详情
 function ProductManagerDetail(props) {
-    const {productManagerDetailReducer, commonReducer, getProductInfo} = props;
+    const {productManagerDetailReducer, commonReducer} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     const {id} = useParams();
     useEffect(() => {
         props.getBaseSelectList();
-        getProductInfo(id);
+        props.getProductInfo(id);
     }, []);
 
     // 校验
@@ -47,9 +60,6 @@ function ProductManagerDetail(props) {
         if (!productManagerDetailReducer.productInfo.brand_model.id) {
             validateObj.brand_model ='请选择品牌型号';
         }
-        // if (!productManagerDetailReducer.productInfo.product_name) {
-        //     validateObj.product_name ='请输入商品名称';
-        // }
         if (!productManagerDetailReducer.productInfo.price) {
             validateObj.price ='请输入售价';
         }
@@ -68,6 +78,19 @@ function ProductManagerDetail(props) {
     const [tabValue, setTabValue] = React.useState('base');
     const changeTab = (event, newValue) => {
         setTabValue(newValue);
+        switch (newValue) {
+            case "base":
+                props.getProductInfo(id);
+                break;
+            case "purchase":
+                props.getProductPurchase(id);
+                break;
+            case "storage":
+                props.getProductStorage(id);
+                break;
+            default:
+                break;
+        }
     };
 
     return (
@@ -76,7 +99,7 @@ function ProductManagerDetail(props) {
             <Typography gutterBottom className={classes.title}>
                 <Link to={{pathname: '/product_manager', state: {fromDetail: true}}}>
                     <IconButton color="primary" edge="start">
-                        <i className="mdi mdi-arrow-left-bold"></i>
+                        <i className="mdi mdi-arrow-left-bold"/>
                     </IconButton>
                 </Link>
                 商品 - <span>{productManagerDetailReducer.productInfo.product_name}（{productManagerDetailReducer.productInfo.id}）</span>
@@ -87,8 +110,8 @@ function ProductManagerDetail(props) {
                 <AppBar position="static" color="default">
                     <TabList onChange={changeTab} indicatorColor="primary" variant="fullWidth" textColor="primary">
                         <Tab label="基本信息" value="base" />
-                        <Tab label="采购记录" value="2" />
-                        <Tab label="库存" value="3" />
+                        <Tab label="采购记录" value="purchase" />
+                        <Tab label="库存" value="storage" />
                     </TabList>
                 </AppBar>
 
@@ -104,7 +127,7 @@ function ProductManagerDetail(props) {
                                               // 清空 商品子分类
                                               dispatch(ProductManagerDetailActionType.setProductInfo({name: "category_sub", value: null}));
                                               // 根据选择内容，刷新 商品子分类 列表
-                                              props.getCategorySubList(value.id);
+                                              dispatch(commonAction.getCategorySubList(value.id));
                                           }}
                                           value={productManagerDetailReducer.productInfo.category}
                                           renderInput={(params) => <TextField {...params} label="商品分类" margin="dense" variant="outlined"/>}
@@ -134,7 +157,7 @@ function ProductManagerDetail(props) {
                                               // 清空 商品子分类
                                               dispatch(ProductManagerDetailActionType.setProductInfo({name: "brand_model", value: null}));
                                               // 根据选择内容，刷新 商品子分类 列表
-                                              props.getBrandModelList(value.id);
+                                              dispatch(commonAction.getBrandModelList(value.id));
                                           }}
                                           value={productManagerDetailReducer.productInfo.brand}
                                           renderInput={(params) => <TextField {...params} label="品牌" margin="dense" variant="outlined"/>}
@@ -239,8 +262,81 @@ function ProductManagerDetail(props) {
                     </Grid>
                 </TabPanel>
 
-                <TabPanel value="2">Item Two</TabPanel>
-                <TabPanel value="3">Item Three</TabPanel>
+                <TabPanel value="purchase">
+                    <TableContainer component={Paper}>
+                        <Table stickyHeader aria-label="sticky table" style={{minWidth: 650}}>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell padding="default" className={classes.head} align="center">采购单号</TableCell>
+                                    <TableCell padding="default" className={classes.head} align="center">供应商</TableCell>
+                                    <TableCell padding="default" className={classes.head} align="center">商品</TableCell>
+                                    <TableCell padding="default" className={classes.head} align="center">单位成本</TableCell>
+                                    <TableCell padding="default" className={classes.head} align="center">采购数量</TableCell>
+                                    <TableCell padding="default" className={classes.head} align="center">总成本</TableCell>
+                                    <TableCell padding="default" className={classes.head} align="center">采购日期</TableCell>
+                                    <TableCell padding="default" className={classes.head} align="center">备注</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {productManagerDetailReducer.purchaseList.map((row) => (
+                                    <TableRow className={classes.tableRow} key={row.id}>
+                                        <TableCell padding="" align="center">{row.purchase_id}</TableCell>
+                                        <TableCell padding="" align="center">{row.supplier_name}</TableCell>
+                                        <TableCell padding="" align="center">{row.product_name}</TableCell>
+                                        <TableCell padding="" align="center">{row.unit_cost}</TableCell>
+                                        <TableCell padding="" align="center">{row.purchase_count}</TableCell>
+                                        <TableCell padding="" align="center">{row.total_cost}</TableCell>
+                                        <TableCell padding="" align="center">{row.created_on}</TableCell>
+                                        <TableCell padding="" align="left">{row.price}</TableCell>
+                                    </TableRow>
+                                ))}
+
+                                {productManagerDetailReducer.purchaseList.length === 0 &&
+                                <TableRow>
+                                    <TableCell colSpan={8} style={{textAlign: 'center'}}>暂无数据</TableCell>
+                                </TableRow>}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </TabPanel>
+
+                <TabPanel value="storage">
+                    <TableContainer component={Paper}>
+                        <Table stickyHeader aria-label="sticky table" style={{minWidth: 650}}>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell padding="default" className={classes.head} align="center">仓库</TableCell>
+                                    <TableCell padding="default" className={classes.head} align="center">仓库分区</TableCell>
+                                    <TableCell padding="default" className={classes.head} align="center">供应商</TableCell>
+                                    <TableCell padding="default" className={classes.head} align="center">商品</TableCell>
+                                    <TableCell padding="default" className={classes.head} align="center">采购单号</TableCell>
+                                    <TableCell padding="default" className={classes.head} align="center">仓储数量</TableCell>
+                                    <TableCell padding="default" className={classes.head} align="center">仓储日期</TableCell>
+                                    <TableCell padding="default" className={classes.head} align="center">备注</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {productManagerDetailReducer.storageList.map((row) => (
+                                    <TableRow className={classes.tableRow} key={row.id}>
+                                        <TableCell padding="" align="center">{row.storage_name}</TableCell>
+                                        <TableCell padding="" align="center">{row.storage_area_name}</TableCell>
+                                        <TableCell padding="" align="center">{row.supplier_name}</TableCell>
+                                        <TableCell padding="" align="center">{row.product_name}</TableCell>
+                                        <TableCell padding="" align="center">{row.purchase_id}</TableCell>
+                                        <TableCell padding="" align="center">{row.storage_count}</TableCell>
+                                        <TableCell padding="" align="center">{row.date_id}</TableCell>
+                                        <TableCell padding="" align="left">{row.remark}</TableCell>
+                                    </TableRow>
+                                ))}
+
+                                {productManagerDetailReducer.storageList.length === 0 &&
+                                <TableRow>
+                                    <TableCell colSpan={8} style={{textAlign: 'center'}}>暂无数据</TableCell>
+                                </TableRow>}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </TabPanel>
             </TabContext>
         </div>
     )
@@ -259,25 +355,20 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(commonAction.getCategoryList());
         dispatch(commonAction.getBrandList());
     },
-    // select控件，联动检索
-    getCategorySubList: (categoryId) => {
-        dispatch(commonAction.getCategorySubList(categoryId));
-    },
-    setCategorySubList: (value) => {
-        dispatch(CommonActionType.setCategorySubList(value));
-    },
-    getBrandModelList: (brandId) => {
-        dispatch(commonAction.getBrandModelList(brandId));
-    },
-    setBrandModelList: (value) => {
-        dispatch(CommonActionType.setBrandModelList(value));
-    },
     getProductInfo: (id) => {
         dispatch(productManagerDetailAction.getProductInfo(id));
     },
     updateProduct: () => {
         dispatch(productManagerDetailAction.updateProduct());
-    }
+    },
+    // 采购记录
+    getProductPurchase: (id) => {
+        dispatch(productManagerDetailAction.getProductPurchase(id));
+    },
+    // 库存
+    getProductStorage: (id) => {
+        dispatch(productManagerDetailAction.getProductStorage(id));
+    },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductManagerDetail)
