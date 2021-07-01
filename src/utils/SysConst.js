@@ -106,6 +106,29 @@ export const SETTLE_TYPE = [
     {value: 1, label: "月结"},
     {value: 2, label: "非月结"}
 ];
+//运费支付
+export const TRANSFER_COST_TYPE = [
+    {value: 1, label: "对方支付"},
+    {value: 2, label: "我方支付"}
+];
+//仓储状态
+export const  STORAGE_STATUS= [
+    {value: 1, label: "未入库"},
+    {value: 7, label: "已入库"}
+];
+//支付状态
+export const PAYMENT_STATUS = [
+    {value: 1, label: "未支付"},
+    {value: 7, label: "已支付"}
+];
+
+//采购状态
+export const PURCHASE_STATUS = [
+    {value: 1, label: "未处理"},
+    {value: 3, label: "处理中"},
+    {value: 7, label: "已完成"}
+];
+
 // 用于权限设定（包含所有机能设定）
 export const ALL_PAGE_LIST = [
     {

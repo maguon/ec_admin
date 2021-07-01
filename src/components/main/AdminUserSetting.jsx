@@ -359,13 +359,13 @@ function AdminUserSetting (props) {
                                             color='primary'
                                             inputProps={{ 'aria-label': 'secondary checkbox' }}
                                         />
-                                      <IconButton size="primary" color="primary" onClick={() => {getUserById(row.id);handleAddOpen(row);}}><i className="mdi mdi-table-search purple-font margin-left10"
+                                      <IconButton  color="primary" onClick={() => {getUserById(row.id);handleAddOpen(row);}}><i className="mdi mdi-table-search purple-font margin-left10"
                                         > </i>
                                       </IconButton>
                                     </TableCell>
                                 </TableRow>))}
                             { adminUserSettingReducer.adminArray.length === 0 &&
-                                <TableRow style={{height:60}}> <TableCell align="center" colSpan="6">暂无数据</TableCell></TableRow>
+                                <TableRow style={{height:60}}><TableCell align="center" colSpan="6">暂无数据</TableCell></TableRow>
                             }
                         </TableBody>
                     </Table>

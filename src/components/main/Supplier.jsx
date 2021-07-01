@@ -263,6 +263,7 @@ function Supplier (props){
                     <Table  size={'small'} aria-label="a dense table">
                         <TableHead >
                             <TableRow style={{height:60}}>
+                                <StyledTableCell align="center">id</StyledTableCell>
                                 <StyledTableCell align="center">名称</StyledTableCell>
                                 <StyledTableCell align="center">类型</StyledTableCell>
                                 <StyledTableCell align="center">联系人</StyledTableCell>
@@ -277,6 +278,7 @@ function Supplier (props){
                         <TableBody>
                             {supplierReducer.supplierArray.length > 0 &&supplierReducer.supplierArray.map((row) => (
                                 <TableRow key={row.id}>
+                                    <TableCell align="center" >{row.id}</TableCell>
                                     <TableCell align="center" >{row.supplier_name}</TableCell>
                                     <TableCell align="center" >{commonUtil.getJsonValue(sysConst.SUPPLIER_TYPE,row.supplier_type)}</TableCell>
                                     <TableCell align="center" >{row.contact_name}</TableCell>
@@ -287,11 +289,11 @@ function Supplier (props){
                                     <TableCell align="center">{commonUtil.getJsonValue(sysConst.USE_FLAG, row.status)}</TableCell>
                                     <TableCell align="center">
                                         {/* 删除按钮 */}
-                                        <IconButton color="primary" edge="start" onClick={() => {
+                                       {/* <IconButton color="primary" edge="start" onClick={() => {
                                             deleteSupplierInfo(row.id)
                                         }}>
                                             <i className="mdi mdi-close mdi-24px"/>
-                                        </IconButton>
+                                        </IconButton>*/}
 
                                         <IconButton color="primary" edge="start">
                                             <Link to={{pathname: '/supplier/' + row.id}}>
@@ -301,7 +303,7 @@ function Supplier (props){
                                     </TableCell>
                                 </TableRow>))}
                             {supplierReducer.supplierArray.length === 0 &&
-                            <TableRow style={{height:60}}> <TableCell align="center" colSpan="9">暂无数据</TableCell></TableRow>
+                            <TableRow style={{height:60}}> <TableCell align="center" colSpan="10">暂无数据</TableCell></TableRow>
                             }
                         </TableBody>
                     </Table>
