@@ -31,6 +31,7 @@ import {ProductManagerDetailActionType} from '../../types';
 
 const productManagerDetailAction = require('../../actions/main/ProductManagerDetailAction');
 const commonAction = require('../../actions/layout/CommonAction');
+const formatUtil = require('../../utils/FormatUtil');
 const sysConst = require('../../utils/SysConst');
 const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
@@ -286,7 +287,7 @@ function ProductManagerDetail(props) {
                                         <TableCell padding="" align="center">{row.unit_cost}</TableCell>
                                         <TableCell padding="" align="center">{row.purchase_count}</TableCell>
                                         <TableCell padding="" align="center">{row.total_cost}</TableCell>
-                                        <TableCell padding="" align="center">{row.created_on}</TableCell>
+                                        <TableCell padding="" align="center">{formatUtil.getDate(row.created_on)}</TableCell>
                                         <TableCell padding="" align="left">{row.price}</TableCell>
                                     </TableRow>
                                 ))}
@@ -310,7 +311,8 @@ function ProductManagerDetail(props) {
                                     <TableCell padding="default" className={classes.head} align="center">供应商</TableCell>
                                     <TableCell padding="default" className={classes.head} align="center">商品</TableCell>
                                     <TableCell padding="default" className={classes.head} align="center">采购单号</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">仓储数量</TableCell>
+                                    <TableCell padding="default" className={classes.head} align="center">单价</TableCell>
+                                    <TableCell padding="default" className={classes.head} align="center">数量</TableCell>
                                     <TableCell padding="default" className={classes.head} align="center">仓储日期</TableCell>
                                     <TableCell padding="default" className={classes.head} align="center">备注</TableCell>
                                 </TableRow>
@@ -323,6 +325,7 @@ function ProductManagerDetail(props) {
                                         <TableCell padding="" align="center">{row.supplier_name}</TableCell>
                                         <TableCell padding="" align="center">{row.product_name}</TableCell>
                                         <TableCell padding="" align="center">{row.purchase_id}</TableCell>
+                                        <TableCell padding="" align="center">{row.unit_cost}</TableCell>
                                         <TableCell padding="" align="center">{row.storage_count}</TableCell>
                                         <TableCell padding="" align="center">{row.date_id}</TableCell>
                                         <TableCell padding="" align="left">{row.remark}</TableCell>

@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function StorageProduct(props) {
-    const {storageProductReducer, commonReducer, fromDetail} = props;
+    const {storageProductReducer, commonReducer, fromDetail, downLoadCsv} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
 
@@ -94,7 +94,7 @@ function StorageProduct(props) {
 
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
-                <Grid container item xs={11} spacing={3}>
+                <Grid container item xs={10} spacing={3}>
                     <Grid item xs={3}>
                         <Autocomplete id="condition-storage" fullWidth
                                       options={commonReducer.storageList}
@@ -175,12 +175,12 @@ function StorageProduct(props) {
                     </Fab>
                 </Grid>
 
-                {/*/!*追加按钮*!/*/}
-                {/*<Grid item xs={1}>*/}
-                {/*    <Fab color="primary" aria-label="add" size="small" onClick={() => {initModal()}}>*/}
-                {/*        <i className="mdi mdi-plus mdi-24px"/>*/}
-                {/*    </Fab>*/}
-                {/*</Grid>*/}
+                {/*追加按钮*/}
+                <Grid item xs={1} style={{textAlign:'right'}}>
+                    <Fab color="primary" aria-label="add" size="small" onClick={() => {downLoadCsv()}} style={{marginTop : 50}}>
+                        <i className="mdi mdi-cloud-download mdi-24px"/>
+                    </Fab>
+                </Grid>
             </Grid>
 
             {/* 下部分：检索结果显示区域 */}
@@ -227,8 +227,8 @@ function StorageProduct(props) {
                             <TableCell rowSpan={2} />
                             <TableCell rowSpan={2} />
                             <TableCell rowSpan={2} />
-                            <TableCell colSpan={3}>库存总量：{storageProductReducer.storageProductData.statistics.totalCnt}</TableCell>
-                            <TableCell colSpan={3}>库存总成本：{storageProductReducer.storageProductData.statistics.totalCost}</TableCell>
+                            <TableCell colSpan={3} align="center">库存总量：{storageProductReducer.storageProductData.statistics.totalCnt}</TableCell>
+                            <TableCell colSpan={3} align="right" style={{paddingRight:40}}>库存总成本：{storageProductReducer.storageProductData.statistics.totalCost}</TableCell>
                         </TableRow>}
                         {storageProductReducer.storageProductData.dataList.length === 0 &&
                         <TableRow>
@@ -270,6 +270,9 @@ const mapDispatchToProps = (dispatch) => ({
     },
     getStorageProductList: (dataStart) => {
         dispatch(storageProductAction.getStorageProductList({dataStart}))
+    },
+    downLoadCsv: () => {
+        dispatch(storageProductAction.downLoadCsv())
     },
     saveModalData: () => {
         // dispatch(storageProductAction.saveModalData({
