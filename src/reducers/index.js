@@ -16,6 +16,7 @@ import AppSettingReducer from "./main/AppSettingReducer";
 import SupplierReducer from './main/SupplierReducer';
 import SupplierDetailReducer from './main/SupplierDetailReducer';
 import PurchaseReducer from './main/PurchaseReducer';
+import PurchaseDetailReducer from './main/PurchaseDetailReducer';
 import DataDictionaryReducer from './main/DataDictionaryReducer'
 export default combineReducers({
     form: reduxFormReducer,
@@ -35,5 +36,6 @@ export default combineReducers({
     SupplierReducer,
     SupplierDetailReducer,
     PurchaseReducer,
+    PurchaseDetailReducer,
     DataDictionaryReducer
 });

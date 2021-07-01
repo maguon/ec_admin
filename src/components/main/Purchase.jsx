@@ -439,7 +439,7 @@ function Purchase (props){
                                         <TableCell align="center">
                                             {/* 详情按钮 */}
                                             <IconButton color="primary" edge="start">
-                                                <Link to={{pathname: '/supplier/' + row.supplier_id}}>
+                                                <Link to={{pathname: '/purchase/' + row.id}}>
                                                     <i className="mdi mdi-table-search purple-font margin-left10"> </i>
                                                 </Link>
                                             </IconButton>

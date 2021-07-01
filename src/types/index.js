@@ -14,6 +14,7 @@ import * as AppSettingActionType from "./main/AppSettingActionType";
 import * as SupplierActionType from './main/SupplierActionType';
 import * as SupplierDetailActionType from './main/SupplierDetailActionType';
 import * as PurchaseActionType from  './main/PurchaseActionType';
+import * as PurchaseDetailActionType from  './main/PurchaseDetailActionType';
 import * as DataDictionaryActionType from './main/DataDictionaryActionType';
 export {
     AppActionType,
@@ -32,5 +33,6 @@ export {
     AdminUserSettingActionType,
     AppSettingActionType,
     PurchaseActionType,
+    PurchaseDetailActionType,
     DataDictionaryActionType
 }

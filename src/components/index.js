@@ -21,6 +21,7 @@ import StorageProduct from "./main/StorageProduct";
 import Supplier from './main/Supplier';
 import SupplierDetail from './main/SupplierDetail';
 import Purchase from './main/Purchase';
+import PurchaseDetail from './main/PurchaseDetail'
 import DataDictionary from  './main/DataDictionary';
 import NestedList from "./utils/NestedList";
 
@@ -48,6 +49,7 @@ export {
     Supplier,
     SupplierDetail,
     Purchase,
+    PurchaseDetail,
     DataDictionary,
     NestedList
 }
