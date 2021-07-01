@@ -100,9 +100,9 @@ function ProductManagerDetail(props) {
                                           getOptionLabel={(option) => option.category_name}
                                           onChange={(event, value) => {
                                               // 将当前选中值 赋值 reducer
-                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "category", value: {id: value.id, category_name: value.category_name}}));
+                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "category", value: value}));
                                               // 清空 商品子分类
-                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "category_sub", value: {}}));
+                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "category_sub", value: null}));
                                               // 根据选择内容，刷新 商品子分类 列表
                                               props.getCategorySubList(value.id);
                                           }}
@@ -116,7 +116,7 @@ function ProductManagerDetail(props) {
                                           noOptionsText="无选项"
                                           getOptionLabel={(option) => option.category_sub_name}
                                           onChange={(event, value) => {
-                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "category_sub", value: {id: value.id, category_sub_name: value.category_sub_name}}));
+                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "category_sub", value: value}));
                                           }}
                                           value={productManagerDetailReducer.productInfo.category_sub}
                                           renderInput={(params) => <TextField {...params} label="商品子分类" margin="dense" variant="outlined"
@@ -130,9 +130,9 @@ function ProductManagerDetail(props) {
                                           getOptionLabel={(option) => option.brand_name}
                                           onChange={(event, value) => {
                                               // 将当前选中值 赋值 reducer
-                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "brand", value: {id: value.id, brand_name: value.brand_name}}));
+                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "brand", value: value}));
                                               // 清空 商品子分类
-                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "brand_model", value: {}}));
+                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "brand_model", value: null}));
                                               // 根据选择内容，刷新 商品子分类 列表
                                               props.getBrandModelList(value.id);
                                           }}
@@ -146,7 +146,7 @@ function ProductManagerDetail(props) {
                                           noOptionsText="无选项"
                                           getOptionLabel={(option) => option.brand_model_name}
                                           onChange={(e, value) => {
-                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "brand_model", value: {id: value.id, brand_model_name: value.brand_model_name}}));
+                                              dispatch(ProductManagerDetailActionType.setProductInfo({name: "brand_model", value: value}));
                                           }}
                                           value={productManagerDetailReducer.productInfo.brand_model}
                                           renderInput={(params) => <TextField {...params} label="品牌型号" margin="dense" variant="outlined"

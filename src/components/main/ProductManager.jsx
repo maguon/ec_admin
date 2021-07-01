@@ -396,12 +396,12 @@ function ProductManager(props) {
                 <Table stickyHeader aria-label="sticky table" style={{minWidth: 650}}>
                     <TableHead>
                         <TableRow>
+                            <TableCell padding="default" className={classes.head} align="center">ID</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">商品分类</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">商品子分类</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">品牌</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">品牌型号</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">商品名称</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">序列号</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">标准类型</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">单位</TableCell>
                             <TableCell padding="default" className={classes.head} align="right">售价</TableCell>
@@ -412,12 +412,12 @@ function ProductManager(props) {
                     <TableBody>
                         {productManagerReducer.productData.dataList.map((row) => (
                             <TableRow className={classes.tableRow} key={row.id}>
+                                <TableCell padding="none" align="center">{row.id}</TableCell>
                                 <TableCell padding="none" align="center">{row.category_name}</TableCell>
                                 <TableCell padding="none" align="center">{row.category_sub_name}</TableCell>
                                 <TableCell padding="none" align="center">{row.brand_name}</TableCell>
                                 <TableCell padding="none" align="center">{row.brand_model_name}</TableCell>
                                 <TableCell padding="none" align="center">{row.product_name}</TableCell>
-                                <TableCell padding="none" align="center">{row.product_serial}</TableCell>
                                 <TableCell padding="none"
                                            align="center">{commonUtil.getJsonValue(sysConst.STANDARD_TYPE, row.standard_type)}</TableCell>
                                 <TableCell padding="none" align="center">{row.unit_name}</TableCell>
