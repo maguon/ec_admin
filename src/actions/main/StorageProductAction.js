@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
-import {StorageProductActionType} from '../../types';
+import {AppActionType, StorageProductActionType} from '../../types';
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
@@ -32,7 +32,9 @@ export const getStorageProductList = (params) => async (dispatch, getState) => {
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
 
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
         let productData = getState().StorageProductReducer.storageProductData;
         if (res.success) {
             productData.start = start;

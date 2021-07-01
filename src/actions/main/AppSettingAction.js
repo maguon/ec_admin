@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
-import {AppSettingActionType} from '../../types';
+import {AppActionType, AppSettingActionType} from '../../types';
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
@@ -30,7 +30,9 @@ export const getAppList = (params) => async (dispatch, getState) => {
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
 
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
         let appData = getState().AppSettingReducer.appData;
         if (res.success) {
             appData.start = start;

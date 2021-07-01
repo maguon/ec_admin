@@ -30,7 +30,9 @@ const initialState = {
         // "barcode": "string",
         // 备注
         remark: ''
-    }
+    },
+    purchaseList:[],
+    storageList:[]
 };
 
 export default handleActions({
@@ -51,6 +53,18 @@ export default handleActions({
         return {
             ...state,
             productInfo: productObj
+        }
+    },
+    [ProductManagerDetailActionType.getProductPurchase]: (state, action) => {
+        return {
+            ...state,
+            purchaseList: action.payload
+        }
+    },
+    [ProductManagerDetailActionType.setProductStorage]: (state, action) => {
+        return {
+            ...state,
+            storageList: action.payload
         }
     }
 }, initialState)
