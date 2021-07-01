@@ -1,79 +1,69 @@
 import {handleActions} from 'redux-actions';
-import {ProductManagerActionType} from '../../types';
+import {StorageProductActionType} from '../../types';
 
 const initialState = {
     // 检索结果
-    productData: {
+    storageProductData: {
         // 开始位置
         start: 0,
         // 每页数量
-        size: 11,
+        size: 10,
         // 检索结果数量
         dataSize: 0,
         // 数据列表
-        dataList: []
+        dataList: [],
+        // 统计
+        statistics: {totalCnt: 0, totalCost: 0}
     },
     // 检索条件
     queryParams: {
-        paramCategory: null,
-        paramCategorySub: null,
-        paramBrand: null,
-        paramBrandModel: null,
-        paramProduct: null,
-        paramStandardType: null,
-        paramStatus: null
+        // 仓库
+        storage: null,
+        // 仓库分区
+        storageArea: null,
+        // 供应商
+        supplier: null,
+        // 商品
+        product: null,
+        // 采购单ID
+        purchaseId: '',
+        // 仓储日期（始）
+        startDate: '',
+        // 仓储日期（终）
+        endDate: ''
     },
-    // 检索结果
-    modalData: {
-        // 新增 / 修改 区分
-        pageType: '',
-        // 唯一键
-        uid : -1,
-
-        // 商品分类
-        categoryType: null,
-        // 商品子分类
-        categorySubType: null,
-        // 品牌
-        brandType: null,
-        // 品牌型号
-        brandModelType: null,
-        // 商品名称
-        productName: '',
-        // 商品别名
-        productSName: '',
-        // 序列号
-        productSerial: '',
-        // 产地
-        productAddress: '',
-        // 标准类型（标准、非标准）
-        standardType: null,
-        // 单位
-        unitName:  '',
-        // 单价
-        price: 0,
-        // 图片
-        image: '',
-        // "barcode": "string",
-        // 备注
-        remark: ''
-    }
+    modalData: {}
 };
 
 export default handleActions({
-    [ProductManagerActionType.setProductData]: (state, action) => {
+    [StorageProductActionType.setStorageProductData]: (state, action) => {
         return {
             ...state,
-            productData: action.payload
+            storageProductData: action.payload
         }
     },
-    [ProductManagerActionType.setQueryParams]: (state, action) => {
+    [StorageProductActionType.setStorageProductDataCnt]: (state, action) => {
+        state.storageProductData.statistics = action.payload;
+        return {
+            ...state,
+            storageProductData: state.storageProductData
+        }
+    },
+    [StorageProductActionType.setDefaultQueryParams]: (state, action) => {
         return {
             ...state,
             queryParams: action.payload
         }
     },
-    [ProductManagerActionType.setModalData]: (state, action) => {
+    [StorageProductActionType.setQueryParams]: (state, action) => {
+        const {name, value} = action.payload;
+        const paramsObj = {...state.queryParams, [name]: value};
+        return {
+            ...state,
+            queryParams: paramsObj
+        }
+    },
+    [StorageProductActionType.setModalData]: (state, action) => {
         return {
             ...state,
             modalData: action.payload

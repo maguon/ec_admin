@@ -7,6 +7,9 @@ const initialState = {
     brandList: [],
     brandModelList: [],
     productList: [],
+    storageList: [],
+    storageAreaList: [],
+    supplierList: [],
 };
 
 export default handleActions({
@@ -38,6 +41,24 @@ export default handleActions({
         return {
             ...state,
             productList: action.payload
+        }
+    },
+    [CommonActionType.setStorageList]: (state, action) => {
+        return {
+            ...state,
+            storageList: action.payload
+        }
+    },
+    [CommonActionType.setStorageAreaList]: (state, action) => {
+        return {
+            ...state,
+            storageAreaList: action.payload
+        }
+    },
+    [CommonActionType.setSupplierList]: (state, action) => {
+        return {
+            ...state,
+            supplierList: action.payload
         }
     },
 }, initialState);
