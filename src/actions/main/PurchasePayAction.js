@@ -1,30 +1,31 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
-import {AppActionType, AppSettingActionType} from '../../types';
+import {AppActionType, PurchasePayActionType} from '../../types';
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
 
-export const getAppList = (params) => async (dispatch, getState) => {
+export const getPurchasePayList = (params) => async (dispatch, getState) => {
     try {
         // 检索条件：开始位置
         const start = params.dataStart;
         // 检索条件：每页数量
-        const size = getState().AppSettingReducer.appData.size;
-        // 检索条件：系统类型
-        const deviceType = params.paramDeviceType;
-        // 检索条件：状态
-        const status = params.paramStatus;
+        const size = getState().PurchasePayReducer.purchasePayData.size;
 
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/app?start=' + start + '&size=' + size;
+            + '/purchase?start=' + start + '&size=' + size;
 
         // 检索条件
         let conditionsObj = {
-            deviceType: deviceType,
-            status: status
+            purchaseId: params.purchaseId,
+            supplierId: params.supplier == null ? '' : params.supplier.id,
+            planDateStart: params.planDateStart.replace(/-/g, ""),
+            planDateEnd: params.planDateEnd.replace(/-/g, ""),
+            paymentStatus: params.paymentStatus,
+            paymentDateStart: params.paymentDateStart.replace(/-/g, ""),
+            paymentDateEnd: params.paymentDateEnd.replace(/-/g, "")
         };
         let conditions = httpUtil.objToUrl(conditionsObj);
         // 检索URL
@@ -33,44 +34,34 @@ export const getAppList = (params) => async (dispatch, getState) => {
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-        let appData = getState().AppSettingReducer.appData;
+        let appData = getState().PurchasePayReducer.purchasePayData;
         if (res.success) {
             appData.start = start;
             appData.dataSize = res.rows.length;
             appData.dataList = res.rows.slice(0, size - 1);
-            dispatch({type: AppSettingActionType.setAppData, payload: appData});
+            dispatch({type: PurchasePayActionType.getPurchasePayData, payload: appData});
         } else if (!res.success) {
-            Swal.fire("获取App系统列表信息失败", res.msg, "warning");
+            Swal.fire("获取采购支付列表失败", res.msg, "warning");
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }
 };
 
-export const changeStatus = (id, status, condition) => async (dispatch, getState) => {
+export const confirmPayment = (id, params) => async (dispatch, getState) => {
     try {
         // 状态
-        let newStatus;
-        if (status === 0) {
-            newStatus = 1
-        } else {
-            newStatus = 0
-        }
-
-        // 状态
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/app/' + id + '/status?status=' + newStatus;
+            + '/purchase/' + id + '/paymentStatus?paymentStatus=' + sysConst.PAYMENT_STATUS[1].value;
+
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpPut(url, {});
         dispatch({type: AppActionType.showLoadProgress, payload: false});
+
         if (res.success) {
             Swal.fire("修改成功", "", "success");
             // 刷新列表
-            dispatch(getAppList({
-                paramDeviceType: condition.paramDeviceType,
-                paramStatus: condition.paramStatus,
-                dataStart: getState().AppSettingReducer.appData.start
-            }));
+            dispatch(getPurchasePayList({...params, dataStart: getState().PurchasePayReducer.purchasePayData.start}));
         } else if (!res.success) {
             Swal.fire("修改失败", res.msg, "warning");
         }
@@ -79,62 +70,24 @@ export const changeStatus = (id, status, condition) => async (dispatch, getState
     }
 };
 
-export const deleteApp = (id, condition) => async (dispatch, getState) => {
+export const getPurchaseItem = (purchaseId) => async (dispatch) => {
     try {
-        const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/app/' + id + '/del';
-        dispatch({type: AppActionType.showLoadProgress, payload: true});
-        const res = await httpUtil.httpDelete(url, {});
-        dispatch({type: AppActionType.showLoadProgress, payload: false});
-        if (res.success) {
-            Swal.fire("删除成功", "", "success");
-            // 刷新列表
-            dispatch(getAppList({
-                paramDeviceType: condition.paramDeviceType,
-                paramStatus: condition.paramStatus,
-                dataStart: getState().AppSettingReducer.appData.start
-            }));
-        } else if (!res.success) {
-            Swal.fire('删除失败', res.msg, 'warning');
-        }
-    } catch (err) {
-        Swal.fire("操作失败", err.message, "error");
-    }
-};
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/purchaseItem?purchaseId=' + purchaseId;
 
-export const saveModalData = (modalData, condition) => async (dispatch, getState) => {
-    try {
-        const params = {
-            appType: modalData.appType,
-            deviceType: modalData.deviceType,
-            version: modalData.version,
-            versionNum: modalData.versionNum,
-            minVersionNum: modalData.minVersionNum,
-            forceUpdate: modalData.forceUpdate,
-            url: modalData.url,
-            remarks: modalData.remark
-        };
-        // 基本url
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/app';
-        let res;
         dispatch({type: AppActionType.showLoadProgress, payload: true});
-        if (modalData.pageType === 'new') {
-            res = await httpUtil.httpPost(url, params);
-        } else {
-            url = url + '/' + modalData.uid;
-            res = await httpUtil.httpPut(url, params);
-        }
+        const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
+
         if (res.success) {
-            Swal.fire("保存成功", "", "success");
-            // 刷新列表
-            dispatch(getAppList({
-                paramDeviceType: condition.paramDeviceType,
-                paramStatus: condition.paramStatus,
-                dataStart: getState().AppSettingReducer.appData.start
-            }));
+            if (res.rows.length > 0) {
+                dispatch({type: PurchasePayActionType.setModalData, payload: res.rows[0]});
+            } else {
+                dispatch({type: PurchasePayActionType.setModalData, payload: {}});
+            }
         } else if (!res.success) {
-            Swal.fire("保存失败", res.msg, "warning");
+            Swal.fire("获取采购支付详情失败", res.msg, "warning");
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
