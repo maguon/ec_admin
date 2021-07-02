@@ -10,7 +10,9 @@ export const getSupplierList = (params) => async (dispatch, getState) => {
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/supplier?';
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true) {
             dispatch({type: PurchaseActionType.getSupplierList, payload: res.rows});
         } else if (res.success === false) {
@@ -25,7 +27,9 @@ export const getSupplierList = (params) => async (dispatch, getState) => {
 export const getProductList = (params) => async (dispatch, getState) => {
     try {
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/product?';
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true) {
             dispatch({type: PurchaseActionType.getProductList, payload: res.rows});
         } else if (res.success === false) {
@@ -60,7 +64,9 @@ export const addPurchaseInfo = (supplier,paramsItem,transferCostType,transferCos
         console.log(params)
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchase';
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpPost(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true) {
             Swal.fire("新增成功", "", "success");
             // 刷新列表

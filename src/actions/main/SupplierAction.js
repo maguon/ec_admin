@@ -38,7 +38,9 @@ export const getSupplierList = (params) => async (dispatch, getState) => {
 export const addSupplier = (params) => async (dispatch) => {
     params.settleMonthDay=Number(params.settleMonthDay==''?null:params.settleMonthDay)
     try {
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpPost(apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/supplier', params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true) {
             dispatch(getSupplierList());
             Swal.fire("增加成功", "", "success");
@@ -53,9 +55,12 @@ export const addSupplier = (params) => async (dispatch) => {
 //删除供应商
 export const deleteSupplier =(params) => async (dispatch) => {
     try {
+
         const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/supplier/' + params + '/del';
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpDelete(url, {});
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
             Swal.fire("删除成功", "", "success");
             // 刷新列表
