@@ -18,6 +18,7 @@ import Storage from "./main/Storage";
 import ProductManager from "./main/ProductManager";
 import ProductManagerDetail from "./main/ProductManagerDetail";
 import PurchasePay from "./main/PurchasePay";
+import PurchaseRefund from "./main/PurchaseRefund";
 import StorageProduct from "./main/StorageProduct";
 import Supplier from './main/Supplier';
 import SupplierDetail from './main/SupplierDetail';
@@ -47,6 +48,7 @@ export {
     ProductManager,
     ProductManagerDetail,
     PurchasePay,
+    PurchaseRefund,
     StorageProduct,
     Supplier,
     SupplierDetail,

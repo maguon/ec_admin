@@ -225,6 +225,12 @@ export const ALL_PAGE_LIST = [
                 "icon": "mdi-chevron-right",
                 "usable": false
             },
+            {
+                "link": "/purchase_refund",
+                "name": "采购退款",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
         ]
     },
     {

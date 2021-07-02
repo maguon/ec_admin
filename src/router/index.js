@@ -14,6 +14,7 @@ import {
     Purchase,
     PurchaseDetail,
     PurchasePay,
+    PurchaseRefund,
     AdminUserSetting,
     AppSetting,
     AuthoritySetting,
@@ -55,6 +56,8 @@ export const routesWithHeader = [
     /** 财务管理 */
     // 采购付款
     {path: "/purchase_pay", exact: true, component: PurchasePay},
+    // 采购退款
+    {path: "/purchase_refund", exact: true, component: PurchaseRefund},
 
     /** 数据字典 */
     {path: "/data_dictionary", exact: true, component: DataDictionary},
