@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config/index';
-import {SupplierDetailActionType} from '../../types';
+import {AppActionType, SupplierDetailActionType} from '../../types';
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
@@ -11,7 +11,9 @@ export const getSupplierInfo = (params) => async (dispatch, getState) => {
         // 基本检索URL
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/supplier?supplierId='+params;
         // 检索URL
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true && res.rows.length>0) {
             dispatch({type: SupplierDetailActionType.getSupplierInfo, payload: res.rows[0]});
         } else if (res.success === false) {
@@ -27,7 +29,9 @@ export const getPurchaseInfo = (params) => async (dispatch, getState) => {
         // 基本检索URL
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/purchaseItem?supplierId='+params;
         // 检索URL
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true && res.rows.length>0) {
             dispatch({type: SupplierDetailActionType.getPurchaseInfo, payload: res.rows.slice(0,10)});
         } else if (res.success === false) {
@@ -42,9 +46,11 @@ export const getPurchaseInfo = (params) => async (dispatch, getState) => {
 export const getPurchaseRefundInfo = (params) => async (dispatch, getState) => {
     try {
         // 基本检索URL
-        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/purchaseRefund';
+        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/purchaseRefund?supplierId='+params;
         // 检索URL
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true && res.rows.length>0) {
             dispatch({type: SupplierDetailActionType.getPurchaseRefundInfo, payload: res.rows.slice(0,10)});
             console.log(res.rows.slice(0,10))
@@ -77,7 +83,9 @@ export const updateSupplier = (params) => async (dispatch, getState) => {
             "settleType": params.settle_type,
             "settleMonthDay": params.settle_month_day==''?0:params.settle_month_day
         }
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpPut(apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/supplier/'+params.id, paramsObj);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true) {
             Swal.fire("修改成功", "", "success");
         } else if (res.success === false) {
