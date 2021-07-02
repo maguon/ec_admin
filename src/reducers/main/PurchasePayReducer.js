@@ -14,7 +14,7 @@ const initialState = {
         dataList: []
     },
     // 检索结果
-    modalData: {}
+    modalData: []
 };
 
 export default handleActions({

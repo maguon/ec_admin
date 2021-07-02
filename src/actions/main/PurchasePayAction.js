@@ -81,11 +81,7 @@ export const getPurchaseItem = (purchaseId) => async (dispatch) => {
         dispatch({type: AppActionType.showLoadProgress, payload: false});
 
         if (res.success) {
-            if (res.rows.length > 0) {
-                dispatch({type: PurchasePayActionType.setModalData, payload: res.rows[0]});
-            } else {
-                dispatch({type: PurchasePayActionType.setModalData, payload: {}});
-            }
+            dispatch({type: PurchasePayActionType.setModalData, payload: res.rows});
         } else if (!res.success) {
             Swal.fire("获取采购支付详情失败", res.msg, "warning");
         }

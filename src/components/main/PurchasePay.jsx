@@ -95,9 +95,13 @@ function PurchasePay(props) {
         setModalOpen(false);
     };
 
+    // 采购信息
+    const [purchaseData, setPurchaseData] = React.useState({});
+
     //初始添加模态框值
-    const initModal =(purchaseId) =>{
-        props.getPurchaseItem(purchaseId);
+    const initModal =(purchaseData) =>{
+        setPurchaseData(purchaseData);
+        props.getPurchaseItem(purchaseData.id);
         // 设定模态打开
         setModalOpen(true);
     };
@@ -221,7 +225,7 @@ function PurchasePay(props) {
                                     </IconButton>}
 
                                     {/* 编辑按钮 */}
-                                    <IconButton color="primary" edge="start" onClick={() => {initModal(row.id)}}>
+                                    <IconButton color="primary" edge="start" onClick={() => {initModal(row)}}>
                                         <i className="mdi mdi-table-search mdi-24px"/>
                                     </IconButton>
                                 </TableCell>
@@ -253,14 +257,40 @@ function PurchasePay(props) {
                 footer={<Button variant="contained" onClick={closeModal}>关闭</Button>}
             >
                 <Grid container spacing={2}>
-                    <Grid item sm={12}><Typography color="primary">采购单号：{purchasePayReducer.modalData.purchase_id}</Typography></Grid>
-                    <Grid item sm={6}>供应商：{purchasePayReducer.modalData.supplier_name}</Grid>
-                    <Grid item sm={6}>商品：{purchasePayReducer.modalData.product_name}</Grid>
-                    <Grid item xs={6}>单价：{purchasePayReducer.modalData.unit_cost}</Grid>
-                    <Grid item xs={6}>采购数量：{purchasePayReducer.modalData.purchase_count}</Grid>
-                    <Grid item xs={6}>总成本：{purchasePayReducer.modalData.total_cost}</Grid>
-                    <Grid item xs={12}>备注：{purchasePayReducer.modalData.remark}</Grid>
+                    <Grid item sm={6}><Typography color="primary">采购单号：{purchaseData.id}</Typography></Grid>
+                    <Grid item sm={6}>供应商：{purchaseData.supplier_name}</Grid>
+                    <Grid item xs={12}>备注：{purchaseData.remark}</Grid>
                 </Grid>
+
+                <TableContainer component={Paper} style={{marginTop:10}}>
+                    <Table stickyHeader aria-label="sticky table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell padding="default" className={classes.head} align="center">商品</TableCell>
+                                <TableCell padding="default" className={classes.head} align="center">单价</TableCell>
+                                <TableCell padding="default" className={classes.head} align="center">数量</TableCell>
+                                <TableCell padding="default" className={classes.head} align="center">总成本</TableCell>
+                                <TableCell padding="default" className={classes.head} align="center">备注</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {purchasePayReducer.modalData.map((row) => (
+                                <TableRow className={classes.tableRow} key={'table-row-' + row.id}>
+                                    <TableCell padding="default" align="center">{row.product_name}</TableCell>
+                                    <TableCell padding="default" align="center">{row.unit_cost}</TableCell>
+                                    <TableCell padding="default" align="center">{row.purchase_count}</TableCell>
+                                    <TableCell padding="default" align="center">{row.total_cost}</TableCell>
+                                    <TableCell padding="default" align="center">{row.remark}</TableCell>
+                                </TableRow>
+                            ))}
+                            {purchasePayReducer.modalData.length === 0 &&
+                            <TableRow>
+                                <TableCell colSpan={5} style={{textAlign: 'center'}}>暂无数据</TableCell>
+                            </TableRow>}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+
             </SimpleModal>
         </div>
     )
