@@ -65,11 +65,11 @@ export const getStorageProductList = (params) => async (dispatch, getState) => {
     }
 };
 
-export const downLoadCsv = () => async (dispatch, getState) => {
+export const downLoadCsv = () => async (dispatch) => {
     try {
         // 基本检索URL
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/storageProductRel?status=1';
+        let url = 'http://' + apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/storageProductRel.csv?status=1';
         // 检索条件
         let conditions =  dispatch(getParams());
         // 检索URL
