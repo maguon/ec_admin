@@ -55,7 +55,7 @@ export default function SimpleModal(props) {
         setOpen(false);
     };
     return (
-        <Dialog aria-labelledby="customized-dialog-title" open={props.open} onClose={props.onClose} maxWidth={maxWidth}>
+        <Dialog aria-labelledby="customized-dialog-title" open={props.open} onClose={props.onClose} maxWidth={maxWidth} fullWidth>
 
             <DialogTitle id="customized-dialog-title">
                 {props.title}
