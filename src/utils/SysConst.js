@@ -216,6 +216,18 @@ export const ALL_PAGE_LIST = [
         ]
     },
     {
+        "label": "财务管理",
+        "icon": "mdi-chart-line",
+        "children": [
+            {
+                "link": "/purchase_pay",
+                "name": "采购付款",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
+        ]
+    },
+    {
         "link": "/data_dictionary",
         "label": "数据字典",
         "icon": "mdi-book-multiple",
