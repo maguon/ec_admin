@@ -191,8 +191,6 @@ function StorageProduct(props) {
                             <TableCell padding="default" className={classes.head} align="center">仓库</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">仓库分区</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">供应商</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">采购号</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">订单号</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">商品名称</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">单位成本</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">库存</TableCell>
@@ -206,8 +204,6 @@ function StorageProduct(props) {
                                 <TableCell padding="" align="center">{row.storage_name}</TableCell>
                                 <TableCell padding="" align="center">{row.storage_area_name}</TableCell>
                                 <TableCell padding="" align="center">{row.supplier_name}</TableCell>
-                                <TableCell padding="" align="center">{row.purchase_id}</TableCell>
-                                <TableCell padding="" align="center">{row.order_id}</TableCell>
                                 <TableCell padding="" align="center">{row.product_name}</TableCell>
                                 <TableCell padding="" align="center">{row.unit_cost}</TableCell>
                                 <TableCell padding="" align="center">{row.storage_count}</TableCell>
