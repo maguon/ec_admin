@@ -49,7 +49,9 @@ export const getStorageProductList = (params) => async (dispatch, getState) => {
             // 取得统计数据
             url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageProductRelStatistics';
             url = conditions.length > 0 ? url + "?" + conditions : url;
+            dispatch({type: AppActionType.showLoadProgress, payload: true});
             res = await httpUtil.httpGet(url);
+            dispatch({type: AppActionType.showLoadProgress, payload: false});
             if (res.success && res.rows.length > 0) {
                 dispatch({type: StorageProductActionType.setStorageProductDataCnt, payload: {totalCnt: res.rows[0].storage_count, totalCost: res.rows[0].total_cost}});
             } else {

@@ -62,6 +62,7 @@ export const saveCategoryData = (categoryData) => async (dispatch, getState) => 
 
         let url;
         let res;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         switch (categoryData.pageType) {
             case "new":
                 url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/category';
@@ -82,6 +83,7 @@ export const saveCategoryData = (categoryData) => async (dispatch, getState) => 
             default:
                 break;
         }
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
 
         if (res.success) {
             Swal.fire("保存成功", "", "success");

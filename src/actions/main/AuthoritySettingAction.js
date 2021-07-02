@@ -60,7 +60,9 @@ export const createUserGroup = (params) => async (dispatch, getState) => {
     try {
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + "/typeMenu";
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpPost(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
             // 更新select框 数据
             dispatch(getUserGroupList());
@@ -105,7 +107,9 @@ export const saveMenu = (currentUserType) => async (dispatch, getState) => {
         };
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + "/typeMenu";
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpPost(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
 
         if (res.success) {
             Swal.fire("保存成功", "", "success");

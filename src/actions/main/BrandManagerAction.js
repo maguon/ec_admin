@@ -62,6 +62,7 @@ export const saveBrandData = (brandData) => async (dispatch) => {
 
         let url;
         let res;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         switch (brandData.pageType) {
             case "new":
                 url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/brand';
@@ -82,6 +83,7 @@ export const saveBrandData = (brandData) => async (dispatch) => {
             default:
                 break;
         }
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
 
         if (res.success) {
             Swal.fire("保存成功", "", "success");

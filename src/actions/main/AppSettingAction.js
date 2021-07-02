@@ -60,7 +60,9 @@ export const changeStatus = (id, status, condition) => async (dispatch, getState
         // 状态
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/app/' + id + '/status?status=' + newStatus;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpPut(url, {});
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
             Swal.fire("修改成功", "", "success");
             // 刷新列表
@@ -81,7 +83,9 @@ export const deleteApp = (id, condition) => async (dispatch, getState) => {
     try {
         const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/app/' + id + '/del';
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpDelete(url, {});
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
             Swal.fire("删除成功", "", "success");
             // 刷新列表
@@ -113,12 +117,14 @@ export const saveModalData = (modalData, condition) => async (dispatch, getState
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/app';
         let res;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         if (modalData.pageType === 'new') {
             res = await httpUtil.httpPost(url, params);
         } else {
             url = url + '/' + modalData.uid;
             res = await httpUtil.httpPut(url, params);
         }
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
             Swal.fire("保存成功", "", "success");
             // 刷新列表

@@ -49,7 +49,9 @@ export const updateProduct = () => async (dispatch, getState) => {
         };
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/product/' + productInfo.id;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpPut(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
             Swal.fire("保存成功", "", "success");
         } else if (!res.success) {
