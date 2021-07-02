@@ -1,7 +1,23 @@
 import {
-    Login, Register, ResetPassword,
-    MainPanel, CategoryManager, BrandManager, Storage, StorageProduct, ProductManager, ProductManagerDetail, Supplier, SupplierDetail, Purchase,PurchaseDetail,
-    AdminUserSetting, AppSetting, AuthoritySetting, DataDictionary
+    Login,
+    Register,
+    ResetPassword,
+    MainPanel,
+    CategoryManager,
+    BrandManager,
+    Storage,
+    StorageProduct,
+    ProductManager,
+    ProductManagerDetail,
+    Supplier,
+    SupplierDetail,
+    Purchase,
+    PurchaseDetail,
+    PurchasePay,
+    AdminUserSetting,
+    AppSetting,
+    AuthoritySetting,
+    DataDictionary
 } from "../components";
 
 export const routes = [
@@ -35,6 +51,10 @@ export const routesWithHeader = [
     {path: "/storage", exact: true, component: Storage},
     // 库存商品
     {path: "/storage_product", exact: true, component: StorageProduct},
+
+    /** 财务管理 */
+    // 采购付款
+    {path: "/purchase_pay", exact: true, component: PurchasePay},
 
     /** 数据字典 */
     {path: "/data_dictionary", exact: true, component: DataDictionary},

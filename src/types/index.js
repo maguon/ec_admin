@@ -8,6 +8,7 @@ import * as StorageActionType from './main/StorageActionType'
 import * as ProductManagerActionType from './main/ProductManagerActionType'
 import * as StorageProductActionType from './main/StorageProductActionType'
 import * as ProductManagerDetailActionType from './main/ProductManagerDetailActionType'
+import * as PurchasePayActionType from './main/PurchasePayActionType'
 import * as AuthoritySettingActionType from './main/AuthoritySettingActionType'
 import * as AdminUserSettingActionType from "./main/AdminUserSettingActionType";
 import * as AppSettingActionType from "./main/AppSettingActionType";
@@ -27,6 +28,7 @@ export {
     ProductManagerActionType,
     StorageProductActionType,
     ProductManagerDetailActionType,
+    PurchasePayActionType,
     SupplierActionType,
     SupplierDetailActionType,
     AuthoritySettingActionType,
