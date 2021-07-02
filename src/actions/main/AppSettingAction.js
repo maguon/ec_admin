@@ -66,9 +66,7 @@ export const changeStatus = (id, status, condition) => async (dispatch, getState
         if (res.success) {
             Swal.fire("修改成功", "", "success");
             // 刷新列表
-            dispatch(getAppList({
-                paramDeviceType: condition.paramDeviceType,
-                paramStatus: condition.paramStatus,
+            dispatch(getAppList({...condition,
                 dataStart: getState().AppSettingReducer.appData.start
             }));
         } else if (!res.success) {
@@ -89,9 +87,7 @@ export const deleteApp = (id, condition) => async (dispatch, getState) => {
         if (res.success) {
             Swal.fire("删除成功", "", "success");
             // 刷新列表
-            dispatch(getAppList({
-                paramDeviceType: condition.paramDeviceType,
-                paramStatus: condition.paramStatus,
+            dispatch(getAppList({...condition,
                 dataStart: getState().AppSettingReducer.appData.start
             }));
         } else if (!res.success) {
@@ -128,9 +124,7 @@ export const saveModalData = (modalData, condition) => async (dispatch, getState
         if (res.success) {
             Swal.fire("保存成功", "", "success");
             // 刷新列表
-            dispatch(getAppList({
-                paramDeviceType: condition.paramDeviceType,
-                paramStatus: condition.paramStatus,
+            dispatch(getAppList({...condition,
                 dataStart: getState().AppSettingReducer.appData.start
             }));
         } else if (!res.success) {

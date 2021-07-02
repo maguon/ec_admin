@@ -271,7 +271,7 @@ function ProductManagerDetail(props) {
                                     <TableCell padding="default" className={classes.head} align="center">采购单号</TableCell>
                                     <TableCell padding="default" className={classes.head} align="center">供应商</TableCell>
                                     <TableCell padding="default" className={classes.head} align="center">商品</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">单位成本</TableCell>
+                                    <TableCell padding="default" className={classes.head} align="center">单价</TableCell>
                                     <TableCell padding="default" className={classes.head} align="center">采购数量</TableCell>
                                     <TableCell padding="default" className={classes.head} align="center">总成本</TableCell>
                                     <TableCell padding="default" className={classes.head} align="center">采购日期</TableCell>

@@ -192,7 +192,7 @@ function StorageProduct(props) {
                             <TableCell padding="default" className={classes.head} align="center">仓库分区</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">供应商</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">商品名称</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">单位成本</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">单价</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">库存</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">仓储日期</TableCell>
                             {/*<TableCell padding="default" className={classes.head} align="center">操作</TableCell>*/}
