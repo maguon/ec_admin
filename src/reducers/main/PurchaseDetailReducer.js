@@ -17,6 +17,9 @@ const initialState = {
         transfer_cost_type: ''
     },
     purchaseDetailItemInfo:[],
+    purchaseRefundDetailInfo:[],
+    productDetailArray:[],
+    storageProductArray:[]
 };
 
 export default handleActions({
@@ -52,4 +55,25 @@ export default handleActions({
             purchaseDetailItemInfo:purchaseDetailItemObj
         }
     },
+    [PurchaseDetailActionType.getPurchaseRefundDetailInfo]: (state, action) => {
+        return {
+            ...state,
+            purchaseRefundDetailInfo: action.payload
+        }
+    },
+    [PurchaseDetailActionType.getProductDetailArray]: (state, action) => {
+        return {
+            ...state,
+            productDetailArray: action.payload
+        }
+    },
+    [PurchaseDetailActionType.getStorageProductArray]: (state, action) => {
+        return {
+            ...state,
+            storageProductArray: action.payload
+        }
+    },
+
+
+
 }, initialState)

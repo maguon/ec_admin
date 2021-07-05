@@ -139,7 +139,11 @@ export const PURCHASE_STATUS = [
     {value: 3, label: "处理中"},
     {value: 7, label: "已完成"}
 ];
-
+//是否需要出库
+export const STORAGE_TYPE= [
+    {value: 0, label: "不需要"},
+    {value: 1, label: "需要"}
+];
 // 用于权限设定（包含所有机能设定）
 export const ALL_PAGE_LIST = [
     {

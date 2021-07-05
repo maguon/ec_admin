@@ -23,6 +23,28 @@ export const getPurchaseDetailInfo = (params) => async (dispatch, getState) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
+
+//商品
+export const getProductList = (params) => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchaseItem?purchaseId='+params;
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+
+        if (res.success) {
+            dispatch({type: PurchaseDetailActionType.getProductDetailArray, payload: res.rows});
+        } else if (!res.success) {
+            Swal.fire('获取商品列表失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire('操作失败', err.message, 'error');
+    }
+};
+
+
 export const getPurchaseItemDetailInfo = (params) => async (dispatch, getState) => {
     try {
         // 基本检索URL
@@ -99,3 +121,73 @@ export const updatePurchaseDetailItemInfo = (paramsId,index) => async (dispatch,
         Swal.fire('操作失败', err.message, 'error');
     }
 }
+
+//采购管理 -> 退货tab
+export const getPurchaseRefundDetailInfo = (params) => async (dispatch, getState) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/purchaseRefund?purchaseId='+params;
+        // 检索URL
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success === true && res.rows.length>0) {
+            dispatch({type: PurchaseDetailActionType.getPurchaseRefundDetailInfo, payload: res.rows.slice(0,10)});
+            console.log(res.rows.slice(0,10))
+        } else if (res.success === false) {
+            Swal.fire('获取供应商信息失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire('操作失败', err.message, 'error');
+    }
+};
+
+export const getStorageProductArray = (params) => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageProductRel?purchaseId='+params;
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+
+        if (res.success) {
+            dispatch({type: PurchaseDetailActionType.getStorageProductArray, payload: res.rows});
+        } else if (!res.success) {
+            Swal.fire('获取商品列表失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire('操作失败', err.message, 'error');
+    }
+};
+export const postRefundDetailInfo = (id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType) => async (dispatch) => {
+    try {
+        const params = {
+            "remark": addTransferRemark,
+            "supplierId": item.supplier_id,
+            "productId": item.product_id,
+            "productName": item.product_name,
+            "storageType": addStorageType,
+            "refundUnitCost": addUnitCost,
+            "refundCount": addPurchaseCount,
+            "transferCostType": addTransferCostType,
+            "transferCost": addTransferCost,
+            "orderId": 0
+        };
+        // 基本url
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchase/'+id+'/purchaseItem/'+item.id+'/purchaseRefund';
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpPost(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch(getPurchaseRefundDetailInfo(id));
+            Swal.fire("保存成功", "", "success");
+        } else if (!res.success) {
+            Swal.fire('保存失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+

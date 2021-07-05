@@ -432,8 +432,13 @@ function SupplierDetail (props){
 }
 
 const mapStateToProps = (state, ownProps) => {
+    let fromDetail = false;
+    if (typeof ownProps.location.state != 'undefined' && ownProps.location.state != null && ownProps.location.state.fromDetail) {
+        fromDetail = true;
+    }
     return {
-        supplierDetailReducer: state.SupplierDetailReducer
+        supplierDetailReducer: state.SupplierDetailReducer,
+        fromDetail: fromDetail
     }
 };
 
