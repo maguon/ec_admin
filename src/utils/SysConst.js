@@ -144,6 +144,19 @@ export const STORAGE_TYPE= [
     {value: 0, label: "不需要"},
     {value: 1, label: "需要"}
 ];
+
+// 盘点状态
+export const STORAGE_CHECK_STATUS = [
+    {value: 1, label: "正常"},
+    {value: 2, label: "异常"}
+];
+
+// 盘点完成状态
+export const STORAGE_RET_STATUS = [
+    {value: 1, label: "未完成"},
+    {value: 2, label: "完成"}
+];
+
 // 用于权限设定（包含所有机能设定）
 export const ALL_PAGE_LIST = [
     {
