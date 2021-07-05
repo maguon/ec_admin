@@ -25,7 +25,7 @@ import Swal from "sweetalert2";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const commonAction = require('../../actions/layout/CommonAction');
-const purchasePayAction = require('../../actions/main/PurchasePayAction');
+const purchaseRefundAction = require('../../actions/main/PurchaseRefundAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
@@ -47,14 +47,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function PurchasePay(props) {
-    const {purchasePayReducer, commonReducer, confirmPay} = props;
+    const {purchaseRefundReducer, commonReducer, confirmPay} = props;
     const classes = useStyles();
 
     /** 检索条件 */
-    // 采购日期
-    const [planDateStart, setPlanDateStart] = React.useState('');
-    const [planDateEnd, setPlanDateEnd] = React.useState('');
-    // 支付日期
+    // 退款日期
     const [paymentDateStart, setPaymentDateStart] = React.useState('');
     const [paymentDateEnd, setPaymentDateEnd] = React.useState('');
     // 采购单号
@@ -66,26 +63,26 @@ function PurchasePay(props) {
 
     useEffect(() => {
         props.getBaseSelectList();
-        let dataStart = props.purchasePayReducer.purchasePayData.start;
-        props.getPurchasePayList(planDateStart,planDateEnd,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus,dataStart);
+        let dataStart = props.purchaseRefundReducer.purchaseRefundData.start;
+        props.getPurchaseRefundList(paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus,dataStart);
     }, []);
 
     // 查询列表
-    const queryPurchasePayList = () => {
+    const queryPurchaseRefundList = () => {
         // 默认第一页
-        props.getPurchasePayList(planDateStart,planDateEnd,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus, 0);
+        props.getPurchaseRefundList(paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus, 0);
     };
 
     // 上一页
     const getPrePage = () => {
-        props.getPurchasePayList(planDateStart,planDateEnd,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus
-            , props.purchasePayReducer.purchasePayData.start - (props.purchasePayReducer.purchasePayData.size - 1));
+        props.getPurchaseRefundList(paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus
+            , props.purchaseRefundReducer.purchaseRefundData.start - (props.purchaseRefundReducer.purchaseRefundData.size - 1));
     };
 
     // 下一页
     const getNextPage = () => {
-        props.getPurchasePayList(planDateStart,planDateEnd,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus
-            , props.purchasePayReducer.purchasePayData.start + (props.purchasePayReducer.purchasePayData.size - 1));
+        props.getPurchaseRefundList(paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus
+            , props.purchaseRefundReducer.purchaseRefundData.start + (props.purchaseRefundReducer.purchaseRefundData.size - 1));
     };
 
     // 模态属性
@@ -96,12 +93,13 @@ function PurchasePay(props) {
     };
 
     // 采购信息
-    const [purchaseData, setPurchaseData] = React.useState({});
+    const [purchaseRefundData, setPurchaseRefundData] = React.useState({});
 
     //初始添加模态框值
-    const initModal =(purchaseData) =>{
-        setPurchaseData(purchaseData);
-        props.getPurchaseItem(purchaseData.id);
+    const initModal =(purchaseRefundData) =>{
+        setPurchaseRefundData(purchaseRefundData);
+        // props.getPurchaseItem(purchaseRefundData.id);
+        props.getSupplierInfo(purchaseRefundData.supplier_id);
         // 设定模态打开
         setModalOpen(true);
     };
@@ -109,30 +107,20 @@ function PurchasePay(props) {
     return (
         <div className={classes.root}>
             {/* 标题部分 */}
-            <Typography gutterBottom className={classes.title}>采购付款</Typography>
+            <Typography gutterBottom className={classes.title}>采购退款</Typography>
             <Divider light className={classes.divider}/>
 
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
                 <Grid container item xs={11} spacing={3}>
-                    <Grid item xs={3}>
-                        <TextField label="采购日期（始）" fullWidth margin="dense" variant="outlined" type="date" InputLabelProps={{ shrink: true }}
-                                   value={planDateStart}
-                                   onChange={(e)=>{setPlanDateStart(e.target.value)}}/>
-                    </Grid>
-                    <Grid item xs={3}>
-                        <TextField label="采购日期（始）" fullWidth margin="dense" variant="outlined" type="date" InputLabelProps={{ shrink: true }}
-                                   value={planDateEnd}
-                                   onChange={(e)=>{setPlanDateEnd(e.target.value)}}/>
-                    </Grid>
 
-                    <Grid item xs={3}>
-                        <TextField label="支付日期（始）" fullWidth margin="dense" variant="outlined" type="date" InputLabelProps={{ shrink: true }}
+                    <Grid item xs={2}>
+                        <TextField label="退款日期（始）" fullWidth margin="dense" variant="outlined" type="date" InputLabelProps={{ shrink: true }}
                                    value={paymentDateStart}
                                    onChange={(e)=>{setPaymentDateStart(e.target.value)}}/>
                     </Grid>
-                    <Grid item xs={3}>
-                        <TextField label="支付日期（始）" fullWidth margin="dense" variant="outlined" type="date" InputLabelProps={{ shrink: true }}
+                    <Grid item xs={2}>
+                        <TextField label="退款日期（始）" fullWidth margin="dense" variant="outlined" type="date" InputLabelProps={{ shrink: true }}
                                    value={paymentDateEnd}
                                    onChange={(e)=>{setPaymentDateEnd(e.target.value)}}/>
                     </Grid>
@@ -154,11 +142,11 @@ function PurchasePay(props) {
                         />
                     </Grid>
 
-                    <Grid item xs={3}>
+                    <Grid item xs={2}>
                         <FormControl variant="outlined" fullWidth={true} margin="dense">
-                            <InputLabel id="device-type-select-outlined-label">支付状态</InputLabel>
+                            <InputLabel id="device-type-select-outlined-label">退款状态</InputLabel>
                             <Select
-                                label="支付状态"
+                                label="退款状态"
                                 labelId="device-type-select-outlined-label"
                                 id="device-type-select-outlined"
                                 value={paymentStatus}
@@ -167,7 +155,7 @@ function PurchasePay(props) {
                                 }}
                             >
                                 <MenuItem value="">请选择</MenuItem>
-                                {sysConst.PAYMENT_STATUS.map((item, index) => (
+                                {sysConst.REFUND_PAYMENT_STATUS.map((item, index) => (
                                     <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
                                 ))}
                             </Select>
@@ -177,7 +165,7 @@ function PurchasePay(props) {
 
                 {/*查询按钮*/}
                 <Grid item xs={1} style={{textAlign:'right'}}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={queryPurchasePayList} style={{marginTop : 50}}>
+                    <Fab color="primary" aria-label="add" size="small" onClick={queryPurchaseRefundList}>
                         <i className="mdi mdi-magnify mdi-24px"/>
                     </Fab>
                 </Grid>
@@ -190,33 +178,37 @@ function PurchasePay(props) {
                         <TableRow>
                             <TableCell padding="default" className={classes.head} align="center">采购单号</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">供应商</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">采购日期</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">商品</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">退款日期</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">运费类型</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">运费</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">商品成本</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">总成本</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">支付日期</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">支付状态</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">退货单价</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">退货数量</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">退款盈亏</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">退款状态</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">操作</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {purchasePayReducer.purchasePayData.dataList.map((row) => (
+                        {purchaseRefundReducer.purchaseRefundData.dataList.map((row) => (
                             <TableRow className={classes.tableRow} key={'table-row-' + row.id}>
-                                <TableCell padding="none" align="center">{row.id}</TableCell>
+                                <TableCell padding="none" align="center">{row.purchase_id}</TableCell>
                                 <TableCell padding="none" align="center">{row.supplier_name}</TableCell>
-                                <TableCell padding="none" align="center">{row.plan_date_id}</TableCell>
+                                <TableCell padding="none" align="center">{row.product_name}</TableCell>
+                                <TableCell padding="none" align="center">{row.date_id}</TableCell>
                                 <TableCell padding="none" align="center">{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE, row.transfer_cost_type)}</TableCell>
                                 <TableCell padding="none" align="center">{row.transfer_cost}</TableCell>
-                                <TableCell padding="none" align="center">{row.product_cost}</TableCell>
                                 <TableCell padding="none" align="center">{row.total_cost}</TableCell>
-                                <TableCell padding="none" align="center">{row.payment_date_id}</TableCell>
-                                <TableCell padding="none" align="center">{commonUtil.getJsonValue(sysConst.PAYMENT_STATUS, row.payment_status)}</TableCell>
+                                <TableCell padding="none" align="center">{row.refund_unit_cost}</TableCell>
+                                <TableCell padding="none" align="center">{row.refund_count}</TableCell>
+                                <TableCell padding="none" align="center">{row.refund_profile}</TableCell>
+                                <TableCell padding="none" align="center">{commonUtil.getJsonValue(sysConst.REFUND_PAYMENT_STATUS, row.payment_status)}</TableCell>
                                 <TableCell padding="none" align="center">
                                     {/* 支付状态 */}
                                     {row.payment_status==1 &&
                                     <IconButton color="primary" edge="start"
-                                                onClick={() => {confirmPay(row.id,planDateStart,planDateEnd,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus)}}>
+                                                onClick={() => {confirmPay(row.id,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus)}}>
                                         <i className="mdi mdi-bitcoin mdi-24px"/>
                                     </IconButton>}
                                     {row.payment_status!=1 &&
@@ -231,9 +223,9 @@ function PurchasePay(props) {
                                 </TableCell>
                             </TableRow>
                         ))}
-                        {purchasePayReducer.purchasePayData.dataList.length === 0 &&
+                        {purchaseRefundReducer.purchaseRefundData.dataList.length === 0 &&
                         <TableRow>
-                            <TableCell colSpan={10} style={{textAlign: 'center'}}>暂无数据</TableCell>
+                            <TableCell colSpan={12} style={{textAlign: 'center'}}>暂无数据</TableCell>
                         </TableRow>}
                     </TableBody>
                 </Table>
@@ -241,55 +233,40 @@ function PurchasePay(props) {
 
             {/* 上下页按钮 */}
             <Box style={{textAlign: 'right', marginTop: 20}}>
-                {purchasePayReducer.purchasePayData.start > 0 && purchasePayReducer.purchasePayData.dataSize > 0 &&
+                {purchaseRefundReducer.purchaseRefundData.start > 0 && purchaseRefundReducer.purchaseRefundData.dataSize > 0 &&
                 <Button variant="contained" color="primary" style={{marginRight: 20}} onClick={getPrePage}>上一页</Button>}
-                {purchasePayReducer.purchasePayData.dataSize >= purchasePayReducer.purchasePayData.size &&
+                {purchaseRefundReducer.purchaseRefundData.dataSize >= purchaseRefundReducer.purchaseRefundData.size &&
                 <Button variant="contained" color="primary" onClick={getNextPage}>下一页</Button>}
             </Box>
 
-            {/* 模态：新增/修改 */}
             <SimpleModal
-                maxWidth={'sm'}
-                title="采购支付详情"
+                maxWidth={'md'}
+                title="采购退款详情"
                 open={modalOpen}
                 onClose={closeModal}
                 showFooter={true}
                 footer={<Button variant="contained" onClick={closeModal}>关闭</Button>}
             >
                 <Grid container spacing={2}>
-                    <Grid item sm={6}><Typography color="primary">采购单号：{purchaseData.id}</Typography></Grid>
-                    <Grid item sm={6}>供应商：{purchaseData.supplier_name}</Grid>
-                    <Grid item xs={12}>备注：{purchaseData.remark}</Grid>
-                </Grid>
+                    <Grid item sm={3}><Typography color="primary">采购单号：{purchaseRefundData.purchase_id}</Typography></Grid>
+                    <Grid item xs={9}>备注：{purchaseRefundData.remark}</Grid>
 
-                <TableContainer component={Paper} style={{marginTop:10}}>
-                    <Table stickyHeader aria-label="sticky table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell padding="default" className={classes.head} align="center">商品</TableCell>
-                                <TableCell padding="default" className={classes.head} align="center">单价</TableCell>
-                                <TableCell padding="default" className={classes.head} align="center">数量</TableCell>
-                                <TableCell padding="default" className={classes.head} align="center">总成本</TableCell>
-                                <TableCell padding="default" className={classes.head} align="center">备注</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {purchasePayReducer.modalData.map((row) => (
-                                <TableRow className={classes.tableRow} key={'table-row-' + row.id}>
-                                    <TableCell padding="default" align="center">{row.product_name}</TableCell>
-                                    <TableCell padding="default" align="center">{row.unit_cost}</TableCell>
-                                    <TableCell padding="default" align="center">{row.purchase_count}</TableCell>
-                                    <TableCell padding="default" align="center">{row.total_cost}</TableCell>
-                                    <TableCell padding="default" align="center">{row.remark}</TableCell>
-                                </TableRow>
-                            ))}
-                            {purchasePayReducer.modalData.length === 0 &&
-                            <TableRow>
-                                <TableCell colSpan={5} style={{textAlign: 'center'}}>暂无数据</TableCell>
-                            </TableRow>}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                    <Grid item xs={6}>商品：{purchaseRefundData.product_name}</Grid>
+                    <Grid item xs={3}>退款盈亏：{purchaseRefundData.refund_profile}</Grid>
+                    <Grid item xs={3}>退款状态：{commonUtil.getJsonValue(sysConst.REFUND_PAYMENT_STATUS, purchaseRefundData.payment_status)}</Grid>
+
+                    <Grid item sm={6}>供应商：{purchaseRefundData.supplier_name}</Grid>
+                    <Grid item sm={3}>联系人：{commonReducer.supplierInfo.contact_name}</Grid>
+                    <Grid item sm={3}>手机：{commonReducer.supplierInfo.mobile}</Grid>
+                    <Grid item sm={6}>地址：{commonReducer.supplierInfo.address}</Grid>
+                    <Grid item sm={3}>传真：{commonReducer.supplierInfo.fax}</Grid>
+                    <Grid item sm={3}>电话：{commonReducer.supplierInfo.tel}</Grid>
+                    <Grid item sm={6}>邮箱：{commonReducer.supplierInfo.email}</Grid>
+                    <Grid item sm={6}>公司抬头：{commonReducer.supplierInfo.invoice_title}</Grid>
+                    <Grid item sm={12}>开户地址：{commonReducer.supplierInfo.invoice_address}</Grid>
+                    <Grid item sm={6}>开户行：{commonReducer.supplierInfo.invoice_bank}</Grid>
+                    <Grid item sm={6}>开户账号：{commonReducer.supplierInfo.invoice_bank_ser}</Grid>
+                </Grid>
 
             </SimpleModal>
         </div>
@@ -298,7 +275,7 @@ function PurchasePay(props) {
 
 const mapStateToProps = (state) => {
     return {
-        purchasePayReducer: state.PurchasePayReducer,
+        purchaseRefundReducer: state.PurchaseRefundReducer,
         commonReducer: state.CommonReducer
     }
 };
@@ -308,12 +285,15 @@ const mapDispatchToProps = (dispatch) => ({
     getBaseSelectList: () => {
         dispatch(commonAction.getSupplierList());
     },
-    getPurchasePayList: (planDateStart,planDateEnd,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus,dataStart) => {
-        dispatch(purchasePayAction.getPurchasePayList({planDateStart,planDateEnd,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus,dataStart}))
+    getSupplierInfo: (supplierId) => {
+        dispatch(commonAction.getSupplierInfo(supplierId));
     },
-    confirmPay: (id, planDateStart,planDateEnd,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus) => {
+    getPurchaseRefundList: (paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus,dataStart) => {
+        dispatch(purchaseRefundAction.getPurchaseRefundList({paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus,dataStart}))
+    },
+    confirmPay: (id, paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus) => {
         Swal.fire({
-            title: "确定支付该订单？",
+            title: "确定完成该退款？",
             text: "",
             icon: "warning",
             showCancelButton: true,
@@ -321,13 +301,13 @@ const mapDispatchToProps = (dispatch) => ({
             cancelButtonText:"取消"
         }).then(async (value) => {
             if (value.isConfirmed) {
-                dispatch(purchasePayAction.confirmPayment(id, {planDateStart,planDateEnd,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus}));
+                dispatch(purchaseRefundAction.confirmPayment(id, {paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus}));
             }
         });
     },
-    getPurchaseItem: (purchaseId) => {
-        dispatch(purchasePayAction.getPurchaseItem(purchaseId))
-    }
+    // getPurchaseItem: (purchaseId) => {
+    //     dispatch(purchaseRefundAction.getPurchaseItem(purchaseId))
+    // }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PurchasePay)

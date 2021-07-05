@@ -34,12 +34,12 @@ export const getPurchasePayList = (params) => async (dispatch, getState) => {
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-        let appData = getState().PurchasePayReducer.purchasePayData;
+        let newData = getState().PurchasePayReducer.purchasePayData;
         if (res.success) {
-            appData.start = start;
-            appData.dataSize = res.rows.length;
-            appData.dataList = res.rows.slice(0, size - 1);
-            dispatch({type: PurchasePayActionType.getPurchasePayData, payload: appData});
+            newData.start = start;
+            newData.dataSize = res.rows.length;
+            newData.dataList = res.rows.slice(0, size - 1);
+            dispatch({type: PurchasePayActionType.getPurchasePayData, payload: newData});
         } else if (!res.success) {
             Swal.fire("获取采购支付列表失败", res.msg, "warning");
         }

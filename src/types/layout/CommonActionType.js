@@ -8,3 +8,4 @@ export const setProductList = createAction('SET_COMMON_PRODUCT_LIST');
 export const setStorageList = createAction('SET_COMMON_STORAGE_LIST');
 export const setStorageAreaList = createAction('SET_COMMON_STORAGE_AREA_LIST');
 export const setSupplierList = createAction('SET_COMMON_SUPPLIER_LIST');
+export const setSupplierInfo = createAction('SET_COMMON_SUPPLIER_INFO');

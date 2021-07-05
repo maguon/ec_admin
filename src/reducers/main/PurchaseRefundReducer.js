@@ -1,9 +1,9 @@
 import {handleActions} from 'redux-actions';
-import {PurchasePayActionType} from '../../types';
+import {PurchaseRefundActionType} from '../../types';
 
 const initialState = {
     // 检索结果
-    purchasePayData: {
+    purchaseRefundData: {
         // 开始位置
         start: 0,
         // 每页数量
@@ -18,13 +18,13 @@ const initialState = {
 };
 
 export default handleActions({
-    [PurchasePayActionType.getPurchasePayData]: (state, action) => {
+    [PurchaseRefundActionType.getPurchaseRefundData]: (state, action) => {
         return {
             ...state,
-            purchasePayData: action.payload
+            purchaseRefundData: action.payload
         }
     },
-    [PurchasePayActionType.setModalData]: (state, action) => {
+    [PurchaseRefundActionType.setModalData]: (state, action) => {
         return {
             ...state,
             modalData: action.payload

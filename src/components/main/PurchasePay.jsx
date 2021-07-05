@@ -102,6 +102,7 @@ function PurchasePay(props) {
     const initModal =(purchaseData) =>{
         setPurchaseData(purchaseData);
         props.getPurchaseItem(purchaseData.id);
+        props.getSupplierInfo(purchaseData.supplier_id);
         // 设定模态打开
         setModalOpen(true);
     };
@@ -249,48 +250,40 @@ function PurchasePay(props) {
 
             {/* 模态：新增/修改 */}
             <SimpleModal
-                maxWidth={'sm'}
+                maxWidth={'md'}
                 title="采购支付详情"
                 open={modalOpen}
                 onClose={closeModal}
                 showFooter={true}
                 footer={<Button variant="contained" onClick={closeModal}>关闭</Button>}
             >
-                <Grid container spacing={2}>
-                    <Grid item sm={6}><Typography color="primary">采购单号：{purchaseData.id}</Typography></Grid>
+                <Grid container spacing={2} style={{marginBottom: 10}}>
+                    <Grid item sm={3}><Typography color="primary">采购单号：{purchaseData.id}</Typography></Grid>
+                    <Grid item xs={9}>备注：{purchaseData.remark}</Grid>
+
                     <Grid item sm={6}>供应商：{purchaseData.supplier_name}</Grid>
-                    <Grid item xs={12}>备注：{purchaseData.remark}</Grid>
+                    <Grid item sm={3}>联系人：{commonReducer.supplierInfo.contact_name}</Grid>
+                    <Grid item sm={3}>手机：{commonReducer.supplierInfo.mobile}</Grid>
+                    <Grid item sm={6}>地址：{commonReducer.supplierInfo.address}</Grid>
+                    <Grid item sm={3}>传真：{commonReducer.supplierInfo.fax}</Grid>
+                    <Grid item sm={3}>电话：{commonReducer.supplierInfo.tel}</Grid>
+                    <Grid item sm={6}>邮箱：{commonReducer.supplierInfo.email}</Grid>
+                    <Grid item sm={6}>公司抬头：{commonReducer.supplierInfo.invoice_title}</Grid>
+                    <Grid item sm={12}>开户地址：{commonReducer.supplierInfo.invoice_address}</Grid>
+                    <Grid item sm={6}>开户行：{commonReducer.supplierInfo.invoice_bank}</Grid>
+                    <Grid item sm={6}>开户账号：{commonReducer.supplierInfo.invoice_bank_ser}</Grid>
                 </Grid>
 
-                <TableContainer component={Paper} style={{marginTop:10}}>
-                    <Table stickyHeader aria-label="sticky table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell padding="default" className={classes.head} align="center">商品</TableCell>
-                                <TableCell padding="default" className={classes.head} align="center">单价</TableCell>
-                                <TableCell padding="default" className={classes.head} align="center">数量</TableCell>
-                                <TableCell padding="default" className={classes.head} align="center">总成本</TableCell>
-                                <TableCell padding="default" className={classes.head} align="center">备注</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {purchasePayReducer.modalData.map((row) => (
-                                <TableRow className={classes.tableRow} key={'table-row-' + row.id}>
-                                    <TableCell padding="default" align="center">{row.product_name}</TableCell>
-                                    <TableCell padding="default" align="center">{row.unit_cost}</TableCell>
-                                    <TableCell padding="default" align="center">{row.purchase_count}</TableCell>
-                                    <TableCell padding="default" align="center">{row.total_cost}</TableCell>
-                                    <TableCell padding="default" align="center">{row.remark}</TableCell>
-                                </TableRow>
-                            ))}
-                            {purchasePayReducer.modalData.length === 0 &&
-                            <TableRow>
-                                <TableCell colSpan={5} style={{textAlign: 'center'}}>暂无数据</TableCell>
-                            </TableRow>}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-
+                {purchasePayReducer.modalData.map((row) => (
+                    <Grid container spacing={1}>
+                        <Grid item sm={3}><TextField label="商品" fullWidth margin="dense" variant="outlined" disabled value={row.product_name}/></Grid>
+                        <Grid item sm={1}><TextField label="单价" fullWidth margin="dense" variant="outlined" disabled value={row.unit_cost}/></Grid>
+                        <Grid item sm={1}><TextField label="数量" fullWidth margin="dense" variant="outlined" disabled value={row.purchase_count}/></Grid>
+                        <Grid item sm={1}><TextField label="总成本" fullWidth margin="dense" variant="outlined" disabled value={row.purchase_count}/></Grid>
+                        <Grid item sm={6}><TextField label="备注" fullWidth margin="dense" variant="outlined" disabled value={row.remark}/></Grid>
+                    </Grid>
+                ))}
+                {purchasePayReducer.modalData.length === 0 && <Grid item xs={12} style={{textAlign:'center'}}>暂无数据</Grid>}
             </SimpleModal>
         </div>
     )
@@ -307,6 +300,9 @@ const mapDispatchToProps = (dispatch) => ({
     // 取得画面 select控件，基础数据
     getBaseSelectList: () => {
         dispatch(commonAction.getSupplierList());
+    },
+    getSupplierInfo: (supplierId) => {
+        dispatch(commonAction.getSupplierInfo(supplierId));
     },
     getPurchasePayList: (planDateStart,planDateEnd,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus,dataStart) => {
         dispatch(purchasePayAction.getPurchasePayList({planDateStart,planDateEnd,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus,dataStart}))
