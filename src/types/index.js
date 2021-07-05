@@ -8,6 +8,7 @@ import * as StorageActionType from './main/StorageActionType'
 import * as ProductManagerActionType from './main/ProductManagerActionType'
 import * as StorageProductActionType from './main/StorageProductActionType'
 import * as StorageCheckActionType from './main/StorageCheckActionType'
+import * as StorageCheckDetailActionType from './main/StorageCheckDetailActionType'
 import * as ProductManagerDetailActionType from './main/ProductManagerDetailActionType'
 import * as PurchasePayActionType from './main/PurchasePayActionType'
 import * as PurchaseRefundActionType from './main/PurchaseRefundActionType'
@@ -30,6 +31,7 @@ export {
     ProductManagerActionType,
     StorageProductActionType,
     StorageCheckActionType,
+    StorageCheckDetailActionType,
     ProductManagerDetailActionType,
     PurchasePayActionType,
     PurchaseRefundActionType,

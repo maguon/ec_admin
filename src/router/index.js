@@ -8,6 +8,7 @@ import {
     Storage,
     StorageProduct,
     StorageCheck,
+    StorageCheckDetail,
     ProductManager,
     ProductManagerDetail,
     Supplier,
@@ -53,8 +54,9 @@ export const routesWithHeader = [
     {path: "/storage", exact: true, component: Storage},
     // 库存商品
     {path: "/storage_product", exact: true, component: StorageProduct},
-    // 库存商品
+    // 仓库盘点
     {path: "/storage_check", exact: true, component: StorageCheck},
+    {path: "/storage_check/:id", exact: true, component: StorageCheckDetail},
 
     /** 财务管理 */
     // 采购付款
