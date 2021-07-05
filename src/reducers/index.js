@@ -12,6 +12,7 @@ import ProductManagerDetailReducer from './main/ProductManagerDetailReducer';
 import PurchasePayReducer from './main/PurchasePayReducer';
 import PurchaseRefundReducer from './main/PurchaseRefundReducer';
 import StorageProductReducer from './main/StorageProductReducer';
+import StorageCheckReducer from './main/StorageCheckReducer';
 import AuthoritySettingReducer from './main/AuthoritySettingReducer';
 import AdminUserSettingReducer from "./main/AdminUserSettingReducer";
 import AppSettingReducer from "./main/AppSettingReducer";
@@ -34,6 +35,7 @@ export default combineReducers({
     PurchasePayReducer,
     PurchaseRefundReducer,
     StorageProductReducer,
+    StorageCheckReducer,
     AuthoritySettingReducer,
     AdminUserSettingReducer,
     AppSettingReducer,

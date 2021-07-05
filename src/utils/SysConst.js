@@ -212,6 +212,12 @@ export const ALL_PAGE_LIST = [
                 "name": "库存商品",
                 "icon": "mdi-chevron-right",
                 "usable": false
+            },
+            {
+                "link": "/storage_check",
+                "name": "仓库盘点",
+                "icon": "mdi-chevron-right",
+                "usable": false
             }
         ]
     },
