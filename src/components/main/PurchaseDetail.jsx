@@ -65,6 +65,7 @@ function PurchaseDetail (props){
     const dispatch = useDispatch();
     const {id} = useParams();
     const [transferCostTypeFlag, setTransferCostTypeFlag] = useState(true);
+    const [addTransferCostTypeFlag, setAddTransferCostTypeFlag] = useState(true);
     const [purchaseCountTotal, setPurchaseCountTotal] = useState(0);
     const [modalOpenFlag, setModalOpenFlag] = useState(false);
     const [modalItemOpenFlag, setModalItemOpenFlag] = useState(false);
@@ -78,6 +79,7 @@ function PurchaseDetail (props){
     const [addStorageType, setAddStorageType] = useState(0);
     const [addStorageTypeItem, setAddStorageTypeItem] = useState(0);
     const [validation,setValidation] = useState({});
+    const [addValidation,setAddValidation] = useState({});
     useEffect(()=>{
         getPurchaseDetailInfo(id);
         getPurchaseItemDetailInfo(id);
@@ -105,9 +107,9 @@ function PurchaseDetail (props){
             purchaseDetailReducer.purchaseDetailInfo.transfer_cost=0;
         }
         if(addTransferCostType==2){
-            setTransferCostTypeFlag(false)
+            setAddTransferCostTypeFlag(false)
         }else {
-            setTransferCostTypeFlag(true)
+            setAddTransferCostTypeFlag(true)
             setAddTransferCost(0);
         }
     },[purchaseDetailReducer.purchaseDetailInfo.transfer_cost_type,addTransferCostType]);
@@ -143,8 +145,49 @@ function PurchaseDetail (props){
                 }
             }
         }
+        if(addStorageTypeItem==0){
+            for(var value of purchaseDetailReducer.purchaseDetailItemInfo){
+                if(value.id==addProduct.id){
+                    if(addPurchaseCount>value.purchase_count) {
+                        validateObj.addPurchaseCount='请输入小于采购的数量';
+                    }
+                }
+            }
+
+        }else {
+            for(var value of purchaseDetailReducer.storageProductArray){
+                if(value.product_id==addProduct.product_id||value.product_name==addProduct){
+                    if(addPurchaseCount>value.storage_count) {
+                        validateObj.addPurchaseCount='请输入小于库存的数量';
+                    }
+                }
+            }
+        }
         setValidation(validateObj);
         return Object.keys(validateObj).length
+    }
+    const addValidate = ()=>{
+        const addValidateObj ={};
+        if(addStorageTypeItem==0){
+            for(var value of purchaseDetailReducer.purchaseDetailItemInfo){
+                if(value.id==addProduct.id){
+                    if(addPurchaseCount>value.purchase_count) {
+                        addValidateObj.addPurchaseCount='请输入小于采购的数量';
+                    }
+                }
+            }
+
+        }else {
+            for(var value of purchaseDetailReducer.storageProductArray){
+                if(value.product_id==addProduct.product_id||value.product_name==addProduct){
+                    if(addPurchaseCount>value.storage_count) {
+                        addValidateObj.addPurchaseCount='请输入小于库存的数量';
+                    }
+                }
+            }
+        }
+        setAddValidation(addValidateObj);
+        return Object.keys(addValidateObj).length
     }
     //初始添加模态框值
     const handleAddOpen =() =>{
@@ -160,6 +203,11 @@ function PurchaseDetail (props){
         setModalItemOpenFlag(true);
         setAddProduct(product_name)
         setAddStorageType(1)
+        setAddTransferCostType(1);
+        setAddTransferCost(0);
+        setAddUnitCost(0);
+        setAddPurchaseCount(0);
+        setAddTransferRemark('');
     };
     // 关闭模态
     const modalClose = () => {
@@ -185,7 +233,7 @@ function PurchaseDetail (props){
         }
     }
     const addRefundDetailItemInfo =()=>{
-        const errorCount = validate();
+        const errorCount = addValidate();
         if(errorCount==0){
             for(var value of purchaseDetailReducer.storageProductArray){
                 if(value.product_name==addProduct){
@@ -287,7 +335,7 @@ function PurchaseDetail (props){
                                     </Select>
                                 </FormControl>
                             </Grid>
-                            <Grid item xs>
+                            <Grid item xs={2}>
                                 <TextField type="number" label="运费" disabled={transferCostTypeFlag} fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                            value={purchaseDetailReducer.purchaseDetailInfo.transfer_cost}
                                            onChange={(e) => {
@@ -295,11 +343,12 @@ function PurchaseDetail (props){
                                            }}
                                 />
                             </Grid>
-                            <Grid item xs>
+                            <Grid item xs={2}>
                                 <TextField label="总价" fullWidth={true} disabled={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                            value={Number(purchaseCountTotal)}
                                 />
                             </Grid>
+                            <Grid item xs={1}></Grid>
                         </Grid>
                         {/*商品选择*/}
                         {purchaseDetailReducer.purchaseDetailItemInfo.map((item,index)=>(
@@ -348,10 +397,10 @@ function PurchaseDetail (props){
                                                }}
                                     />
                                 </Grid>
-                                <Grid item xs  align="center"  style={{display:purchaseDetailReducer.purchaseDetailInfo.status==3?'block':'none',marginTop:'5px'}}>
-                                    <Fab color="primary" aria-label="add" size="small" onClick={() => {updatePurchaseDetailItemInfo(item.id,index)}}>
-                                        <i className="mdi mdi-pencil mdi-24px" />
-                                    </Fab>
+                                <Grid item xs={1}  align="center"  style={{display:purchaseDetailReducer.purchaseDetailInfo.status==3?'block':'none',marginTop:'14px'}}>
+
+                                        <i className="mdi mdi-check mdi-24px"  style={{color:'#3f51b5'}} onClick={() => {updatePurchaseDetailItemInfo(item.id,index)}}/>
+
                                 </Grid>
                             </Grid>
                         ))}
@@ -522,7 +571,7 @@ function PurchaseDetail (props){
                         </FormControl>
                     </Grid>
                     <Grid item xs>
-                        <TextField type="number" label="运费" disabled={transferCostTypeFlag} fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
+                        <TextField type="number" label="运费" disabled={addTransferCostTypeFlag} fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                    value={addTransferCost}
                                    onChange={(e) => {
                                        setAddTransferCost(e.target.value)
@@ -531,7 +580,7 @@ function PurchaseDetail (props){
                     </Grid>
                     <Grid item xs>
                         <TextField label="总价" fullWidth={true} disabled={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                   value={Number(addTransferCost)+Number(addUnitCost*addPurchaseCount)}
+                                   value={Number(addUnitCost*addPurchaseCount)-Number(addTransferCost)}
                         />
                     </Grid>
                 </Grid>
@@ -583,7 +632,7 @@ function PurchaseDetail (props){
                 </Grid>
                 <Grid  container spacing={3}>
                     <Grid item xs>
-                        <FormControl variant="outlined" fullWidth={true} margin="dense">
+                        <FormControl variant="outlined" fullWidth={true} margin="dense" disabled={true}>
                             <InputLabel id="standard-select-outlined-label" shrink>是否出库</InputLabel>
                             <Select
                                 label="是否出库"
@@ -666,7 +715,7 @@ function PurchaseDetail (props){
                         </FormControl>
                     </Grid>
                     <Grid item xs>
-                        <TextField type="number" label="运费" disabled={transferCostTypeFlag} fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
+                        <TextField type="number" label="运费" disabled={addTransferCostTypeFlag} fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                    value={addTransferCost}
                                    onChange={(e) => {
                                        setAddTransferCost(e.target.value)
@@ -675,7 +724,7 @@ function PurchaseDetail (props){
                     </Grid>
                     <Grid item xs>
                         <TextField label="总价" fullWidth={true} disabled={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                   value={Number(addTransferCost)+Number(addUnitCost*addPurchaseCount)}
+                                   value={Number(addUnitCost*addPurchaseCount)-Number(addTransferCost)}
                         />
                     </Grid>
                 </Grid>
@@ -712,8 +761,8 @@ function PurchaseDetail (props){
                                    onChange={(e) => {
                                        setAddPurchaseCount(e.target.value)
                                    }}
-                                   error={validation.addPurchaseCount && validation.addPurchaseCount!=''}
-                                   helperText={validation.addPurchaseCount}
+                                   error={addValidation.addPurchaseCount && addValidation.addPurchaseCount!=''}
+                                   helperText={addValidation.addPurchaseCount}
                         />
                     </Grid>
                     <Grid item xs>
@@ -724,7 +773,7 @@ function PurchaseDetail (props){
                 </Grid>
                 <Grid  container spacing={3}>
                     <Grid item xs>
-                        <FormControl variant="outlined" fullWidth={true} margin="dense">
+                        <FormControl variant="outlined" fullWidth={true} margin="dense" disabled={true}>
                             <InputLabel id="standard-select-outlined-label" shrink>是否出库</InputLabel>
                             <Select
                                 label="是否出库"
@@ -755,10 +804,6 @@ function PurchaseDetail (props){
                     </Grid>
                 </Grid>
             </SimpleModal>
-
-
-
-
         </div>
     )
 
