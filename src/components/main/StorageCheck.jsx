@@ -19,12 +19,23 @@ import {
     Button, Fab, FormControl, InputLabel, MenuItem, makeStyles
 } from "@material-ui/core";
 
+
+import DateFnsUtils from '@date-io/date-fns';
+import {
+    MuiPickersUtilsProvider,
+    KeyboardDatePicker,
+} from '@material-ui/pickers';
+
 // 引入Dialog
 import {SimpleModal} from "../index";
 import Swal from "sweetalert2";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import {CommonActionType, StorageCheckActionType, StorageProductActionType} from "../../types";
+import {CommonActionType, StorageCheckActionType} from "../../types";
 import {Link} from "react-router-dom";
+
+import {
+    DatePicker
+} from '@material-ui/pickers';
 
 const storageCheckAction = require('../../actions/main/StorageCheckAction');
 const commonAction = require('../../actions/layout/CommonAction');
@@ -49,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function StorageCheck(props) {
-    const {storageCheckReducer, commonReducer, changeStatus, saveModalData, fromDetail} = props;
+    const {storageCheckReducer, commonReducer, saveModalData, fromDetail} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
 
@@ -73,56 +84,23 @@ function StorageCheck(props) {
         // 详情页面 返回 保留reducer，否则，清空
         if (!fromDetail) {
             let queryParams = {
-                storage: null,
-                storageArea: null,
-                supplier: null,
-                product: null,
-                purchaseId: '',
-                startDate: '',
-                endDate: ''
+                dateIdStart: '',
+                dateIdEnd: '',
+                checkStatus: null
             };
             dispatch(StorageCheckActionType.setQueryParams(queryParams));
         }
         // 取得画面 select控件，基础数据
         props.getBaseSelectList();
         props.getStorageCheckList(props.storageCheckReducer.storageCheckData.start);
+
+        console.log(storageCheckReducer.queryParams.dateIdStart=='');
     }, []);
-
-
-    // useEffect(() => {
-    //     // 商品分类有选择时，取得商品子分类， 否则清空
-    //     setParamCategorySub(null);
-    //     if (paramCategory != null) {
-    //         props.getCategorySubList(paramCategory.id);
-    //     } else {
-    //         props.setCategorySubList([]);
-    //     }
-    // }, [paramCategory]);
-    //
-    // useEffect(() => {
-    //     // 品牌有选择时，取得品牌型号， 否则清空
-    //     setParamBrandModel(null);
-    //     if (paramBrand != null) {
-    //         props.getBrandModelList(paramBrand.id);
-    //     } else {
-    //         props.setBrandModelList([]);
-    //     }
-    // }, [paramBrand]);
 
     // 模态属性
     const [modalOpen, setModalOpen] = React.useState(false);
     // 关闭模态
     const closeModal = () => {
-        // if (paramCategory != null) {
-        //     props.getCategorySubList(paramCategory.id);
-        // } else {
-        //     props.setCategorySubList([]);
-        // }
-        // if (paramBrand != null) {
-        //     props.getBrandModelList(paramBrand.id);
-        // } else {
-        //     props.setBrandModelList([]);
-        // }
         setModalOpen(false);
     };
 
@@ -165,6 +143,8 @@ function StorageCheck(props) {
         // 设定模态打开
         setModalOpen(true);
     };
+
+
 
     useEffect(() => {
         let desc = "";
@@ -212,110 +192,77 @@ function StorageCheck(props) {
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
                 <Grid container item xs={10} spacing={3}>
-                    <Grid item xs={2}>
-                        <TextField label="采购单ID" fullWidth margin="dense" variant="outlined" type="search" value={storageCheckReducer.queryParams.purchaseId}
-                                   onChange={(e)=>{dispatch(StorageProductActionType.setQueryParams({name: "purchaseId", value: e.target.value}))}}/>
+                    <Grid item xs={3}>
+                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                    okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                    label="盘点日期（始）"
+                                    value={storageCheckReducer.queryParams.dateIdStart=="" ? null : storageCheckReducer.queryParams.dateIdStart}
+                                    onChange={(date)=>{
+                                        dispatch(StorageCheckActionType.setQueryParam({name: "dateIdStart", value: date}))
+                                    }}
+                        />
                     </Grid>
-                    {/*<Grid item xs={2}>*/}
-                    {/*    <Autocomplete fullWidth*/}
-                    {/*                  options={commonReducer.categorySubList}*/}
-                    {/*                  noOptionsText="无选项"*/}
-                    {/*                  getOptionLabel={(option) => option.category_sub_name}*/}
-                    {/*                  onChange={(event, value) => {*/}
-                    {/*                      setParamCategorySub(value);*/}
-                    {/*                  }}*/}
-                    {/*                  value={paramCategorySub}*/}
-                    {/*                  renderInput={(params) => <TextField {...params} label="商品子分类" margin="dense" variant="outlined"/>}*/}
-                    {/*    />*/}
-                    {/*</Grid>*/}
+                    <Grid item xs={3}>
+                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                    okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                    label="盘点日期（终）"
+                                    value={storageCheckReducer.queryParams.dateIdEnd=="" ? null : storageCheckReducer.queryParams.dateIdEnd}
+                                    onChange={(date)=>{
+                                        dispatch(StorageCheckActionType.setQueryParam({name: "dateIdEnd", value: date}))
+                                    }}
+                        />
+                    </Grid>
 
-                    {/*<Grid item xs={2}>*/}
-                    {/*    <Autocomplete fullWidth*/}
-                    {/*                  options={commonReducer.brandList}*/}
-                    {/*                  getOptionLabel={(option) => option.brand_name}*/}
-                    {/*                  onChange={(event, value) => {*/}
-                    {/*                      setParamBrand(value);*/}
-                    {/*                  }}*/}
-                    {/*                  value={paramBrand}*/}
-                    {/*                  renderInput={(params) => <TextField {...params} label="品牌" margin="dense" variant="outlined"/>}*/}
-                    {/*    />*/}
-                    {/*</Grid>*/}
-                    {/*<Grid item xs={2}>*/}
-                    {/*    <Autocomplete fullWidth*/}
-                    {/*                  options={commonReducer.brandModelList}*/}
-                    {/*                  noOptionsText="无选项"*/}
-                    {/*                  getOptionLabel={(option) => option.brand_model_name}*/}
-                    {/*                  onChange={(event, value) => {*/}
-                    {/*                      setParamBrandModel(value);*/}
-                    {/*                  }}*/}
-                    {/*                  value={paramBrandModel}*/}
-                    {/*                  renderInput={(params) => <TextField {...params} label="品牌型号" margin="dense" variant="outlined"/>}*/}
-                    {/*    />*/}
-                    {/*</Grid>*/}
+                    <Grid item xs={3}>
+                        <FormControl variant="outlined" fullWidth margin="dense">
+                            <InputLabel id="status-select-outlined-label">盘点状态</InputLabel>
+                            <Select
+                                label="盘点状态"
+                                labelId="status-select-outlined-label"
+                                id="status-select-outlined"
+                                value={storageCheckReducer.queryParams.checkStatus}
+                                onChange={(e, value) => {
+                                    dispatch(StorageCheckActionType.setQueryParam({name: "checkStatus", value: e.target.value}));
+                                }}
+                            >
+                                <MenuItem value="">请选择</MenuItem>
+                                {sysConst.STORAGE_CHECK_STATUS.map((item, index) => (
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
 
-                    {/*<Grid item xs={3}>*/}
-                    {/*    <Autocomplete id="condition-product" fullWidth={true}*/}
-                    {/*                  options={commonReducer.productList}*/}
-                    {/*                  noOptionsText="无选项"*/}
-                    {/*                  getOptionLabel={(option) => option.product_name}*/}
-                    {/*                  onChange={(event, value) => {*/}
-                    {/*                      setParamProduct(value);*/}
-                    {/*                  }}*/}
-                    {/*                  value={paramProduct}*/}
-                    {/*                  renderInput={(params) => <TextField {...params} label="商品" margin="dense" variant="outlined"/>}*/}
-                    {/*    />*/}
-                    {/*</Grid>*/}
-
-                    {/*<Grid item xs={2}>*/}
-                    {/*    <FormControl variant="outlined" fullWidth margin="dense">*/}
-                    {/*        <InputLabel id="standard-type-select-outlined-label">标准类型</InputLabel>*/}
-                    {/*        <Select*/}
-                    {/*            label="标准类型"*/}
-                    {/*            labelId="standard-type-select-outlined-label"*/}
-                    {/*            id="standard-select-outlined"*/}
-                    {/*            value={paramStandardType}*/}
-                    {/*            onChange={(event, value) => {*/}
-                    {/*                setParamStandardType(event.target.value);*/}
-                    {/*            }}*/}
-                    {/*        >*/}
-                    {/*            <MenuItem value="">请选择</MenuItem>*/}
-                    {/*            {sysConst.STANDARD_TYPE.map((item, index) => (*/}
-                    {/*                <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>*/}
-                    {/*            ))}*/}
-                    {/*        </Select>*/}
-                    {/*    </FormControl>*/}
-                    {/*</Grid>*/}
-
-                    {/*<Grid item xs={2}>*/}
-                    {/*    <FormControl variant="outlined" fullWidth margin="dense">*/}
-                    {/*        <InputLabel id="status-select-outlined-label">状态</InputLabel>*/}
-                    {/*        <Select*/}
-                    {/*            label="状态"*/}
-                    {/*            labelId="status-select-outlined-label"*/}
-                    {/*            id="status-select-outlined"*/}
-                    {/*            value={paramStatus}*/}
-                    {/*            onChange={(event, value) => {*/}
-                    {/*                setParamStatus(event.target.value);*/}
-                    {/*            }}*/}
-                    {/*        >*/}
-                    {/*            <MenuItem value="">请选择</MenuItem>*/}
-                    {/*            {sysConst.USE_FLAG.map((item, index) => (*/}
-                    {/*                <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>*/}
-                    {/*            ))}*/}
-                    {/*        </Select>*/}
-                    {/*    </FormControl>*/}
-                    {/*</Grid>*/}
+                    <Grid item xs={3}>
+                        <FormControl variant="outlined" fullWidth margin="dense">
+                            <InputLabel id="status-select-outlined-label">完成状态</InputLabel>
+                            <Select
+                                label="完成状态"
+                                labelId="status-select-outlined-label"
+                                id="status-select-outlined"
+                                value={storageCheckReducer.queryParams.status}
+                                onChange={(e, value) => {
+                                    dispatch(StorageCheckActionType.setQueryParam({name: "status", value: e.target.value}));
+                                }}
+                            >
+                                <MenuItem value="">请选择</MenuItem>
+                                {sysConst.STORAGE_RET_STATUS.map((item, index) => (
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
                 </Grid>
 
                 {/*查询按钮*/}
-                <Grid item xs={1}>
+                <Grid item xs={1} style={{textAlign:'right'}}>
                     <Fab color="primary" aria-label="add" size="small" onClick={queryStorageCheckList}>
                         <i className="mdi mdi-magnify mdi-24px"/>
                     </Fab>
                 </Grid>
 
                 {/*追加按钮*/}
-                <Grid item xs={1}>
+                <Grid item xs={1} style={{textAlign:'right'}}>
                     <Fab color="primary" aria-label="add" size="small" onClick={() => {initModal()}}>
                         <i className="mdi mdi-plus mdi-24px"/>
                     </Fab>
@@ -327,58 +274,38 @@ function StorageCheck(props) {
                 <Table stickyHeader aria-label="sticky table" style={{minWidth: 650}}>
                     <TableHead>
                         <TableRow>
-                            <TableCell padding="default" className={classes.head} align="center">ID</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">商品分类</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">商品子分类</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">品牌</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">品牌型号</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">商品名称</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">标准类型</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">单位</TableCell>
-                            <TableCell padding="default" className={classes.head} align="right">售价</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">状态</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">盘点日期</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">盘点描述</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">计划盘点数</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">盘点完成数</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">盘点状态</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">完成状态</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">操作</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {storageCheckReducer.storageCheckData.dataList.map((row) => (
                             <TableRow className={classes.tableRow} key={row.id}>
-                                <TableCell padding="none" align="center">{row.id}</TableCell>
-                                <TableCell padding="none" align="center">{row.category_name}</TableCell>
-                                <TableCell padding="none" align="center">{row.category_sub_name}</TableCell>
-                                <TableCell padding="none" align="center">{row.brand_name}</TableCell>
-                                <TableCell padding="none" align="center">{row.brand_model_name}</TableCell>
-                                <TableCell padding="none" align="center">{row.product_name}</TableCell>
-                                <TableCell padding="none"
-                                           align="center">{commonUtil.getJsonValue(sysConst.STANDARD_TYPE, row.standard_type)}</TableCell>
-                                <TableCell padding="none" align="center">{row.unit_name}</TableCell>
-                                <TableCell padding="none" align="right">{row.price}</TableCell>
-                                <TableCell padding="none"
-                                           align="center">{commonUtil.getJsonValue(sysConst.USE_FLAG, row.status)}</TableCell>
+                                <TableCell padding="none" align="center">{row.date_id}</TableCell>
+                                <TableCell padding="none" align="center">{row.check_desc}</TableCell>
+                                <TableCell padding="none" align="center">{row.plan_check_count}</TableCell>
+                                <TableCell padding="none" align="center">{row.checked_count}</TableCell>
+                                <TableCell padding="none" align="center">{commonUtil.getJsonValue(sysConst.STORAGE_CHECK_STATUS, row.check_status)}</TableCell>
+                                <TableCell padding="none" align="center">{commonUtil.getJsonValue(sysConst.STORAGE_RET_STATUS, row.status)}</TableCell>
                                 <TableCell padding="none" align="center">
-                                    {/* 停用/可用 状态 */}
-                                    <Switch
-                                        checked={row.status==1}
-                                        onChange={(e)=>{changeStatus(row.id, row.status)}}
-                                        name="状态"
-                                        color='primary'
-                                        inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                    />
-
                                     {/* 编辑按钮 */}
                                     <IconButton color="primary" edge="start">
-                                        <Link to={{pathname: '/product_manager/' + row.id}}>
+                                        <Link to={{pathname: '/storage_check/' + row.id}}>
                                             <i className="mdi mdi-table-search mdi-24px"/>
                                         </Link>
                                     </IconButton>
-
                                 </TableCell>
                             </TableRow>
                         ))}
 
                         {storageCheckReducer.storageCheckData.dataList.length === 0 &&
                         <TableRow>
-                            <TableCell colSpan={11} style={{textAlign: 'center'}}>暂无数据</TableCell>
+                            <TableCell colSpan={7} style={{textAlign: 'center'}}>暂无数据</TableCell>
                         </TableRow>
                         }
                     </TableBody>

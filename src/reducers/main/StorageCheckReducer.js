@@ -15,13 +15,10 @@ const initialState = {
     },
     // 检索条件
     queryParams: {
-        paramCategory: null,
-        paramCategorySub: null,
-        paramBrand: null,
-        paramBrandModel: null,
-        paramProduct: null,
-        paramStandardType: null,
-        paramStatus: null
+        dateIdStart: null,
+        dateIdEnd: '',
+        checkStatus: null,
+        status: null
     }
 };
 
