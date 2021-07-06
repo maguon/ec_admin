@@ -189,6 +189,12 @@ export const ALL_PAGE_LIST = [
                 "usable": false
             },
             {
+                "link": "/purchase_return",
+                "name": "退货",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
+            {
                 "link": "/category_manager",
                 "name": "商品分类",
                 "icon": "mdi-chevron-right",
