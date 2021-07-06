@@ -15,6 +15,7 @@ import Swal from "sweetalert2";
 import {StorageCheckDetailActionType} from "../../types";
 
 const storageCheckDetailAction = require('../../actions/main/StorageCheckDetailAction');
+const storageCheckAction = require('../../actions/main/StorageCheckAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
@@ -36,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function StorageCheck(props) {
-    const {storageCheckDetailReducer, saveStorageCheck, saveStorageCheckRel, confirmCheck} = props;
+    const {storageCheckDetailReducer, saveStorageCheck, saveStorageCheckRel, confirmCheck, downLoadCsv} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     const {id} = useParams();
@@ -95,7 +96,14 @@ function StorageCheck(props) {
                     <Button variant="contained" color="primary" style={{float:'right',marginLeft: 20}} onClick={saveStorageCheck}>保存</Button>
                 </Grid>}
                 {storageCheckDetailReducer.detailList.length > 0 &&
-                <Grid item xs={12}><Typography color={"primary"}>盘点详情</Typography></Grid>}
+                <Grid item xs={12}>
+                    <Typography color={"primary"}>盘点详情
+                        <IconButton color="primary" edge="start" style={{marginLeft:1}} onClick={()=>{downLoadCsv(storageCheckDetailReducer.storageCheckInfo.id)}}>
+                            <i className="mdi mdi-cloud-download mdi-24px"/>
+                        </IconButton>
+                    </Typography>
+
+                </Grid>}
             </Grid>
 
             {/* 下部分 */}
@@ -174,6 +182,9 @@ const mapDispatchToProps = (dispatch) => ({
         } else {
             dispatch(storageCheckDetailAction.changeStorageCheckStatus(storageCheckInfo.id, sysConst.STORAGE_RET_STATUS[1].value));
         }
+    },
+    downLoadCsv: (storageCheckId) => {
+        dispatch(storageCheckAction.downLoadCsv(storageCheckId))
     }
 });
 

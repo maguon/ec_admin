@@ -75,14 +75,11 @@ export const saveModalData = (modalData) => async (dispatch, getState) => {
             params = {...params, brandModelId: modalData.brandModel.id};
         }
 
-        console.log('params...', params);
-
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageCheck';
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpPost(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-        console.log('',res);
         if (res.success && res.rows.length > 0) {
             const history = createHashHistory();
             history.push('/storage_check/' + res.rows[0].id);
@@ -90,6 +87,17 @@ export const saveModalData = (modalData) => async (dispatch, getState) => {
             // } else if (!res.success) {
             //     Swal.fire("保存失败", res.msg, "warning");
         }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const downLoadCsv = (storageCheckId) => async () => {
+    try {
+        // 基本检索URL
+        let url = 'http://' + apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/storageCheck/' + storageCheckId + '/storageCheckRel.csv';
+        window.open(url);
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }

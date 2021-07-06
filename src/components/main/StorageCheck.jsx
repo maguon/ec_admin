@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function StorageCheck(props) {
-    const {storageCheckReducer, commonReducer, saveModalData, fromDetail} = props;
+    const {storageCheckReducer, commonReducer, saveModalData, downLoadCsv, fromDetail} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
 
@@ -280,6 +280,10 @@ function StorageCheck(props) {
                                 <TableCell padding="none" align="center">{commonUtil.getJsonValue(sysConst.STORAGE_CHECK_STATUS, row.check_status)}</TableCell>
                                 <TableCell padding="none" align="center">{commonUtil.getJsonValue(sysConst.STORAGE_RET_STATUS, row.status)}</TableCell>
                                 <TableCell padding="none" align="center">
+                                    <IconButton color="primary" edge="start" onClick={()=>{downLoadCsv(row.id)}}>
+                                        <i className="mdi mdi-cloud-download mdi-24px"/>
+                                    </IconButton>
+
                                     {/* 编辑按钮 */}
                                     <IconButton color="primary" edge="start">
                                         <Link to={{pathname: '/storage_check/' + row.id}}>
@@ -486,6 +490,9 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(storageCheckAction.saveModalData({
             storage,storageArea,category,categorySub,brand,brandModel,supplier,remark,desc
         }));
+    },
+    downLoadCsv: (storageCheckId) => {
+        dispatch(storageCheckAction.downLoadCsv(storageCheckId))
     }
 });
 
