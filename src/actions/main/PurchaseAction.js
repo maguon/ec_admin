@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
+const commonUtil = require('../../utils/CommonUtil');
 
 // 采购管理 -> 采购 获取供应商列表
 export const getSupplierList = (params) => async (dispatch, getState) => {
@@ -89,11 +90,14 @@ export const getPurchaseList = (params) => async (dispatch, getState) => {
         const size = getState().PurchaseReducer.size;
         // 检索条件
         const paramsObj=getState().PurchaseReducer.queryPurchaseObj;
-       /* paramsObj.supplierId =paramsObj.supplierId.split('&')[0];*/
-        paramsObj.planDateStart =paramsObj.planDateStart.replace(/-/g, '');
-        paramsObj.planDateEnd =paramsObj.planDateEnd.replace(/-/g, '');
-        paramsObj.finishDateStart =paramsObj.finishDateStart.replace(/-/g, '');
-        paramsObj.finishDateEnd =paramsObj.finishDateEnd.replace(/-/g, '');
+        paramsObj.planDateStart =paramsObj.planDateStart==''?'':commonUtil.getDateFormat(paramsObj.planDateStart);
+        paramsObj.planDateEnd =paramsObj.planDateEnd==''?'':commonUtil.getDateFormat(paramsObj.planDateEnd);
+        paramsObj.finishDateStart =paramsObj.finishDateStart==''?'':commonUtil.getDateFormat(paramsObj.finishDateStart);
+        paramsObj.finishDateEnd =paramsObj.finishDateEnd==''?'':commonUtil.getDateFormat(paramsObj.finishDateEnd);
+        paramsObj.paymentStatus =paramsObj.paymentStatus=='-1'?'': paramsObj.paymentStatus;
+        paramsObj.storageStatus =paramsObj.storageStatus=='-1'?'': paramsObj.storageStatus;
+        paramsObj.status =paramsObj.status=='-1'?'': paramsObj.status;
+
         // 基本检索URL
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/purchase?size=' + size;
         let conditions = httpUtil.objToUrl(paramsObj);

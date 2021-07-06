@@ -48,6 +48,9 @@ export const getDateTime = (date) => {
 export const getDate = (date) => {
    return formatDate(date, 'yyyy-MM-dd');
 };
+export const getDateFormat = (date) => {
+   return formatDate(date, 'yyyyMMdd');
+};
 /**
  * 在本地进行文件保存
  * @param  {String} data     要保存到本地的文件数据

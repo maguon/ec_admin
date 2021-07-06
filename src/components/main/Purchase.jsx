@@ -20,6 +20,19 @@ import {withStyles,makeStyles} from "@material-ui/core/styles";
 import {Link} from "react-router-dom";
 import {PurchaseActionType} from '../../types';
 import Autocomplete from "@material-ui/lab/Autocomplete";
+
+//时间控件
+import DateFnsUtils from '@date-io/date-fns';
+import {
+    MuiPickersUtilsProvider,
+    KeyboardDatePicker,
+} from '@material-ui/pickers';
+
+
+import {
+    DatePicker
+} from '@material-ui/pickers';
+
 const PurchaseAction = require('../../actions/main/PurchaseAction');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
@@ -71,6 +84,10 @@ const StyledTableCell = withStyles((theme) => ({
     }
 }))(TableCell);
 
+
+
+
+
 //采购
 function Purchase (props){
     const {purchaseReducer,getSupplierList,getProductList,getPurchaseList} = props;
@@ -92,9 +109,9 @@ function Purchase (props){
     const [planDateEnd, setPlanDateEnd] = useState("");
     const [finishDateStart, setFinishDateStart] = useState("");
     const [finishDateEnd, setFinishDateEnd] = useState('');
-    const [paymentStatus, setPaymentStatus] = useState(null);
-    const [storageStatus, setStorageStatus] = useState(null);
-    const [status, setStatus] = useState(null);
+    const [paymentStatus, setPaymentStatus] = useState('-1');
+    const [storageStatus, setStorageStatus] = useState('-1');
+    const [status, setStatus] = useState('-1');
 
 
     const [validation,setValidation] = useState({});
@@ -286,9 +303,9 @@ function Purchase (props){
                                     setStorageStatus(event.target.value);
                                 }}
                             >
-                                <MenuItem value="">请选择</MenuItem>
+                                <MenuItem  key={-1} value='-1'>请选择</MenuItem>
                                 {sysConst.STORAGE_STATUS.map((item, index) => (
-                                    <MenuItem value={item.value}>{item.label}</MenuItem>
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
@@ -305,9 +322,9 @@ function Purchase (props){
                                     setPaymentStatus(event.target.value);
                                 }}
                             >
-                                <MenuItem value="">请选择</MenuItem>
+                                <MenuItem key={-1} value='-1'>请选择</MenuItem>
                                 {sysConst.PAYMENT_STATUS.map((item, index) => (
-                                    <MenuItem value={item.value}>{item.label}</MenuItem>
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
@@ -324,69 +341,49 @@ function Purchase (props){
                                     setStatus(event.target.value);
                                 }}
                             >
-                                <MenuItem value="">请选择</MenuItem>
+                                <MenuItem key={-1} value='-1'>请选择</MenuItem>
                                 {sysConst.PURCHASE_STATUS.map((item, index) => (
-                                    <MenuItem value={item.value}>{item.label}</MenuItem>
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
                     </Grid>
                     {/* 计划开始时间*/}
                     <Grid item  xs={3}>
-                        <TextField
-                            size="small"
-                            fullWidth={true}
-                            variant="outlined"
-                            label="开始日期(始)"
-                            type="date"
-                            value={planDateStart}
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            onChange={(e)=>setPlanDateStart(e.target.value)}
+                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                    okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                    label="开始日期（始）"
+                                    value={planDateStart=="" ? null : planDateStart}
+                                    onChange={(date)=>{
+                                        setPlanDateStart(date)
+                                    }}
                         />
                     </Grid>
                     <Grid item  xs={3}>
-                        <TextField
-                            size="small"
-                            fullWidth={true}
-                            variant="outlined"
-                            label="开始日期(终)"
-                            type="date"
-                            defaultValue={planDateEnd}
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            onChange={(e)=>setPlanDateEnd(e.target.value)}
+
+                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                    okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                    label="开始日期(终)"
+                                    value={planDateEnd=="" ? null : planDateEnd}
+                                    onChange={(date)=>setPlanDateEnd(date)}
                         />
                     </Grid>
                     {/*完成时间*/}
                     <Grid item  xs={3}>
-                        <TextField
-                            size="small"
-                            fullWidth={true}
-                            variant="outlined"
-                            label="完成日期(始)"
-                            type="date"
-                            defaultValue={finishDateStart}
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            onChange={(e)=>setFinishDateStart(e.target.value)}
+
+                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                    okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                    label="完成日期(始)"
+                                    value={finishDateStart=="" ? null : finishDateStart}
+                                    onChange={(date)=>setFinishDateStart(date)}
                         />
                     </Grid>
                     <Grid item  xs={3}>
-                        <TextField
-                            size="small"
-                            fullWidth={true}
-                            variant="outlined"
-                            label="完成日期(终)"
-                            type="date"
-                            defaultValue={finishDateEnd}
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            onChange={(e)=>setFinishDateEnd(e.target.value)}
+                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                    okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                    label="完成日期(终)"
+                                    value={finishDateEnd=="" ? null : finishDateEnd}
+                                    onChange={(date)=>setFinishDateEnd(date)}
                         />
                     </Grid>
                 </Grid>
@@ -424,7 +421,7 @@ function Purchase (props){
                             </TableHead>
                             <TableBody>
                                 {purchaseReducer.purchaseArray.length > 0 &&purchaseReducer.purchaseArray.map((row) => (
-                                    <TableRow key={row.id}>
+                                    <TableRow key={'purchase-'+row.id}>
                                         <TableCell align="center" >{row.id}</TableCell>
                                         <TableCell align="center" >{row.supplier_name}</TableCell>
                                         <TableCell align="center" >{row.plan_date_id}</TableCell>
@@ -437,7 +434,7 @@ function Purchase (props){
                                         <TableCell align="center" >{row.total_cost}</TableCell>
                                         <TableCell align="center" >{commonUtil.getJsonValue(sysConst.PURCHASE_STATUS, row.status)}</TableCell>
                                         <TableCell align="center">
-                                            {/* 详情按钮 */}
+                                            {/* 详情按钮*/}
                                             <IconButton color="primary" edge="start">
                                                 <Link to={{pathname: '/purchase/' + row.id}}>
                                                     <i className="mdi mdi-table-search purple-font margin-left10"> </i>
@@ -557,49 +554,7 @@ function Purchase (props){
                 </Grid>
                 {/*商品选择*/}
                 {purchaseItem.map((item,index)=>(
-                    <Grid  container spacing={3} key={index}>
-                       {/* <Grid item xs>
-                            <TextField className={classes.selectCondition}
-                                       select
-                                       margin="dense"
-                                       label="类目"
-                                       value={item.category}
-                                       onChange={
-                                           (e)=>setPurchaseItemParams(index,'category',e.target.value)}
-                                       SelectProps={{
-                                           native: true,
-                                       }}
-                                       variant="outlined"
-                            >
-                                {purchaseReducer.categoryArray.map((option) => (
-                                    <option key={option.id} value={option.id+'&'+option.category_name}>
-                                        {option.category_name}
-                                    </option>
-                                ))}
-                            </TextField>
-                        </Grid>
-                        <Grid item xs>
-                            <TextField className={classes.selectCondition}
-                                       select
-                                       margin="dense"
-                                       label="二级类目"
-                                       value={item.categorySub}
-                                       onChange={(e)=>setPurchaseItemParams(index,'categorySub',e.target.value)}
-                                       SelectProps={{
-                                           native: true,
-                                       }}
-                                       error={validation.categorySub&&validation.categorySub!=''}
-                                       helperText={validation.categorySub}
-                                       variant="outlined"
-                            >
-                                <option key={1} value={-1}>请选择</option>
-                                {item.categorySubArray==null?'':item.productArray.map((option) => (
-                                    <option key={option.id} value={option.id+'&'+option.category_sub_name}>
-                                        {option.category_sub_name}
-                                    </option>
-                                ))}
-                            </TextField>
-                        </Grid>*/}
+                    <Grid  container spacing={3} key={'purchaseItem-'+index}>
                         <Grid item xs>
                             <TextField className={classes.selectCondition}
                                        select
