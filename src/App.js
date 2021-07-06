@@ -9,6 +9,9 @@ import {applyMiddleware, createStore, compose} from 'redux';
 import reducers from './reducers'
 // 引入布局组件
 import {Header,Navigation,Footer,LoadProgree} from './components';
+import DateFnsUtils from "@date-io/date-fns";
+import cnLocale from "date-fns/locale/zh-CN";
+import {MuiPickersUtilsProvider} from "@material-ui/pickers";
 
 const store = compose(
     applyMiddleware(ReduxThunk)
@@ -54,6 +57,7 @@ function App(props) {
     return (
         <Provider store={store}>
             <Router hashType={"hashbang"}>
+                <MuiPickersUtilsProvider utils={DateFnsUtils} locale={cnLocale}>
                 <Switch>
                     {/* login相关 */}
                     {routes.routes.map((route, index) => (
@@ -88,6 +92,7 @@ function App(props) {
                         <Footer/>
                     </Fragment>
                 </Switch>
+                </MuiPickersUtilsProvider>
                 {/* 加载中... */}
                 <LoadProgree/>
             </Router>
