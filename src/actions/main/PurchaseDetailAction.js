@@ -133,7 +133,6 @@ export const getPurchaseRefundDetailInfo = (params) => async (dispatch, getState
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true && res.rows.length>0) {
             dispatch({type: PurchaseDetailActionType.getPurchaseRefundDetailInfo, payload: res.rows.slice(0,10)});
-            console.log(res.rows.slice(0,10))
         } else if (res.success === false) {
             Swal.fire('获取供应商信息失败', res.msg, 'warning');
         }
@@ -146,11 +145,9 @@ export const getStorageProductArray = (params) => async (dispatch) => {
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageProductRel?purchaseId='+params;
-
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-
         if (res.success) {
             dispatch({type: PurchaseDetailActionType.getStorageProductArray, payload: res.rows});
         } else if (!res.success) {

@@ -20,7 +20,8 @@ import {
     AdminUserSetting,
     AppSetting,
     AuthoritySetting,
-    DataDictionary
+    DataDictionary,
+    RurchaseReturn,
 } from "../components";
 
 export const routes = [
@@ -38,6 +39,8 @@ export const routesWithHeader = [
     //采购
     {path: "/purchase", exact: true, component: Purchase},
     {path: "/purchase/:id", exact: true, component: PurchaseDetail},
+    //退货
+    {path: "/purchase_return", exact: true, component: RurchaseReturn},
     // 商品分类
     {path: "/category_manager", exact: true, component: CategoryManager},
     // 品牌

@@ -1,4 +1,4 @@
-import { createHashHistory,createBrowserHistory } from 'history';
+import { createHashHistory,createBrowserHistory} from 'history';
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
 import {AppActionType, StorageCheckActionType} from '../../types';
@@ -17,20 +17,17 @@ export const getStorageCheckList = (params) => async (dispatch, getState) => {
         const queryParams = getState().StorageCheckReducer.queryParams;
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/product?start=' + start + '&size=' + size;
+            + '/storageCheck?start=' + start + '&size=' + size;
         // 检索条件
-        // let conditionsObj = {
-        //     categoryId: queryParams.paramCategory == null ? '' : queryParams.paramCategory.id,
-        //     categorySubId: queryParams.paramCategorySub == null ? '' : queryParams.paramCategorySub.id,
-        //     brandId: queryParams.paramBrand === null ? '' : queryParams.paramBrand.id,
-        //     brandModelId: queryParams.paramBrandModel == null ? '' : queryParams.paramBrandModel.id,
-        //     productId: queryParams.paramProduct == null ? '' : queryParams.paramProduct.id,
-        //     standardType: queryParams.paramStandardType == null ? '' : queryParams.paramStandardType,
-        //     status: queryParams.paramStatus == null ? '' : queryParams.paramStatus,
-        // };
-        // let conditions = httpUtil.objToUrl(conditionsObj);
-        // // 检索URL
-        // url = conditions.length > 0 ? url + "&" + conditions : url;
+        let conditionsObj = {
+            dateIdStart: queryParams.dateIdStart,
+            dateIdEnd: queryParams.dateIdEnd,
+            checkStatus: queryParams.checkStatus == null ? '' : queryParams.checkStatus,
+            status: queryParams.status == null ? '' : queryParams.status
+        };
+        let conditions = httpUtil.objToUrl(conditionsObj);
+        // 检索URL
+        url = conditions.length > 0 ? url + "&" + conditions : url;
 
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
@@ -81,36 +78,44 @@ export const getStorageCheckList = (params) => async (dispatch, getState) => {
 
 export const saveModalData = (modalData) => async (dispatch, getState) => {
     try {
-        const params = {
-            categoryId: modalData.category.id,
-            categorySubId: modalData.categorySub.id,
-            brandId: modalData.brand.id,
-            brandModelId: modalData.brandModel.id,
-            productName: modalData.productName,
-            productSName: modalData.productSName,
-            productSerial: modalData.productSerial,
-            productAddress: modalData.productAddress,
-            unitName: modalData.unitName,
-            price: modalData.price,
-            standardType: modalData.standardType,
+        let params = {
+            checkDesc: modalData.desc,
             remark: modalData.remark
         };
+        if (modalData.storage != null) {
+            params = {...params, storageId: modalData.storage.id};
+        }
+        if (modalData.storageArea != null) {
+            params = {...params, storageAreaId: modalData.storageArea.id};
+        }
+        if (modalData.supplier != null) {
+            params = {...params, supplierId: modalData.supplier.id};
+        }
+        if (modalData.category != null) {
+            params = {...params, categoryId: modalData.category.id};
+        }
+        if (modalData.categorySub != null) {
+            params = {...params, categorySubId: modalData.categorySub.id};
+        }
+        if (modalData.brand != null) {
+            params = {...params, brandId: modalData.brand.id};
+        }
+        if (modalData.brandModel != null) {
+            params = {...params, brandModelId: modalData.brandModel.id};
+        }
+
         // 基本url
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/product';
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageCheck';
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpPost(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-        if (res.success) {
+        if (res.success && res.rows.length > 0) {
             console.log('',res);
             const history = createHashHistory();
-            history.push('/product_manager/' + res.rows[0].id);
+            history.push('/storage_check/' + res.rows[0].id);
             Swal.fire("保存成功", "", "success");
-            // // 刷新列表
-            // dispatch(getProductList({
-            //     dataStart: getState().StorageCheckReducer.storageCheckData.start
-            // }));
-        } else if (!res.success) {
-            Swal.fire("保存失败", res.msg, "warning");
+        // } else if (!res.success) {
+        //     Swal.fire("保存失败", res.msg, "warning");
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");

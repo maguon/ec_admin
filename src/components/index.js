@@ -27,6 +27,7 @@ import SupplierDetail from './main/SupplierDetail';
 import Purchase from './main/Purchase';
 import PurchaseDetail from './main/PurchaseDetail'
 import DataDictionary from  './main/DataDictionary';
+import RurchaseReturn from './main/RurchaseReturn'
 import NestedList from "./utils/NestedList";
 
 export {
@@ -59,5 +60,6 @@ export {
     Purchase,
     PurchaseDetail,
     DataDictionary,
+    RurchaseReturn,
     NestedList
 }

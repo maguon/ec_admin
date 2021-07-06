@@ -1,5 +1,6 @@
 import {createAction} from 'redux-actions';
 
-export const setStorageCheckData = createAction('SET_STORAGE_CHECK_LIST_DATA');
-export const setQueryParam = createAction('SET_STORAGE_CHECK_LIST_QUERY_PARAM');
-export const setQueryParams = createAction('SET_STORAGE_CHECK_LIST_QUERY_PARAMS');
+export const getProductInfo = createAction('GET_PRODUCT_DETAIL_INFO');
+export const setProductInfo = createAction('SET_PRODUCT_DETAIL_INFO');
+export const getProductPurchase = createAction('GET_PRODUCT_DETAIL_PURCHASE_LIST');
+export const setProductStorage = createAction('GET_PRODUCT_DETAIL_STORAGE_LIST');
