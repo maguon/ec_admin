@@ -31,7 +31,7 @@ import {ProductManagerDetailActionType} from '../../types';
 
 const productManagerDetailAction = require('../../actions/main/ProductManagerDetailAction');
 const commonAction = require('../../actions/layout/CommonAction');
-const formatUtil = require('../../utils/FormatUtil');
+const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
@@ -287,7 +287,7 @@ function ProductManagerDetail(props) {
                                         <TableCell padding="" align="center">{row.unit_cost}</TableCell>
                                         <TableCell padding="" align="center">{row.purchase_count}</TableCell>
                                         <TableCell padding="" align="center">{row.total_cost}</TableCell>
-                                        <TableCell padding="" align="center">{formatUtil.getDate(row.created_on)}</TableCell>
+                                        <TableCell padding="" align="center">{commonUtil.getDate(row.created_on)}</TableCell>
                                         <TableCell padding="" align="left">{row.price}</TableCell>
                                     </TableRow>
                                 ))}
