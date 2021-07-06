@@ -54,6 +54,11 @@ export const getDate = (date) => {
    return formatDate(date, 'yyyy-MM-dd');
 };
 
+export const getDateFormat = (date) => {
+   return formatDate(date, 'yyyyMMdd');
+};
+
+
 export const number2date = (dateNum) => {
    let dateStr = dateNum + '';
    return dateStr.substring(0,4) + '-' + dateStr.substring(4,6) + '-' + dateStr.substring(6,8);
