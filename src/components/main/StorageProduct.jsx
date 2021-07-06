@@ -4,7 +4,6 @@ import {connect, useDispatch} from 'react-redux';
 import {
     Box,
     Grid,
-    IconButton,
     TextField,
     Table,
     TableHead,
@@ -15,20 +14,16 @@ import {
     Paper,
     Typography,
     Divider,
-    Select,Switch,
-    Button, Fab, FormControl, InputLabel, MenuItem, makeStyles
+    Button, Fab, makeStyles
 } from "@material-ui/core";
 
 // 引入Dialog
-import {SimpleModal} from "../index";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {CommonActionType, StorageProductActionType} from "../../types";
-import {Link} from "react-router-dom";
+import {DatePicker} from "@material-ui/pickers";
 
 const storageProductAction = require('../../actions/main/StorageProductAction');
 const commonAction = require('../../actions/layout/CommonAction');
-const sysConst = require('../../utils/SysConst');
-const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
 
 const useStyles = makeStyles((theme) => ({
@@ -158,13 +153,24 @@ function StorageProduct(props) {
                     </Grid>
 
                     <Grid item xs={3}>
-                        <TextField label="仓储日期（始）" fullWidth margin="dense" variant="outlined" type="date" InputLabelProps={{ shrink: true }} pattern="yyyyMMdd"
-                                   value={storageProductReducer.queryParams.startDate}
-                                   onChange={(e)=>{dispatch(StorageProductActionType.setQueryParams({name: "startDate", value: e.target.value}))}}/>
+                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                    okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                    label="仓储日期（始）"
+                                    value={storageProductReducer.queryParams.startDate == '' ? null : storageProductReducer.queryParams.startDate}
+                                    onChange={(date)=>{
+                                        dispatch(StorageProductActionType.setQueryParams({name: "startDate", value: date}))
+                                    }}
+                        />
                     </Grid>
                     <Grid item xs={3}>
-                        <TextField label="仓储日期（始）" fullWidth margin="dense" variant="outlined" type="date" InputLabelProps={{ shrink: true }} value={storageProductReducer.queryParams.endDate}
-                                   onChange={(e)=>{dispatch(StorageProductActionType.setQueryParams({name: "endDate", value: e.target.value}))}}/>
+                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                    okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                    label="仓储日期（终）"
+                                    value={storageProductReducer.queryParams.endDate == '' ? null : storageProductReducer.queryParams.endDate}
+                                    onChange={(date)=>{
+                                        dispatch(StorageProductActionType.setQueryParams({name: "endDate", value: date}))
+                                    }}
+                        />
                     </Grid>
                 </Grid>
 
@@ -208,14 +214,6 @@ function StorageProduct(props) {
                                 <TableCell padding="" align="center">{row.unit_cost}</TableCell>
                                 <TableCell padding="" align="center">{row.storage_count}</TableCell>
                                 <TableCell padding="" align="center">{row.date_id}</TableCell>
-                                {/*<TableCell padding="" align="center">*/}
-                                {/*    /!* 编辑按钮 *!/*/}
-                                {/*    <IconButton color="primary" edge="start">*/}
-                                {/*        <Link to={{pathname: '/product_manager/' + row.id}}>*/}
-                                {/*            <i className="mdi mdi-table-search mdi-24px"/>*/}
-                                {/*        </Link>*/}
-                                {/*    </IconButton>*/}
-                                {/*</TableCell>*/}
                             </TableRow>
                         ))}
                         {storageProductReducer.storageProductData.dataList.length > 0 &&
@@ -269,11 +267,6 @@ const mapDispatchToProps = (dispatch) => ({
     },
     downLoadCsv: () => {
         dispatch(storageProductAction.downLoadCsv())
-    },
-    saveModalData: () => {
-        // dispatch(storageProductAction.saveModalData({
-        //     category, categorySub, brand, brandModel, productName, productSName, productAddress, productSerial, unitName, price, standardType, remark
-        // }));
     }
 });
 

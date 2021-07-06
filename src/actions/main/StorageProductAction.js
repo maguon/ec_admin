@@ -4,6 +4,7 @@ import {AppActionType, StorageProductActionType} from '../../types';
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
+const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 
 const getParams = () => (dispatch, getState) => {
@@ -15,8 +16,8 @@ const getParams = () => (dispatch, getState) => {
         supplierId: queryParams.supplier === null ? '' : queryParams.supplier.id,
         productId: queryParams.product == null ? '' : queryParams.product.id,
         purchaseId: queryParams.purchaseId,
-        dateIdStart: queryParams.startDate.replace(/-/g, ""),
-        dateIdEnd: queryParams.endDate.replace(/-/g, "")
+        dateIdStart: commonUtil.formatDate(queryParams.startDate, 'yyyyMMdd'),
+        dateIdEnd: commonUtil.formatDate(queryParams.endDate, 'yyyyMMdd')
     };
     return httpUtil.objToUrl(conditionsObj);
 };

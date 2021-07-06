@@ -23,6 +23,7 @@ import {
 import {SimpleModal} from "../index";
 import Swal from "sweetalert2";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import {DatePicker} from "@material-ui/pickers";
 
 const commonAction = require('../../actions/layout/CommonAction');
 const purchasePayAction = require('../../actions/main/PurchasePayAction');
@@ -52,11 +53,11 @@ function PurchasePay(props) {
 
     /** 检索条件 */
     // 采购日期
-    const [planDateStart, setPlanDateStart] = React.useState('');
-    const [planDateEnd, setPlanDateEnd] = React.useState('');
+    const [planDateStart, setPlanDateStart] = React.useState(null);
+    const [planDateEnd, setPlanDateEnd] = React.useState(null);
     // 支付日期
-    const [paymentDateStart, setPaymentDateStart] = React.useState('');
-    const [paymentDateEnd, setPaymentDateEnd] = React.useState('');
+    const [paymentDateStart, setPaymentDateStart] = React.useState(null);
+    const [paymentDateEnd, setPaymentDateEnd] = React.useState(null);
     // 采购单号
     const [purchaseId, setPurchaseId] = React.useState('');
     // 供应商
@@ -117,25 +118,45 @@ function PurchasePay(props) {
             <Grid container spacing={3}>
                 <Grid container item xs={11} spacing={3}>
                     <Grid item xs={3}>
-                        <TextField label="采购日期（始）" fullWidth margin="dense" variant="outlined" type="date" InputLabelProps={{ shrink: true }}
-                                   value={planDateStart}
-                                   onChange={(e)=>{setPlanDateStart(e.target.value)}}/>
+                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                    okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                    label="采购日期（始）"
+                                    value={planDateStart}
+                                    onChange={(date)=>{
+                                        setPlanDateStart(date);
+                                    }}
+                        />
                     </Grid>
                     <Grid item xs={3}>
-                        <TextField label="采购日期（始）" fullWidth margin="dense" variant="outlined" type="date" InputLabelProps={{ shrink: true }}
-                                   value={planDateEnd}
-                                   onChange={(e)=>{setPlanDateEnd(e.target.value)}}/>
+                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                    okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                    label="采购日期（终）"
+                                    value={planDateEnd}
+                                    onChange={(date)=>{
+                                        setPlanDateEnd(date);
+                                    }}
+                        />
                     </Grid>
 
                     <Grid item xs={3}>
-                        <TextField label="支付日期（始）" fullWidth margin="dense" variant="outlined" type="date" InputLabelProps={{ shrink: true }}
-                                   value={paymentDateStart}
-                                   onChange={(e)=>{setPaymentDateStart(e.target.value)}}/>
+                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                    okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                    label="支付日期（始）"
+                                    value={paymentDateStart}
+                                    onChange={(date)=>{
+                                        setPaymentDateStart(date);
+                                    }}
+                        />
                     </Grid>
                     <Grid item xs={3}>
-                        <TextField label="支付日期（始）" fullWidth margin="dense" variant="outlined" type="date" InputLabelProps={{ shrink: true }}
-                                   value={paymentDateEnd}
-                                   onChange={(e)=>{setPaymentDateEnd(e.target.value)}}/>
+                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                    okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                    label="支付日期（终）"
+                                    value={paymentDateEnd}
+                                    onChange={(date)=>{
+                                        setPaymentDateEnd(date);
+                                    }}
+                        />
                     </Grid>
 
                     <Grid item xs={3}>

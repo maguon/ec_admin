@@ -4,6 +4,7 @@ import {AppActionType, PurchaseRefundActionType} from '../../types';
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
+const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 
 export const getPurchaseRefundList = (params) => async (dispatch, getState) => {
@@ -22,8 +23,8 @@ export const getPurchaseRefundList = (params) => async (dispatch, getState) => {
             purchaseId: params.purchaseId,
             supplierId: params.supplier == null ? '' : params.supplier.id,
             paymentStatus: params.paymentStatus,
-            dateIdStart: params.paymentDateStart.replace(/-/g, ""),
-            dateIdEnd: params.paymentDateEnd.replace(/-/g, "")
+            dateIdStart: commonUtil.formatDate(params.paymentDateStart, 'yyyyMMdd'),
+            dateIdEnd: commonUtil.formatDate(params.paymentDateEnd, 'yyyyMMdd')
         };
         let conditions = httpUtil.objToUrl(conditionsObj);
         // 检索URL

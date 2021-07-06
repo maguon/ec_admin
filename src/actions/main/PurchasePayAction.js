@@ -4,6 +4,7 @@ import {AppActionType, PurchasePayActionType} from '../../types';
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
+const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 
 export const getPurchasePayList = (params) => async (dispatch, getState) => {
@@ -21,11 +22,11 @@ export const getPurchasePayList = (params) => async (dispatch, getState) => {
         let conditionsObj = {
             purchaseId: params.purchaseId,
             supplierId: params.supplier == null ? '' : params.supplier.id,
-            planDateStart: params.planDateStart.replace(/-/g, ""),
-            planDateEnd: params.planDateEnd.replace(/-/g, ""),
+            planDateStart: commonUtil.formatDate(params.planDateStart, 'yyyyMMdd'),
+            planDateEnd: commonUtil.formatDate(params.planDateEnd, 'yyyyMMdd'),
             paymentStatus: params.paymentStatus,
-            paymentDateStart: params.paymentDateStart.replace(/-/g, ""),
-            paymentDateEnd: params.paymentDateEnd.replace(/-/g, "")
+            paymentDateStart: commonUtil.formatDate(params.paymentDateStart, 'yyyyMMdd'),
+            paymentDateEnd: commonUtil.formatDate(params.paymentDateEnd, 'yyyyMMdd')
         };
         let conditions = httpUtil.objToUrl(conditionsObj);
         // 检索URL

@@ -1,5 +1,5 @@
 import Swal from 'sweetalert2';
-import {AppActionType, CommonActionType, PurchasePayActionType} from '../../types';
+import {AppActionType, CommonActionType} from '../../types';
 import {apiHost} from '../../config';
 
 const httpUtil = require('../../utils/HttpUtils');
