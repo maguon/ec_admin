@@ -262,6 +262,7 @@ function StorageCheck(props) {
                     <TableHead>
                         <TableRow>
                             <TableCell padding="default" className={classes.head} align="center">盘点日期</TableCell>
+                            <TableCell padding="default" className={classes.head} align="center">操作人员</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">计划盘点数</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">盘点完成数</TableCell>
                             <TableCell padding="default" className={classes.head} align="center">盘点状态</TableCell>
@@ -273,13 +274,14 @@ function StorageCheck(props) {
                         {storageCheckReducer.storageCheckData.dataList.map((row) => (
                             <TableRow className={classes.tableRow} key={row.id}>
                                 <TableCell padding="none" align="center">{row.date_id == 0 ? '' : row.date_id}</TableCell>
+                                <TableCell padding="none" align="center">{row.real_name}</TableCell>
                                 <TableCell padding="none" align="center">{row.plan_check_count}</TableCell>
                                 <TableCell padding="none" align="center">{row.checked_count}</TableCell>
                                 <TableCell padding="none" align="center">{commonUtil.getJsonValue(sysConst.STORAGE_CHECK_STATUS, row.check_status)}</TableCell>
                                 <TableCell padding="none" align="center">{commonUtil.getJsonValue(sysConst.STORAGE_RET_STATUS, row.status)}</TableCell>
                                 <TableCell padding="none" align="center">
                                     <IconButton color="primary" edge="start" onClick={()=>{downLoadCsv(row.id)}}>
-                                        <i className="mdi mdi-cloud-download mdi-24px"/>
+                                        <i className="mdi mdi-file-excel mdi-24px"/>
                                     </IconButton>
 
                                     {/* 编辑按钮 */}
@@ -294,7 +296,7 @@ function StorageCheck(props) {
 
                         {storageCheckReducer.storageCheckData.dataList.length === 0 &&
                         <TableRow>
-                            <TableCell colSpan={6} style={{textAlign: 'center'}}>暂无数据</TableCell>
+                            <TableCell colSpan={7} style={{textAlign: 'center'}}>暂无数据</TableCell>
                         </TableRow>
                         }
                     </TableBody>
