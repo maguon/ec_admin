@@ -147,6 +147,7 @@ export const STORAGE_TYPE= [
 
 // 盘点状态
 export const STORAGE_CHECK_STATUS = [
+    {value: 0, label: "未开始"},
     {value: 1, label: "正常"},
     {value: 2, label: "异常"}
 ];

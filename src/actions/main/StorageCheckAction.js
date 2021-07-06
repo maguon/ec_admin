@@ -1,10 +1,11 @@
-import { createHashHistory,createBrowserHistory} from 'history';
+import {createHashHistory, createBrowserHistory} from 'history';
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
 import {AppActionType, StorageCheckActionType} from '../../types';
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
+const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 
 export const getStorageCheckList = (params) => async (dispatch, getState) => {
@@ -20,8 +21,8 @@ export const getStorageCheckList = (params) => async (dispatch, getState) => {
             + '/storageCheck?start=' + start + '&size=' + size;
         // 检索条件
         let conditionsObj = {
-            dateIdStart: queryParams.dateIdStart,
-            dateIdEnd: queryParams.dateIdEnd,
+            dateIdStart: commonUtil.formatDate(queryParams.dateIdStart, 'yyyyMMdd'),
+            dateIdEnd: commonUtil.formatDate(queryParams.dateIdEnd, 'yyyyMMdd'),
             checkStatus: queryParams.checkStatus == null ? '' : queryParams.checkStatus,
             status: queryParams.status == null ? '' : queryParams.status
         };
@@ -45,36 +46,6 @@ export const getStorageCheckList = (params) => async (dispatch, getState) => {
         Swal.fire("操作失败", err.message, "error");
     }
 };
-
-// export const changeStatus = (id, status) => async (dispatch, getState) => {
-//     try {
-//         // 状态
-//         let newStatus;
-//         if (status === 0) {
-//             newStatus = 1
-//         } else {
-//             newStatus = 0
-//         }
-//
-//         // 状态
-//         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-//             + '/product/' + id + '/status?status=' + newStatus;
-//         dispatch({type: AppActionType.showLoadProgress, payload: true});
-//         const res = await httpUtil.httpPut(url, {});
-//         dispatch({type: AppActionType.showLoadProgress, payload: false});
-//         if (res.success) {
-//             Swal.fire("修改成功", "", "success");
-//             // 刷新列表
-//             dispatch(getProductList({
-//                 dataStart: getState().StorageCheckReducer.storageCheckData.start
-//             }));
-//         } else if (!res.success) {
-//             Swal.fire("修改失败", res.msg, "warning");
-//         }
-//     } catch (err) {
-//         Swal.fire("操作失败", err.message, "error");
-//     }
-// };
 
 export const saveModalData = (modalData) => async (dispatch, getState) => {
     try {
@@ -104,18 +75,20 @@ export const saveModalData = (modalData) => async (dispatch, getState) => {
             params = {...params, brandModelId: modalData.brandModel.id};
         }
 
+        console.log('params...', params);
+
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageCheck';
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpPost(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
+        console.log('',res);
         if (res.success && res.rows.length > 0) {
-            console.log('',res);
             const history = createHashHistory();
             history.push('/storage_check/' + res.rows[0].id);
             Swal.fire("保存成功", "", "success");
-        // } else if (!res.success) {
-        //     Swal.fire("保存失败", res.msg, "warning");
+            // } else if (!res.success) {
+            //     Swal.fire("保存失败", res.msg, "warning");
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");

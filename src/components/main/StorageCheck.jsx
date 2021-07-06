@@ -15,20 +15,12 @@ import {
     Paper,
     Typography,
     Divider,
-    Select,Switch,
+    Select,
     Button, Fab, FormControl, InputLabel, MenuItem, makeStyles
 } from "@material-ui/core";
 
-
-import DateFnsUtils from '@date-io/date-fns';
-import {
-    MuiPickersUtilsProvider,
-    KeyboardDatePicker,
-} from '@material-ui/pickers';
-
 // 引入Dialog
 import {SimpleModal} from "../index";
-import Swal from "sweetalert2";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {CommonActionType, StorageCheckActionType} from "../../types";
 import {Link} from "react-router-dom";
@@ -86,7 +78,8 @@ function StorageCheck(props) {
             let queryParams = {
                 dateIdStart: '',
                 dateIdEnd: '',
-                checkStatus: null
+                checkStatus: null,
+                status: null
             };
             dispatch(StorageCheckActionType.setQueryParams(queryParams));
         }
@@ -143,8 +136,6 @@ function StorageCheck(props) {
         // 设定模态打开
         setModalOpen(true);
     };
-
-
 
     useEffect(() => {
         let desc = "";
@@ -215,11 +206,9 @@ function StorageCheck(props) {
 
                     <Grid item xs={3}>
                         <FormControl variant="outlined" fullWidth margin="dense">
-                            <InputLabel id="status-select-outlined-label">盘点状态</InputLabel>
-                            <Select
+                            <InputLabel id="check-status-select-outlined-label">盘点状态</InputLabel>
+                            <Select labelId="check-status-select-outlined-label"
                                 label="盘点状态"
-                                labelId="status-select-outlined-label"
-                                id="status-select-outlined"
                                 value={storageCheckReducer.queryParams.checkStatus}
                                 onChange={(e, value) => {
                                     dispatch(StorageCheckActionType.setQueryParam({name: "checkStatus", value: e.target.value}));
@@ -236,10 +225,8 @@ function StorageCheck(props) {
                     <Grid item xs={3}>
                         <FormControl variant="outlined" fullWidth margin="dense">
                             <InputLabel id="status-select-outlined-label">完成状态</InputLabel>
-                            <Select
+                            <Select labelId="status-select-outlined-label"
                                 label="完成状态"
-                                labelId="status-select-outlined-label"
-                                id="status-select-outlined"
                                 value={storageCheckReducer.queryParams.status}
                                 onChange={(e, value) => {
                                     dispatch(StorageCheckActionType.setQueryParam({name: "status", value: e.target.value}));
@@ -286,7 +273,7 @@ function StorageCheck(props) {
                     <TableBody>
                         {storageCheckReducer.storageCheckData.dataList.map((row) => (
                             <TableRow className={classes.tableRow} key={row.id}>
-                                <TableCell padding="none" align="center">{row.date_id}</TableCell>
+                                <TableCell padding="none" align="center">{row.date_id == 0 ? '' : row.date_id}</TableCell>
                                 <TableCell padding="none" align="center">{row.check_desc}</TableCell>
                                 <TableCell padding="none" align="center">{row.plan_check_count}</TableCell>
                                 <TableCell padding="none" align="center">{row.checked_count}</TableCell>
@@ -492,29 +479,9 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(CommonActionType.setBrandModelList(value));
     },
 
-
-
-
-    setQueryParams: (value) => {
-        dispatch(StorageCheckActionType.setQueryParams(value));
-    },
     getStorageCheckList: (dataStart) => {
         dispatch(storageCheckAction.getStorageCheckList({dataStart}))
     },
-    // changeStatus: (id, status) => {
-    //     Swal.fire({
-    //         title: status === 1 ? "确定停用该数据？" : "确定重新启用该数据？",
-    //         text: "",
-    //         icon: "warning",
-    //         showCancelButton: true,
-    //         confirmButtonText: "确定",
-    //         cancelButtonText:"取消"
-    //     }).then(async (value) => {
-    //         if (value.isConfirmed) {
-    //             dispatch(storageCheckAction.changeStatus(id, status));
-    //         }
-    //     });
-    // },
     saveModalData: (storage,storageArea,category,categorySub,brand,brandModel,supplier,remark,desc) => {
         dispatch(storageCheckAction.saveModalData({
             storage,storageArea,category,categorySub,brand,brandModel,supplier,remark,desc

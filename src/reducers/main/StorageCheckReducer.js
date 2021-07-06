@@ -15,7 +15,7 @@ const initialState = {
     },
     // 检索条件
     queryParams: {
-        dateIdStart: null,
+        dateIdStart: '',
         dateIdEnd: '',
         checkStatus: null,
         status: null

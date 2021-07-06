@@ -1,6 +1,6 @@
 import {createAction} from 'redux-actions';
 
-export const getProductInfo = createAction('GET_PRODUCT_DETAIL_INFO');
-export const setProductInfo = createAction('SET_PRODUCT_DETAIL_INFO');
-export const getProductPurchase = createAction('GET_PRODUCT_DETAIL_PURCHASE_LIST');
-export const setProductStorage = createAction('GET_PRODUCT_DETAIL_STORAGE_LIST');
+export const getStorageCheckInfo = createAction('GET_STORAGE_CHECK_DETAIL_INFO');
+export const getDetailList = createAction('GET_STORAGE_CHECK_DETAIL_LIST');
+export const setStorageCheckInfo = createAction('SET_STORAGE_CHECK_DETAIL_INFO');
+export const setDetailList = createAction('SET_STORAGE_CHECK_DETAIL_LIST');

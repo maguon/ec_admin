@@ -1,49 +1,39 @@
 import {handleActions} from 'redux-actions';
-import {StorageCheckActionType} from '../../types';
+import {StorageCheckDetailActionType} from '../../types';
 
 const initialState = {
-    // 检索结果
-    storageCheckData: {
-        // 开始位置
-        start: 0,
-        // 每页数量
-        size: 11,
-        // 检索结果数量
-        dataSize: 0,
-        // 数据列表
-        dataList: []
-    },
-    // 检索条件
-    queryParams: {
-        paramCategory: null,
-        paramCategorySub: null,
-        paramBrand: null,
-        paramBrandModel: null,
-        paramProduct: null,
-        paramStandardType: null,
-        paramStatus: null
-    }
+    storageCheckInfo: {},
+    detailList: []
 };
 
 export default handleActions({
-    [StorageCheckActionType.setStorageCheckData]: (state, action) => {
+    [StorageCheckDetailActionType.getStorageCheckInfo]: (state, action) => {
         return {
             ...state,
-            storageCheckData: action.payload
+            storageCheckInfo: action.payload
         }
     },
-    [StorageCheckActionType.setQueryParam]: (state, action) => {
+    [StorageCheckDetailActionType.getDetailList]: (state, action) => {
+        return {
+            ...state,
+            detailList: action.payload
+        }
+    },
+    [StorageCheckDetailActionType.setStorageCheckInfo]: (state, action) => {
         const {name, value} = action.payload;
-        const paramsObj = {...state.queryParams, [name]: value};
+        const storageCheckObj = {...state.storageCheckInfo, [name]: value};
         return {
             ...state,
-            queryParams: paramsObj
+            storageCheckInfo: storageCheckObj
         }
     },
-    [StorageCheckActionType.setQueryParams]: (state, action) => {
+    [StorageCheckDetailActionType.setDetailList]: (state, action) => {
+        const {name, value, index} = action.payload;
+        let newDetailList = state.detailList;
+        newDetailList[index][name] = value;
         return {
             ...state,
-            queryParams: action.payload
+            detailList: newDetailList
         }
-    }
+    },
 }, initialState)
