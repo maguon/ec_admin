@@ -2,6 +2,8 @@ import {createHashHistory, createBrowserHistory} from 'history';
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
 import {AppActionType, StorageCheckActionType} from '../../types';
+import html2canvas from 'html2canvas';
+import {jsPDF} from "jspdf";
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
@@ -102,3 +104,125 @@ export const downLoadCsv = (storageCheckId) => async () => {
         Swal.fire("操作失败", err.message, "error");
     }
 };
+
+export const downLoadPDF = () => async () => {
+    console.log('----------------------------------------');
+    try {
+        html2canvas(document.getElementById("ttt"), {
+            // allowTaint: true, //避免一些不识别的图片干扰，默认为false，遇到不识别的图片干扰则会停止处理html2canvas
+            // taintTest: false,
+            useCORS: true,
+            // Create a canvas with double-resolution.
+            scale: 2,
+            // Create a canvas with 144 dpi (1.5x resolution).
+            dpi: 192,
+            // 背景设为白色（默认为黑色）
+            background: "#fff"
+        }).then(function (canvas) {
+            // document.getElementById("temp").appendChild(canvas);
+
+            console.log('aaaaaaaaaaaaaaa')
+            // Html / Canvas 画面 尺寸
+            var contentWidth = canvas.width;
+            var contentHeight = canvas.height;
+            console.log('contentWidth', contentWidth);
+            console.log('contentHeight', contentHeight);
+
+            // 一页pdf显示html页面生成的canvas高度;（根据比例，算出来的固定值）
+            var htmlPageHeight = contentWidth / 595.28 * 841.89;
+            console.log('htmlPageHeight', htmlPageHeight);
+            //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
+            var pdfPageWidth = 595.28;
+            var pdfPageHeight = 595.28 / contentWidth * contentHeight;
+            console.log('pdfPageHeight', pdfPageHeight);
+            var pageData = canvas.toDataURL('image/jpeg', 1.0);
+
+            // var pdf = new jsPDF('', 'pt', 'a4');
+            // 画面尺寸小于 一页，则默认为A4，否则：设定指定高度画面
+            var pdf = new jsPDF('', 'pt', contentHeight < htmlPageHeight ? 'a4' : [pdfPageWidth, pdfPageHeight + 30]);
+            pdf.addImage(pageData, 'JPEG', 0, 0, pdfPageWidth, pdfPageHeight);
+
+            // 分页显示 代码暂时不用
+
+
+            // 保存PDF文件
+            pdf.save('测试.pdf');
+        });
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+
+/**
+ * 下载PDF文件。
+ */
+// const downloadPDF = function () {
+//     try{
+//         // 去掉画面CSS (主要为了去滚动条)
+//         $("#context-div").removeClass("ConWrap");
+//         $("#carInfoDiv").removeClass("modal");
+//         $(".shadeDowWrap").show();
+//         // 下载PDF 之前，去掉画面显示的 删除图标
+//         $(".img_close").remove();
+//         html2canvas(document.getElementById("car_info"), {
+//             // allowTaint: true, //避免一些不识别的图片干扰，默认为false，遇到不识别的图片干扰则会停止处理html2canvas
+//             // taintTest: false,
+//             useCORS: true,
+//             // Create a canvas with double-resolution.
+//             scale: 2,
+//             // Create a canvas with 144 dpi (1.5x resolution).
+//             dpi: 192,
+//             onrendered: function(canvas) {
+//                 // Html / Canvas 画面 尺寸
+//                 var contentWidth = canvas.width;
+//                 var contentHeight = canvas.height;
+//                 // 一页pdf显示html页面生成的canvas高度;（根据比例，算出来的固定值）
+//                 var htmlPageHeight = contentWidth / 595.28 * 841.89;
+//                 //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
+//                 var pdfPageWidth = 595.28;
+//                 var pdfPageHeight = 595.28/contentWidth * contentHeight;
+//                 var pageData = canvas.toDataURL('image/jpeg', 1.0);
+//
+//                 // var pdf = new jsPDF('', 'pt', 'a4');
+//                 // 画面尺寸小于 一页，则默认为A4，否则：设定指定高度画面
+//                 var pdf = new jsPDF('', 'pt', contentHeight < htmlPageHeight ? 'a4' : [pdfPageWidth, pdfPageHeight + 30]);
+//                 pdf.addImage(pageData, 'JPEG', 0, 0, pdfPageWidth, pdfPageHeight );
+//
+//                 // 分页显示 代码暂时不用
+//
+//                 // // 未生成pdf的html页面高度
+//                 // var leftHeight = contentHeight;
+//                 // // pdf页面偏移 （因为分页，产生偏移）
+//                 // var position = 0;
+//                 // // 当内容未超过pdf一页显示的范围，无需分页
+//                 // if (leftHeight < htmlPageHeight) {
+//                 //     pdf.addImage(pageData, 'JPEG', 0, 0, pdfPageWidth, pdfPageHeight);
+//                 // } else {
+//                 //     // 有剩余未显示内容，则循环执行
+//                 //     while(leftHeight > 0) {
+//                 //         pdf.addImage(pageData, 'JPEG', 0, position, pdfPageWidth, pdfPageHeight);
+//                 //         leftHeight -= htmlPageHeight;
+//                 //         position -= 841.89;
+//                 //         //避免添加空白页
+//                 //         if(leftHeight > 0) {
+//                 //             pdf.addPage();
+//                 //         }
+//                 //     }
+//                 // }
+//
+//                 // 保存PDF文件
+//                 pdf.save(vin + '.pdf');
+//                 $(".shadeDowWrap").hide();
+//             },
+//             // 背景设为白色（默认为黑色）
+//             background: "#fff"
+//         });
+//     } finally {
+//         // 追加画面CSS
+//         $("#carInfoDiv").addClass("modal");
+//         $("#context-div").addClass("ConWrap");
+//         // 关闭模态
+//         $('#carInfoDiv').modal('close');
+//     }
+// };

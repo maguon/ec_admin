@@ -7,8 +7,8 @@ import {
     IconButton,
     TextField,
     Typography,
-    Divider,
-    Button, makeStyles
+    Divider,Avatar,
+    Button, makeStyles, ButtonBase
 } from "@material-ui/core";
 
 import Swal from "sweetalert2";
@@ -33,11 +33,43 @@ const useStyles = makeStyles((theme) => ({
         fontWeight:'bold',
         background:'#F7F6F9',
         borderTop: '2px solid #D4D4D4'
-    }
+    },
+    pdfPage: {
+        width: 1280,
+        fontColor: 'black',
+        padding: 50,
+    },
+    pdfHeader: {
+        borderLeft: '1px solid #D4D4D4',
+        borderTop: '1px solid #D4D4D4',
+        borderBottom: '1px solid #D4D4D4',
+        background:'#ECEFF1',
+        textAlign: 'center',
+        padding: 5
+    },
+    pdfLastHeader: {
+        border: '1px solid #D4D4D4',
+        background:'#ECEFF1',
+        textAlign: 'center',
+        padding: 5
+    },
+    pdfBody: {
+        borderLeft: '1px solid #D4D4D4',
+        borderBottom: '1px solid #D4D4D4',
+        textAlign: 'center',
+        padding: 5
+    },
+    pdfLastBody: {
+        borderLeft: '1px solid #D4D4D4',
+        borderRight: '1px solid #D4D4D4',
+        borderBottom: '1px solid #D4D4D4',
+        textAlign: 'center',
+        padding: 5
+    },
 }));
 
 function StorageCheck(props) {
-    const {storageCheckDetailReducer, saveStorageCheck, saveStorageCheckRel, confirmCheck, downLoadCsv} = props;
+    const {storageCheckDetailReducer, saveStorageCheck, saveStorageCheckRel, confirmCheck, downLoadCsv, downLoadPDF} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     const {id} = useParams();
@@ -47,7 +79,7 @@ function StorageCheck(props) {
     }, []);
 
     return (
-        <div className={classes.root}>
+        <div className={classes.root} id="temp">
             {/* 标题部分 */}
             <Typography gutterBottom className={classes.title}>
                 <Link to={{pathname: '/storage_check', state: {fromDetail: true}}}>
@@ -94,6 +126,7 @@ function StorageCheck(props) {
                 <Grid item xs={12}>
                     <Button variant="contained" color="primary" style={{float:'right', marginLeft: 20}} onClick={()=>{confirmCheck(storageCheckDetailReducer.storageCheckInfo)}}>完成</Button>
                     <Button variant="contained" color="primary" style={{float:'right',marginLeft: 20}} onClick={saveStorageCheck}>保存</Button>
+                    <Button variant="contained" color="primary" style={{float:'right',marginLeft: 20}} onClick={downLoadPDF}>下载</Button>
                 </Grid>}
                 {storageCheckDetailReducer.detailList.length > 0 &&
                 <Grid item xs={12}>
@@ -150,6 +183,157 @@ function StorageCheck(props) {
                     </Grid>}
                 </Grid>
             ))}
+
+            {/* PDF 输出用 DIV */}
+            <div id="ttt" className={classes.pdfPage} style={{marginTop: -999999}}>
+                <Grid container spacing={0}>
+                    <Grid item sm={2}>
+                        <img style={{width: 120}} src="/logo120.png"  alt=""/>
+                    </Grid>
+                </Grid>
+
+                <Grid container spacing={0} style={{paddingTop: 15}}>
+                    <Grid item sm={2} className={classes.pdfHeader}>仓库</Grid>
+                    <Grid item sm={2} className={classes.pdfHeader}>仓库分区</Grid>
+                    <Grid item sm={2} className={classes.pdfHeader}>商品</Grid>
+
+                    <Grid item sm={1} className={classes.pdfHeader}>库存数</Grid>
+                    <Grid item sm={1} className={classes.pdfHeader}>盘点数</Grid>
+                    <Grid item sm={4} className={classes.pdfLastHeader}>备注</Grid>
+                </Grid>
+
+                {storageCheckDetailReducer.detailList.map((row, index) => (
+                    <Grid container spacing={0}>
+                        <Grid item sm={2} className={classes.pdfBody}>{row.storage_name}</Grid>
+                        <Grid item sm={2} className={classes.pdfBody}>{row.storage_area_name}</Grid>
+                        <Grid item sm={2} className={classes.pdfBody}>{row.product_name}</Grid>
+
+                        <Grid item sm={1} className={classes.pdfBody}>{row.storage_count}</Grid>
+                        <Grid item sm={1} className={classes.pdfBody}>{row.check_count}</Grid>
+                        <Grid item sm={4} className={classes.pdfLastBody}>{row.remark}</Grid>
+                    </Grid>
+                ))}
+
+                {/*{storageCheckDetailReducer.detailList.map((row, index) => (*/}
+                {/*    <Grid container spacing={0}>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_area_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.product_name}</Grid>*/}
+
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.storage_count}</Grid>*/}
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.check_count}</Grid>*/}
+                {/*        <Grid item sm={4} className={classes.pdfLastBody}>{row.remark}</Grid>*/}
+                {/*    </Grid>*/}
+                {/*))}*/}
+
+                {/*{storageCheckDetailReducer.detailList.map((row, index) => (*/}
+                {/*    <Grid container spacing={0}>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_area_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.product_name}</Grid>*/}
+
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.storage_count}</Grid>*/}
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.check_count}</Grid>*/}
+                {/*        <Grid item sm={4} className={classes.pdfLastBody}>{row.remark}</Grid>*/}
+                {/*    </Grid>*/}
+                {/*))}*/}
+
+                {/*{storageCheckDetailReducer.detailList.map((row, index) => (*/}
+                {/*    <Grid container spacing={0}>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_area_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.product_name}</Grid>*/}
+
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.storage_count}</Grid>*/}
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.check_count}</Grid>*/}
+                {/*        <Grid item sm={4} className={classes.pdfLastBody}>{row.remark}</Grid>*/}
+                {/*    </Grid>*/}
+                {/*))}*/}
+
+                {/*{storageCheckDetailReducer.detailList.map((row, index) => (*/}
+                {/*    <Grid container spacing={0}>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_area_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.product_name}</Grid>*/}
+
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.storage_count}</Grid>*/}
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.check_count}</Grid>*/}
+                {/*        <Grid item sm={4} className={classes.pdfLastBody}>{row.remark}</Grid>*/}
+                {/*    </Grid>*/}
+                {/*))}*/}
+
+                {/*{storageCheckDetailReducer.detailList.map((row, index) => (*/}
+                {/*    <Grid container spacing={0}>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_area_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.product_name}</Grid>*/}
+
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.storage_count}</Grid>*/}
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.check_count}</Grid>*/}
+                {/*        <Grid item sm={4} className={classes.pdfLastBody}>{row.remark}</Grid>*/}
+                {/*    </Grid>*/}
+                {/*))}*/}
+
+                {/*{storageCheckDetailReducer.detailList.map((row, index) => (*/}
+                {/*    <Grid container spacing={0}>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_area_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.product_name}</Grid>*/}
+
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.storage_count}</Grid>*/}
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.check_count}</Grid>*/}
+                {/*        <Grid item sm={4} className={classes.pdfLastBody}>{row.remark}</Grid>*/}
+                {/*    </Grid>*/}
+                {/*))}*/}
+
+                {/*{storageCheckDetailReducer.detailList.map((row, index) => (*/}
+                {/*    <Grid container spacing={0}>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_area_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.product_name}</Grid>*/}
+
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.storage_count}</Grid>*/}
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.check_count}</Grid>*/}
+                {/*        <Grid item sm={4} className={classes.pdfLastBody}>{row.remark}</Grid>*/}
+                {/*    </Grid>*/}
+                {/*))}*/}
+
+                {/*{storageCheckDetailReducer.detailList.map((row, index) => (*/}
+                {/*    <Grid container spacing={0}>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_area_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.product_name}</Grid>*/}
+
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.storage_count}</Grid>*/}
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.check_count}</Grid>*/}
+                {/*        <Grid item sm={4} className={classes.pdfLastBody}>{row.remark}</Grid>*/}
+                {/*    </Grid>*/}
+                {/*))}*/}
+
+                {/*{storageCheckDetailReducer.detailList.map((row, index) => (*/}
+                {/*    <Grid container spacing={0}>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_area_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.product_name}</Grid>*/}
+
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.storage_count}</Grid>*/}
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.check_count}</Grid>*/}
+                {/*        <Grid item sm={4} className={classes.pdfLastBody}>{row.remark}</Grid>*/}
+                {/*    </Grid>*/}
+                {/*))}*/}
+
+                {/*{storageCheckDetailReducer.detailList.map((row, index) => (*/}
+                {/*    <Grid container spacing={0}>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.storage_area_name}</Grid>*/}
+                {/*        <Grid item sm={2} className={classes.pdfBody}>{row.product_name}</Grid>*/}
+
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.storage_count}</Grid>*/}
+                {/*        <Grid item sm={1} className={classes.pdfBody}>{row.check_count}</Grid>*/}
+                {/*        <Grid item sm={4} className={classes.pdfLastBody}>{row.remark}</Grid>*/}
+                {/*    </Grid>*/}
+                {/*))}*/}
+            </div>
         </div>
     )
 }
@@ -185,6 +369,9 @@ const mapDispatchToProps = (dispatch) => ({
     },
     downLoadCsv: (storageCheckId) => {
         dispatch(storageCheckAction.downLoadCsv(storageCheckId))
+    },
+    downLoadPDF: () => {
+        dispatch(storageCheckAction.downLoadPDF())
     }
 });
 
