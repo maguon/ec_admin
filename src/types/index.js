@@ -20,7 +20,7 @@ import * as SupplierDetailActionType from './main/SupplierDetailActionType';
 import * as PurchaseActionType from  './main/PurchaseActionType';
 import * as PurchaseDetailActionType from  './main/PurchaseDetailActionType';
 import * as DataDictionaryActionType from './main/DataDictionaryActionType';
-import * as RurchaseReturnActionType from './main/RurchaseReturnActionType'
+import * as PurchaseReturnActionType from './main/PurchaseReturnActionType';
 export {
     AppActionType,
     CommonActionType,
@@ -44,5 +44,5 @@ export {
     PurchaseActionType,
     PurchaseDetailActionType,
     DataDictionaryActionType,
-    RurchaseReturnActionType
+    PurchaseReturnActionType
 }
