@@ -2,8 +2,6 @@ import {createHashHistory, createBrowserHistory} from 'history';
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
 import {AppActionType, StorageCheckActionType} from '../../types';
-import html2canvas from 'html2canvas';
-import {jsPDF} from "jspdf";
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
@@ -113,28 +111,7 @@ export const downLoadPDF = (storageCheckId) => async (dispatch) => {
         const res = await httpUtil.httpGet(url);
         if (res.success) {
             dispatch({type: StorageCheckActionType.setPdfDataList, payload: res.rows});
-            html2canvas(document.getElementById("pdf"), {
-                useCORS: true,
-                scale: 2,
-                dpi: 192,
-                background: "#fff"
-            }).then(function (canvas) {
-                // Html / Canvas 画面 尺寸
-                let contentWidth = canvas.width;
-                let contentHeight = canvas.height;
-                // 一页pdf显示html页面生成的canvas高度;（根据比例，算出来的固定值）
-                let htmlPageHeight = contentWidth / 595.28 * 841.89;
-                //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
-                let pdfPageWidth = 595.28;
-                let pdfPageHeight = 595.28 / contentWidth * contentHeight;
-                let pageData = canvas.toDataURL('image/jpeg', 1.0);
-                // 画面尺寸小于 一页，则默认为A4，否则：设定指定高度画面
-                let pdf = new jsPDF('', 'pt', contentHeight < htmlPageHeight ? 'a4' : [pdfPageWidth, pdfPageHeight + 30]);
-                pdf.addImage(pageData, 'JPEG', 0, 0, pdfPageWidth, pdfPageHeight);
-                // 保存PDF文件
-                pdf.save('仓库盘点详情-' + storageCheckId + '.pdf');
-            });
-
+            commonUtil.downLoadPDF(document.getElementById("pdf"),'仓库盘点详情-' + storageCheckId + '.pdf');
         } else if (!res.success) {
             Swal.fire("获取仓库盘点详细列表失败", res.msg, "warning");
         }

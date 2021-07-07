@@ -1,3 +1,38 @@
+import html2canvas from "html2canvas";
+import {jsPDF} from "jspdf";
+
+export const downLoadPDF = (dom, fileName) => {
+   html2canvas(dom, {
+      // allowTaint: true, //避免一些不识别的图片干扰，默认为false，遇到不识别的图片干扰则会停止处理html2canvas
+      // taintTest: false,
+      useCORS: true,
+      // Create a canvas with double-resolution.
+      scale: 2,
+      // Create a canvas with 144 dpi (1.5x resolution).
+      dpi: 192,
+      // 背景设为白色（默认为黑色）
+      background: "#fff"
+   }).then(function (canvas) {
+      // Html / Canvas 画面 尺寸
+      let contentWidth = canvas.width;
+      let contentHeight = canvas.height;
+
+      // 一页pdf显示html页面生成的canvas高度;（根据比例，算出来的固定值）
+      let htmlPageHeight = contentWidth / 595.28 * 841.89;
+      //a4纸的尺寸[595.28,841.89]，html页面生成的canvas在pdf中图片的宽高
+      let pdfPageWidth = 595.28;
+      let pdfPageHeight = 595.28 / contentWidth * contentHeight;
+      let pageData = canvas.toDataURL('image/jpeg', 1.0);
+
+      // 画面尺寸小于 一页，则默认为A4，否则：设定指定高度画面
+      let pdf = new jsPDF('', 'pt', contentHeight < htmlPageHeight ? 'a4' : [pdfPageWidth, pdfPageHeight + 30]);
+      pdf.addImage(pageData, 'JPEG', 0, 0, pdfPageWidth, pdfPageHeight);
+
+      // 保存PDF文件
+      pdf.save(fileName);
+   });
+};
+
 export const getJsonValue = (original, key) => {
    let ret = '未知';
    for (let i = 0; i < original.length; i++) {
