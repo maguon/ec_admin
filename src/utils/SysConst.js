@@ -190,7 +190,7 @@ export const ALL_PAGE_LIST = [
                 "usable": false
             },
             {
-                "link": "/purchase_return",
+                "link": "/purchase_refund",
                 "name": "退货",
                 "icon": "mdi-chevron-right",
                 "usable": false

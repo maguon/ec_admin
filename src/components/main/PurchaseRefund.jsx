@@ -451,11 +451,11 @@ function PurchaseRefund (props){
                                             {row.status==1 &&
                                             <IconButton color="primary" edge="start"
                                                         onClick={() => {updateRefundStatus(row.id)}}>
-                                                <i className="mdi mdi-bitcoin mdi-24px"/>
+                                                <i className="mdi mdi-check mdi-24px"/>
                                             </IconButton>}
                                             {row.status!=1 &&
                                             <IconButton color="default" edge="start" disabled>
-                                                <i className="mdi mdi-check-circle-outline mdi-24px"/>
+                                                <i className="mdi mdi-check mdi-24px"/>
                                             </IconButton>}
 
 
