@@ -7,6 +7,7 @@ import {
     BrandManager,
     Storage,
     StorageProduct,
+    StorageInOut,
     StorageCheck,
     StorageCheckDetail,
     ProductManager,
@@ -53,13 +54,15 @@ export const routesWithHeader = [
     {path: "/supplier/:id",exact: true,component: SupplierDetail},
 
     /** 仓库管理 */
-    // 仓库设置
-    {path: "/storage", exact: true, component: Storage},
     // 库存商品
     {path: "/storage_product", exact: true, component: StorageProduct},
+    // 出入库
+    {path: "/storage_in_out", exact: true, component: StorageInOut},
     // 仓库盘点
     {path: "/storage_check", exact: true, component: StorageCheck},
     {path: "/storage_check/:id", exact: true, component: StorageCheckDetail},
+    // 仓库设置
+    {path: "/storage", exact: true, component: Storage},
 
     /** 财务管理 */
     // 采购付款

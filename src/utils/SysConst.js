@@ -226,14 +226,14 @@ export const ALL_PAGE_LIST = [
         "icon": "mdi-chart-line",
         "children": [
             {
-                "link": "/storage",
-                "name": "仓库设置",
+                "link": "/storage_product",
+                "name": "库存商品",
                 "icon": "mdi-chevron-right",
                 "usable": false
             },
             {
-                "link": "/storage_product",
-                "name": "库存商品",
+                "link": "/storage_in_out",
+                "name": "出入库",
                 "icon": "mdi-chevron-right",
                 "usable": false
             },
@@ -242,7 +242,13 @@ export const ALL_PAGE_LIST = [
                 "name": "仓库盘点",
                 "icon": "mdi-chevron-right",
                 "usable": false
-            }
+            },
+            {
+                "link": "/storage",
+                "name": "仓库设置",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
         ]
     },
     {

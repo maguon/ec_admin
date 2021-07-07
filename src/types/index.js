@@ -7,6 +7,7 @@ import * as BrandManagerActionType from './main/BrandManagerActionType'
 import * as StorageActionType from './main/StorageActionType'
 import * as ProductManagerActionType from './main/ProductManagerActionType'
 import * as StorageProductActionType from './main/StorageProductActionType'
+import * as StorageInOutActionType from './main/StorageInOutActionType'
 import * as StorageCheckActionType from './main/StorageCheckActionType'
 import * as StorageCheckDetailActionType from './main/StorageCheckDetailActionType'
 import * as ProductManagerDetailActionType from './main/ProductManagerDetailActionType'
@@ -31,6 +32,7 @@ export {
     StorageActionType,
     ProductManagerActionType,
     StorageProductActionType,
+    StorageInOutActionType,
     StorageCheckActionType,
     StorageCheckDetailActionType,
     ProductManagerDetailActionType,

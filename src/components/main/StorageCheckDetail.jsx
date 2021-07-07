@@ -229,7 +229,7 @@ const mapDispatchToProps = (dispatch) => ({
         }
     },
     confirmCheck: (storageCheckInfo) => {
-        // 计划盘点数 <> 盘点完成数 则不能执行完成操作
+        // 计划盘点数 <> 盘点完成数 则不能执行完成操作  采购入库，退货出库，出入库
         if (storageCheckInfo.plan_check_count != storageCheckInfo.checked_count) {
             Swal.fire("盘点完成数和计划盘点数不相等，不能执行完成", '', "warning");
         } else {
