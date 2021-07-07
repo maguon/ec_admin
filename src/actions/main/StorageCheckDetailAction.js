@@ -116,7 +116,7 @@ export const changeStorageCheckStatus = (storageCheckId, status) => async (dispa
     }
 };
 
-export const downLoadPDF = () => async () => {
+export const downLoadPDF = (storageCheckId) => async () => {
     try {
         html2canvas(document.getElementById("pdf"), {
             // allowTaint: true, //避免一些不识别的图片干扰，默认为false，遇到不识别的图片干扰则会停止处理html2canvas
@@ -146,7 +146,7 @@ export const downLoadPDF = () => async () => {
             pdf.addImage(pageData, 'JPEG', 0, 0, pdfPageWidth, pdfPageHeight);
 
             // 保存PDF文件
-            pdf.save('仓库盘点详情.pdf');
+            pdf.save('仓库盘点详情-' + storageCheckId + '.pdf');
         });
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");

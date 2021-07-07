@@ -110,7 +110,7 @@ function StorageCheck(props) {
                         <IconButton color="primary" edge="start" style={{marginLeft:1}} onClick={()=>{downLoadCsv(storageCheckDetailReducer.storageCheckInfo.id)}}>
                             <i className="mdi mdi-file-excel mdi-24px"/>
                         </IconButton>
-                        <IconButton color="primary" edge="start" onClick={downLoadPDF}>
+                        <IconButton color="primary" edge="start" onClick={()=>{downLoadPDF(storageCheckDetailReducer.storageCheckInfo.id)}}>
                             <i className="mdi mdi-file-pdf mdi-24px"/>
                         </IconButton>
                     </Typography>
@@ -239,8 +239,8 @@ const mapDispatchToProps = (dispatch) => ({
     downLoadCsv: (storageCheckId) => {
         dispatch(storageCheckAction.downLoadCsv(storageCheckId))
     },
-    downLoadPDF: () => {
-        dispatch(storageCheckDetailAction.downLoadPDF())
+    downLoadPDF: (storageCheckId) => {
+        dispatch(storageCheckDetailAction.downLoadPDF(storageCheckId))
     }
 });
 

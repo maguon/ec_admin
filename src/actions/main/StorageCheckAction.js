@@ -132,7 +132,7 @@ export const downLoadPDF = (storageCheckId) => async (dispatch) => {
                 let pdf = new jsPDF('', 'pt', contentHeight < htmlPageHeight ? 'a4' : [pdfPageWidth, pdfPageHeight + 30]);
                 pdf.addImage(pageData, 'JPEG', 0, 0, pdfPageWidth, pdfPageHeight);
                 // 保存PDF文件
-                pdf.save('仓库盘点详情.pdf');
+                pdf.save('仓库盘点详情-' + storageCheckId + '.pdf');
             });
 
         } else if (!res.success) {
