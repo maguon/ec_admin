@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
-import {AppActionType, PurchaseRefundActionType} from '../../types';
+import {AppActionType, PurchaseRefundPayActionType} from '../../types';
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
@@ -12,7 +12,7 @@ export const getPurchaseRefundList = (params) => async (dispatch, getState) => {
         // 检索条件：开始位置
         const start = params.dataStart;
         // 检索条件：每页数量
-        const size = getState().PurchaseRefundReducer.purchaseRefundData.size;
+        const size = getState().PurchaseRefundPayReducer.purchaseRefundData.size;
 
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
@@ -33,12 +33,12 @@ export const getPurchaseRefundList = (params) => async (dispatch, getState) => {
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-        let newData = getState().PurchaseRefundReducer.purchaseRefundData;
+        let newData = getState().PurchaseRefundPayReducer.purchaseRefundData;
         if (res.success) {
             newData.start = start;
             newData.dataSize = res.rows.length;
             newData.dataList = res.rows.slice(0, size - 1);
-            dispatch({type: PurchaseRefundActionType.getPurchaseRefundData, payload: newData});
+            dispatch({type: PurchaseRefundPayActionType.getPurchaseRefundData, payload: newData});
         } else if (!res.success) {
             Swal.fire("获取采购退款列表失败", res.msg, "warning");
         }
@@ -60,7 +60,7 @@ export const confirmPayment = (id, params) => async (dispatch, getState) => {
         if (res.success) {
             Swal.fire("修改成功", "", "success");
             // 刷新列表
-            dispatch(getPurchaseRefundList({...params, dataStart: getState().PurchaseRefundReducer.purchaseRefundData.start}));
+            dispatch(getPurchaseRefundList({...params, dataStart: getState().PurchaseRefundPayReducer.purchaseRefundData.start}));
         } else if (!res.success) {
             Swal.fire("修改失败", res.msg, "warning");
         }

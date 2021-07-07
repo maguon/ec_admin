@@ -1,5 +1,5 @@
 import {handleActions} from 'redux-actions';
-import {PurchaseRefundActionType} from '../../types';
+import {PurchaseRefundPayActionType} from '../../types';
 
 const initialState = {
     // 检索结果
@@ -18,13 +18,13 @@ const initialState = {
 };
 
 export default handleActions({
-    [PurchaseRefundActionType.getPurchaseRefundData]: (state, action) => {
+    [PurchaseRefundPayActionType.getPurchaseRefundData]: (state, action) => {
         return {
             ...state,
             purchaseRefundData: action.payload
         }
     },
-    [PurchaseRefundActionType.setModalData]: (state, action) => {
+    [PurchaseRefundPayActionType.setModalData]: (state, action) => {
         return {
             ...state,
             modalData: action.payload

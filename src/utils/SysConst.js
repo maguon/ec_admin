@@ -256,7 +256,7 @@ export const ALL_PAGE_LIST = [
                 "usable": false
             },
             {
-                "link": "/purchase_refund",
+                "link": "/purchase_refund_pay",
                 "name": "采购退款",
                 "icon": "mdi-chevron-right",
                 "usable": false

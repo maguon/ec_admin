@@ -47,8 +47,8 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function PurchasePay(props) {
-    const {purchaseRefundReducer, commonReducer, confirmPay} = props;
+function PurchaseRefundPay(props) {
+    const {purchaseRefundPayReducer, commonReducer, confirmPay} = props;
     const classes = useStyles();
 
     /** 检索条件 */
@@ -64,7 +64,7 @@ function PurchasePay(props) {
 
     useEffect(() => {
         props.getBaseSelectList();
-        let dataStart = props.purchaseRefundReducer.purchaseRefundData.start;
+        let dataStart = props.purchaseRefundPayReducer.purchaseRefundData.start;
         props.getPurchaseRefundList(paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus,dataStart);
     }, []);
 
@@ -77,13 +77,13 @@ function PurchasePay(props) {
     // 上一页
     const getPrePage = () => {
         props.getPurchaseRefundList(paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus
-            , props.purchaseRefundReducer.purchaseRefundData.start - (props.purchaseRefundReducer.purchaseRefundData.size - 1));
+            , props.purchaseRefundPayReducer.purchaseRefundData.start - (props.purchaseRefundPayReducer.purchaseRefundData.size - 1));
     };
 
     // 下一页
     const getNextPage = () => {
         props.getPurchaseRefundList(paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus
-            , props.purchaseRefundReducer.purchaseRefundData.start + (props.purchaseRefundReducer.purchaseRefundData.size - 1));
+            , props.purchaseRefundPayReducer.purchaseRefundData.start + (props.purchaseRefundPayReducer.purchaseRefundData.size - 1));
     };
 
     // 模态属性
@@ -202,7 +202,7 @@ function PurchasePay(props) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {purchaseRefundReducer.purchaseRefundData.dataList.map((row) => (
+                        {purchaseRefundPayReducer.purchaseRefundData.dataList.map((row) => (
                             <TableRow className={classes.tableRow} key={'table-row-' + row.id}>
                                 <TableCell padding="none" align="center">{row.purchase_id}</TableCell>
                                 <TableCell padding="none" align="center">{row.supplier_name}</TableCell>
@@ -234,7 +234,7 @@ function PurchasePay(props) {
                                 </TableCell>
                             </TableRow>
                         ))}
-                        {purchaseRefundReducer.purchaseRefundData.dataList.length === 0 &&
+                        {purchaseRefundPayReducer.purchaseRefundData.dataList.length === 0 &&
                         <TableRow>
                             <TableCell colSpan={12} style={{textAlign: 'center'}}>暂无数据</TableCell>
                         </TableRow>}
@@ -244,9 +244,9 @@ function PurchasePay(props) {
 
             {/* 上下页按钮 */}
             <Box style={{textAlign: 'right', marginTop: 20}}>
-                {purchaseRefundReducer.purchaseRefundData.start > 0 && purchaseRefundReducer.purchaseRefundData.dataSize > 0 &&
+                {purchaseRefundPayReducer.purchaseRefundData.start > 0 && purchaseRefundPayReducer.purchaseRefundData.dataSize > 0 &&
                 <Button variant="contained" color="primary" style={{marginRight: 20}} onClick={getPrePage}>上一页</Button>}
-                {purchaseRefundReducer.purchaseRefundData.dataSize >= purchaseRefundReducer.purchaseRefundData.size &&
+                {purchaseRefundPayReducer.purchaseRefundData.dataSize >= purchaseRefundPayReducer.purchaseRefundData.size &&
                 <Button variant="contained" color="primary" onClick={getNextPage}>下一页</Button>}
             </Box>
 
@@ -286,7 +286,7 @@ function PurchasePay(props) {
 
 const mapStateToProps = (state) => {
     return {
-        purchaseRefundReducer: state.PurchaseRefundReducer,
+        purchaseRefundPayReducer: state.PurchaseRefundPayReducer,
         commonReducer: state.CommonReducer
     }
 };
@@ -321,4 +321,4 @@ const mapDispatchToProps = (dispatch) => ({
     // }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(PurchasePay)
+export default connect(mapStateToProps, mapDispatchToProps)(PurchaseRefundPay)
