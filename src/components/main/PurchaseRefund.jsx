@@ -26,10 +26,11 @@ import {
 } from "@material-ui/core";
 import Fab from '@material-ui/core/Fab';
 import {withStyles,makeStyles} from "@material-ui/core/styles";
-import {PurchaseReturnActionType} from '../../types';
+import {PurchaseRefundActionType} from '../../types';
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from "@material-ui/pickers";
-const PurchaseReturnAction = require('../../actions/main/PurchaseReturnAction');
+import Swal from "sweetalert2";
+const PurchaseRefundAction = require('../../actions/main/PurchaseRefundAction');
 const PurchaseAction = require('../../actions/main/PurchaseAction');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
@@ -82,10 +83,12 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell);
 
 //采购
-function PurchaseReturn (props){
-    const {purchaseReducer,purchaseReturnReducer,getPurchaseReturnList,getProductList,getPurchaseList,postPurchaseReturnItem,getPurchaseItem,putPurchaseReturnDetailInfo} = props;
+function PurchaseRefund (props){
+    const {purchaseReducer,purchaseRefundReducer,getPurchaseRefundList,getProductList,getSupplierList,getPurchaseList,addPurchaseRefundItem,getPurchaseItem,updateRefundStatus,updatePurchaseRefundDetailInfo} = props;
     const classes = useStyles();
     const [pageNumber,setPageNumber] = useState(0);
+    //采购单号
+    const [purchaseId, setPurchaseId] = React.useState(null);
     // 供应商
     const [supplier, setSupplier] = React.useState(null);
     //商品
@@ -99,7 +102,7 @@ function PurchaseReturn (props){
     const [dateIdEnd, setDateIdEnd] = React.useState('');
     //添加
     const [modalOpenFlag, setModalOpenFlag] = useState(false);
-    const [purchaseReturnId, setPurchaseReturnId] = useState('');
+    const [purchaseRefundId, setPurchaseRefundId] = useState('');
     const [addTransferCostType, setAddTransferCostType] = useState(1);
     const [addTransferCost, setAddTransferCost] = useState(0);
     const [addUnitCost, setAddUnitCost] = useState(0);
@@ -111,7 +114,7 @@ function PurchaseReturn (props){
     const [addTransferRemark, setAddTransferRemark] = useState('');
     const [addProduct, setAddProduct] = useState(-1);
     const [validationStep,setValidationStep] = useState({});
-    const steps = ['填写采购ID', '填写商品单价数量', '填写运费'];
+    const steps = ['填写采购ID', '填写商品详情'];
     //修改
     const [modalDetailOpenFlag, setModalDetailOpenFlag] = useState(false);
     const [putTransferCostType, setPutTransferCostType] = useState(1);
@@ -122,15 +125,19 @@ function PurchaseReturn (props){
     const [putTransferRemark, setPutTransferRemark] = useState('');
     const [putProduct, setPutProduct] = useState(-1);
     const [putSupplier, setPutSupplier] = useState(-1);
-    const [putPurchaseRefundId , setPurchaseRefundId] = useState(-1);
     const [putPurchaseItemId , setPurchaseItemId] = useState(-1);
     const [putTransferCostTypeFlag, setPutTransferCostTypeFlag] = useState(true);
+    const [putStatus,setPutStatus] = useState('');
+    const [putPurchaseId,setPutPurchaseId] = useState('');
+
     useEffect(()=>{
         getProductList();
+        getSupplierList();
         getPurchaseList();
     },[]);
     useEffect(()=>{
         const queryObj = {
+            purchaseId:purchaseId,
             supplierId:supplier != null ? supplier.id : '',
             productId :product != null ? product.id : '',
             paymentStatus:paymentStatus,
@@ -139,10 +146,10 @@ function PurchaseReturn (props){
             dateIdEnd:dateIdEnd,
             start :pageNumber
         };
-        props.setPurchaseReturnQueryObj(queryObj);
+        props.setPurchaseRefundQueryObj(queryObj);
     },[supplier,product,paymentStatus,status,dateIdStart,dateIdEnd])
     useEffect(()=>{
-        getPurchaseReturnList();
+        getPurchaseRefundList();
     },[]);
     useEffect(()=>{
         if(addTransferCostType==2){
@@ -163,18 +170,18 @@ function PurchaseReturn (props){
     //验证()
     const validate = ()=>{
         const validateObj ={};
-        if(!purchaseReturnId){
-            validateObj.purchaseReturnId='请输入采购ID';
+        if(!purchaseRefundId){
+            validateObj.purchaseRefundId='请输入采购ID';
         }else {
             let arrnew = [];
-            purchaseReturnReducer.purchaseItem.forEach(e => {
+            purchaseRefundReducer.purchaseItem.forEach(e => {
                 arrnew.push(e.id)
             })
-            if(arrnew.includes(purchaseReturnId)){
-                getPurchaseItem(purchaseReturnId);
+            if(arrnew.includes(purchaseRefundId)){
+                getPurchaseItem(purchaseRefundId);
                 setActiveStep((prevActiveStep) => prevActiveStep + 1);
             }else {
-                validateObj.purchaseReturnId='请输入正确的采购ID';
+                validateObj.purchaseRefundId='请输入正确的采购ID';
             }
         }
         setValidation(validateObj);
@@ -194,18 +201,6 @@ function PurchaseReturn (props){
         setValidationStep(validateStepObj);
         return Object.keys(validateStepObj).length
     }
-    function getStepContent(stepIndex) {
-        switch (stepIndex) {
-            case 0:
-                return '填写采购ID';
-            case 1:
-                return '填写单价数量';
-            case 2:
-                return '填写运费方式';
-            default:
-                return 'Unknown stepIndex';
-        }
-    }
     const handleNext = (step) => {
         if(step==0){
             validate();
@@ -213,15 +208,11 @@ function PurchaseReturn (props){
         if(step==1){
             const errorCount = validateStep();
             if(errorCount==0) {
-                setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                addPurchaseRefundItem(purchaseRefundId,addProduct,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addStorageType,addTransferRemark);
+                setModalOpenFlag(false);
+                setActiveStep(0);
             }
         }
-        if(step==2){
-           postPurchaseReturnItem(purchaseReturnId,addProduct,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addStorageType,addTransferRemark);
-            setModalOpenFlag(false);
-            setActiveStep(0);
-        }
-
     };
     const handleBack = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -230,8 +221,9 @@ function PurchaseReturn (props){
     const handleReset = () => {
         setActiveStep(0);
     };
-    const getPurchaseReturnArray=()=>{
-        props.setPurchaseReturnQueryObj({
+    const getPurchaseRefundArray=()=>{
+        props.setPurchaseRefundQueryObj({
+            purchaseId:purchaseId,
             supplierId:supplier != null ? supplier.id : '',
             productId :product != null ? product.id : '',
             paymentStatus:paymentStatus,
@@ -239,10 +231,10 @@ function PurchaseReturn (props){
             dateIdStart:dateIdStart,
             dateIdEnd:dateIdEnd,
             start :0})
-        getPurchaseReturnList();
+        getPurchaseRefundList();
         setPageNumber(0);
     }
-    const modalOpenPurchaseReturn=()=>{
+    const modalOpenPurchaseRefund=()=>{
         setModalOpenFlag(true);
         setAddTransferCostType(1);
         setAddTransferCost(0);
@@ -251,18 +243,18 @@ function PurchaseReturn (props){
         setAddStorageType(0);
         setAddTransferRemark('');
         setAddProduct(-1);
-        setPurchaseReturnId('');
+        setPurchaseRefundId('');
     }
     // 关闭模态
     const modalClose = () => {
         setModalOpenFlag(false);
         setModalDetailOpenFlag(false);
     };
-    const putPurchaseReturnDetail=()=>{
-        putPurchaseReturnDetailInfo(putPurchaseRefundId,putPurchaseItemId,putTransferRemark,putStorageType,putUnitCost,putPurchaseCount,putTransferCostType,putTransferCost);
+    const putPurchaseRefundDetail=()=>{
+        updatePurchaseRefundDetailInfo(putPurchaseId,putPurchaseItemId,putTransferRemark,putStorageType,putUnitCost,putPurchaseCount,putTransferCostType,putTransferCost);
         setModalDetailOpenFlag(false);
     }
-    const handleOpenPurchaseReturn=(item) =>{
+    const handleOpenPurchaseRefund=(item) =>{
         setModalDetailOpenFlag(true);
         setPutSupplier(item.supplier_name);
         setPutProduct(item.product_name);
@@ -272,34 +264,37 @@ function PurchaseReturn (props){
         setPutTransferCost(item.transfer_cost);
         setPutUnitCost(item.refund_unit_cost);
         setPutTransferCostType(item.transfer_cost_type);
-        setPurchaseRefundId(item.id);
         setPurchaseItemId(item.purchase_item_id);
+        setPutStatus(item.status)
+        setPutPurchaseId(item.id);
     }
     //上一页
-    const getPrePurchaseReturnList = () => {
-        setPageNumber(pageNumber- (props.purchaseReturnReducer.size-1));
-        props.setPurchaseReturnQueryObj({
+    const getPrePurchaseRefundList = () => {
+        setPageNumber(pageNumber- (props.purchaseRefundReducer.size-1));
+        props.setPurchaseRefundQueryObj({
+            purchaseId:purchaseId,
             supplierId:supplier != null ? supplier.id : '',
             productId :product != null ? product.id : '',
             paymentStatus:paymentStatus,
             status:status,
             dateIdStart:dateIdStart,
             dateIdEnd:dateIdEnd,
-            start :pageNumber- (props.purchaseReturnReducer.size-1)})
-        getPurchaseReturnList();
+            start :pageNumber- (props.purchaseRefundReducer.size-1)})
+        getPurchaseRefundList();
     };
     //下一页
-    const  getNextPurchaseReturnList= () => {
-        setPageNumber(pageNumber+ (props.purchaseReturnReducer.size-1));
-        props.setPurchaseReturnQueryObj({
+    const  getNextPurchaseRefundList= () => {
+        setPageNumber(pageNumber+ (props.purchaseRefundReducer.size-1));
+        props.setPurchaseRefundQueryObj({
+            purchaseId:purchaseId,
             supplierId:supplier != null ? supplier.id : '',
             productId :product != null ? product.id : '',
             paymentStatus:paymentStatus,
             status:status,
             dateIdStart:dateIdStart,
             dateIdEnd:dateIdEnd,
-            start :pageNumber+ (props.purchaseReturnReducer.size-1)})
-        getPurchaseReturnList();
+            start :pageNumber+ (props.purchaseRefundReducer.size-1)})
+        getPurchaseRefundList();
     };
     return(
         <div className={classes.root}>
@@ -309,6 +304,13 @@ function PurchaseReturn (props){
             {/*查询条件*/}
             <Grid container  spacing={3}>
                 <Grid container item xs={10} spacing={3}>
+                    {/*采购单号*/}
+                    <Grid item xs>
+                        <TextField label="采购单号" fullWidth={true} margin="dense" variant="outlined"  type="search" value={purchaseId}
+                                   onChange={(e)=>setPurchaseId(e.target.value)}
+                        />
+                    </Grid>
+
                     {/*供应商名称*/}
                     <Grid item xs>
                         <Autocomplete id="condition-supplier" fullWidth
@@ -373,11 +375,11 @@ function PurchaseReturn (props){
                             </Select>
                         </FormControl>
                     </Grid>
-                    {/* 完成时间*/}
+                    {/* 退款时间*/}
                     <Grid item xs>
                         <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
-                                    label="完成时间（始）"
+                                    label="退款时间（始）"
                                     value={dateIdStart=="" ? null : dateIdStart}
                                     onChange={(date)=>{
                                         setDateIdStart(date)
@@ -387,7 +389,7 @@ function PurchaseReturn (props){
                     <Grid item xs>
                         <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
-                                    label="完成时间(终)"
+                                    label="退款时间(终)"
                                     value={dateIdEnd=="" ? null : dateIdEnd}
                                     onChange={(date)=>setDateIdEnd(date)}
                         />
@@ -395,13 +397,13 @@ function PurchaseReturn (props){
                 </Grid>
                 {/*查询按钮*/}
                 <Grid item xs={1} align="center">
-                    <Fab size="small" color="primary" aria-label="add" onClick={() => {getPurchaseReturnArray()}} style={{marginTop: 10}}>
+                    <Fab size="small" color="primary" aria-label="add" onClick={() => {getPurchaseRefundArray()}} style={{marginTop: 10}}>
                         <i className="mdi mdi-magnify mdi-24px"/>
                     </Fab>
                 </Grid>
                 {/*添加按钮*/}
                 <Grid item xs={1} align="center">
-                    <Fab size="small" color="primary" aria-label="add" onClick={()=>{modalOpenPurchaseReturn()}} style={{marginTop: 10}}>
+                    <Fab size="small" color="primary" aria-label="add" onClick={()=>{modalOpenPurchaseRefund()}} style={{marginTop: 10}}>
                         <i className="mdi mdi-plus mdi-24px" />
                     </Fab>
                 </Grid>
@@ -412,6 +414,7 @@ function PurchaseReturn (props){
                             <TableHead >
                                 <TableRow style={{height:60}}>
                                     <StyledTableCell align="center">ID</StyledTableCell>
+                                    <StyledTableCell align="center">采购单号</StyledTableCell>
                                     <StyledTableCell align="center">供应商</StyledTableCell>
                                     <StyledTableCell align="center">商品名称</StyledTableCell>
                                     <StyledTableCell align="center">退款状态</StyledTableCell>
@@ -422,14 +425,15 @@ function PurchaseReturn (props){
                                     <StyledTableCell align="center">退款总价</StyledTableCell>
                                     <StyledTableCell align="center">退货盈亏</StyledTableCell>
                                     <StyledTableCell align="center">状态</StyledTableCell>
-                                    <StyledTableCell align="center">退货完成时间</StyledTableCell>
+                                    <StyledTableCell align="center">退款时间</StyledTableCell>
                                     <StyledTableCell align="center">操作</StyledTableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {purchaseReturnReducer.purchaseReturnArray.length > 0 &&purchaseReturnReducer.purchaseReturnArray.map((row) => (
+                                {purchaseRefundReducer.purchaseRefundArray.length > 0 &&purchaseRefundReducer.purchaseRefundArray.map((row) => (
                                     <TableRow key={'purchase-'+row.id}>
                                         <TableCell align="center" >{row.id}</TableCell>
+                                        <TableCell align="center" >{row.purchase_id}</TableCell>
                                         <TableCell align="center" >{row.supplier_name}</TableCell>
                                         <TableCell align="center" >{row.product_name}</TableCell>
                                         <TableCell align="center" >{commonUtil.getJsonValue(sysConst.REFUND_PAYMENT_STATUS, row.payment_status)}</TableCell>
@@ -442,24 +446,37 @@ function PurchaseReturn (props){
                                         <TableCell align="center" >{commonUtil.getJsonValue(sysConst.REFUND_STATUS,row.status)}</TableCell>
                                         <TableCell align="center" >{row.date_id}</TableCell>
                                         <TableCell align="center">
+
+                                            {/* 退货状态 */}
+                                            {row.status==1 &&
+                                            <IconButton color="primary" edge="start"
+                                                        onClick={() => {updateRefundStatus(row.id)}}>
+                                                <i className="mdi mdi-bitcoin mdi-24px"/>
+                                            </IconButton>}
+                                            {row.status!=1 &&
+                                            <IconButton color="default" edge="start" disabled>
+                                                <i className="mdi mdi-check-circle-outline mdi-24px"/>
+                                            </IconButton>}
+
+
                                            {/*  详情按钮*/}
-                                            <IconButton color="primary" edge="start" onClick={() => {handleOpenPurchaseReturn(row);}}>
+                                            <IconButton color="primary" edge="start" onClick={() => {handleOpenPurchaseRefund(row);}}>
                                                 <i className="mdi mdi-table-search purple-font margin-left10"> </i>
                                             </IconButton>
                                         </TableCell>
                                     </TableRow>))}
-                                {purchaseReturnReducer.purchaseReturnArray.length === 0 &&
-                                <TableRow style={{height:60}}><TableCell align="center" colSpan="13">暂无数据</TableCell></TableRow>
+                                {purchaseRefundReducer.purchaseRefundArray.length === 0 &&
+                                <TableRow style={{height:60}}><TableCell align="center" colSpan="14">暂无数据</TableCell></TableRow>
                                 }
                             </TableBody>
                         </Table>
 
-                        {purchaseReturnReducer.dataSize >=purchaseReturnReducer.size &&
-                        <Button className={classes.button} variant="contained" color="primary"  onClick={getNextPurchaseReturnList}>
+                        {purchaseRefundReducer.dataSize >=purchaseRefundReducer.size &&
+                        <Button className={classes.button} variant="contained" color="primary"  onClick={getNextPurchaseRefundList}>
                             下一页
                         </Button>}
-                        {purchaseReturnReducer.queryPurchaseReturnObj.start > 0 &&purchaseReturnReducer.dataSize > 0 &&
-                        <Button className={classes.button} variant="contained" color="primary" onClick={getPrePurchaseReturnList}>
+                        {purchaseRefundReducer.queryPurchaseRefundObj.start > 0 &&purchaseRefundReducer.dataSize > 0 &&
+                        <Button className={classes.button} variant="contained" color="primary" onClick={getPrePurchaseRefundList}>
                             上一页
                         </Button>}
 
@@ -491,7 +508,6 @@ function PurchaseReturn (props){
                         </div>
                     ) : (
                         <div>
-                            <Typography className={classes.instructions}>{getStepContent(activeStep)}</Typography>
 
 
                             {/*第一步添加ID*/}
@@ -500,20 +516,71 @@ function PurchaseReturn (props){
                                 <TextField fullWidth
                                            style={{margin: '20px  0px'}}
                                            margin='normal'
-                                           name="purchaseReturnId"
+                                           name="purchaseRefundId"
                                            type="text"
                                            label="采购ID"
                                            variant="outlined"
-                                           value={purchaseReturnId}
-                                           onChange={(e) => setPurchaseReturnId(e.target.value)}
-                                           error={validation.purchaseReturnId&&validation.purchaseReturnId!=''}
-                                           helperText={validation.purchaseReturnId}
+                                           value={purchaseRefundId}
+                                           onChange={(e) => setPurchaseRefundId(e.target.value)}
+                                           error={validation.purchaseRefundId&&validation.purchaseRefundId!=''}
+                                           helperText={validation.purchaseRefundId}
 
 
                                 />
                             </div>
-                            {/*第二步添加单价数量*/}
+                            {/*第二步添加商品详情*/}
                             <div style={{display:activeStep==1?'block':'none',margin:'20px 0'}}>
+                                <Grid  container spacing={3} >
+                                    <Grid item xs>
+                                        <FormControl variant="outlined" fullWidth={true} margin="dense">
+                                            <InputLabel id="standard-select-outlined-label" shrink>运费类型</InputLabel>
+                                            <Select
+                                                label="运费类型"
+                                                labelId="standard-select-outlined-label"
+                                                id="standard-select-outlined"
+                                                value={addTransferCostType}
+                                                onChange={(e)=>{
+                                                    setAddTransferCostType(e.target.value)
+                                                }}
+                                            >
+                                                {sysConst.TRANSFER_COST_TYPE.map((item, index) => (
+                                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs>
+                                        <TextField type="number" label="运费" disabled={addTransferCostTypeFlag} fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
+                                                   value={addTransferCost}
+                                                   onChange={(e) => {
+                                                       setAddTransferCost(e.target.value)
+                                                   }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs>
+                                        <TextField label="总价" fullWidth={true} disabled={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
+                                                   value={Number(addUnitCost*addPurchaseCount)-Number(addTransferCost)}
+                                        />
+                                    </Grid>
+                                    <Grid item xs>
+                                        <FormControl variant="outlined" fullWidth={true} margin="dense">
+                                            <InputLabel id="standard-select-outlined-label" shrink>是否出库</InputLabel>
+                                            <Select
+                                                label="是否出库"
+                                                labelId="standard-select-outlined-label"
+                                                id="standard-select-outlined"
+                                                value={addStorageType}
+                                                onChange={(e)=>{
+                                                    setAddStorageType(e.target.value)
+                                                }}
+                                            >
+                                                {sysConst.STORAGE_TYPE.map((item, index) => (
+                                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                </Grid>
                                 <Grid  container spacing={3}>
                                     <Grid item xs>
                                         <FormControl variant="outlined" fullWidth={true} margin="dense">
@@ -528,8 +595,8 @@ function PurchaseReturn (props){
                                                 }}
                                                 error={validationStep.addProduct&&validationStep.addProduct!=''&&validationStep.addProduct!='-1' }
                                             >  <MenuItem key={-1} value={-1}>请选择</MenuItem>
-                                                {purchaseReturnReducer.productArray.map((item, index) => (
-                                                    <MenuItem key={item.id} value={item}>{item.product_name}</MenuItem>
+                                                {purchaseRefundReducer.productArray.map((item, index) => (
+                                                    item.storage_product_id==null?<MenuItem key={item.id} value={item}>{item.product_name}(未入库)</MenuItem>:<MenuItem key={item.id} value={item}>{item.product_name}(已入库){item.storage_count}</MenuItem>
                                                 ))}
                                             </Select>
                                             {(validationStep.addProduct&&validationStep.addProduct!=''&&validationStep.addProduct!='-1' && <FormHelperText style={{color: 'red'}}>{validationStep.addProduct}</FormHelperText>)}
@@ -561,56 +628,7 @@ function PurchaseReturn (props){
                                         />
                                     </Grid>
                                 </Grid>
-                            </div>
-                            {/*第三步添加运费方式*/}
-                            <div style={{display:activeStep==2?'block':'none',margin:'20px 0'}}>
-                                <Grid  container spacing={3} >
-                                    <Grid item xs>
-                                        <FormControl variant="outlined" fullWidth={true} margin="dense">
-                                            <InputLabel id="standard-select-outlined-label" shrink>运费类型</InputLabel>
-                                            <Select
-                                                label="运费类型"
-                                                labelId="standard-select-outlined-label"
-                                                id="standard-select-outlined"
-                                                value={addTransferCostType}
-                                                onChange={(e)=>{
-                                                    setAddTransferCostType(e.target.value)
-                                                }}
-                                            >
-                                                {sysConst.TRANSFER_COST_TYPE.map((item, index) => (
-                                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid item xs>
-                                        <TextField type="number" label="运费" disabled={addTransferCostTypeFlag} fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                                   value={addTransferCost}
-                                                   onChange={(e) => {
-                                                       setAddTransferCost(e.target.value)
-                                                   }}
-                                        />
-                                    </Grid>
-                                </Grid>
                                 <Grid  container spacing={3}>
-                                    <Grid item xs>
-                                        <FormControl variant="outlined" fullWidth={true} margin="dense">
-                                            <InputLabel id="standard-select-outlined-label" shrink>是否出库</InputLabel>
-                                            <Select
-                                                label="是否出库"
-                                                labelId="standard-select-outlined-label"
-                                                id="standard-select-outlined"
-                                                value={addStorageType}
-                                                onChange={(e)=>{
-                                                    setAddStorageType(e.target.value)
-                                                }}
-                                            >
-                                                {sysConst.STORAGE_TYPE.map((item, index) => (
-                                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
                                     <Grid item xs>
                                         <TextField
                                             fullWidth={true}
@@ -648,9 +666,10 @@ function PurchaseReturn (props){
                 showFooter={true}
                 footer={
                     <>
-                        <Button variant="contained" onClick={putPurchaseReturnDetail} color="primary">
+                        {putStatus==1 &&
+                        <Button variant="contained" onClick={putPurchaseRefundDetail} color="primary">
                             确定
-                        </Button>
+                        </Button>}
                         <Button onClick={()=>{setModalDetailOpenFlag(false)}} color="primary" autoFocus>
                             取消
                         </Button>
@@ -660,6 +679,24 @@ function PurchaseReturn (props){
 
             >
                     <Grid  container spacing={3}>
+                        <Grid item xs>
+                            <FormControl variant="outlined"   disabled={true} fullWidth={true} margin="dense">
+                                <InputLabel id="standard-select-outlined-label" shrink>采购单号</InputLabel>
+                                <TextField fullWidth
+                                           disabled={true}
+                                           size="small"
+                                           name="supplierName"
+                                           type="text"
+                                           label="采购单号"
+                                           variant="outlined"
+                                           value={putPurchaseId}
+
+                                />
+                            </FormControl>
+                        </Grid>
+                    </Grid>
+                    <Grid  container spacing={3}>
+
                     <Grid item xs>
                         <FormControl variant="outlined"   disabled={true} fullWidth={true} margin="dense">
                             <InputLabel id="standard-select-outlined-label" shrink>供应商名称</InputLabel>
@@ -783,36 +820,54 @@ function PurchaseReturn (props){
 };
 const mapStateToProps = (state, ownProps) => {
     return {
-        purchaseReturnReducer: state.PurchaseReturnReducer,
+        purchaseRefundReducer: state.PurchaseRefundReducer,
         purchaseReducer: state.PurchaseReducer,
     }
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    setPurchaseReturnQueryObj:(queryObj) =>{
-        dispatch(PurchaseReturnActionType.setPurchaseReturnQueryObj(queryObj))
+    setPurchaseRefundQueryObj:(queryObj) =>{
+        dispatch(PurchaseRefundActionType.setPurchaseRefundQueryObj(queryObj))
     },
     //获取列表
-    getPurchaseReturnList: () => {
-        dispatch(PurchaseReturnAction.getPurchaseReturnList())
+    getPurchaseRefundList: () => {
+        dispatch(PurchaseRefundAction.getPurchaseRefundList())
     },
     getPurchaseItem: (id) => {
-        dispatch(PurchaseReturnAction.getPurchaseItem(id))
+        dispatch(PurchaseRefundAction.getPurchaseItem(id))
     },
     //获取商品
     getProductList:() =>{
         dispatch(PurchaseAction.getProductList())
     },
+    getSupplierList:() =>{
+        dispatch(PurchaseAction.getSupplierList())
+    },
     getPurchaseList:() =>{
-        dispatch(PurchaseReturnAction.getPurchaseList())
+        dispatch(PurchaseRefundAction.getPurchaseList())
     },
-    postPurchaseReturnItem:(purchaseReturnId,addProduct,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addStorageType,addTransferRemark) =>{
-        dispatch(PurchaseReturnAction.postPurchaseReturnItem(purchaseReturnId,addProduct,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addStorageType,addTransferRemark))
+    addPurchaseRefundItem:(purchaseRefundId,addProduct,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addStorageType,addTransferRemark) =>{
+        dispatch(PurchaseRefundAction.addPurchaseRefundItem(purchaseRefundId,addProduct,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addStorageType,addTransferRemark))
     },
-    putPurchaseReturnDetailInfo:(putPurchaseRefundId,putPurchaseItemId,putTransferRemark,putStorageType,putUnitCost,putPurchaseCount,putTransferCostType,putTransferCost) =>{
-        dispatch(PurchaseReturnAction.putPurchaseReturnDetailInfo(putPurchaseRefundId,putPurchaseItemId,putTransferRemark,putStorageType,putUnitCost,putPurchaseCount,putTransferCostType,putTransferCost))
-    }
+    updatePurchaseRefundDetailInfo:(putPurchaseId,putPurchaseItemId,putTransferRemark,putStorageType,putUnitCost,putPurchaseCount,putTransferCostType,putTransferCost) =>{
+        dispatch(PurchaseRefundAction.updatePurchaseRefundDetailInfo(putPurchaseId,putPurchaseItemId,putTransferRemark,putStorageType,putUnitCost,putPurchaseCount,putTransferCostType,putTransferCost))
+    },
+    updateRefundStatus: (id) => {
+        Swal.fire({
+            title: "确定完成该条退货？",
+            text: "",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "确定",
+            cancelButtonText:"取消"
+        }).then(async (value) => {
+            if (value.isConfirmed) {
+                dispatch(PurchaseRefundAction.updateRefundStatus(id));
+            }
+        });
+    },
+
 
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(PurchaseReturn)
+export default connect(mapStateToProps, mapDispatchToProps)(PurchaseRefund)

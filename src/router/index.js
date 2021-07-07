@@ -21,7 +21,7 @@ import {
     AppSetting,
     AuthoritySetting,
     DataDictionary,
-    PurchaseReturn,
+    PurchaseRefund,
 } from "../components";
 
 export const routes = [
@@ -40,7 +40,7 @@ export const routesWithHeader = [
     {path: "/purchase", exact: true, component: Purchase},
     {path: "/purchase/:id", exact: true, component: PurchaseDetail},
     //退货
-    {path: "/purchase_return", exact: true, component: PurchaseReturn},
+    {path: "/purchase_return", exact: true, component: PurchaseRefund},
     // 商品分类
     {path: "/category_manager", exact: true, component: CategoryManager},
     // 品牌

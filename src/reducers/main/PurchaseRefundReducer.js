@@ -1,8 +1,9 @@
 import {handleActions} from 'redux-actions';
-import {PurchaseReturnActionType} from '../../types';
+import {PurchaseRefundActionType} from '../../types';
 const initialState = {
     //查询条件
-    queryPurchaseReturnObj:{
+    queryPurchaseRefundObj:{
+        purchaseId:'',
         supplierId:'',
         productId :'',
         paymentStatus:'',
@@ -15,37 +16,37 @@ const initialState = {
     size: 11,
     // 检索结果数量
     dataSize: 0,
-    purchaseReturnArray:[],
+    purchaseRefundArray:[],
     purchaseItem:[],
     productArray:[],
 }
 
 export default handleActions({
-    [PurchaseReturnActionType.getPurchaseReturnList]: (state, action) => {
+    [PurchaseRefundActionType.getPurchaseRefundList]: (state, action) => {
         return {
             ...state,
-            purchaseReturnArray: action.payload
+            purchaseRefundArray: action.payload
         }
     },
-    [PurchaseReturnActionType.setPurchaseReturnQueryObj]: (state, action) => {
+    [PurchaseRefundActionType.setPurchaseRefundQueryObj]: (state, action) => {
         return {
             ...state,
-            queryPurchaseReturnObj: action.payload
+            queryPurchaseRefundObj: action.payload
         }
     },
-    [PurchaseReturnActionType.setPurchaseReturnListDataSize]: (state, action) => {
+    [PurchaseRefundActionType.setPurchaseRefundListDataSize]: (state, action) => {
         return {
             ...state,
             dataSize: action.payload
         }
     },
-    [PurchaseReturnActionType.setPurchaseItem]: (state, action) => {
+    [PurchaseRefundActionType.setPurchaseItem]: (state, action) => {
         return {
             ...state,
             purchaseItem: action.payload
         }
     },
-    [PurchaseReturnActionType.setProductArray]: (state, action) => {
+    [PurchaseRefundActionType.setProductArray]: (state, action) => {
         return {
             ...state,
             productArray: action.payload

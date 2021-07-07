@@ -22,7 +22,7 @@ import SupplierDetailReducer from './main/SupplierDetailReducer';
 import PurchaseReducer from './main/PurchaseReducer';
 import PurchaseDetailReducer from './main/PurchaseDetailReducer';
 import DataDictionaryReducer from './main/DataDictionaryReducer';
-import PurchaseReturnReducer from './main/PurchaseReturnReducer';
+import PurchaseRefundReducer from './main/PurchaseRefundReducer';
 export default combineReducers({
     form: reduxFormReducer,
     AppReducer,
@@ -47,5 +47,5 @@ export default combineReducers({
     PurchaseReducer,
     PurchaseDetailReducer,
     DataDictionaryReducer,
-    PurchaseReturnReducer,
+    PurchaseRefundReducer,
 });

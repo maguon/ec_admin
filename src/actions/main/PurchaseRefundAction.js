@@ -1,4 +1,4 @@
-import {PurchaseReturnActionType, AppActionType} from '../../types';
+import {PurchaseRefundActionType, AppActionType} from '../../types';
 import {apiHost} from "../../config";
 import Swal from "sweetalert2";
 const httpUtil = require('../../utils/HttpUtils');
@@ -6,13 +6,13 @@ const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 
-export const getPurchaseReturnList = (params) => async (dispatch, getState) => {
+export const getPurchaseRefundList = (params) => async (dispatch, getState) => {
     try {
 
         // 检索条件：每页数量
-        const size = getState().PurchaseReturnReducer.size;
+        const size = getState().PurchaseRefundReducer.size;
         // 检索条件
-        const paramsObj=getState().PurchaseReturnReducer.queryPurchaseReturnObj;
+        const paramsObj=getState().PurchaseRefundReducer.queryPurchaseRefundObj;
         paramsObj.dateIdStart =paramsObj.dateIdStart==''?'':commonUtil.getDateFormat(paramsObj.dateIdStart);
         paramsObj.dateIdEnd =paramsObj.dateIdEnd==''?'':commonUtil.getDateFormat(paramsObj.dateIdEnd);
         paramsObj.paymentStatus =paramsObj.paymentStatus=='-1'?'': paramsObj.paymentStatus;
@@ -27,8 +27,8 @@ export const getPurchaseReturnList = (params) => async (dispatch, getState) => {
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true) {
-            dispatch({type: PurchaseReturnActionType.setPurchaseReturnListDataSize, payload: res.rows.length});
-            dispatch({type: PurchaseReturnActionType.getPurchaseReturnList, payload: res.rows.slice(0, size - 1)});
+            dispatch({type: PurchaseRefundActionType.setPurchaseRefundListDataSize, payload: res.rows.length});
+            dispatch({type: PurchaseRefundActionType.getPurchaseRefundList, payload: res.rows.slice(0, size - 1)});
         } else if (res.success === false) {
             Swal.fire('获取采购列表信息失败', res.msg, 'warning');
         }
@@ -46,7 +46,7 @@ export const getPurchaseList = (params) => async (dispatch, getState) => {
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success&&res.rows.length>0) {
-            dispatch({type: PurchaseReturnActionType.setPurchaseItem, payload: res.rows});
+            dispatch({type: PurchaseRefundActionType.setPurchaseItem, payload: res.rows});
         } else if (res.success&&res.rows.length==0) {
             Swal.fire('未查到此采购ID', res.msg, 'warning');
         }else{
@@ -59,14 +59,14 @@ export const getPurchaseList = (params) => async (dispatch, getState) => {
 export const getPurchaseItem = (params) => async (dispatch, getState) => {
     try {
         // 基本检索URL
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchaseItem?purchaseId='+params
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchaseItemStorage?purchaseId='+params
 
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
 
         if (res.success) {
-            dispatch({type: PurchaseReturnActionType.setProductArray, payload: res.rows});
+            dispatch({type: PurchaseRefundActionType.setProductArray, payload: res.rows});
         }else{
             Swal.fire('获取失败', res.msg, 'warning');
         }
@@ -75,7 +75,7 @@ export const getPurchaseItem = (params) => async (dispatch, getState) => {
     }
 };
 
-export const postPurchaseReturnItem = (purchaseReturnId,addProduct,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addStorageType,addTransferRemark) => async (dispatch, getState) => {
+export const addPurchaseRefundItem = (purchaseRefundId,addProduct,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addStorageType,addTransferRemark) => async (dispatch, getState) => {
     try {
         const params = {
             "remark":addTransferRemark,
@@ -90,12 +90,12 @@ export const postPurchaseReturnItem = (purchaseReturnId,addProduct,addTransferCo
             "orderId": 0
         };
         // 基本url
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchase/'+purchaseReturnId+'/purchaseItem/'+addProduct.id+'/purchaseRefund';
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchase/'+purchaseRefundId+'/purchaseItem/'+addProduct.product_item_id+'/purchaseRefund';
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpPost(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
-            dispatch(getPurchaseReturnList())
+            dispatch(getPurchaseRefundList())
             Swal.fire("新增成功", "", "success");
         } else if (!res.success) {
             Swal.fire("新增失败", res.msg, "warning");
@@ -104,7 +104,7 @@ export const postPurchaseReturnItem = (purchaseReturnId,addProduct,addTransferCo
         Swal.fire("操作失败", err.message, "error");
     }
 };
-export const putPurchaseReturnDetailInfo = (putPurchaseRefundId,putPurchaseItemId,putTransferRemark,putStorageType,putUnitCost,putPurchaseCount,putTransferCostType,putTransferCost) => async (dispatch, getState) => {
+export const updatePurchaseRefundDetailInfo = (putPurchaseRefundId,putPurchaseItemId,putTransferRemark,putStorageType,putUnitCost,putPurchaseCount,putTransferCostType,putTransferCost) => async (dispatch, getState) => {
     try {
         const params = {
             "remark": putTransferRemark,
@@ -120,7 +120,7 @@ export const putPurchaseReturnDetailInfo = (putPurchaseRefundId,putPurchaseItemI
         let res = await httpUtil.httpPut(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
-            dispatch(getPurchaseReturnList())
+            dispatch(getPurchaseRefundList())
             Swal.fire("保存成功", "", "success");
         } else if (!res.success) {
             Swal.fire("保存失败", res.msg, "warning");
@@ -129,6 +129,27 @@ export const putPurchaseReturnDetailInfo = (putPurchaseRefundId,putPurchaseItemI
         Swal.fire("操作失败", err.message, "error");
     }
 };
+
+export const updateRefundStatus = (id) => async (dispatch, getState) => {
+    try {
+        // 状态
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/purchaseRefund/' + id + '/status?status=7';
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpPut(url, {});
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            Swal.fire("修改成功", "", "success");
+            // 刷新列表
+            dispatch(getPurchaseRefundList())
+        } else if (!res.success) {
+            Swal.fire("修改失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
 
 
 

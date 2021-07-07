@@ -18,7 +18,7 @@ import Storage from "./main/Storage";
 import ProductManager from "./main/ProductManager";
 import ProductManagerDetail from "./main/ProductManagerDetail";
 import PurchasePay from "./main/PurchasePay";
-import PurchaseRefund from "./main/PurchaseRefund";
+import PurchaseRefundPay from "./main/PurchaseRefundPay";
 import StorageProduct from "./main/StorageProduct";
 import StorageCheck from "./main/StorageCheck";
 import StorageCheckDetail from "./main/StorageCheckDetail";
@@ -27,7 +27,7 @@ import SupplierDetail from './main/SupplierDetail';
 import Purchase from './main/Purchase';
 import PurchaseDetail from './main/PurchaseDetail'
 import DataDictionary from  './main/DataDictionary';
-import PurchaseReturn from './main/PurchaseReturn';
+import PurchaseRefund from './main/PurchaseRefund';
 import NestedList from "./utils/NestedList";
 
 export {
@@ -51,7 +51,7 @@ export {
     ProductManager,
     ProductManagerDetail,
     PurchasePay,
-    PurchaseRefund,
+    PurchaseRefundPay,
     StorageProduct,
     StorageCheck,
     StorageCheckDetail,
@@ -60,6 +60,6 @@ export {
     Purchase,
     PurchaseDetail,
     DataDictionary,
-    PurchaseReturn,
+    PurchaseRefund,
     NestedList
 }
