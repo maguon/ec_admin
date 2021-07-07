@@ -26,7 +26,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from "@material-ui/pickers";
 
 const commonAction = require('../../actions/layout/CommonAction');
-const purchaseRefundAction = require('../../actions/main/PurchaseRefundAction');
+const purchaseRefundPayAction = require('../../actions/main/PurchaseRefundPayAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
@@ -300,7 +300,7 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(commonAction.getSupplierInfo(supplierId));
     },
     getPurchaseRefundList: (paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus,dataStart) => {
-        dispatch(purchaseRefundAction.getPurchaseRefundList({paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus,dataStart}))
+        dispatch(purchaseRefundPayAction.getPurchaseRefundList({paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus,dataStart}))
     },
     confirmPay: (id, paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus) => {
         Swal.fire({
@@ -312,12 +312,12 @@ const mapDispatchToProps = (dispatch) => ({
             cancelButtonText:"取消"
         }).then(async (value) => {
             if (value.isConfirmed) {
-                dispatch(purchaseRefundAction.confirmPayment(id, {paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus}));
+                dispatch(purchaseRefundPayAction.confirmPayment(id, {paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus}));
             }
         });
     },
     // getPurchaseItem: (purchaseId) => {
-    //     dispatch(purchaseRefundAction.getPurchaseItem(purchaseId))
+    //     dispatch(purchaseRefundPayAction.getPurchaseItem(purchaseId))
     // }
 });
 
