@@ -60,7 +60,7 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell);
 //采购---详情
 function PurchaseDetail (props){
-    const {purchaseDetailReducer,getPurchaseDetailInfo,getPurchaseItemDetailInfo,changeStatus,updatePurchaseDetailInfo,updatePurchaseDetailItemInfo,getPurchaseRefundDetailInfo,getProductList,getStorageProductArray,postRefundDetailInfo} = props;
+    const {purchaseDetailReducer,getPurchaseDetailInfo,getPurchaseItemDetailInfo,updateStatus,updatePurchaseDetailInfo,updatePurchaseDetailItemInfo,getPurchaseRefundDetailInfo,getProductList,getStorageProductArray,addRefundDetailItem} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     const {id} = useParams();
@@ -228,7 +228,7 @@ function PurchaseDetail (props){
     const addRefundDetailInfo =() => {
         const errorCount = validate();
         if(errorCount==0){
-            postRefundDetailInfo(id,addProduct,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType);
+            addRefundDetailItem(id,addProduct,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType);
             setModalOpenFlag(false);
         }
     }
@@ -237,7 +237,7 @@ function PurchaseDetail (props){
         if(errorCount==0){
             for(var value of purchaseDetailReducer.storageProductArray){
                 if(value.product_name==addProduct){
-                    postRefundDetailInfo(id,value,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageTypeItem);
+                    addRefundDetailItem(id,value,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageTypeItem);
                     setModalItemOpenFlag(false);
                 }
             }
@@ -423,10 +423,10 @@ function PurchaseDetail (props){
                             </Grid>
 
                             <Grid item xs  align="center"   style={{display:purchaseDetailReducer.purchaseDetailInfo.status==1?'block':'none',marginTop:'30px'}}>
-                                <Button variant="contained" color="secondary"  onClick={() => {changeStatus(id,3)}}>开始处理</Button>
+                                <Button variant="contained" color="secondary"  onClick={() => {updateStatus(id,3)}}>开始处理</Button>
                             </Grid>
                             <Grid item xs  align="center"  style={{display:purchaseDetailReducer.purchaseDetailInfo.status==3?'block':'none',marginTop:'30px'}}>
-                                <Button variant="contained" color="secondary"  onClick={() => {changeStatus(id,7)}}>处理</Button>
+                                <Button variant="contained" color="secondary"  onClick={() => {updateStatus(id,7)}}>处理</Button>
                             </Grid>
                             <Grid item xs={4}></Grid>
                         </Grid>
@@ -833,7 +833,7 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
     updatePurchaseDetailItemInfo:(itemId,index)=>{
         dispatch(PurchaseDetailAction.updatePurchaseDetailItemInfo(itemId,index))
     },
-    changeStatus: (id, status) => {
+    updateStatus: (id, status) => {
         Swal.fire({
             title: status === 3 ? "确定开始处理该条采购？" : "确定完成该采购数据？",
             text: "",
@@ -856,8 +856,8 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
     getStorageProductArray:(id)=>{
         dispatch(PurchaseDetailAction.getStorageProductArray(id))
     },
-    postRefundDetailInfo:(id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType)=>{
-        dispatch(PurchaseDetailAction.postRefundDetailInfo(id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType))
+    addRefundDetailItem:(id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType)=>{
+        dispatch(PurchaseDetailAction.addRefundDetailItem(id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType))
     }
 });
 

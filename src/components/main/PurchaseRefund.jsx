@@ -417,15 +417,15 @@ function PurchaseRefund (props){
                                     <StyledTableCell align="center">采购单号</StyledTableCell>
                                     <StyledTableCell align="center">供应商</StyledTableCell>
                                     <StyledTableCell align="center">商品名称</StyledTableCell>
-                                    <StyledTableCell align="center">退款状态</StyledTableCell>
                                     <StyledTableCell align="center">退货单价</StyledTableCell>
                                     <StyledTableCell align="center">退货数量</StyledTableCell>
                                     <StyledTableCell align="center">运费支付方式</StyledTableCell>
                                     <StyledTableCell align="center">运费</StyledTableCell>
                                     <StyledTableCell align="center">退款总价</StyledTableCell>
                                     <StyledTableCell align="center">退货盈亏</StyledTableCell>
-                                    <StyledTableCell align="center">状态</StyledTableCell>
+                                    <StyledTableCell align="center">退款状态</StyledTableCell>
                                     <StyledTableCell align="center">退款时间</StyledTableCell>
+                                    <StyledTableCell align="center">状态</StyledTableCell>
                                     <StyledTableCell align="center">操作</StyledTableCell>
                                 </TableRow>
                             </TableHead>
@@ -436,15 +436,15 @@ function PurchaseRefund (props){
                                         <TableCell align="center" >{row.purchase_id}</TableCell>
                                         <TableCell align="center" >{row.supplier_name}</TableCell>
                                         <TableCell align="center" >{row.product_name}</TableCell>
-                                        <TableCell align="center" >{commonUtil.getJsonValue(sysConst.REFUND_PAYMENT_STATUS, row.payment_status)}</TableCell>
                                         <TableCell align="center" >{row.refund_unit_cost}</TableCell>
                                         <TableCell align="center" >{row.refund_count}</TableCell>
                                         <TableCell align="center" >{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE,row.transfer_cost_type)}</TableCell>
                                         <TableCell align="center" >{row.transfer_cost}</TableCell>
                                         <TableCell align="center" >{row.total_cost}</TableCell>
                                         <TableCell align="center" >{row.refund_profile}</TableCell>
-                                        <TableCell align="center" >{commonUtil.getJsonValue(sysConst.REFUND_STATUS,row.status)}</TableCell>
+                                        <TableCell align="center" >{commonUtil.getJsonValue(sysConst.REFUND_PAYMENT_STATUS, row.payment_status)}</TableCell>
                                         <TableCell align="center" >{row.date_id}</TableCell>
+                                        <TableCell align="center" >{commonUtil.getJsonValue(sysConst.REFUND_STATUS,row.status)}</TableCell>
                                         <TableCell align="center">
 
                                             {/* 退货状态 */}

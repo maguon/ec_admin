@@ -157,7 +157,7 @@ export const getStorageProductArray = (params) => async (dispatch) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
-export const postRefundDetailInfo = (id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType) => async (dispatch) => {
+export const addRefundDetailItem = (id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType) => async (dispatch) => {
     try {
         const params = {
             "remark": addTransferRemark,
