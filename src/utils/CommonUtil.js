@@ -2,6 +2,9 @@ import html2canvas from "html2canvas";
 import {jsPDF} from "jspdf";
 
 export const downLoadPDF = (dom, fileName) => {
+   // 取得滚动条距离顶部位置
+   let scrollTop = getScrollTop();
+   window.scrollTo(0,0);
    html2canvas(dom, {
       // allowTaint: true, //避免一些不识别的图片干扰，默认为false，遇到不识别的图片干扰则会停止处理html2canvas
       // taintTest: false,
@@ -11,7 +14,7 @@ export const downLoadPDF = (dom, fileName) => {
       // Create a canvas with 144 dpi (1.5x resolution).
       dpi: 192,
       // 背景设为白色（默认为黑色）
-      background: "#fff"
+      background: "#fff",
    }).then(function (canvas) {
       // Html / Canvas 画面 尺寸
       let contentWidth = canvas.width;
@@ -23,7 +26,7 @@ export const downLoadPDF = (dom, fileName) => {
       let pdfPageWidth = 595.28;
       let pdfPageHeight = 595.28 / contentWidth * contentHeight;
       let pageData = canvas.toDataURL('image/jpeg', 1.0);
-
+      window.scrollTo(0,scrollTop);
       // 画面尺寸小于 一页，则默认为A4，否则：设定指定高度画面
       let pdf = new jsPDF('', 'pt', contentHeight < htmlPageHeight ? 'a4' : [pdfPageWidth, pdfPageHeight + 30]);
       pdf.addImage(pageData, 'JPEG', 0, 0, pdfPageWidth, pdfPageHeight);
@@ -172,4 +175,14 @@ export function objToMap(obj){
       strMap.set(k,obj[k]);
    }
    return strMap;
+}
+
+function getScrollTop() {
+   let scrollTop = 0;
+   if (document.documentElement && document.documentElement.scrollTop) {
+      scrollTop = document.documentElement.scrollTop;
+   } else if (document.body) {
+      scrollTop = document.body.scrollTop;
+   }
+   return scrollTop;
 }
