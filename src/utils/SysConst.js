@@ -162,7 +162,7 @@ export const REFUND_PAYMENT_STATUS = [
 // 退仓状态
 export const REFUND_STORAGE_FLAG = [
     {value: 1, label: "未退仓"},
-    {value: 7, label: "已退仓"}
+    {value: 2, label: "已退仓"}
 ];
 
 // 用于权限设定（包含所有机能设定）

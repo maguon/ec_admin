@@ -1,9 +1,9 @@
 import {handleActions} from 'redux-actions';
-import {StorageProductActionType} from '../../types';
+import {StorageInOutActionType} from '../../types';
 
 const initialState = {
     // 检索结果
-    storageProductData: {
+    purchaseItemStorage: {
         // 开始位置
         start: 0,
         // 每页数量
@@ -11,62 +11,103 @@ const initialState = {
         // 检索结果数量
         dataSize: 0,
         // 数据列表
-        dataList: [],
-        // 统计
-        statistics: {totalCnt: 0, totalCost: 0}
+        dataList: []
     },
     // 检索条件
-    queryParams: {
+    purchaseParams: {
+        // 仓储状态
+        storageStatus: null,
         // 仓库
         storage: null,
         // 仓库分区
         storageArea: null,
         // 供应商
         supplier: null,
-        // 商品
-        product: null,
         // 采购单ID
         purchaseId: '',
-        // 仓储日期（始）
-        startDate: '',
-        // 仓储日期（终）
-        endDate: ''
+        // 商品ID
+        productId: ''
     },
-    modalData: {}
+    purchaseRefundData: {
+        // 开始位置
+        start: 0,
+        // 每页数量
+        size: 10,
+        // 检索结果数量
+        dataSize: 0,
+        // 数据列表
+        dataList: []
+    },
+    refundParams: {
+        // 退仓状态
+        refundStorageFlag: null,
+        // 退款状态
+        paymentStatus: null,
+        // 运费类型
+        transferCostType: null,
+        // 供应商
+        supplier: null,
+        // 采购单ID
+        purchaseId: '',
+        // 商品ID
+        productId: ''
+    },
+    storageProductRelList: [],
+    storageProductRelDetail: [],
 };
 
 export default handleActions({
-    [StorageProductActionType.setStorageProductData]: (state, action) => {
+    [StorageInOutActionType.getPurchaseItemStorageData]: (state, action) => {
         return {
             ...state,
-            storageProductData: action.payload
+            purchaseItemStorage: action.payload
         }
     },
-    [StorageProductActionType.setStorageProductDataCnt]: (state, action) => {
-        state.storageProductData.statistics = action.payload;
+    [StorageInOutActionType.setPurchaseParams]: (state, action) => {
         return {
             ...state,
-            storageProductData: state.storageProductData
+            purchaseParams: action.payload
         }
     },
-    [StorageProductActionType.setDefaultQueryParams]: (state, action) => {
-        return {
-            ...state,
-            queryParams: action.payload
-        }
-    },
-    [StorageProductActionType.setQueryParams]: (state, action) => {
+    [StorageInOutActionType.setPurchaseParam]: (state, action) => {
         const {name, value} = action.payload;
-        const paramsObj = {...state.queryParams, [name]: value};
+        const paramsObj = {...state.purchaseParams, [name]: value};
         return {
             ...state,
-            queryParams: paramsObj
+            purchaseParams: paramsObj
         }
     },
-    [StorageProductActionType.setModalData]: (state, action) => {
+
+    [StorageInOutActionType.getPurchaseRefundData]: (state, action) => {
         return {
             ...state,
-            modalData: action.payload
+            purchaseRefundData: action.payload
         }
-    }
+    },
+    [StorageInOutActionType.setRefundParams]: (state, action) => {
+        return {
+            ...state,
+            refundParams: action.payload
+        }
+    },
+    [StorageInOutActionType.setRefundParam]: (state, action) => {
+        const {name, value} = action.payload;
+        const paramsObj = {...state.refundParams, [name]: value};
+        return {
+            ...state,
+            refundParams: paramsObj
+        }
+    },
+    [StorageInOutActionType.setStorageProductRelList]: (state, action) => {
+        return {
+            ...state,
+            storageProductRelList: action.payload
+        }
+    },
+    [StorageInOutActionType.setStorageProductRelDetail]: (state, action) => {
+        return {
+            ...state,
+            storageProductRelDetail: action.payload
+        }
+    },
 }, initialState)

@@ -1,81 +1,176 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
-import {AppActionType, StorageProductActionType} from '../../types';
+import {AppActionType, StorageInOutActionType} from '../../types';
+import {getStorageCheckInfo} from "./StorageCheckDetailAction";
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 
-const getParams = () => (dispatch, getState) => {
-    // 检索条件
-    const queryParams = getState().StorageProductReducer.queryParams;
-    let conditionsObj = {
-        storageId: queryParams.storage == null ? '' : queryParams.storage.id,
-        storageAreaId: queryParams.storageArea == null ? '' : queryParams.storageArea.id,
-        supplierId: queryParams.supplier === null ? '' : queryParams.supplier.id,
-        productId: queryParams.product == null ? '' : queryParams.product.id,
-        purchaseId: queryParams.purchaseId,
-        dateIdStart: commonUtil.formatDate(queryParams.startDate, 'yyyyMMdd'),
-        dateIdEnd: commonUtil.formatDate(queryParams.endDate, 'yyyyMMdd')
-    };
-    return httpUtil.objToUrl(conditionsObj);
-};
-
-export const getStorageProductList = (params) => async (dispatch, getState) => {
+export const getPurchaseItemStorage = (params) => async (dispatch, getState) => {
     try {
         // 检索条件：开始位置
         const start = params.dataStart;
         // 检索条件：每页数量
-        const size = getState().StorageProductReducer.storageProductData.size;
+        const size = getState().StorageInOutReducer.purchaseItemStorage.size;
+        // 检索条件
+        const queryParams = getState().StorageInOutReducer.purchaseParams;
+        let conditionsObj = {
+            storageStatus: queryParams.storageStatus == null ? '' : queryParams.storageStatus,
+            storageId: queryParams.storage == null ? '' : queryParams.storage.id,
+            storageAreaId: queryParams.storageArea == null ? '' : queryParams.storageArea.id,
+            supplierId: queryParams.supplier === null ? '' : queryParams.supplier.id,
+            purchaseId: queryParams.purchaseId,
+            productId: queryParams.productId,
+        };
 
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/storageProductRel?status=1&start=' + start + '&size=' + size;
+            + '/purchaseItemStorage?start=' + start + '&size=' + size;
         // 检索条件
-        let conditions =  dispatch(getParams());
+        let conditions =  httpUtil.objToUrl(conditionsObj);
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
 
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-        let productData = getState().StorageProductReducer.storageProductData;
+        let newData = getState().StorageInOutReducer.purchaseItemStorage;
         if (res.success) {
-            productData.start = start;
-            productData.dataSize = res.rows.length;
-            productData.dataList = res.rows.slice(0, size - 1);
-            dispatch({type: StorageProductActionType.setStorageProductData, payload: productData});
-
-            // 取得统计数据
-            url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageProductRelStatistics';
-            url = conditions.length > 0 ? url + "?" + conditions : url;
-            dispatch({type: AppActionType.showLoadProgress, payload: true});
-            res = await httpUtil.httpGet(url);
-            dispatch({type: AppActionType.showLoadProgress, payload: false});
-            if (res.success && res.rows.length > 0) {
-                dispatch({type: StorageProductActionType.setStorageProductDataCnt, payload: {totalCnt: res.rows[0].storage_count, totalCost: res.rows[0].total_cost}});
-            } else {
-                dispatch({type: StorageProductActionType.setStorageProductDataCnt, payload: {totalCnt: 0, totalCost: 0}});
-            }
+            newData.start = start;
+            newData.dataSize = res.rows.length;
+            newData.dataList = res.rows.slice(0, size - 1);
+            dispatch({type: StorageInOutActionType.getPurchaseItemStorageData, payload: newData});
         } else if (!res.success) {
-            Swal.fire("获取库存商品列表信息失败", res.msg, "warning");
+            Swal.fire("获取采购入库列表失败", res.msg, "warning");
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }
 };
 
-export const downLoadCsv = () => async (dispatch) => {
+export const putInStorage = (data) => async (dispatch, getState) => {
     try {
-        // 基本检索URL
-        let url = 'http://' + apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/storageProductRel.csv?status=1';
+        // 状态
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/purchase/' + data.purchaseItem.purchase_id + '/purchaseItem/'+ data.purchaseItem.purchase_item_id  +'/storageStatus';
+        const params = {
+            storageId: data.storage == null ? '' : data.storage.id,
+            storageAreaId: data.storageArea == null ? '' : data.storageArea.id,
+            remark: data.remark
+        };
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpPut(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            Swal.fire("修改成功", "", "success");
+            dispatch(getPurchaseItemStorage({dataStart: getState().StorageInOutReducer.purchaseItemStorage.start}));
+        } else if (!res.success) {
+            Swal.fire("修改失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const getPurchaseRefund = (params) => async (dispatch, getState) => {
+    try {
+        // 检索条件：开始位置
+        const start = params.dataStart;
+        // 检索条件：每页数量
+        const size = getState().StorageInOutReducer.purchaseRefundData.size;
         // 检索条件
-        let conditions =  dispatch(getParams());
+        const queryParams = getState().StorageInOutReducer.refundParams;
+        let conditionsObj = {
+            refundStorageFlag: queryParams.refundStorageFlag == null ? '' : queryParams.refundStorageFlag,
+            paymentStatus: queryParams.paymentStatus == null ? '' : queryParams.paymentStatus,
+            transferCostType: queryParams.transferCostType == null ? '' : queryParams.transferCostType,
+            supplierId: queryParams.supplier === null ? '' : queryParams.supplier.id,
+            purchaseId: queryParams.purchaseId,
+            productId: queryParams.productId,
+        };
+
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/purchaseRefund?start=' + start + '&size=' + size + '&storageType=' + sysConst.STORAGE_TYPE[1].value;
+        // 检索条件
+        let conditions =  httpUtil.objToUrl(conditionsObj);
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
-        window.open(url);
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        let newData = getState().StorageInOutReducer.purchaseRefundData;
+        if (res.success) {
+            newData.start = start;
+            newData.dataSize = res.rows.length;
+            newData.dataList = res.rows.slice(0, size - 1);
+            dispatch({type: StorageInOutActionType.getPurchaseRefundData, payload: newData});
+        } else if (!res.success) {
+            Swal.fire("获取退货出库列表失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const getStorageProductRel = (purchaseItemId) => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/storageProductRel?purchaseItemId=' + purchaseItemId;
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: StorageInOutActionType.setStorageProductRelList, payload: res.rows});
+        } else if (!res.success) {
+            Swal.fire("获取仓库商品列表失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const getStorageProductRelDetail = (storageProductRelDetailId) => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/storageProductRelDetail?storageProductRelDetailId=' + storageProductRelDetailId;
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: StorageInOutActionType.setStorageProductRelDetail, payload: res.rows});
+        } else if (!res.success) {
+            Swal.fire("获取仓库商品详情失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const refundStorage = (data) => async (dispatch, getState) => {
+    try {
+        // 状态
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/purchaseRefund/' + data.purchaseRefund.id + '/storageProductRel/'+ data.storageProduct.id  +'/refundStorage';
+        const params = {
+            remark: data.refundRemark
+        };
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpPut(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            Swal.fire("修改成功", "", "success");
+            dispatch(getPurchaseRefund({dataStart: getState().StorageInOutReducer.purchaseRefundData.start}));
+        } else if (!res.success) {
+            Swal.fire("修改失败", res.msg, "warning");
+        }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }
