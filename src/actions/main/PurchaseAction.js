@@ -82,7 +82,7 @@ export const addPurchaseInfo = (supplier,paramsItem,transferCostType,transferCos
 
 
 };
-// 采购管理 -> 供应商 取得画面列表
+// 采购管理 -> 采购 取得画面列表
 export const getPurchaseList = (params) => async (dispatch, getState) => {
     try {
 
@@ -114,6 +114,23 @@ export const getPurchaseList = (params) => async (dispatch, getState) => {
         }
     } catch (err) {
         Swal.fire('操作失败', err.message, 'error');
+    }
+};
+export const downLoadPDF = (params,name) => async (dispatch) => {
+    try {
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/supplier?supplierName='+name;
+        let urlPurchase = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchaseItem?purchaseId='+params;
+        const res = await httpUtil.httpGet(url);
+        const resPurchase = await httpUtil.httpGet(urlPurchase);
+        if (res.success&&resPurchase.success) {
+            dispatch({type: PurchaseActionType.getSupplierArray, payload: res.rows[0]});
+            dispatch({type: PurchaseActionType.getPurchaseItemArray, payload: resPurchase.rows});
+            commonUtil.downLoadPDF(document.getElementById("purchaseItemId"),'采购单详情-' + params + '.pdf');
+        } else if (!res.success) {
+            Swal.fire("获取采购详细列表失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
     }
 };
 

@@ -20,22 +20,13 @@ import {withStyles,makeStyles} from "@material-ui/core/styles";
 import {Link} from "react-router-dom";
 import {PurchaseActionType} from '../../types';
 import Autocomplete from "@material-ui/lab/Autocomplete";
-
-//时间控件
-import DateFnsUtils from '@date-io/date-fns';
-import {
-    MuiPickersUtilsProvider,
-    KeyboardDatePicker,
-} from '@material-ui/pickers';
-
-
 import {
     DatePicker
 } from '@material-ui/pickers';
-
 const PurchaseAction = require('../../actions/main/PurchaseAction');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
+const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
     // 标题样式
     root: {
@@ -73,7 +64,13 @@ const useStyles = makeStyles((theme) => ({
     },
     addCategory:{
         marginTop:'8px'
-    }
+    },
+    pdfPage:customTheme.pdfPage,
+    pdfTitle:customTheme.pdfTitle,
+    tblHeader:customTheme.tblHeader,
+    tblLastHeader:customTheme.tblLastHeader,
+    tblBody:customTheme.tblBody,
+    tblLastBody:customTheme.tblLastBody
 }));
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -84,13 +81,9 @@ const StyledTableCell = withStyles((theme) => ({
     }
 }))(TableCell);
 
-
-
-
-
 //采购
 function Purchase (props){
-    const {purchaseReducer,getSupplierList,getProductList,getPurchaseList} = props;
+    const {purchaseReducer,getSupplierList,getProductList,getPurchaseList,downLoadPDF,fromDetail} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     //添加采购信息
@@ -101,7 +94,6 @@ function Purchase (props){
     const [transferCostType, setTransferCostType] = useState("");
     const [transferRemark, setTransferRemark] = useState("");
     const [purchaseCountTotal, setPurchaseCountTotal] = useState(0);
-
     //查询
     const [pageNumber,setPageNumber] = useState(0);
     const [supplierName, setSupplierName] = useState(null);
@@ -112,12 +104,9 @@ function Purchase (props){
     const [paymentStatus, setPaymentStatus] = useState('-1');
     const [storageStatus, setStorageStatus] = useState('-1');
     const [status, setStatus] = useState('-1');
-
-
     const [validation,setValidation] = useState({});
     const [purchaseItem,setPurchaseItem]  = useState([{product:-1,unitCost:0,unitNumber:0,purchaseCount:0,remark:""}])
     useEffect(()=>{
-
         getSupplierList();
         getProductList();
         if(transferCostType==2){
@@ -128,23 +117,39 @@ function Purchase (props){
         }
     },[transferCostType]);
     useEffect(()=>{
-        const queryObj = {
-            supplierId:supplierName != null ? supplierName.id : '',
-            storageStatus:storageStatus,
-            paymentStatus:paymentStatus,
-            status:status,
-            planDateStart :planDateStart,
-            planDateEnd:planDateEnd,
-            finishDateStart:finishDateStart,
-            finishDateEnd:finishDateEnd,
-            start :pageNumber
-        };
-        props.setPurchaseQueryObj(queryObj);
+        if (!fromDetail) {
+            const  queryObj={
+                supplierId:supplierName != null ? supplierName.id : '',
+                storageStatus:storageStatus,
+                paymentStatus:paymentStatus,
+                status:status,
+                planDateStart :planDateStart,
+                planDateEnd:planDateEnd,
+                finishDateStart:finishDateStart,
+                finishDateEnd:finishDateEnd,
+                start :pageNumber
+            }
+            props.setPurchaseQueryObj(queryObj);
+        }else{
+            const   queryObj = {
+                supplierId:purchaseReducer.queryPurchaseObj.supplierId,
+                storageStatus:purchaseReducer.queryPurchaseObj.storageStatus,
+                paymentStatus:purchaseReducer.queryPurchaseObj.paymentStatus,
+                status:purchaseReducer.queryPurchaseObj.status,
+                planDateStart :purchaseReducer.queryPurchaseObj.planDateStart,
+                planDateEnd:purchaseReducer.queryPurchaseObj.planDateEnd,
+                finishDateStart:purchaseReducer.queryPurchaseObj.finishDateStart,
+                finishDateEnd:purchaseReducer.queryPurchaseObj.finishDateEnd,
+                start :purchaseReducer.queryPurchaseObj.start
+
+            };
+            props.setPurchaseQueryObj(queryObj);
+        }
+
     },[supplierName,planDateStart,planDateEnd,finishDateStart,finishDateEnd])
     useEffect(()=>{
         getPurchaseList();
     },[])
-
     //change
     const setPurchaseItemParams = (index,name,value)=>{
         if(name=='product'){
@@ -173,7 +178,6 @@ function Purchase (props){
             purchaseItem[index].remark=value;
         }
     }
-
 
     //查询采购列表
     const getPurchaseArray =() =>{
@@ -434,6 +438,9 @@ function Purchase (props){
                                         <TableCell align="center" >{row.total_cost}</TableCell>
                                         <TableCell align="center" >{commonUtil.getJsonValue(sysConst.PURCHASE_STATUS, row.status)}</TableCell>
                                         <TableCell align="center">
+                                            <IconButton color="primary" edge="start" onClick={()=>{downLoadPDF(row)}}>
+                                                <i className="mdi mdi-file-pdf mdi-24px"/>
+                                            </IconButton>
                                             {/* 详情按钮*/}
                                             <IconButton color="primary" edge="start">
                                                 <Link to={{pathname: '/purchase/' + row.id}}>
@@ -460,6 +467,7 @@ function Purchase (props){
                     </TableContainer>
                 </Grid>
             </Grid>
+
 
             {/*模态框*/}
             <SimpleModal
@@ -641,13 +649,65 @@ function Purchase (props){
                     </Grid>
                 </Grid>
             </SimpleModal>
+
+
+            {/* PDF 输出用 DIV */}
+            <div id="purchaseItemId" className={classes.pdfPage} style={{marginTop: -99999}}>
+                <Grid container spacing={0}>
+                    <Grid item sm={12} className={classes.pdfTitle}>采购单</Grid>
+                    <Grid item sm={2}><img style={{width: 120,paddingLeft:30,marginTop:15}} src="/logo120.png"  alt=""/></Grid>
+                    <Grid item container sm={10} spacing={0}>
+                        <Grid item sm={6}><b>采购单号：</b>{purchaseReducer.purchasePdfData.id}</Grid>
+                        <Grid item sm={6}><b>操作人员：</b>{purchaseReducer.purchasePdfData.op_user}</Grid>
+                        <Grid item sm={6}><b>供应商名称：</b>{purchaseReducer.purchasePdfData.supplier_name}</Grid>
+                        <Grid item sm={6}><b>联系人姓名：</b>{purchaseReducer.supplierPdfArray.contact_name}</Grid>
+                        <Grid item sm={6}><b>手机：</b>{purchaseReducer.supplierPdfArray.mobile}</Grid>
+                        <Grid item sm={6}><b>邮箱：</b>{purchaseReducer.supplierPdfArray.email}</Grid>
+                        <Grid item sm={6}><b>电话：</b>{purchaseReducer.supplierPdfArray.tel}</Grid>
+                        <Grid item sm={6}><b>传真：</b>{purchaseReducer.supplierPdfArray.fax}</Grid>
+                        <Grid item sm={12}><b>地址：</b>{purchaseReducer.supplierPdfArray.address}</Grid>
+                        <Grid item sm={6}><b>公司抬头：</b>{purchaseReducer.supplierPdfArray.invoice_title}</Grid>
+                        <Grid item sm={6}><b>开户行：</b>{purchaseReducer.supplierPdfArray.invoice_bank}</Grid>
+                        <Grid item sm={6}><b>开户行账号：</b>{purchaseReducer.supplierPdfArray.invoice_bank_ser}</Grid>
+                        <Grid item sm={6}><b>开户地址：</b>{purchaseReducer.supplierPdfArray.invoice_address}</Grid>
+                    </Grid>
+                </Grid>
+
+                <Grid container spacing={0} style={{paddingTop: 25}}>
+                    <Grid item sm={2} className={classes.tblHeader}>商品名称</Grid>
+                    <Grid item sm={2} className={classes.tblHeader}>单价</Grid>
+                    <Grid item sm={2} className={classes.tblHeader}>数量</Grid>
+                    <Grid item sm={2} className={classes.tblHeader}>总价</Grid>
+                    <Grid item sm={4} className={classes.tblLastHeader}>备注</Grid>
+                </Grid>
+                {purchaseReducer.purchaseItemArray.map((row, index) => (
+                    <Grid container spacing={0}>
+                        <Grid item sm={2} className={classes.tblBody}>{row.product_name}</Grid>
+                        <Grid item sm={2} className={classes.tblBody}>{row.unit_cost}</Grid>
+                        <Grid item sm={2} className={classes.tblBody}>{row.purchase_count}</Grid>
+                        <Grid item sm={2} className={classes.tblBody}>{Number(row.unit_cost*row.purchase_count)}</Grid>
+                        <Grid item sm={4} className={classes.tblLastBody}>{row.remark}</Grid>
+                    </Grid>
+                ))}
+
+                <Grid container spacing={0} style={{paddingTop: 35}}  align='right'>
+                    <Grid item sm={4}>{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE,purchaseReducer.purchasePdfData.transfer_cost_type)}运费:{purchaseReducer.purchasePdfData.transfer_cost}</Grid>
+                    <Grid item sm={4}>总价:{purchaseReducer.purchasePdfData.total_cost}</Grid>
+                    <Grid item sm={4}>备注:{purchaseReducer.purchasePdfData.remark}</Grid>
+                </Grid>
+            </div>
         </div>
     )
 
 }
 const mapStateToProps = (state, ownProps) => {
+    let fromDetail = false;
+    if (typeof ownProps.location.state != 'undefined' && ownProps.location.state != null && ownProps.location.state.fromDetail) {
+        fromDetail = true;
+    }
     return {
-        purchaseReducer: state.PurchaseReducer
+        purchaseReducer: state.PurchaseReducer,
+        fromDetail: fromDetail
     }
 };
 
@@ -670,6 +730,10 @@ const mapDispatchToProps = (dispatch) => ({
     //添加商品
     addPurchaseInfo:(supplier,purchaseItem,transferCostType,transferCost,transferRemark) =>{
         dispatch(PurchaseAction.addPurchaseInfo(supplier,purchaseItem,transferCostType,transferCost,transferRemark))
+    },
+    downLoadPDF: (purchaseInfo) => {
+        dispatch(PurchaseActionType.setPurchasePdfData(purchaseInfo));
+        dispatch(PurchaseAction.downLoadPDF(purchaseInfo.id,purchaseInfo.supplier_name));
     }
 
 });

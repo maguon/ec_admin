@@ -71,7 +71,7 @@ const StyledTableCell = withStyles((theme) => ({
 
 //供应商
 function Supplier (props){
-    const {supplierReducer,deleteSupplier} = props;
+    const {supplierReducer,deleteSupplier,fromDetail} = props;
     const classes = useStyles();
     //查询条件
     const [paramSupplierName,setParamSupplierName]=useState(null);
@@ -143,12 +143,24 @@ function Supplier (props){
 
 
     useEffect(()=>{
-        const queryObj = {
-            supplierName:paramSupplierName,
-            supplierType :paramSupplierType!= null ?paramSupplierType.value:'',
-            start :pageNumber
-        };
-        props.setSupplierQueryObj(queryObj);
+
+        if (!fromDetail) {
+            const queryObj = {
+                supplierName:paramSupplierName,
+                supplierType :paramSupplierType!= null ?paramSupplierType.value:'',
+                start :pageNumber
+            };
+            props.setSupplierQueryObj(queryObj);
+        }else {
+            const queryObj = {
+                supplierName:supplierReducer.queryObj.supplierName,
+                supplierType :supplierReducer.queryObj.supplierType,
+                start :supplierReducer.queryObj.start
+            }
+            props.setSupplierQueryObj(queryObj);
+        }
+
+
     },[paramSupplierName,paramSupplierType,pageNumber])
 
     useEffect(()=>{
@@ -595,8 +607,13 @@ function Supplier (props){
     )
 }
 const mapStateToProps = (state, ownProps) => {
+    let fromDetail = false;
+    if (typeof ownProps.location.state != 'undefined' && ownProps.location.state != null && ownProps.location.state.fromDetail) {
+        fromDetail = true;
+    }
     return {
-        supplierReducer: state.SupplierReducer
+        supplierReducer: state.SupplierReducer,
+        fromDetail: fromDetail
     }
 };
 

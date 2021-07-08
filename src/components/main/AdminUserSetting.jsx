@@ -313,18 +313,17 @@ function AdminUserSetting (props) {
                     </TextField>
                 </Grid>
                 {/*查询按钮*/}
-                <Grid container item xs>
-                    <Grid container direction="row" justify="space-evenly" alignItems="center">
-                        <Fab size="small" color="primary" aria-label="add" onClick={() => {getUserArray()}}>
-                            <i className="mdi mdi-magnify mdi-24px"/>
-                        </Fab>
-                        {/*添加按钮*/}
-                        <Fab size="small" color="primary" aria-label="add" onClick={()=>{handleAddOpen(null)}}>
-                            <i className="mdi mdi-plus mdi-24px" />
-                        </Fab>
-                    </Grid>
+                <Grid item xs={1} align="center">
+                    <Fab size="small" color="primary" aria-label="add" onClick={() => {getUserArray()}} style={{marginTop: 5}}>
+                        <i className="mdi mdi-magnify mdi-24px"/>
+                    </Fab>
                 </Grid>
-
+                {/*添加按钮*/}
+                <Grid item xs={1} align="center">
+                    <Fab size="small" color="primary" aria-label="add" onClick={()=>{handleAddOpen(null)}} style={{marginTop: 5}}>
+                        <i className="mdi mdi-plus mdi-24px" />
+                    </Fab>
+                </Grid>
             </Grid>
 
             {/*主体*/}

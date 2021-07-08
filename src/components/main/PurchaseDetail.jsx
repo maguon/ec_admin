@@ -32,6 +32,7 @@ import {SimpleModal} from "../index";
 const PurchaseDetailAction = require('../../actions/main/PurchaseDetailAction');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
+const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
     // 标题样式
     root: {
@@ -48,7 +49,13 @@ const useStyles = makeStyles((theme) => ({
         height: 1,
         marginBottom: 15,
         background: '#7179e6'
-    }
+    },
+    pdfPage:customTheme.pdfPage,
+    pdfTitle:customTheme.pdfTitle,
+    tblHeader:customTheme.tblHeader,
+    tblLastHeader:customTheme.tblLastHeader,
+    tblBody:customTheme.tblBody,
+    tblLastBody:customTheme.tblLastBody
 }));
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -60,7 +67,7 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell);
 //采购---详情
 function PurchaseDetail (props){
-    const {purchaseDetailReducer,getPurchaseDetailInfo,getPurchaseItemDetailInfo,updateStatus,updatePurchaseDetailInfo,updatePurchaseDetailItemInfo,getPurchaseRefundDetailInfo,getProductList,getStorageProductArray,addRefundDetailItem} = props;
+    const {purchaseDetailReducer,getPurchaseDetailInfo,getPurchaseItemDetailInfo,updateStatus,updatePurchaseDetailInfo,updatePurchaseDetailItemInfo,getPurchaseRefundDetailInfo,getProductList,getStorageProductArray,addRefundDetailItem,downLoadPDF} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     const {id} = useParams();
@@ -418,6 +425,11 @@ function PurchaseDetail (props){
                         {/*修改  状态*/}
                         <Grid  container spacing={3}>
                             <Grid item xs={4}></Grid>
+                            <Grid item xs align='center' style={{marginTop:'15px'}}>
+                                <IconButton color="primary" edge="start" onClick={()=>{downLoadPDF(purchaseDetailReducer.purchaseDetailInfo.supplier_name)}}>
+                                    <i className="mdi mdi-file-pdf" style={{fontSize:40}}/>
+                                </IconButton>
+                            </Grid>
                             <Grid item xs  align="center" style={{display:purchaseDetailReducer.purchaseDetailInfo.status==3?'block':'none',marginTop:'30px'}}>
                                 <Button variant="contained" color="primary" onClick={updatePurchaseDetailInfo}>保存</Button>
                             </Grid>
@@ -430,6 +442,50 @@ function PurchaseDetail (props){
                             </Grid>
                             <Grid item xs={4}></Grid>
                         </Grid>
+                        {/* PDF 输出用 DIV */}
+                        <div id="purchaseId" className={classes.pdfPage} style={{marginTop: -99999}}>
+                            <Grid container spacing={0}>
+                                <Grid item sm={12} className={classes.pdfTitle}>采购单</Grid>
+                                <Grid item sm={2}><img style={{width: 120,paddingLeft:30,marginTop:15}} src="/logo120.png"  alt=""/></Grid>
+                                <Grid item container sm={10} spacing={0}>
+                                    <Grid item sm={6}><b>采购单号：</b>{purchaseDetailReducer.purchaseDetailInfo.id}</Grid>
+                                    <Grid item sm={6}><b>操作人员：</b>{purchaseDetailReducer.purchaseDetailInfo.op_user}</Grid>
+                                    <Grid item sm={6}><b>供应商名称：</b>{purchaseDetailReducer.purchaseDetailInfo.supplier_name}</Grid>
+                                    <Grid item sm={6}><b>联系人姓名：</b>{purchaseDetailReducer.supplierDetailArray.contact_name}</Grid>
+                                    <Grid item sm={6}><b>手机：</b>{purchaseDetailReducer.supplierDetailArray.mobile}</Grid>
+                                    <Grid item sm={6}><b>邮箱：</b>{purchaseDetailReducer.supplierDetailArray.email}</Grid>
+                                    <Grid item sm={6}><b>电话：</b>{purchaseDetailReducer.supplierDetailArray.tel}</Grid>
+                                    <Grid item sm={6}><b>传真：</b>{purchaseDetailReducer.supplierDetailArray.fax}</Grid>
+                                    <Grid item sm={12}><b>地址：</b>{purchaseDetailReducer.supplierDetailArray.address}</Grid>
+                                    <Grid item sm={6}><b>公司抬头：</b>{purchaseDetailReducer.supplierDetailArray.invoice_title}</Grid>
+                                    <Grid item sm={6}><b>开户行：</b>{purchaseDetailReducer.supplierDetailArray.invoice_bank}</Grid>
+                                    <Grid item sm={6}><b>开户行账号：</b>{purchaseDetailReducer.supplierDetailArray.invoice_bank_ser}</Grid>
+                                    <Grid item sm={6}><b>开户地址：</b>{purchaseDetailReducer.supplierDetailArray.invoice_address}</Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid container spacing={0} style={{paddingTop: 25}}>
+                                <Grid item sm={2} className={classes.tblHeader}>商品名称</Grid>
+                                <Grid item sm={2} className={classes.tblHeader}>单价</Grid>
+                                <Grid item sm={2} className={classes.tblHeader}>数量</Grid>
+                                <Grid item sm={2} className={classes.tblHeader}>总价</Grid>
+                                <Grid item sm={4} className={classes.tblLastHeader}>备注</Grid>
+                            </Grid>
+                            {purchaseDetailReducer.purchaseDetailItemInfo.map((row, index) => (
+                                <Grid container spacing={0}>
+                                    <Grid item sm={2} className={classes.tblBody}>{row.product_name}</Grid>
+                                    <Grid item sm={2} className={classes.tblBody}>{row.unit_cost}</Grid>
+                                    <Grid item sm={2} className={classes.tblBody}>{row.purchase_count}</Grid>
+                                    <Grid item sm={2} className={classes.tblBody}>{Number(row.unit_cost*row.purchase_count)}</Grid>
+                                    <Grid item sm={4} className={classes.tblLastBody}>{row.remark}</Grid>
+                                </Grid>
+                            ))}
+                            <Grid container spacing={0} style={{paddingTop: 35}}  align='right'>
+                                <Grid item sm={4}>{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE,purchaseDetailReducer.purchaseDetailInfo.transfer_cost_type)}运费:{purchaseDetailReducer.purchaseDetailInfo.transfer_cost}</Grid>
+                                <Grid item sm={4}>总价:{purchaseDetailReducer.purchaseDetailInfo.total_cost}</Grid>
+                                <Grid item sm={4}>备注:{purchaseDetailReducer.purchaseDetailInfo.remark}</Grid>
+                            </Grid>
+                        </div>
+
                     </TabPanel>
                     <TabPanel value='2'>
                         <Grid item xs align="right">
@@ -858,6 +914,9 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
     },
     addRefundDetailItem:(id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType)=>{
         dispatch(PurchaseDetailAction.addRefundDetailItem(id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType))
+    },
+    downLoadPDF: (name) => {
+        dispatch(PurchaseDetailAction.downLoadPDF(name))
     }
 });
 

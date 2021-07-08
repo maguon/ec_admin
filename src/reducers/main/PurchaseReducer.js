@@ -4,6 +4,9 @@ const initialState = {
     //查询条件
     queryPurchaseObj:{
         supplierId:'',
+        storageStatus:'',
+        paymentStatus:'',
+        status:'',
         planDateStart :'',
         planDateEnd:'',
         finishDateStart:'',
@@ -40,6 +43,9 @@ const initialState = {
     supplierArray: [],
     //商品
     productArray:[],
+    purchasePdfData: {},
+    supplierPdfArray:{},
+    purchaseItemArray:[],
 };
 
 export default handleActions({
@@ -88,5 +94,24 @@ export default handleActions({
             productArray: action.payload
         }
     },
+    [PurchaseActionType.setPurchasePdfData]: (state, action) => {
+        return {
+            ...state,
+            purchasePdfData: action.payload
+        }
+    },
+    [PurchaseActionType.getSupplierArray]: (state, action) => {
+        return {
+            ...state,
+            supplierPdfArray: action.payload
+        }
+    },
+    [PurchaseActionType.getPurchaseItemArray]: (state, action) => {
+        return {
+            ...state,
+           purchaseItemArray: action.payload
+        }
+    },
+
 
 }, initialState)

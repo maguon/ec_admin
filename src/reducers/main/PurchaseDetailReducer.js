@@ -19,7 +19,8 @@ const initialState = {
     purchaseDetailItemInfo:[],
     purchaseRefundDetailInfo:[],
     productDetailArray:[],
-    storageProductArray:[]
+    storageProductArray:[],
+    supplierDetailArray: {},
 };
 
 export default handleActions({
@@ -71,6 +72,12 @@ export default handleActions({
         return {
             ...state,
             storageProductArray: action.payload
+        }
+    },
+    [PurchaseDetailActionType.getSupplierDetailArray]: (state, action) => {
+        return {
+            ...state,
+            supplierDetailArray: action.payload
         }
     },
 
