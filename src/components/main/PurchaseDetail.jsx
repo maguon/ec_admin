@@ -426,7 +426,7 @@ function PurchaseDetail (props){
                         <Grid  container spacing={3}>
                             <Grid item xs={4}></Grid>
                             <Grid item xs align='center' style={{marginTop:'15px'}}>
-                                <IconButton color="primary" edge="start" onClick={()=>{downLoadPDF(purchaseDetailReducer.purchaseDetailInfo.supplier_name)}}>
+                                <IconButton color="primary" edge="start" onClick={()=>{downLoadPDF(purchaseDetailReducer.purchaseDetailInfo.supplier_name,purchaseDetailReducer.purchaseDetailInfo.id)}}>
                                     <i className="mdi mdi-file-pdf" style={{fontSize:40}}/>
                                 </IconButton>
                             </Grid>
@@ -915,8 +915,8 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
     addRefundDetailItem:(id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType)=>{
         dispatch(PurchaseDetailAction.addRefundDetailItem(id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType))
     },
-    downLoadPDF: (name) => {
-        dispatch(PurchaseDetailAction.downLoadPDF(name))
+    downLoadPDF: (name,id) => {
+        dispatch(PurchaseDetailAction.downLoadPDF(name,id))
     }
 });
 
