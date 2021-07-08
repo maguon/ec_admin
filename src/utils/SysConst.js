@@ -122,17 +122,6 @@ export const PAYMENT_STATUS = [
     {value: 7, label: "已支付"}
 ];
 
-//退货退款状态
-export const REFUND_PAYMENT_STATUS = [
-    {value: 1, label: "未完成"},
-    {value: 7, label: "已完成"}
-];
-//退货状态
-export const REFUND_STATUS = [
-    {value: 1, label: "未完成"},
-    {value: 7, label: "已完成"}
-];
-
 //采购状态
 export const PURCHASE_STATUS = [
     {value: 1, label: "未处理"},
@@ -156,6 +145,24 @@ export const STORAGE_CHECK_STATUS = [
 export const STORAGE_RET_STATUS = [
     {value: 1, label: "未完成"},
     {value: 2, label: "完成"}
+];
+
+// 退货状态
+export const REFUND_STATUS = [
+    {value: 1, label: "未完成"},
+    {value: 7, label: "已完成"}
+];
+
+// 退货退款状态
+export const REFUND_PAYMENT_STATUS = [
+    {value: 1, label: "未完成"},
+    {value: 7, label: "已完成"}
+];
+
+// 退仓状态
+export const REFUND_STORAGE_FLAG = [
+    {value: 1, label: "未退仓"},
+    {value: 7, label: "已退仓"}
 ];
 
 // 用于权限设定（包含所有机能设定）
