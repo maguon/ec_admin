@@ -1,41 +1,41 @@
 import React, {useEffect} from 'react';
 import {connect} from 'react-redux';
+import Swal from "sweetalert2";
 // 引入material-ui基础组件
 import {
     Box,
+    Button,
+    Divider,
+    Fab,
+    FormControl,
     Grid,
     IconButton,
-    TextField,
+    InputLabel,
+    makeStyles,
+    MenuItem,
+    Paper,
+    Select,
     Table,
-    TableHead,
-    TableRow,
     TableBody,
     TableCell,
     TableContainer,
-    Paper,
-    Typography,
-    Divider,
-    Select,
-    Button, Fab, FormControl, InputLabel, MenuItem,makeStyles
+    TableHead,
+    TableRow,
+    TextField,
+    Typography
 } from "@material-ui/core";
-
-// 引入Dialog
-import {SimpleModal} from "../index";
-import Swal from "sweetalert2";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from "@material-ui/pickers";
+// 引入Dialog
+import {SimpleModal} from "../index";
 
 const commonAction = require('../../actions/layout/CommonAction');
 const purchasePayAction = require('../../actions/main/PurchasePayAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
-
 const useStyles = makeStyles((theme) => ({
-    root:{
-        marginBottom: 20,
-        minWidth: 800
-    },
+    root: customTheme.root,
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
     tableHead:customTheme.tableHead

@@ -1,27 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
-import {
-    Button,
-    Divider,
-    Grid,
-    TextField,
-    Typography,
-    Fab,
-    makeStyles, IconButton
-} from "@material-ui/core";
-import {SimpleModal} from '../'
+import {Button, Divider, Fab, Grid, IconButton, makeStyles, TextField, Typography} from "@material-ui/core";
 import TreeItem from "@material-ui/lab/TreeItem";
 import TreeView from "@material-ui/lab/TreeView";
+import {SimpleModal} from '../'
 
 const categoryManagerAction = require('../../actions/main/CategoryManagerAction');
-
 const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
-    root:{
-        marginBottom: 20,
-    },
+    root: customTheme.root,
     title: customTheme.pageTitle,
-    divider: customTheme.pageDivider,
+    divider: customTheme.pageDivider
 }));
 
 function CategoryManager (props) {

@@ -3,14 +3,7 @@ import {Link, useParams} from "react-router-dom";
 import {connect, useDispatch} from 'react-redux';
 import Swal from "sweetalert2";
 // 引入material-ui基础组件
-import {
-    Grid,
-    IconButton,
-    TextField,
-    Typography,
-    Divider,
-    Button, makeStyles
-} from "@material-ui/core";
+import {Button, Divider, Grid, IconButton, makeStyles, TextField, Typography} from "@material-ui/core";
 import {StorageCheckDetailActionType} from "../../types";
 
 const storageCheckDetailAction = require('../../actions/main/StorageCheckDetailAction');
@@ -20,14 +13,9 @@ const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
 
 const useStyles = makeStyles((theme) => ({
-    // 标题样式
-    root: {
-        minWidth: 800,
-        paddingBottom: 50
-    },
+    root: customTheme.root,
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
-
     pdfPage:customTheme.pdfPage,
     pdfTitle:customTheme.pdfTitle,
     tblHeader:customTheme.tblHeader,
@@ -176,7 +164,6 @@ function StorageCheck(props) {
                     <Grid item sm={2} className={classes.tblHeader}>仓库</Grid>
                     <Grid item sm={2} className={classes.tblHeader}>仓库分区</Grid>
                     <Grid item sm={2} className={classes.tblHeader}>商品</Grid>
-
                     <Grid item sm={1} className={classes.tblHeader}>库存数</Grid>
                     <Grid item sm={1} className={classes.tblHeader}>盘点数</Grid>
                     <Grid item sm={4} className={classes.tblLastHeader}>备注</Grid>
@@ -187,7 +174,6 @@ function StorageCheck(props) {
                         <Grid item sm={2} className={classes.tblBody}>{row.storage_name}</Grid>
                         <Grid item sm={2} className={classes.tblBody}>{row.storage_area_name}</Grid>
                         <Grid item sm={2} className={classes.tblBody}>{row.product_name}</Grid>
-
                         <Grid item sm={1} className={classes.tblBody}>{row.storage_count}</Grid>
                         <Grid item sm={1} className={classes.tblBody}>{row.check_count}</Grid>
                         <Grid item sm={4} className={classes.tblLastBody}>{row.remark}</Grid>

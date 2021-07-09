@@ -57,7 +57,6 @@ export const saveStorageCheck = () => async (dispatch, getState) => {
         };
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageCheck/' + storageCheckInfo.id;
-        console.log('',url);
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpPut(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});

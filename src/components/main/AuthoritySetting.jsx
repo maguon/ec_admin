@@ -1,31 +1,27 @@
 import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
     Button,
-    Divider,
-    Grid,
-    FormControlLabel,
     Checkbox,
-    TextField,
-    Typography,
+    Divider,
     Fab,
-    makeStyles
+    FormControlLabel,
+    Grid,
+    makeStyles,
+    TextField,
+    Typography
 } from "@material-ui/core";
 import {SimpleModal} from '../'
 import {AuthoritySettingActionType} from "../../types";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const authoritySettingAction = require('../../actions/main/AuthoritySettingAction');
 const sysConst = require('../../utils/SysConst');
 const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
-    // 标题样式
-    root: {
-        minWidth: 800,
-        paddingBottom: 50
-    },
+    root: customTheme.root,
     title: customTheme.pageTitle,
-    divider: customTheme.pageDivider,
+    divider: customTheme.pageDivider
 }));
 
 // 权限设置
@@ -74,7 +70,7 @@ function AuthoritySetting (props) {
     };
     const submitModal = (event) => {
         const errorCount = validate();
-        if(errorCount==0){
+        if(errorCount===0){
             addUserGroup(typeName, remarks);
             closeModal();
         }

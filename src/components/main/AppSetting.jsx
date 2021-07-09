@@ -4,22 +4,28 @@ import Swal from "sweetalert2";
 // 引入material-ui基础组件
 import {
     Box,
+    Button,
+    Divider,
+    Fab,
+    FormControl,
+    FormHelperText,
     Grid,
     IconButton,
-    TextField,
+    InputLabel,
+    makeStyles,
+    MenuItem,
+    Paper,
+    Select,
+    Switch,
     Table,
-    TableHead,
-    TableRow,
     TableBody,
     TableCell,
     TableContainer,
-    Paper,
-    Typography,
-    Divider,
-    Select,Switch,
-    Button, Fab, FormControl, InputLabel, MenuItem,FormHelperText, makeStyles
+    TableHead,
+    TableRow,
+    TextField,
+    Typography
 } from "@material-ui/core";
-
 // 引入Dialog
 import {SimpleModal} from "../index";
 
@@ -27,12 +33,8 @@ const appSettingAction = require('../../actions/main/AppSettingAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
-
 const useStyles = makeStyles((theme) => ({
-    root:{
-        marginBottom: 20,
-        minWidth: 800
-    },
+    root: customTheme.root,
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
     tableHead: customTheme.tableHead

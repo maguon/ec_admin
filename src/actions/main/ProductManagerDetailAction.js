@@ -67,7 +67,6 @@ export const getProductPurchase = (productId) => async (dispatch) => {
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchaseItem?productId=' + productId + '&start=0&size=10';
 
-        console.log('',url);
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});

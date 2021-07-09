@@ -1,25 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
-import {
-    Button,
-    Divider,
-    Grid,
-    TextField,
-    Typography,
-    Fab,
-    makeStyles, IconButton
-} from "@material-ui/core";
-import {SimpleModal} from '../'
+import {Button, Divider, Fab, Grid, IconButton, makeStyles, TextField, Typography} from "@material-ui/core";
 import TreeItem from "@material-ui/lab/TreeItem";
 import TreeView from "@material-ui/lab/TreeView";
+import {SimpleModal} from '../'
 
 const storageAction = require('../../actions/main/StorageAction');
-
 const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
-    root:{
-        marginBottom: 20,
-    },
+    root: customTheme.root,
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
 }));
@@ -58,7 +47,7 @@ function Storage (props) {
     };
     const submitModal = () => {
         const errorCount = validate();
-        if(errorCount==0){
+        if(errorCount===0){
             saveStorageData(pageType, uid, storageId, storageName, remark);
             closeModal();
         }

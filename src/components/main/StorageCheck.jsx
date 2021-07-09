@@ -1,26 +1,31 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Link} from "react-router-dom";
 // 引入material-ui基础组件
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import {DatePicker} from '@material-ui/pickers';
 import {
     Box,
+    Button,
+    Divider,
+    Fab,
+    FormControl,
     Grid,
     IconButton,
-    TextField,
+    InputLabel,
+    makeStyles,
+    MenuItem,
+    Paper,
+    Select,
     Table,
-    TableHead,
-    TableRow,
     TableBody,
     TableCell,
     TableContainer,
-    Paper,
-    Typography,
-    Divider,
-    Select,
-    Button, Fab, FormControl, InputLabel, MenuItem, makeStyles
+    TableHead,
+    TableRow,
+    TextField,
+    Typography
 } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import {DatePicker} from '@material-ui/pickers';
 // 引入Dialog
 import {SimpleModal} from "../index";
 import {CommonActionType, StorageCheckActionType} from "../../types";
@@ -32,11 +37,7 @@ const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
 
 const useStyles = makeStyles((theme) => ({
-    // 标题样式
-    root: {
-        minWidth: 800,
-        paddingBottom: 50
-    },
+    root: customTheme.root,
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
     tableHead:customTheme.tableHead,
@@ -452,7 +453,6 @@ function StorageCheck(props) {
                     <Grid item sm={2} className={classes.tblHeader}>仓库</Grid>
                     <Grid item sm={2} className={classes.tblHeader}>仓库分区</Grid>
                     <Grid item sm={2} className={classes.tblHeader}>商品</Grid>
-
                     <Grid item sm={1} className={classes.tblHeader}>库存数</Grid>
                     <Grid item sm={1} className={classes.tblHeader}>盘点数</Grid>
                     <Grid item sm={4} className={classes.tblLastHeader}>备注</Grid>
@@ -463,7 +463,6 @@ function StorageCheck(props) {
                         <Grid item sm={2} className={classes.tblBody}>{row.storage_name}</Grid>
                         <Grid item sm={2} className={classes.tblBody}>{row.storage_area_name}</Grid>
                         <Grid item sm={2} className={classes.tblBody}>{row.product_name}</Grid>
-
                         <Grid item sm={1} className={classes.tblBody}>{row.storage_count}</Grid>
                         <Grid item sm={1} className={classes.tblBody}>{row.check_count}</Grid>
                         <Grid item sm={4} className={classes.tblLastBody}>{row.remark}</Grid>

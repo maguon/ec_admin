@@ -1,27 +1,32 @@
 import React, {useEffect, useState} from 'react';
-import {connect} from 'react-redux';
 import {Link} from "react-router-dom";
+import {connect} from 'react-redux';
 import Swal from "sweetalert2";
 // 引入material-ui基础组件
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
     Box,
+    Button,
+    Divider,
+    Fab,
+    FormControl,
     Grid,
     IconButton,
-    TextField,
+    InputLabel,
+    makeStyles,
+    MenuItem,
+    Paper,
+    Select,
+    Switch,
     Table,
-    TableHead,
-    TableRow,
     TableBody,
     TableCell,
     TableContainer,
-    Paper,
-    Typography,
-    Divider,
-    Select,Switch,
-    Button, Fab, FormControl, InputLabel, MenuItem, makeStyles
+    TableHead,
+    TableRow,
+    TextField,
+    Typography
 } from "@material-ui/core";
-
+import Autocomplete from "@material-ui/lab/Autocomplete";
 // 引入Dialog
 import {SimpleModal} from "../index";
 import {CommonActionType, ProductManagerActionType} from "../../types";
@@ -31,13 +36,8 @@ const commonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
-
 const useStyles = makeStyles((theme) => ({
-    // 标题样式
-    root: {
-        minWidth: 800,
-        paddingBottom: 50
-    },
+    root: customTheme.root,
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
     tableHead:customTheme.tableHead
@@ -182,14 +182,12 @@ function ProductManager(props) {
     const [brand, setBrand] = React.useState(null);
     // 品牌型号 *
     const [brandModel, setBrandModel] = React.useState(null);
-
     // 商品名称 *
     const [productName, setProductName] = React.useState('');
     // 商品别名
     const [productSName, setProductSName] = React.useState('');
     // 产地
     const [productAddress, setProductAddress] = React.useState('');
-
     // 序列号
     const [productSerial, setProductSerial] = React.useState('');
     // 单位
@@ -241,7 +239,6 @@ function ProductManager(props) {
         if (!brandModel) {
             validateObj.brandModel ='请选择品牌型号';
         }
-
         if (!productName) {
             validateObj.productName ='请输入商品名称';
         }
@@ -414,7 +411,7 @@ function ProductManager(props) {
                                 <TableCell align="center">
                                     {/* 停用/可用 状态 */}
                                     <Switch color='primary' size="small" name="状态"
-                                        checked={row.status==1}
+                                        checked={row.status==sysConst.USE_FLAG[1].value}
                                         onChange={(e)=>{changeStatus(row.id, row.status)}}
                                     />
 
@@ -595,7 +592,6 @@ function ProductManager(props) {
                                    helperText={validation.price}
                         />
                     </Grid>
-
                     <Grid item xs={12}>
                         <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={remark}
                                    onChange={(e) => {
@@ -604,7 +600,6 @@ function ProductManager(props) {
                         />
                     </Grid>
                 </Grid>
-
             </SimpleModal>
         </div>
     )

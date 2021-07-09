@@ -1,40 +1,39 @@
 import React, {useEffect} from 'react';
 import {connect, useDispatch} from 'react-redux';
 // 引入material-ui基础组件
-import {DatePicker} from "@material-ui/pickers";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
     Box,
+    Button,
+    Divider,
+    Fab,
     Grid,
-    TextField,
+    makeStyles,
+    Paper,
     Table,
-    TableHead,
-    TableRow,
     TableBody,
     TableCell,
     TableContainer,
-    Paper,
-    Typography,
-    Divider,
-    Button, Fab, makeStyles
+    TableHead,
+    TableRow,
+    TextField,
+    Typography
 } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import {DatePicker} from "@material-ui/pickers";
 import {CommonActionType, StorageProductActionType} from "../../types";
 
 const storageProductAction = require('../../actions/main/StorageProductAction');
 const commonAction = require('../../actions/layout/CommonAction');
 const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
-    root:{
-        marginBottom: 20,
-        minWidth: 800
-    },
+    root: customTheme.root,
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
     tableHead:customTheme.tableHead
 }));
 
 function StorageProduct(props) {
-    const {storageProductReducer, commonReducer, fromDetail, downLoadCsv} = props;
+    const {storageProductReducer, commonReducer, downLoadCsv} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
 
@@ -54,19 +53,17 @@ function StorageProduct(props) {
     };
 
     useEffect(() => {
-        // 详情页面 返回 保留reducer，否则，清空
-        if (!fromDetail) {
-            let queryParams = {
-                storage: null,
-                storageArea: null,
-                supplier: null,
-                product: null,
-                purchaseId: '',
-                startDate: '',
-                endDate: ''
-            };
-            dispatch(StorageProductActionType.setDefaultQueryParams(queryParams));
-        }
+        // 清空reducer
+        let queryParams = {
+            storage: null,
+            storageArea: null,
+            supplier: null,
+            product: null,
+            purchaseId: '',
+            startDate: '',
+            endDate: ''
+        };
+        dispatch(StorageProductActionType.setDefaultQueryParams(queryParams));
         // 取得画面 select控件，基础数据
         props.getBaseSelectList();
         props.getStorageProductList(props.storageProductReducer.storageProductData.start);
@@ -191,7 +188,6 @@ function StorageProduct(props) {
                             <TableCell className={classes.tableHead} align="center">单价</TableCell>
                             <TableCell className={classes.tableHead} align="center">库存</TableCell>
                             <TableCell className={classes.tableHead} align="center">仓储日期</TableCell>
-                            {/*<TableCell className={classes.tableHead} align="center">操作</TableCell>*/}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -234,14 +230,9 @@ function StorageProduct(props) {
 }
 
 const mapStateToProps = (state, ownProps) => {
-    let fromDetail = false;
-    if (typeof ownProps.location.state != 'undefined' && ownProps.location.state != null && ownProps.location.state.fromDetail) {
-        fromDetail = true;
-    }
     return {
         storageProductReducer: state.StorageProductReducer,
-        commonReducer: state.CommonReducer,
-        fromDetail: fromDetail
+        commonReducer: state.CommonReducer
     }
 };
 

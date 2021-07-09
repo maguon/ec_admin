@@ -2,25 +2,30 @@ import React, {useEffect} from 'react';
 import {connect} from 'react-redux';
 import Swal from "sweetalert2";
 // 引入material-ui基础组件
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import {DatePicker} from "@material-ui/pickers";
 import {
     Box,
+    Button,
+    Divider,
+    Fab,
+    FormControl,
     Grid,
     IconButton,
-    TextField,
+    InputLabel,
+    makeStyles,
+    MenuItem,
+    Paper,
+    Select,
     Table,
-    TableHead,
-    TableRow,
     TableBody,
     TableCell,
     TableContainer,
-    Paper,
-    Typography,
-    Divider,
-    Select,
-    Button, Fab, FormControl, InputLabel, MenuItem,makeStyles
+    TableHead,
+    TableRow,
+    TextField,
+    Typography
 } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import {DatePicker} from "@material-ui/pickers";
 // 引入Dialog
 import {SimpleModal} from "../index";
 
@@ -29,12 +34,8 @@ const purchaseRefundPayAction = require('../../actions/main/PurchaseRefundPayAct
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
-
 const useStyles = makeStyles((theme) => ({
-    root:{
-        marginBottom: 20,
-        minWidth: 800
-    },
+    root: customTheme.root,
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
     tableHead:customTheme.tableHead
@@ -250,11 +251,9 @@ function PurchaseRefundPay(props) {
                 <Grid container spacing={2}>
                     <Grid item sm={3}><Typography color="primary">采购单号：{purchaseRefundData.purchase_id}</Typography></Grid>
                     <Grid item xs={9}>备注：{purchaseRefundData.remark}</Grid>
-
                     <Grid item xs={6}>商品：{purchaseRefundData.product_name}</Grid>
                     <Grid item xs={3}>退款盈亏：{purchaseRefundData.refund_profile}</Grid>
                     <Grid item xs={3}>退款状态：{commonUtil.getJsonValue(sysConst.REFUND_PAYMENT_STATUS, purchaseRefundData.payment_status)}</Grid>
-
                     <Grid item sm={6}>供应商：{purchaseRefundData.supplier_name}</Grid>
                     <Grid item sm={3}>联系人：{commonReducer.supplierInfo.contact_name}</Grid>
                     <Grid item sm={3}>手机：{commonReducer.supplierInfo.mobile}</Grid>
@@ -304,10 +303,7 @@ const mapDispatchToProps = (dispatch) => ({
                 dispatch(purchaseRefundPayAction.confirmPayment(id, {paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus}));
             }
         });
-    },
-    // getPurchaseItem: (purchaseId) => {
-    //     dispatch(purchaseRefundPayAction.getPurchaseItem(purchaseId))
-    // }
+    }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PurchaseRefundPay)

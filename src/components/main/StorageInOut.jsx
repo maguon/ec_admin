@@ -2,29 +2,37 @@ import React, {useEffect, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 // 引入material-ui基础组件
 import {
+    AppBar,
     Box,
+    Button,
+    Divider,
+    Fab,
+    FormControl,
     Grid,
-    TextField,
+    IconButton,
+    InputLabel,
+    makeStyles,
+    MenuItem,
+    Paper,
+    Select,
+    Tab,
     Table,
-    TableHead,
-    TableRow,
     TableBody,
     TableCell,
     TableContainer,
-    Paper,
-    Typography,
-    Divider,
-    Button, Fab, makeStyles, AppBar, Tab, FormControl, InputLabel, Select, MenuItem, IconButton
+    TableHead,
+    TableRow,
+    TextField,
+    Typography
 } from "@material-ui/core";
-
-// 引入Dialog
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import {CommonActionType, StorageInOutActionType} from "../../types";
 import {DatePicker} from "@material-ui/pickers";
 import TabList from "@material-ui/lab/TabList";
 import TabPanel from "@material-ui/lab/TabPanel";
 import TabContext from "@material-ui/lab/TabContext";
+// 引入Dialog
 import {SimpleModal} from "../index";
+import {CommonActionType, StorageInOutActionType} from "../../types";
 
 const storageInOutAction = require('../../actions/main/StorageInOutAction');
 const commonAction = require('../../actions/layout/CommonAction');
@@ -33,10 +41,7 @@ const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
 
 const useStyles = makeStyles((theme) => ({
-    root:{
-        marginBottom: 20,
-        minWidth: 800,
-    },
+    root: customTheme.root,
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
     tableHead: customTheme.tableHead
@@ -446,7 +451,6 @@ function StorageInOut(props) {
                             <Grid item sm={6}>供应商：{purchaseItem.supplier_name}</Grid>
                             <Grid item sm={6}>商品：{purchaseItem.product_name}</Grid>
                             <Grid item sm={6}>单价：{purchaseItem.unit_cost}</Grid>
-
                             <Grid item sm={6}>
                                 <Autocomplete fullWidth
                                               options={commonReducer.storageList}

@@ -1,32 +1,32 @@
 import React, {useEffect, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Link, useParams} from "react-router-dom";
-import {
-    Button,
-    Divider,
-    Grid,
-    Typography,
-    TextField,
-    IconButton,
-    AppBar,
-    Tab,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    makeStyles,
-    Paper,
-    Table,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody,
-    TableContainer
-} from "@material-ui/core";
 import TabContext from '@material-ui/lab/TabContext';
 import TabList from '@material-ui/lab/TabList';
 import TabPanel from '@material-ui/lab/TabPanel';
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import {
+    AppBar,
+    Button,
+    Divider,
+    FormControl,
+    Grid,
+    IconButton,
+    InputLabel,
+    makeStyles,
+    MenuItem,
+    Paper,
+    Select,
+    Tab,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Typography
+} from "@material-ui/core";
 import {ProductManagerDetailActionType} from '../../types';
 
 const productManagerDetailAction = require('../../actions/main/ProductManagerDetailAction');
@@ -35,11 +35,7 @@ const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
-    // 标题样式
-    root: {
-        minWidth: 800,
-        paddingBottom: 50
-    },
+    root: customTheme.root,
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
     tableHead:customTheme.tableHead
