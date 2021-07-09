@@ -341,6 +341,12 @@ export const ALL_PAGE_LIST = [
                 "name": "权限设置",
                 "icon": "mdi-chevron-right",
                 "usable": false
+            },
+            {
+                "link": "/service_setting",
+                "name": "服务项目设置",
+                "icon": "mdi-chevron-right",
+                "usable": false
             }
         ]
     }
