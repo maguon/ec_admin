@@ -3,15 +3,14 @@ import {PurchaseActionType} from '../../types';
 const initialState = {
     //查询条件
     queryPurchaseObj:{
-        supplierId:'',
+        supplierId:null,
         storageStatus:'',
         paymentStatus:'',
         status:'',
         planDateStart :'',
         planDateEnd:'',
         finishDateStart:'',
-        finishDateEnd:'',
-        start :0
+        finishDateEnd:''
     },
 
     //添加条件
@@ -32,7 +31,7 @@ const initialState = {
             }
         ]
     },
-
+    start:0,
     // 每页数量
     size: 11,
     // 检索结果数量
@@ -53,6 +52,14 @@ export default handleActions({
         return {
             ...state,
             queryPurchaseObj: action.payload
+        }
+    },
+    [PurchaseActionType.setPurchaseQueryObjs]: (state, action) => {
+        const {name, value} = action.payload;
+        const paramsObj = {...state.queryPurchaseObj, [name]: value};
+        return {
+            ...state,
+            queryPurchaseObj: paramsObj
         }
     },
     [PurchaseActionType.getPurchaseAddObj]: (state, action) => {
@@ -86,6 +93,12 @@ export default handleActions({
         return {
             ...state,
             dataSize: action.payload
+        }
+    },
+    [PurchaseActionType.setStart]: (state, action) => {
+        return {
+            ...state,
+            start: action.payload
         }
     },
     [PurchaseActionType.getProductList]: (state, action) => {

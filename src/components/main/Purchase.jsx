@@ -95,15 +95,6 @@ function Purchase (props){
     const [transferRemark, setTransferRemark] = useState("");
     const [purchaseCountTotal, setPurchaseCountTotal] = useState(0);
     //查询
-    const [pageNumber,setPageNumber] = useState(0);
-    const [supplierName, setSupplierName] = useState(null);
-    const [planDateStart, setPlanDateStart] = useState("");
-    const [planDateEnd, setPlanDateEnd] = useState("");
-    const [finishDateStart, setFinishDateStart] = useState("");
-    const [finishDateEnd, setFinishDateEnd] = useState('');
-    const [paymentStatus, setPaymentStatus] = useState('-1');
-    const [storageStatus, setStorageStatus] = useState('-1');
-    const [status, setStatus] = useState('-1');
     const [validation,setValidation] = useState({});
     const [purchaseItem,setPurchaseItem]  = useState([{product:-1,unitCost:0,unitNumber:0,purchaseCount:0,remark:""}])
     useEffect(()=>{
@@ -118,38 +109,22 @@ function Purchase (props){
     },[transferCostType]);
     useEffect(()=>{
         if (!fromDetail) {
-            const  queryObj={
-                supplierId:supplierName != null ? supplierName.id : '',
-                storageStatus:storageStatus,
-                paymentStatus:paymentStatus,
-                status:status,
-                planDateStart :planDateStart,
-                planDateEnd:planDateEnd,
-                finishDateStart:finishDateStart,
-                finishDateEnd:finishDateEnd,
-                start :pageNumber
+            let params={
+                supplierId:'',
+                storageStatus:null,
+                paymentStatus:null,
+                status:null,
+                planDateStart :'',
+                planDateEnd:'',
+                finishDateStart:'',
+                finishDateEnd:''
             }
-            props.setPurchaseQueryObj(queryObj);
-        }else{
-            const   queryObj = {
-                supplierId:purchaseReducer.queryPurchaseObj.supplierId,
-                storageStatus:purchaseReducer.queryPurchaseObj.storageStatus,
-                paymentStatus:purchaseReducer.queryPurchaseObj.paymentStatus,
-                status:purchaseReducer.queryPurchaseObj.status,
-                planDateStart :purchaseReducer.queryPurchaseObj.planDateStart,
-                planDateEnd:purchaseReducer.queryPurchaseObj.planDateEnd,
-                finishDateStart:purchaseReducer.queryPurchaseObj.finishDateStart,
-                finishDateEnd:purchaseReducer.queryPurchaseObj.finishDateEnd,
-                start :purchaseReducer.queryPurchaseObj.start
-
-            };
-            props.setPurchaseQueryObj(queryObj);
+            dispatch(PurchaseActionType.setPurchaseQueryObjs(params));
         }
+        getPurchaseList(purchaseReducer.start);
 
-    },[supplierName,planDateStart,planDateEnd,finishDateStart,finishDateEnd])
-    useEffect(()=>{
-        getPurchaseList();
     },[])
+
     //change
     const setPurchaseItemParams = (index,name,value)=>{
         if(name=='product'){
@@ -181,18 +156,7 @@ function Purchase (props){
 
     //查询采购列表
     const getPurchaseArray =() =>{
-        props.setPurchaseQueryObj({
-            supplierId:supplierName != null ? supplierName.id : '',
-            storageStatus:storageStatus,
-            paymentStatus:paymentStatus,
-            status:status,
-            planDateStart :planDateStart,
-            planDateEnd:planDateEnd,
-            finishDateStart:finishDateStart,
-            finishDateEnd:finishDateEnd,
-            start :0})
-        getPurchaseList();
-        setPageNumber(0);
+        getPurchaseList(0);
     }
     //初始添加模态框值
     const modalOpenPurchase =() =>{
@@ -245,34 +209,12 @@ function Purchase (props){
 
     //上一页
     const getPreSupplierList = () => {
-        setPageNumber(pageNumber- (props.purchaseReducer.size-1));
-        props.setPurchaseQueryObj({
-            supplierId:supplierName != null ? supplierName.id : '',
-            storageStatus:storageStatus,
-            paymentStatus:paymentStatus,
-            status:status,
-            planDateStart :planDateStart,
-            planDateEnd:planDateEnd,
-            finishDateStart:finishDateStart,
-            finishDateEnd:finishDateEnd,
-            start :pageNumber- (props.purchaseReducer.size-1)})
-            getPurchaseList();
+            getPurchaseList(purchaseReducer.start-(purchaseReducer.size-1));
     };
 
     //下一页
     const getNextSupplierList = () => {
-        setPageNumber(pageNumber+ (props.purchaseReducer.size-1));
-        props.setPurchaseQueryObj({
-            supplierId:supplierName != null ? supplierName.id : '',
-            storageStatus:storageStatus,
-            paymentStatus:paymentStatus,
-            status:status,
-            planDateStart :planDateStart,
-            planDateEnd:planDateEnd,
-            finishDateStart:finishDateStart,
-            finishDateEnd:finishDateEnd,
-            start :pageNumber+ (props.purchaseReducer.size-1)})
-            getPurchaseList();
+        getPurchaseList(purchaseReducer.start+(purchaseReducer.size-1));
     };
 
     return(
@@ -288,10 +230,10 @@ function Purchase (props){
                         <Autocomplete id="condition-category" fullWidth={true}
                                       options={purchaseReducer.supplierArray}
                                       getOptionLabel={(option) => option.supplier_name}
-                                      onChange={(event, value) => {
-                                          setSupplierName(value);
+                                      value={purchaseReducer.queryPurchaseObj.supplierId}
+                                      onChange={(e,value) => {
+                                          dispatch(PurchaseActionType.setPurchaseQueryObjs({name: "supplierId", value: value}));
                                       }}
-                                      value={supplierName}
                                       renderInput={(params) => <TextField {...params} label="供应商名称" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
@@ -302,9 +244,9 @@ function Purchase (props){
                                 label="仓储状态"
                                 labelId="status-select-outlined-label"
                                 id="status-select-outlined"
-                                value={storageStatus}
-                                onChange={(event, value) => {
-                                    setStorageStatus(event.target.value);
+                                value={purchaseReducer.queryPurchaseObj.storageStatus}
+                                onChange={(e, value) => {
+                                    dispatch(PurchaseActionType.setPurchaseQueryObjs({name: "storageStatus", value: e.target.value}));
                                 }}
                             >
                                 <MenuItem  key={-1} value='-1'>请选择</MenuItem>
@@ -321,9 +263,9 @@ function Purchase (props){
                                 label="支付状态"
                                 labelId="status-select-outlined-label"
                                 id="status-select-outlined"
-                                value={paymentStatus}
-                                onChange={(event, value) => {
-                                    setPaymentStatus(event.target.value);
+                                value={purchaseReducer.queryPurchaseObj.paymentStatus}
+                                onChange={(e, value) => {
+                                    dispatch(PurchaseActionType.setPurchaseQueryObjs({name: "paymentStatus", value: e.target.value}));
                                 }}
                             >
                                 <MenuItem key={-1} value='-1'>请选择</MenuItem>
@@ -340,9 +282,9 @@ function Purchase (props){
                                 label="采购状态"
                                 labelId="status-select-outlined-label"
                                 id="status-select-outlined"
-                                value={status}
-                                onChange={(event, value) => {
-                                    setStatus(event.target.value);
+                                value={purchaseReducer.queryPurchaseObj.status}
+                                onChange={(e, value) => {
+                                    dispatch(PurchaseActionType.setPurchaseQueryObjs({name: "status", value: e.target.value}));
                                 }}
                             >
                                 <MenuItem key={-1} value='-1'>请选择</MenuItem>
@@ -357,9 +299,9 @@ function Purchase (props){
                         <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
                                     label="开始日期（始）"
-                                    value={planDateStart=="" ? null : planDateStart}
-                                    onChange={(date)=>{
-                                        setPlanDateStart(date)
+                                    value={purchaseReducer.queryPurchaseObj.planDateStart=="" ? null :purchaseReducer.queryPurchaseObj.planDateStart}
+                                    onChange={(date) => {
+                                        dispatch(PurchaseActionType.setPurchaseQueryObjs({name: "planDateStart", value:date}));
                                     }}
                         />
                     </Grid>
@@ -368,8 +310,10 @@ function Purchase (props){
                         <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
                                     label="开始日期(终)"
-                                    value={planDateEnd=="" ? null : planDateEnd}
-                                    onChange={(date)=>setPlanDateEnd(date)}
+                                    value={purchaseReducer.queryPurchaseObj.planDateEnd=="" ? null :purchaseReducer.queryPurchaseObj.planDateEnd}
+                                    onChange={(date) => {
+                                        dispatch(PurchaseActionType.setPurchaseQueryObjs({name: "planDateEnd", value: date}));
+                                    }}
                         />
                     </Grid>
                     {/*完成时间*/}
@@ -378,16 +322,20 @@ function Purchase (props){
                         <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
                                     label="完成日期(始)"
-                                    value={finishDateStart=="" ? null : finishDateStart}
-                                    onChange={(date)=>setFinishDateStart(date)}
+                                    value={purchaseReducer.queryPurchaseObj.finishDateStart=="" ? null :purchaseReducer.queryPurchaseObj.finishDateStart}
+                                    onChange={(date) => {
+                                        dispatch(PurchaseActionType.setPurchaseQueryObjs({name: "finishDateStart", value: date}));
+                                    }}
                         />
                     </Grid>
                     <Grid item  xs={3}>
                         <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
                                     label="完成日期(终)"
-                                    value={finishDateEnd=="" ? null : finishDateEnd}
-                                    onChange={(date)=>setFinishDateEnd(date)}
+                                    value={purchaseReducer.queryPurchaseObj.finishDateEnd=="" ? null :purchaseReducer.queryPurchaseObj.finishDateEnd}
+                                    onChange={(date) => {
+                                        dispatch(PurchaseActionType.setPurchaseQueryObjs({name: "finishDateEnd", value: date}));
+                                    }}
                         />
                     </Grid>
                 </Grid>
@@ -650,7 +598,6 @@ function Purchase (props){
                 </Grid>
             </SimpleModal>
 
-
             {/* PDF 输出用 DIV */}
             <div id="purchaseItemId" className={classes.pdfPage} style={{marginTop: -99999}}>
                 <Grid container spacing={0}>
@@ -691,9 +638,11 @@ function Purchase (props){
                 ))}
 
                 <Grid container spacing={0} style={{paddingTop: 35}}  align='right'>
-                    <Grid item sm={4}>{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE,purchaseReducer.purchasePdfData.transfer_cost_type)}运费:{purchaseReducer.purchasePdfData.transfer_cost}</Grid>
+                    <Grid item sm={8}>{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE,purchaseReducer.purchasePdfData.transfer_cost_type)}运费:{purchaseReducer.purchasePdfData.transfer_cost}</Grid>
                     <Grid item sm={4}>总价:{purchaseReducer.purchasePdfData.total_cost}</Grid>
-                    <Grid item sm={4}>备注:{purchaseReducer.purchasePdfData.remark}</Grid>
+                </Grid>
+                <Grid container spacing={0} style={{paddingTop: 35}}  align='right'>
+                     <Grid item sm={12}>备注:{purchaseReducer.purchasePdfData.remark}</Grid>
                 </Grid>
             </div>
         </div>
@@ -712,12 +661,9 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    setPurchaseQueryObj:(queryObj) =>{
-        dispatch(PurchaseActionType.setPurchaseQueryObj(queryObj))
-    },
     //获取列表
-    getPurchaseList: () => {
-        dispatch(PurchaseAction.getPurchaseList())
+    getPurchaseList: (start) => {
+        dispatch(PurchaseAction.getPurchaseList(start))
     },
     //获取供应商
     getSupplierList:() =>{

@@ -480,9 +480,11 @@ function PurchaseDetail (props){
                                 </Grid>
                             ))}
                             <Grid container spacing={0} style={{paddingTop: 35}}  align='right'>
-                                <Grid item sm={4}>{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE,purchaseDetailReducer.purchaseDetailInfo.transfer_cost_type)}运费:{purchaseDetailReducer.purchaseDetailInfo.transfer_cost}</Grid>
+                                <Grid item sm={8}>{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE,purchaseDetailReducer.purchaseDetailInfo.transfer_cost_type)}运费:{purchaseDetailReducer.purchaseDetailInfo.transfer_cost}</Grid>
                                 <Grid item sm={4}>总价:{purchaseDetailReducer.purchaseDetailInfo.total_cost}</Grid>
-                                <Grid item sm={4}>备注:{purchaseDetailReducer.purchaseDetailInfo.remark}</Grid>
+                            </Grid>
+                            <Grid container spacing={0} style={{paddingTop: 35}}  align='right'>
+                                <Grid item sm={12}>备注:{purchaseDetailReducer.purchaseDetailInfo.remark}</Grid>
                             </Grid>
                         </div>
 

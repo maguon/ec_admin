@@ -1,6 +1,6 @@
 import React, {useEffect,useState}from 'react';
-import {connect} from 'react-redux';
-import {SupplierActionType} from '../../types';
+import {connect, useDispatch} from 'react-redux';
+import {CommonActionType, PurchaseActionType, SupplierActionType} from '../../types';
 import {SimpleModal} from '../index';
 import {
     Button,
@@ -18,10 +18,10 @@ import {
 } from "@material-ui/core";
 import Fab from '@material-ui/core/Fab';
 import {withStyles,makeStyles} from "@material-ui/core/styles";
-import {Link, useParams} from "react-router-dom";
-import Swal from "sweetalert2";
+import {Link} from "react-router-dom";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 const SupplierAction = require('../../actions/main/SupplierAction');
+const CommonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const useStyles = makeStyles((theme) => ({
@@ -68,16 +68,11 @@ const StyledTableCell = withStyles((theme) => ({
 
     }
 }))(TableCell);
-
 //供应商
 function Supplier (props){
-    const {supplierReducer,deleteSupplier,fromDetail} = props;
+    const {commonReducer,supplierReducer,fromDetail} = props;
     const classes = useStyles();
-    //查询条件
-    const [paramSupplierName,setParamSupplierName]=useState(null);
-    const [paramSupplierType,setParamSupplierType]=useState(null);
-    const [pageNumber,setPageNumber] = useState(0);
-
+    const dispatch = useDispatch();
     //添加供应商
     const [modalOpenFlag, setModalOpenFlag] = useState(false);
     const [supplierName, setSupplierName] = useState('');
@@ -143,74 +138,30 @@ function Supplier (props){
 
 
     useEffect(()=>{
-
         if (!fromDetail) {
-            const queryObj = {
-                supplierName:paramSupplierName,
-                supplierType :paramSupplierType!= null ?paramSupplierType.value:'',
-                start :pageNumber
-            };
-            props.setSupplierQueryObj(queryObj);
-        }else {
-            const queryObj = {
-                supplierName:supplierReducer.queryObj.supplierName,
-                supplierType :supplierReducer.queryObj.supplierType,
-                start :supplierReducer.queryObj.start
+            let params={
+                supplierId:null,
+                supplierType:null
             }
-            props.setSupplierQueryObj(queryObj);
+            dispatch(SupplierActionType.setSupplierQueryObjs(params));
         }
-
-
-    },[paramSupplierName,paramSupplierType,pageNumber])
-
-    useEffect(()=>{
-        props.getSupplierList();
-    },[]);
-
+        props.getSupplierList(supplierReducer.start);
+        props.getBaseSelectList()
+    },[])
 
     //查询供应商列表
     const getSupplierArray =() =>{
-        props.setSupplierQueryObj({
-            supplierName:paramSupplierName,
-            supplierType :paramSupplierType!= null ?paramSupplierType.value:'',
-            start :0})
-        props.getSupplierList();
-        setPageNumber(0);
+        props.getSupplierList(0);
     }
-
-
-
-    const deleteSupplierInfo= (id)=>{
-        Swal.fire({
-            title:  "确定删除该供应商？",
-            text: "",
-            icon: "warning",
-            confirmButtonText:'确定',
-            cancelButtonText: "取消",
-        }).then(async function (isConfirm) {
-            deleteSupplier(id)
-        })
-    }
-
 
     //上一页
     const getPreSupplierList = () => {
-        setPageNumber(pageNumber- (props.supplierReducer.size-1));
-        props.setSupplierQueryObj({
-            supplierName:paramSupplierName,
-            supplierType :paramSupplierType!= null ?paramSupplierType.value:'',
-            start :pageNumber- (props.supplierReducer.size-1)})
-        props.getSupplierList();
+        props.getSupplierList(props.supplierReducer.start-(props.supplierReducer.size-1));
     };
 
     //下一页
     const getNextSupplierList = () => {
-        setPageNumber(pageNumber+ (props.supplierReducer.size-1));
-        props.setSupplierQueryObj({
-            supplierName:paramSupplierName,
-            supplierType :paramSupplierType!= null ?paramSupplierType.value:'',
-            start :pageNumber+ (props.supplierReducer.size-1)})
-        props.getSupplierList();
+        props.getSupplierList(props.supplierReducer.start+(props.supplierReducer.size-1));
     };
     return(
         <div className={classes.root}>
@@ -224,46 +175,28 @@ function Supplier (props){
                     {/*供应商名称*/}
 
                     <Grid item xs={3}>
-                        <Autocomplete id="condition-category" fullWidth={true}
-                                      options={supplierReducer.supplierArray}
+                        <Autocomplete fullWidth={true} id="paramSupplierId"
+                                      options={commonReducer.supplierList}
                                       getOptionLabel={(option) => option.supplier_name}
-                                      onChange={(event, value) => {
-                                          setParamSupplierName(value);
+                                      value={supplierReducer.queryObj.supplierId}
+                                      onChange={(e,value) => {
+                                          dispatch(SupplierActionType.setSupplierQueryObjs({name: "supplierId", value: value}));
                                       }}
-                                      value={paramSupplierName}
                                       renderInput={(params) => <TextField {...params} label="供应商名称" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
 
                     {/*供应商类型*/}
                     <Grid item  xs={6} sm={3}>
-                        <Autocomplete id="condition-category" fullWidth={true}
+                        <Autocomplete fullWidth={true} id="paramSupplierType"
                                       options={sysConst.SUPPLIER_TYPE}
                                       getOptionLabel={(option) => option.label}
-                                      onChange={(event, value) => {
-                                          setParamSupplierType(value);
+                                      value={supplierReducer.queryObj.supplierType}
+                                      onChange={(e,value) => {
+                                          dispatch(SupplierActionType.setSupplierQueryObjs({name: "supplierType", value: value}));
                                       }}
-                                      value={paramSupplierType}
                                       renderInput={(params) => <TextField {...params} label="供应商类型" margin="dense" variant="outlined"/>}
                         />
-                       {/* <TextField className={classes.selectCondition}
-                                   select
-                                   margin="dense"
-                                   label="供应商类型"
-                                   value={paramSupplierType}
-                                   onChange={(e)=>setParamSupplierType(e.target.value)}
-                                   SelectProps={{
-                                       native: true,
-                                   }}
-                                   variant="outlined"
-                        >
-                            <option key={1} value={-1} disabled={true}>请选择</option>
-                            {sysConst.SUPPLIER_TYPE.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </TextField>*/}
                     </Grid>
                 </Grid>
 
@@ -296,7 +229,6 @@ function Supplier (props){
                                 <StyledTableCell align="center">手机</StyledTableCell>
                                 <StyledTableCell align="center">传真</StyledTableCell>
                                 <StyledTableCell align="center">结算类型</StyledTableCell>
-                               {/* <StyledTableCell align="center">状态</StyledTableCell>*/}
                                 <StyledTableCell align="center">操作</StyledTableCell>
                             </TableRow>
                         </TableHead>
@@ -311,15 +243,7 @@ function Supplier (props){
                                     <TableCell align="center" >{row.mobile}</TableCell>
                                     <TableCell align="center" >{row.fax}</TableCell>
                                     <TableCell align="center" >{commonUtil.getJsonValue(sysConst.SETTLE_TYPE,row.settle_type)}</TableCell>
-                                  {/*  <TableCell align="center">{commonUtil.getJsonValue(sysConst.USE_FLAG, row.status)}</TableCell>*/}
                                     <TableCell align="center">
-                                        {/* 删除按钮 */}
-                                       {/* <IconButton color="primary" edge="start" onClick={() => {
-                                            deleteSupplierInfo(row.id)
-                                        }}>
-                                            <i className="mdi mdi-close mdi-24px"/>
-                                        </IconButton>*/}
-
                                         <IconButton color="primary" edge="start">
                                             <Link to={{pathname: '/supplier/' + row.id}}>
                                                 <i className="mdi mdi-table-search purple-font margin-left10"> </i>
@@ -328,7 +252,7 @@ function Supplier (props){
                                     </TableCell>
                                 </TableRow>))}
                             {supplierReducer.supplierArray.length === 0 &&
-                            <TableRow style={{height:60}}> <TableCell align="center" colSpan="10">暂无数据</TableCell></TableRow>
+                            <TableRow style={{height:60}}><TableCell align="center" colSpan="10">暂无数据</TableCell></TableRow>
                             }
                         </TableBody>
                     </Table>
@@ -337,7 +261,7 @@ function Supplier (props){
                     <Button className={classes.button} variant="contained" color="primary"  onClick={getNextSupplierList}>
                         下一页
                     </Button>}
-                    {supplierReducer.queryObj.start > 0 &&supplierReducer.dataSize > 0 &&
+                    {supplierReducer.start > 0 &&supplierReducer.dataSize > 0 &&
                     <Button className={classes.button} variant="contained" color="primary" onClick={getPreSupplierList}>
                         上一页
                     </Button>}
@@ -613,6 +537,7 @@ const mapStateToProps = (state, ownProps) => {
     }
     return {
         supplierReducer: state.SupplierReducer,
+        commonReducer:state.CommonReducer,
         fromDetail: fromDetail
     }
 };
@@ -622,8 +547,11 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(SupplierActionType.setSupplierQueryObj(queryObj))
     },
     //获取列表
-    getSupplierList: () => {
-        dispatch(SupplierAction.getSupplierList())
+    getBaseSelectList: () => {
+        dispatch(CommonAction.getSupplierList());
+    },
+    getSupplierList: (start) => {
+        dispatch(SupplierAction.getSupplierList(start));
     },
     //添加供应商
     addSupplier: (supplierName, supplierType,contactName,email,tel,mobile,fax,address,invoiceTitle,invoiceBank,invoiceBankSer,invoiceAddress,settleType,settleMonthDay,remark) => {
@@ -634,10 +562,6 @@ const mapDispatchToProps = (dispatch) => ({
             dispatch(SupplierAction.addSupplier({supplierName, supplierType,contactName,email,tel,mobile,fax,address,invoiceTitle,invoiceBank,invoiceBankSer,invoiceAddress,settleType,settleMonthDay,remark}));
         }
     },
-    //删除供应商
-    deleteSupplier:(id) =>{
-        dispatch(SupplierAction.deleteSupplier(id))
-    }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Supplier)

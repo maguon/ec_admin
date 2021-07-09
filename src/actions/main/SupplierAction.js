@@ -8,23 +8,25 @@ const sysConst = require('../../utils/SysConst');
 // 采购管理 -> 供应商 取得画面列表
 export const getSupplierList = (params) => async (dispatch, getState) => {
     try {
+        const start = params;
         // 检索条件：每页数量
         const size = getState().SupplierReducer.size;
         // 检索条件
         const paramsObj=getState().SupplierReducer.queryObj;
-
-        paramsObj.status = paramsObj.status==-1?'': paramsObj.status;
-        paramsObj.supplierType = paramsObj.supplierType==-1?'': paramsObj.supplierType;
-
         // 基本检索URL
-        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/supplier?size=' + size;
-        let conditions = httpUtil.objToUrl(paramsObj);
-        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/supplier?start=' + start + '&size=' + size;
+        let paramsObject = {
+            supplierType: paramsObj.supplierType == null? '' : paramsObj.supplierType.value,
+            supplierId:paramsObj.supplierId==null?'':paramsObj.supplierId.id
+        };
+        let conditions = httpUtil.objToUrl(paramsObject);
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true) {
+            dispatch({type: SupplierActionType.setSupplierListStart, payload: start});
             dispatch({type: SupplierActionType.setSupplierListDataSize, payload: res.rows.length});
             dispatch({type: SupplierActionType.getSupplierList, payload: res.rows.slice(0, size - 1)});
         } else if (res.success === false) {
@@ -51,24 +53,3 @@ export const addSupplier = (params) => async (dispatch) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
-
-//删除供应商
-export const deleteSupplier =(params) => async (dispatch) => {
-    try {
-
-        const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/supplier/' + params + '/del';
-        dispatch({type: AppActionType.showLoadProgress, payload: true});
-        const res = await httpUtil.httpDelete(url, {});
-        dispatch({type: AppActionType.showLoadProgress, payload: false});
-        if (res.success) {
-            Swal.fire("删除成功", "", "success");
-            // 刷新列表
-            dispatch(getSupplierList());
-        } else if (!res.success) {
-            Swal.fire('删除失败', res.msg, 'warning');
-        }
-    } catch (err) {
-        Swal.fire("操作失败", err.message, "error");
-    }
-}

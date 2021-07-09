@@ -85,28 +85,31 @@ export const addPurchaseInfo = (supplier,paramsItem,transferCostType,transferCos
 // 采购管理 -> 采购 取得画面列表
 export const getPurchaseList = (params) => async (dispatch, getState) => {
     try {
-
+        const start = params;
         // 检索条件：每页数量
         const size = getState().PurchaseReducer.size;
         // 检索条件
         const paramsObj=getState().PurchaseReducer.queryPurchaseObj;
-        paramsObj.planDateStart =paramsObj.planDateStart==''?'':commonUtil.getDateFormat(paramsObj.planDateStart);
-        paramsObj.planDateEnd =paramsObj.planDateEnd==''?'':commonUtil.getDateFormat(paramsObj.planDateEnd);
-        paramsObj.finishDateStart =paramsObj.finishDateStart==''?'':commonUtil.getDateFormat(paramsObj.finishDateStart);
-        paramsObj.finishDateEnd =paramsObj.finishDateEnd==''?'':commonUtil.getDateFormat(paramsObj.finishDateEnd);
-        paramsObj.paymentStatus =paramsObj.paymentStatus=='-1'?'': paramsObj.paymentStatus;
-        paramsObj.storageStatus =paramsObj.storageStatus=='-1'?'': paramsObj.storageStatus;
-        paramsObj.status =paramsObj.status=='-1'?'': paramsObj.status;
-
         // 基本检索URL
-        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/purchase?size=' + size;
-        let conditions = httpUtil.objToUrl(paramsObj);
+        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/purchase?start=' + start + '&size=' + size;
+        let paramsObject = {
+            planDateStart: commonUtil.formatDate(paramsObj.planDateStart, 'yyyyMMdd'),
+            planDateEnd: commonUtil.formatDate(paramsObj.planDateEnd, 'yyyyMMdd'),
+            finishDateStart: commonUtil.formatDate(paramsObj.finishDateStart, 'yyyyMMdd'),
+            finishDateEnd: commonUtil.formatDate(paramsObj.finishDateEnd, 'yyyyMMdd'),
+            storageStatus: paramsObj.storageStatus == null||paramsObj.storageStatus=='-1' ? '' : paramsObj.storageStatus,
+            paymentStatus: paramsObj.paymentStatus == null|| paramsObj.paymentStatus=='-1' ? '' : paramsObj.paymentStatus,
+            status: paramsObj.status == null || paramsObj.status=='-1' ? '' : paramsObj.status,
+            supplierId:paramsObj.supplierId==null?'':paramsObj.supplierId.id
+        };
+        let conditions = httpUtil.objToUrl(paramsObject);
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true) {
+            dispatch({type: PurchaseActionType.setStart, payload: start});
             dispatch({type: PurchaseActionType.setPurchaseListDataSize, payload: res.rows.length});
             dispatch({type: PurchaseActionType.setPurchaseArray, payload: res.rows.slice(0, size - 1)});
         } else if (res.success === false) {

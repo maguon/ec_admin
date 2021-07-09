@@ -3,10 +3,10 @@ import {SupplierActionType} from '../../types';
 const initialState = {
     //查询条件
     queryObj:{
-        supplierName:'',
-        supplierType :'',
-        start :0
+        supplierId:null,
+        supplierType :null,
     },
+    start :0,
     // 每页数量
     size: 11,
     // 检索结果数量
@@ -22,6 +22,14 @@ export default handleActions({
             queryObj: action.payload
         }
     },
+    [SupplierActionType.setSupplierQueryObjs]: (state, action) => {
+        const {name, value} = action.payload;
+        const paramsObj = {...state.queryObj, [name]: value};
+        return {
+            ...state,
+            queryObj: paramsObj
+        }
+    },
     [SupplierActionType.getSupplierList]: (state, action) => {
         return {
             ...state,
@@ -34,4 +42,11 @@ export default handleActions({
             dataSize: action.payload
         }
     },
+    [SupplierActionType.setSupplierListStart]: (state, action) => {
+        return {
+            ...state,
+            start: action.payload
+        }
+    },
+
 }, initialState)
