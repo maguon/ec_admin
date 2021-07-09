@@ -1,6 +1,8 @@
 import React, {useEffect} from 'react';
 import {connect, useDispatch} from 'react-redux';
 // 引入material-ui基础组件
+import {DatePicker} from "@material-ui/pickers";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
     Box,
     Grid,
@@ -16,30 +18,19 @@ import {
     Divider,
     Button, Fab, makeStyles
 } from "@material-ui/core";
-
-// 引入Dialog
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import {CommonActionType, StorageProductActionType} from "../../types";
-import {DatePicker} from "@material-ui/pickers";
 
 const storageProductAction = require('../../actions/main/StorageProductAction');
 const commonAction = require('../../actions/layout/CommonAction');
 const customTheme = require('../layout/Theme').customTheme;
-
 const useStyles = makeStyles((theme) => ({
     root:{
         marginBottom: 20,
+        minWidth: 800
     },
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
-    tableRow: {
-        padding: 5,
-    },
-    head: {
-        fontWeight:'bold',
-        background:'#F7F6F9',
-        borderTop: '2px solid #D4D4D4'
-    }
+    tableHead:customTheme.tableHead
 }));
 
 function StorageProduct(props) {
@@ -89,11 +80,12 @@ function StorageProduct(props) {
 
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
-                <Grid container item xs={10} spacing={3}>
+                <Grid container item xs={10} spacing={1}>
                     <Grid item xs={3}>
-                        <Autocomplete id="condition-storage" fullWidth
+                        <Autocomplete fullWidth
                                       options={commonReducer.storageList}
                                       getOptionLabel={(option) => option.storage_name}
+                                      value={storageProductReducer.queryParams.storage}
                                       onChange={(event, value) => {
                                           // 选择时 将当前选中值 赋值 reducer
                                           dispatch(StorageProductActionType.setQueryParams({name: "storage", value: value}));
@@ -106,43 +98,42 @@ function StorageProduct(props) {
                                               dispatch(CommonActionType.setStorageAreaList([]));
                                           }
                                       }}
-                                      value={storageProductReducer.queryParams.storage}
                                       renderInput={(params) => <TextField {...params} label="仓库" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
                     <Grid item xs={3}>
-                        <Autocomplete id="condition-storage-area" fullWidth
+                        <Autocomplete fullWidth
                                       options={commonReducer.storageAreaList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.storage_area_name}
+                                      value={storageProductReducer.queryParams.storageArea}
                                       onChange={(event, value) => {
                                           dispatch(StorageProductActionType.setQueryParams({name: "storageArea", value: value}));
                                       }}
-                                      value={storageProductReducer.queryParams.storageArea}
                                       renderInput={(params) => <TextField {...params} label="仓库分区" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
 
                     <Grid item xs={3}>
-                        <Autocomplete id="condition-supplier" fullWidth
+                        <Autocomplete fullWidth
                                       options={commonReducer.supplierList}
                                       getOptionLabel={(option) => option.supplier_name}
+                                      value={storageProductReducer.queryParams.supplier}
                                       onChange={(event, value) => {
                                           dispatch(StorageProductActionType.setQueryParams({name: "supplier", value: value}));
                                       }}
-                                      value={storageProductReducer.queryParams.supplier}
                                       renderInput={(params) => <TextField {...params} label="供应商" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
 
                     <Grid item xs={3}>
-                        <Autocomplete id="condition-product" fullWidth
+                        <Autocomplete fullWidth
                                       options={commonReducer.productList}
                                       getOptionLabel={(option) => option.product_name}
+                                      value={storageProductReducer.queryParams.product}
                                       onChange={(event, value) => {
                                           dispatch(StorageProductActionType.setQueryParams({name: "product", value: value}));
                                       }}
-                                      value={storageProductReducer.queryParams.product}
                                       renderInput={(params) => <TextField {...params} label="商品" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
@@ -176,14 +167,13 @@ function StorageProduct(props) {
 
                 {/*查询按钮*/}
                 <Grid item xs={1} style={{textAlign:'right'}}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={queryStorageProductList} style={{marginTop : 50}}>
+                    <Fab color="primary" size="small" onClick={queryStorageProductList} style={{marginTop : 30}}>
                         <i className="mdi mdi-magnify mdi-24px"/>
                     </Fab>
                 </Grid>
 
-                {/*追加按钮*/}
                 <Grid item xs={1} style={{textAlign:'right'}}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={() => {downLoadCsv()}} style={{marginTop : 50}}>
+                    <Fab color="primary" size="small" onClick={() => {downLoadCsv()}} style={{marginTop : 30}}>
                         <i className="mdi mdi-cloud-download mdi-24px"/>
                     </Fab>
                 </Grid>
@@ -191,29 +181,29 @@ function StorageProduct(props) {
 
             {/* 下部分：检索结果显示区域 */}
             <TableContainer component={Paper} style={{marginTop: 20}}>
-                <Table stickyHeader aria-label="sticky table" style={{minWidth: 650}}>
+                <Table stickyHeader size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell padding="default" className={classes.head} align="center">仓库</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">仓库分区</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">供应商</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">商品名称</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">单价</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">库存</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">仓储日期</TableCell>
-                            {/*<TableCell padding="default" className={classes.head} align="center">操作</TableCell>*/}
+                            <TableCell className={classes.tableHead} align="center">仓库</TableCell>
+                            <TableCell className={classes.tableHead} align="center">仓库分区</TableCell>
+                            <TableCell className={classes.tableHead} align="center">供应商</TableCell>
+                            <TableCell className={classes.tableHead} align="center">商品名称</TableCell>
+                            <TableCell className={classes.tableHead} align="center">单价</TableCell>
+                            <TableCell className={classes.tableHead} align="center">库存</TableCell>
+                            <TableCell className={classes.tableHead} align="center">仓储日期</TableCell>
+                            {/*<TableCell className={classes.tableHead} align="center">操作</TableCell>*/}
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {storageProductReducer.storageProductData.dataList.map((row) => (
-                            <TableRow className={classes.tableRow} key={'table-row-' + row.id} style={{paddingTop:15}}>
-                                <TableCell padding="" align="center">{row.storage_name}</TableCell>
-                                <TableCell padding="" align="center">{row.storage_area_name}</TableCell>
-                                <TableCell padding="" align="center">{row.supplier_name}</TableCell>
-                                <TableCell padding="" align="center">{row.product_name}</TableCell>
-                                <TableCell padding="" align="center">{row.unit_cost}</TableCell>
-                                <TableCell padding="" align="center">{row.storage_count}</TableCell>
-                                <TableCell padding="" align="center">{row.date_id}</TableCell>
+                            <TableRow key={'table-row-' + row.id}>
+                                <TableCell align="center">{row.storage_name}</TableCell>
+                                <TableCell align="center">{row.storage_area_name}</TableCell>
+                                <TableCell align="center">{row.supplier_name}</TableCell>
+                                <TableCell align="center">{row.product_name}</TableCell>
+                                <TableCell align="center">{row.unit_cost}</TableCell>
+                                <TableCell align="center">{row.storage_count}</TableCell>
+                                <TableCell align="center">{row.date_id}</TableCell>
                             </TableRow>
                         ))}
                         {storageProductReducer.storageProductData.dataList.length > 0 &&
@@ -226,7 +216,7 @@ function StorageProduct(props) {
                         </TableRow>}
                         {storageProductReducer.storageProductData.dataList.length === 0 &&
                         <TableRow>
-                            <TableCell colSpan={9} style={{textAlign: 'center'}}>暂无数据</TableCell>
+                            <TableCell colSpan={7} align="center">暂无数据</TableCell>
                         </TableRow>}
                     </TableBody>
                 </Table>

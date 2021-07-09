@@ -20,23 +20,14 @@ const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
 
 const useStyles = makeStyles((theme) => ({
-    root:{
-        marginBottom: 20,
+    // 标题样式
+    root: {
+        minWidth: 800,
+        paddingBottom: 50
     },
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
-    tableRow: {
-        padding: 5,
-    },
-    head: {
-        fontWeight:'bold',
-        background:'#F7F6F9',
-        borderTop: '2px solid #D4D4D4'
-    },
-    red: {
-        backgroundColor: 'red',
-        color: 'red',
-    },
+
     pdfPage:customTheme.pdfPage,
     pdfTitle:customTheme.pdfTitle,
     tblHeader:customTheme.tblHeader,
@@ -56,7 +47,7 @@ function StorageCheck(props) {
     }, []);
 
     return (
-        <div className={classes.root} id="temp">
+        <div className={classes.root}>
             {/* 标题部分 */}
             <Typography gutterBottom className={classes.title}>
                 <Link to={{pathname: '/storage_check', state: {fromDetail: true}}}>

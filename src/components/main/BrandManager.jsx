@@ -122,7 +122,7 @@ function BrandManager (props) {
             <Grid container spacing={3}>
                 <Grid item xs={11}> </Grid>
                 <Grid item xs={1}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={()=>{initModal('new', null)}}>
+                    <Fab color="primary" size="small" onClick={()=>{initModal('new', null)}}>
                         <i className="mdi mdi-plus mdi-24px" />
                     </Fab>
                 </Grid>
@@ -186,7 +186,7 @@ function BrandManager (props) {
                 <Grid container spacing={2}>
                     {(pageType!='new' && pageType!='edit') && <Grid item xs={12}>品牌：{parent}</Grid>}
                     <Grid item xs={12}>
-                        <TextField fullWidth={true} margin="dense" variant="outlined" label={(pageType!='new' && pageType!='edit') ? "品牌型号名称" : "品牌名称"} value={brandName}
+                        <TextField fullWidth margin="dense" variant="outlined" label={(pageType!='new' && pageType!='edit') ? "品牌型号名称" : "品牌名称"} value={brandName}
                                    onChange={(e) => {
                                        setBrandName(e.target.value)
                                    }}
@@ -196,7 +196,7 @@ function BrandManager (props) {
                     </Grid>
 
                     <Grid item xs={12}>
-                        <TextField fullWidth={true} margin="dense" variant="outlined" label="备注" multiline rows={4} value={remark}
+                        <TextField fullWidth margin="dense" variant="outlined" label="备注" multiline rows={4} value={remark}
                                    onChange={(e) => {
                                        setRemark(e.target.value)
                                    }}/>

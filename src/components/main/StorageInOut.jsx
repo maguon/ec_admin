@@ -374,7 +374,7 @@ function StorageInOut(props) {
 
                         {/*查询按钮*/}
                         <Grid item xs={1} style={{textAlign:'right'}}>
-                            <Fab color="primary" aria-label="add" size="small" onClick={queryPurchaseItemStorage}>
+                            <Fab color="primary" size="small" onClick={queryPurchaseItemStorage}>
                                 <i className="mdi mdi-magnify mdi-24px"/>
                             </Fab>
                         </Grid>
@@ -485,7 +485,7 @@ function StorageInOut(props) {
                             </Grid>
 
                             <Grid item xs={12}>
-                                <TextField label="备注" fullWidth={true} margin="dense" variant="outlined" multiline rows={2} value={remark}
+                                <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={remark}
                                            onChange={(e) => {
                                                setRemark(e.target.value)
                                            }}
@@ -578,7 +578,7 @@ function StorageInOut(props) {
 
                         {/*查询按钮*/}
                         <Grid item xs={1} style={{textAlign:'right'}}>
-                            <Fab color="primary" aria-label="add" size="small" onClick={queryPurchaseRefund}>
+                            <Fab color="primary" size="small" onClick={queryPurchaseRefund}>
                                 <i className="mdi mdi-magnify mdi-24px"/>
                             </Fab>
                         </Grid>
@@ -843,13 +843,13 @@ function StorageInOut(props) {
 
                         {/*查询按钮*/}
                         <Grid item xs={1} style={{textAlign:'right'}}>
-                            <Fab color="primary" aria-label="add" size="small" onClick={queryStorageProductRelDetailList} style={{marginTop: 30}}>
+                            <Fab color="primary" size="small" onClick={queryStorageProductRelDetailList} style={{marginTop: 30}}>
                                 <i className="mdi mdi-magnify mdi-24px"/>
                             </Fab>
                         </Grid>
 
                         <Grid item xs={1} style={{textAlign:'right'}}>
-                            <Fab color="primary" aria-label="add" size="small" onClick={downLoadCsv} style={{marginTop : 30}}>
+                            <Fab color="primary" size="small" onClick={downLoadCsv} style={{marginTop : 30}}>
                                 <i className="mdi mdi-cloud-download mdi-24px"/>
                             </Fab>
                         </Grid>

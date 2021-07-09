@@ -123,7 +123,7 @@ function Storage (props) {
             <Grid container spacing={3}>
                 <Grid item xs={11}> </Grid>
                 <Grid item xs={1}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={()=>{initModal('new', null)}}>
+                    <Fab color="primary" size="small" onClick={()=>{initModal('new', null)}}>
                         <i className="mdi mdi-plus mdi-24px" />
                     </Fab>
                 </Grid>
@@ -187,7 +187,7 @@ function Storage (props) {
                 <Grid container spacing={2}>
                     {(pageType!='new' && pageType!='edit') && <Grid item xs={12}>仓库：{parent}</Grid>}
                     <Grid item xs={12}>
-                        <TextField fullWidth={true} margin="dense" variant="outlined" label={(pageType!='new' && pageType!='edit') ? "仓库分区名称" : "仓库名称"} value={storageName}
+                        <TextField fullWidth margin="dense" variant="outlined" label={(pageType!='new' && pageType!='edit') ? "仓库分区名称" : "仓库名称"} value={storageName}
                                    onChange={(e) => {
                                        setStorageName(e.target.value)
                                    }}
@@ -197,7 +197,7 @@ function Storage (props) {
                     </Grid>
 
                     <Grid item xs={12}>
-                        <TextField fullWidth={true} margin="dense" variant="outlined" label="备注" multiline rows={4} value={remark}
+                        <TextField fullWidth margin="dense" variant="outlined" label="备注" multiline rows={4} value={remark}
                                    onChange={(e) => {
                                        setRemark(e.target.value)
                                    }}/>

@@ -1,6 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
+import {Link} from "react-router-dom";
+import Swal from "sweetalert2";
 // 引入material-ui基础组件
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
     Box,
     Grid,
@@ -21,10 +24,7 @@ import {
 
 // 引入Dialog
 import {SimpleModal} from "../index";
-import Swal from "sweetalert2";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import {CommonActionType, ProductManagerActionType} from "../../types";
-import {Link} from "react-router-dom";
 
 const productManagerAction = require('../../actions/main/ProductManagerAction');
 const commonAction = require('../../actions/layout/CommonAction');
@@ -33,19 +33,14 @@ const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
 
 const useStyles = makeStyles((theme) => ({
-    root:{
-        marginBottom: 20,
+    // 标题样式
+    root: {
+        minWidth: 800,
+        paddingBottom: 50
     },
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
-    tableRow: {
-        padding: 5,
-    },
-    head: {
-        fontWeight:'bold',
-        background:'#F7F6F9',
-        borderTop: '2px solid #D4D4D4'
-    }
+    tableHead:customTheme.tableHead
 }));
 
 function ProductManager(props) {
@@ -259,7 +254,7 @@ function ProductManager(props) {
 
     const submitModal= ()=>{
         const errorCount = validate();
-        if(errorCount==0){
+        if(errorCount===0){
             saveModalData(category, categorySub, brand, brandModel, productName, productSName, productAddress, productSerial, unitName, price, standardType, remark);
             setModalOpen(false);
         }
@@ -273,9 +268,9 @@ function ProductManager(props) {
 
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
-                <Grid container item xs={10} spacing={3}>
+                <Grid container item xs={10} spacing={1}>
                     <Grid item xs={2}>
-                        <Autocomplete id="condition-category" fullWidth={true}
+                        <Autocomplete fullWidth
                                       options={commonReducer.categoryList}
                                       getOptionLabel={(option) => option.category_name}
                                       onChange={(event, value) => {
@@ -286,7 +281,7 @@ function ProductManager(props) {
                         />
                     </Grid>
                     <Grid item xs={2}>
-                        <Autocomplete id="condition-category-sub" fullWidth={true}
+                        <Autocomplete fullWidth
                                       options={commonReducer.categorySubList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.category_sub_name}
@@ -299,7 +294,7 @@ function ProductManager(props) {
                     </Grid>
 
                     <Grid item xs={2}>
-                        <Autocomplete id="condition-brand" fullWidth={true}
+                        <Autocomplete fullWidth
                                       options={commonReducer.brandList}
                                       getOptionLabel={(option) => option.brand_name}
                                       onChange={(event, value) => {
@@ -310,7 +305,7 @@ function ProductManager(props) {
                         />
                     </Grid>
                     <Grid item xs={2}>
-                        <Autocomplete id="condition-brand-model" fullWidth={true}
+                        <Autocomplete fullWidth
                                       options={commonReducer.brandModelList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.brand_model_name}
@@ -323,7 +318,7 @@ function ProductManager(props) {
                     </Grid>
 
                     {/*<Grid item xs={3}>*/}
-                    {/*    <Autocomplete id="condition-product" fullWidth={true}*/}
+                    {/*    <Autocomplete id="condition-product" fullWidth*/}
                     {/*                  options={commonReducer.productList}*/}
                     {/*                  noOptionsText="无选项"*/}
                     {/*                  getOptionLabel={(option) => option.product_name}*/}
@@ -336,12 +331,9 @@ function ProductManager(props) {
                     {/*</Grid>*/}
 
                     <Grid item xs={2}>
-                        <FormControl variant="outlined" fullWidth={true} margin="dense">
-                            <InputLabel id="standard-type-select-outlined-label">标准类型</InputLabel>
-                            <Select
-                                label="标准类型"
-                                labelId="standard-type-select-outlined-label"
-                                id="standard-select-outlined"
+                        <FormControl variant="outlined" fullWidth margin="dense">
+                            <InputLabel>标准类型</InputLabel>
+                            <Select label="标准类型"
                                 value={paramStandardType}
                                 onChange={(event, value) => {
                                     setParamStandardType(event.target.value);
@@ -356,12 +348,9 @@ function ProductManager(props) {
                     </Grid>
 
                     <Grid item xs={2}>
-                        <FormControl variant="outlined" fullWidth={true} margin="dense">
-                            <InputLabel id="status-select-outlined-label">状态</InputLabel>
-                            <Select
-                                label="状态"
-                                labelId="status-select-outlined-label"
-                                id="status-select-outlined"
+                        <FormControl variant="outlined" fullWidth margin="dense">
+                            <InputLabel>状态</InputLabel>
+                            <Select label="状态"
                                 value={paramStatus}
                                 onChange={(event, value) => {
                                     setParamStatus(event.target.value);
@@ -377,15 +366,15 @@ function ProductManager(props) {
                 </Grid>
 
                 {/*查询按钮*/}
-                <Grid item xs={1}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={queryProductList}>
+                <Grid item xs={1} style={{textAlign: 'right'}}>
+                    <Fab color="primary" size="small" onClick={queryProductList}>
                         <i className="mdi mdi-magnify mdi-24px"/>
                     </Fab>
                 </Grid>
 
                 {/*追加按钮*/}
-                <Grid item xs={1}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={() => {initModal()}}>
+                <Grid item xs={1} style={{textAlign: 'right'}}>
+                    <Fab color="primary" size="small" onClick={() => {initModal()}}>
                         <i className="mdi mdi-plus mdi-24px"/>
                     </Fab>
                 </Grid>
@@ -393,61 +382,55 @@ function ProductManager(props) {
 
             {/* 下部分：检索结果显示区域 */}
             <TableContainer component={Paper} style={{marginTop: 20}}>
-                <Table stickyHeader aria-label="sticky table" style={{minWidth: 650}}>
+                <Table stickyHeader size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell padding="default" className={classes.head} align="center">ID</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">商品分类</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">商品子分类</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">品牌</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">品牌型号</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">商品名称</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">标准类型</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">单位</TableCell>
-                            <TableCell padding="default" className={classes.head} align="right">售价</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">状态</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">操作</TableCell>
+                            <TableCell className={classes.tableHead} align="center">ID</TableCell>
+                            <TableCell className={classes.tableHead} align="center">商品分类</TableCell>
+                            <TableCell className={classes.tableHead} align="center">商品子分类</TableCell>
+                            <TableCell className={classes.tableHead} align="center">品牌</TableCell>
+                            <TableCell className={classes.tableHead} align="center">品牌型号</TableCell>
+                            <TableCell className={classes.tableHead} align="center">商品名称</TableCell>
+                            <TableCell className={classes.tableHead} align="center">标准类型</TableCell>
+                            <TableCell className={classes.tableHead} align="center">单位</TableCell>
+                            <TableCell className={classes.tableHead} align="right">售价</TableCell>
+                            <TableCell className={classes.tableHead} align="center">状态</TableCell>
+                            <TableCell className={classes.tableHead} align="center">操作</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {productManagerReducer.productData.dataList.map((row) => (
-                            <TableRow className={classes.tableRow} key={row.id}>
-                                <TableCell padding="none" align="center">{row.id}</TableCell>
-                                <TableCell padding="none" align="center">{row.category_name}</TableCell>
-                                <TableCell padding="none" align="center">{row.category_sub_name}</TableCell>
-                                <TableCell padding="none" align="center">{row.brand_name}</TableCell>
-                                <TableCell padding="none" align="center">{row.brand_model_name}</TableCell>
-                                <TableCell padding="none" align="center">{row.product_name}</TableCell>
-                                <TableCell padding="none"
-                                           align="center">{commonUtil.getJsonValue(sysConst.STANDARD_TYPE, row.standard_type)}</TableCell>
-                                <TableCell padding="none" align="center">{row.unit_name}</TableCell>
-                                <TableCell padding="none" align="right">{row.price}</TableCell>
-                                <TableCell padding="none"
-                                           align="center">{commonUtil.getJsonValue(sysConst.USE_FLAG, row.status)}</TableCell>
-                                <TableCell padding="none" align="center">
+                            <TableRow key={row.id}>
+                                <TableCell align="center">{row.id}</TableCell>
+                                <TableCell align="center">{row.category_name}</TableCell>
+                                <TableCell align="center">{row.category_sub_name}</TableCell>
+                                <TableCell align="center">{row.brand_name}</TableCell>
+                                <TableCell align="center">{row.brand_model_name}</TableCell>
+                                <TableCell align="center">{row.product_name}</TableCell>
+                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.STANDARD_TYPE, row.standard_type)}</TableCell>
+                                <TableCell align="center">{row.unit_name}</TableCell>
+                                <TableCell align="right">{row.price}</TableCell>
+                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.USE_FLAG, row.status)}</TableCell>
+                                <TableCell align="center">
                                     {/* 停用/可用 状态 */}
-                                    <Switch
+                                    <Switch color='primary' size="small" name="状态"
                                         checked={row.status==1}
                                         onChange={(e)=>{changeStatus(row.id, row.status)}}
-                                        name="状态"
-                                        color='primary'
-                                        inputProps={{ 'aria-label': 'secondary checkbox' }}
                                     />
 
                                     {/* 编辑按钮 */}
-                                    <IconButton color="primary" edge="start">
+                                    <IconButton color="primary" edge="start" size="small">
                                         <Link to={{pathname: '/product_manager/' + row.id}}>
                                             <i className="mdi mdi-table-search mdi-24px"/>
                                         </Link>
                                     </IconButton>
-
                                 </TableCell>
                             </TableRow>
                         ))}
 
                         {productManagerReducer.productData.dataList.length === 0 &&
                         <TableRow>
-                            <TableCell colSpan={11} style={{textAlign: 'center'}}>暂无数据</TableCell>
+                            <TableCell colSpan={11} align="center">暂无数据</TableCell>
                         </TableRow>
                         }
                     </TableBody>
@@ -476,11 +459,12 @@ function ProductManager(props) {
                     </>
                 }
             >
-                <Grid container spacing={2}>
+                <Grid container spacing={1}>
                     <Grid item sm={6}>
-                        <Autocomplete id="condition-category" fullWidth={true}
+                        <Autocomplete fullWidth
                                       options={commonReducer.categoryList}
                                       getOptionLabel={(option) => option.category_name}
+                                      value={category}
                                       onChange={(event, value) => {
                                           setCategory(value);
                                           // 商品分类有选择时，取得商品子分类， 否则清空
@@ -490,33 +474,33 @@ function ProductManager(props) {
                                               props.setCategorySubList([]);
                                           }
                                       }}
-                                      value={category}
                                       renderInput={(params) => <TextField {...params} label="商品分类" margin="dense" variant="outlined"
                                                                           error={validation.category&&validation.category!=''}
                                                                           helperText={validation.category}/>}
                         />
                     </Grid>
                     <Grid item sm={6}>
-                        <Autocomplete id="condition-category-sub" fullWidth={true}
+                        <Autocomplete fullWidth
                                       options={commonReducer.categorySubList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.category_sub_name}
+                                      value={categorySub}
                                       onChange={(event, value) => {
                                           setCategorySub(value);
                                           if (value == null) {
                                               props.getCategorySubList(category.id);
                                           }
                                       }}
-                                      value={categorySub}
                                       renderInput={(params) => <TextField {...params} label="商品子分类" margin="dense" variant="outlined"
                                                                           error={validation.categorySub&&validation.categorySub!=''}
                                                                           helperText={validation.categorySub}/>}
                         />
                     </Grid>
                     <Grid item sm={6}>
-                        <Autocomplete id="condition-brand" fullWidth={true}
+                        <Autocomplete fullWidth
                                       options={commonReducer.brandList}
                                       getOptionLabel={(option) => option.brand_name}
+                                      value={brand}
                                       onChange={(event, value) => {
                                           setBrand(value);
                                           // 品牌有选择时，取得品牌型号， 否则清空
@@ -526,24 +510,23 @@ function ProductManager(props) {
                                               props.setBrandModelList([]);
                                           }
                                       }}
-                                      value={brand}
                                       renderInput={(params) => <TextField {...params} label="品牌" margin="dense" variant="outlined"
                                                                           error={validation.brand&&validation.brand!=''}
                                                                           helperText={validation.brand}/>}
                         />
                     </Grid>
                     <Grid item sm={6}>
-                        <Autocomplete id="condition-brand-model" fullWidth={true}
+                        <Autocomplete fullWidth
                                       options={commonReducer.brandModelList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.brand_model_name}
+                                      value={brandModel}
                                       onChange={(event, value) => {
                                           setBrandModel(value);
                                           if (value == null) {
                                               props.getBrandModelList(brand.id);
                                           }
                                       }}
-                                      value={brandModel}
                                       renderInput={(params) => <TextField {...params} label="品牌型号" margin="dense" variant="outlined"
                                                                           error={validation.brandModel&&validation.brandModel!=''}
                                                                           helperText={validation.brandModel}/>}
@@ -551,7 +534,7 @@ function ProductManager(props) {
                     </Grid>
 
                     <Grid item sm={6}>
-                        <TextField label="商品名称" fullWidth={true} margin="dense" variant="outlined" value={productName}
+                        <TextField label="商品名称" fullWidth margin="dense" variant="outlined" value={productName}
                                    onChange={(e) => {
                                        setProductName(e.target.value)
                                    }}
@@ -560,14 +543,14 @@ function ProductManager(props) {
                         />
                     </Grid>
                     <Grid item sm={6}>
-                        <TextField label="商品别名" fullWidth={true} margin="dense" variant="outlined" value={productSName}
+                        <TextField label="商品别名" fullWidth margin="dense" variant="outlined" value={productSName}
                                    onChange={(e) => {
                                        setProductSName(e.target.value)
                                    }}
                         />
                     </Grid>
                     <Grid item sm={6}>
-                        <TextField label="产地" fullWidth={true} margin="dense" variant="outlined" value={productAddress}
+                        <TextField label="产地" fullWidth margin="dense" variant="outlined" value={productAddress}
                                    onChange={(e) => {
                                        setProductAddress(e.target.value)
                                    }}
@@ -575,19 +558,16 @@ function ProductManager(props) {
                     </Grid>
 
                     <Grid item sm={6}>
-                        <TextField label="序列号" fullWidth={true} margin="dense" variant="outlined" value={productSerial}
+                        <TextField label="序列号" fullWidth margin="dense" variant="outlined" value={productSerial}
                                    onChange={(e) => {
                                        setProductSerial(e.target.value)
                                    }}
                         />
                     </Grid>
                     <Grid item sm={3}>
-                        <FormControl variant="outlined" fullWidth={true} margin="dense">
-                            <InputLabel id="standard-select-outlined-label">标准类型</InputLabel>
-                            <Select
-                                label="标准类型"
-                                labelId="standard-select-outlined-label"
-                                id="standard-select-outlined"
+                        <FormControl variant="outlined" fullWidth margin="dense">
+                            <InputLabel>标准类型</InputLabel>
+                            <Select label="标准类型"
                                 value={standardType}
                                 onChange={(event, value) => {
                                     setStandardType(event.target.value);
@@ -600,14 +580,14 @@ function ProductManager(props) {
                         </FormControl>
                     </Grid>
                     <Grid item sm={3}>
-                        <TextField label="单位" fullWidth={true} margin="dense" variant="outlined" value={unitName}
+                        <TextField label="单位" fullWidth margin="dense" variant="outlined" value={unitName}
                                    onChange={(e) => {
                                        setUnitName(e.target.value)
                                    }}
                         />
                     </Grid>
                     <Grid item sm={3}>
-                        <TextField label="售价" fullWidth={true} margin="dense" variant="outlined" type="number" value={price}
+                        <TextField label="售价" fullWidth margin="dense" variant="outlined" type="number" value={price}
                                    onChange={(e) => {
                                        setPrice(e.target.value)
                                    }}
@@ -617,7 +597,7 @@ function ProductManager(props) {
                     </Grid>
 
                     <Grid item xs={12}>
-                        <TextField label="备注" fullWidth={true} margin="dense" variant="outlined" multiline rows={2} value={remark}
+                        <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={remark}
                                    onChange={(e) => {
                                        setRemark(e.target.value)
                                    }}

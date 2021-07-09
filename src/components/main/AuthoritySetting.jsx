@@ -50,9 +50,11 @@ function AuthoritySetting (props) {
     // 模态状态
     const [modalOpen, setModalOpen] = React.useState(false);
     const openModal = (event) => {
-        setModalOpen(true);
-        // 清楚check内容
+        // 清check内容
         setValidation({});
+        setTypeName('');
+        setRemarks('');
+        setModalOpen(true);
     };
     const closeModal = (event) => {
         setModalOpen(false);
@@ -86,38 +88,32 @@ function AuthoritySetting (props) {
 
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
-                <Grid container item xs={11} spacing={3}>
+                <Grid container item xs={11} spacing={1}>
                     <Grid item xs={3}>
-                        <Autocomplete fullWidth={true}
-                                      id="condition-user-type"
-                                      disableClearable={true}
+                        <Autocomplete fullWidth disableClearable
                                       options={authoritySettingReducer.userGroupList}
                                       getOptionLabel={(option) => option.label}
+                                      value={currentUserType}
                                       onChange={(event, value) => {
                                           setCurrentUserType(value);
                                       }}
-                                      value={currentUserType}
                                       renderInput={(params) => <TextField {...params} label="用户群组" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
 
                     <Grid item xs={6}>
-                        <TextField fullWidth={true}
-                                   InputLabelProps={{ shrink: true }}
-                                   label="备注"
-                                   margin="dense"
-                                   variant="outlined"
+                        <TextField fullWidth margin="dense" variant="outlined" label="备注" InputLabelProps={{ shrink: true }}
+                                   value={authoritySettingReducer.currentRemark}
                                    onChange={(e) => {
                                        setCurrentRemark(e.target.value)
                                    }}
-                                   value={authoritySettingReducer.currentRemark}
                         />
                     </Grid>
                 </Grid>
 
                 {/* 新增用户群组 */}
                 <Grid item xs={1}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={()=>{openModal();setTypeName('');setRemarks('');}}>
+                    <Fab color="primary" size="small" onClick={()=>{openModal()}}>
                         <i className="mdi mdi-plus mdi-24px" />
                     </Fab>
                 </Grid>
@@ -189,7 +185,7 @@ function AuthoritySetting (props) {
             >
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        <TextField fullWidth={true} margin="dense" variant="outlined" label="用户群组名称" value={typeName}
+                        <TextField fullWidth margin="dense" variant="outlined" label="用户群组名称" value={typeName}
                                    onChange={(e) => {
                                        setTypeName(e.target.value)
                                    }}
@@ -199,7 +195,7 @@ function AuthoritySetting (props) {
                     </Grid>
 
                     <Grid item xs={12}>
-                        <TextField fullWidth={true} margin="dense" variant="outlined" label="备注" multiline rows={4} value={remarks}
+                        <TextField fullWidth margin="dense" variant="outlined" label="备注" multiline rows={4} value={remarks}
                                    onChange={(e) => {
                                        setRemarks(e.target.value)
                                    }}/>

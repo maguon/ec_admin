@@ -1,6 +1,9 @@
 import React, {useEffect} from 'react';
 import {connect} from 'react-redux';
+import Swal from "sweetalert2";
 // 引入material-ui基础组件
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import {DatePicker} from "@material-ui/pickers";
 import {
     Box,
     Grid,
@@ -18,12 +21,8 @@ import {
     Select,
     Button, Fab, FormControl, InputLabel, MenuItem,makeStyles
 } from "@material-ui/core";
-
 // 引入Dialog
 import {SimpleModal} from "../index";
-import Swal from "sweetalert2";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import {DatePicker} from "@material-ui/pickers";
 
 const commonAction = require('../../actions/layout/CommonAction');
 const purchaseRefundPayAction = require('../../actions/main/PurchaseRefundPayAction');
@@ -34,17 +33,11 @@ const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
     root:{
         marginBottom: 20,
+        minWidth: 800
     },
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
-    tableRow: {
-        padding: 5,
-    },
-    head: {
-        fontWeight:'bold',
-        background:'#F7F6F9',
-        borderTop: '2px solid #D4D4D4'
-    }
+    tableHead:customTheme.tableHead
 }));
 
 function PurchaseRefundPay(props) {
@@ -113,8 +106,7 @@ function PurchaseRefundPay(props) {
 
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
-                <Grid container item xs={11} spacing={3}>
-
+                <Grid container item xs={11} spacing={1}>
                     <Grid item xs={2}>
                         <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
@@ -145,21 +137,18 @@ function PurchaseRefundPay(props) {
                         <Autocomplete id="condition-supplier" fullWidth
                                       options={commonReducer.supplierList}
                                       getOptionLabel={(option) => option.supplier_name}
+                                      value={supplier}
                                       onChange={(event, value) => {
                                           setSupplier(value)
                                       }}
-                                      value={supplier}
                                       renderInput={(params) => <TextField {...params} label="供应商" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
 
                     <Grid item xs={2}>
-                        <FormControl variant="outlined" fullWidth={true} margin="dense">
-                            <InputLabel id="device-type-select-outlined-label">退款状态</InputLabel>
-                            <Select
-                                label="退款状态"
-                                labelId="device-type-select-outlined-label"
-                                id="device-type-select-outlined"
+                        <FormControl variant="outlined" fullWidth margin="dense">
+                            <InputLabel>退款状态</InputLabel>
+                            <Select label="退款状态"
                                 value={paymentStatus}
                                 onChange={(event, value) => {
                                     setPaymentStatus(event.target.value);
@@ -176,7 +165,7 @@ function PurchaseRefundPay(props) {
 
                 {/*查询按钮*/}
                 <Grid item xs={1} style={{textAlign:'right'}}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={queryPurchaseRefundList}>
+                    <Fab color="primary" size="small" onClick={queryPurchaseRefundList}>
                         <i className="mdi mdi-magnify mdi-24px"/>
                     </Fab>
                 </Grid>
@@ -184,51 +173,51 @@ function PurchaseRefundPay(props) {
 
             {/* 下部分：检索结果显示区域 */}
             <TableContainer component={Paper} style={{marginTop: 20}}>
-                <Table stickyHeader aria-label="sticky table" style={{minWidth: 650}}>
+                <Table stickyHeader size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell padding="default" className={classes.head} align="center">采购单号</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">供应商</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">商品</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">退款日期</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">运费类型</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">运费</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">总成本</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">退货单价</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">退货数量</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">退款盈亏</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">退款状态</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">操作</TableCell>
+                            <TableCell className={classes.tableHead} align="center">采购单号</TableCell>
+                            <TableCell className={classes.tableHead} align="center">供应商</TableCell>
+                            <TableCell className={classes.tableHead} align="center">商品</TableCell>
+                            <TableCell className={classes.tableHead} align="center">退款日期</TableCell>
+                            <TableCell className={classes.tableHead} align="center">运费类型</TableCell>
+                            <TableCell className={classes.tableHead} align="center">运费</TableCell>
+                            <TableCell className={classes.tableHead} align="center">总成本</TableCell>
+                            <TableCell className={classes.tableHead} align="center">退货单价</TableCell>
+                            <TableCell className={classes.tableHead} align="center">退货数量</TableCell>
+                            <TableCell className={classes.tableHead} align="center">退款盈亏</TableCell>
+                            <TableCell className={classes.tableHead} align="center">退款状态</TableCell>
+                            <TableCell className={classes.tableHead} align="center">操作</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {purchaseRefundPayReducer.purchaseRefundData.dataList.map((row) => (
-                            <TableRow className={classes.tableRow} key={'table-row-' + row.id}>
-                                <TableCell padding="none" align="center">{row.purchase_id}</TableCell>
-                                <TableCell padding="none" align="center">{row.supplier_name}</TableCell>
-                                <TableCell padding="none" align="center">{row.product_name}</TableCell>
-                                <TableCell padding="none" align="center">{row.date_id}</TableCell>
-                                <TableCell padding="none" align="center">{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE, row.transfer_cost_type)}</TableCell>
-                                <TableCell padding="none" align="center">{row.transfer_cost}</TableCell>
-                                <TableCell padding="none" align="center">{row.total_cost}</TableCell>
-                                <TableCell padding="none" align="center">{row.refund_unit_cost}</TableCell>
-                                <TableCell padding="none" align="center">{row.refund_count}</TableCell>
-                                <TableCell padding="none" align="center">{row.refund_profile}</TableCell>
-                                <TableCell padding="none" align="center">{commonUtil.getJsonValue(sysConst.REFUND_PAYMENT_STATUS, row.payment_status)}</TableCell>
-                                <TableCell padding="none" align="center">
+                            <TableRow key={'table-row-' + row.id}>
+                                <TableCell align="center">{row.purchase_id}</TableCell>
+                                <TableCell align="center">{row.supplier_name}</TableCell>
+                                <TableCell align="center">{row.product_name}</TableCell>
+                                <TableCell align="center">{row.date_id}</TableCell>
+                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE, row.transfer_cost_type)}</TableCell>
+                                <TableCell align="center">{row.transfer_cost}</TableCell>
+                                <TableCell align="center">{row.total_cost}</TableCell>
+                                <TableCell align="center">{row.refund_unit_cost}</TableCell>
+                                <TableCell align="center">{row.refund_count}</TableCell>
+                                <TableCell align="center">{row.refund_profile}</TableCell>
+                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.REFUND_PAYMENT_STATUS, row.payment_status)}</TableCell>
+                                <TableCell align="center">
                                     {/* 支付状态 */}
                                     {row.payment_status==1 &&
-                                    <IconButton color="primary" edge="start"
+                                    <IconButton color="primary" edge="start" size="small"
                                                 onClick={() => {confirmPay(row.id,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus)}}>
                                         <i className="mdi mdi-bitcoin mdi-24px"/>
                                     </IconButton>}
                                     {row.payment_status!=1 &&
-                                    <IconButton color="default" edge="start" disabled>
+                                    <IconButton color="default" edge="start" size="small" disabled>
                                         <i className="mdi mdi-check-circle-outline mdi-24px"/>
                                     </IconButton>}
 
                                     {/* 编辑按钮 */}
-                                    <IconButton color="primary" edge="start" onClick={() => {initModal(row)}}>
+                                    <IconButton color="primary" edge="start" size="small" onClick={() => {initModal(row)}}>
                                         <i className="mdi mdi-table-search mdi-24px"/>
                                     </IconButton>
                                 </TableCell>
@@ -236,7 +225,7 @@ function PurchaseRefundPay(props) {
                         ))}
                         {purchaseRefundPayReducer.purchaseRefundData.dataList.length === 0 &&
                         <TableRow>
-                            <TableCell colSpan={12} style={{textAlign: 'center'}}>暂无数据</TableCell>
+                            <TableCell colSpan={12} align="center">暂无数据</TableCell>
                         </TableRow>}
                     </TableBody>
                 </Table>

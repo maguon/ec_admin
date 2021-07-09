@@ -108,6 +108,7 @@ export const downLoadPDF = (storageCheckId) => async (dispatch) => {
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/storageCheckRel?storageCheckId=' + storageCheckId;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         if (res.success) {
             dispatch({type: StorageCheckActionType.setPdfDataList, payload: res.rows});
@@ -115,6 +116,7 @@ export const downLoadPDF = (storageCheckId) => async (dispatch) => {
         } else if (!res.success) {
             Swal.fire("获取仓库盘点详细列表失败", res.msg, "warning");
         }
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }

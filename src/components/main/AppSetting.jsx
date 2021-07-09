@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
+import Swal from "sweetalert2";
 // 引入material-ui基础组件
 import {
     Box,
@@ -21,7 +22,6 @@ import {
 
 // 引入Dialog
 import {SimpleModal} from "../index";
-import Swal from "sweetalert2";
 
 const appSettingAction = require('../../actions/main/AppSettingAction');
 const sysConst = require('../../utils/SysConst');
@@ -31,17 +31,11 @@ const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
     root:{
         marginBottom: 20,
+        minWidth: 800
     },
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
-    tableRow: {
-        padding: 5,
-    },
-    head: {
-        fontWeight:'bold',
-        background:'#F7F6F9',
-        borderTop: '2px solid #D4D4D4'
-    }
+    tableHead: customTheme.tableHead
 }));
 
 function AppSetting(props) {
@@ -134,7 +128,7 @@ function AppSetting(props) {
     const [validation,setValidation] = useState({});
     const validate = ()=>{
         const validateObj ={};
-        if(pageType=='new'){
+        if(pageType==='new'){
             if (!appType) {
                 validateObj.appType ='请选择App类型';
             }
@@ -163,7 +157,7 @@ function AppSetting(props) {
 
     const submitModal= ()=>{
         const errorCount = validate();
-        if(errorCount==0){
+        if(errorCount===0){
             saveModalData(pageType, uid, appType, deviceType, forceUpdate, version, versionNum, minVersionNum, url, remark, paramDeviceType, paramStatus);
             setModalOpen(false);
         }
@@ -177,14 +171,11 @@ function AppSetting(props) {
 
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
-                <Grid container item xs={10} spacing={3}>
+                <Grid container item xs={10} spacing={1}>
                     <Grid item xs={6} sm={3}>
-                        <FormControl variant="outlined" fullWidth={true} margin="dense">
-                            <InputLabel id="device-type-select-outlined-label">系统</InputLabel>
-                            <Select
-                                label="系统"
-                                labelId="device-type-select-outlined-label"
-                                id="device-type-select-outlined"
+                        <FormControl variant="outlined" fullWidth margin="dense">
+                            <InputLabel >系统</InputLabel>
+                            <Select label="系统"
                                 value={paramDeviceType}
                                 onChange={(event, value) => {
                                     setParamDeviceType(event.target.value);
@@ -198,12 +189,9 @@ function AppSetting(props) {
                         </FormControl>
                     </Grid>
                     <Grid item xs={6} sm={3}>
-                        <FormControl variant="outlined" fullWidth={true} margin="dense">
-                            <InputLabel id="status-select-outlined-label">状态</InputLabel>
-                            <Select
-                                label="状态"
-                                labelId="status-select-outlined-label"
-                                id="status-select-outlined"
+                        <FormControl variant="outlined" fullWidth margin="dense">
+                            <InputLabel>状态</InputLabel>
+                            <Select label="状态"
                                 value={paramStatus}
                                 onChange={(event, value) => {
                                     setParamStatus(event.target.value);
@@ -220,14 +208,14 @@ function AppSetting(props) {
 
                 {/*查询按钮*/}
                 <Grid item xs={1}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={queryAppList}>
+                    <Fab color="primary" size="small" onClick={queryAppList}>
                         <i className="mdi mdi-magnify mdi-24px"/>
                     </Fab>
                 </Grid>
 
                 {/*追加按钮*/}
                 <Grid item xs={1}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={() => {initModal(null)}}>
+                    <Fab color="primary" size="small" onClick={() => {initModal(null)}}>
                         <i className="mdi mdi-plus mdi-24px"/>
                     </Fab>
                 </Grid>
@@ -235,54 +223,45 @@ function AppSetting(props) {
 
             {/* 下部分：检索结果显示区域 */}
             <TableContainer component={Paper} style={{marginTop: 20}}>
-                <Table stickyHeader aria-label="sticky table" style={{minWidth: 650}}>
+                <Table stickyHeader size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell padding="default" className={classes.head} align="center">App类型</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">系统类型</TableCell>
-                            <TableCell padding="default" className={classes.head} align="left">版本号</TableCell>
-                            <TableCell padding="default" className={classes.head} align="left">版本序号</TableCell>
-                            <TableCell padding="default" className={classes.head} align="left">最低版本号</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">强制更新</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">状态</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">操作</TableCell>
+                            <TableCell className={classes.tableHead} align="center">App类型</TableCell>
+                            <TableCell className={classes.tableHead} align="center">系统类型</TableCell>
+                            <TableCell className={classes.tableHead} align="left">版本号</TableCell>
+                            <TableCell className={classes.tableHead} align="left">版本序号</TableCell>
+                            <TableCell className={classes.tableHead} align="left">最低版本号</TableCell>
+                            <TableCell className={classes.tableHead} align="center">强制更新</TableCell>
+                            <TableCell className={classes.tableHead} align="center">状态</TableCell>
+                            <TableCell className={classes.tableHead} align="center">操作</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {appSettingReducer.appData.dataList.map((row) => (
-                            <TableRow className={classes.tableRow} key={'table-row-' + row.id}>
-                                <TableCell padding="none"
-                                           align="center">{commonUtil.getJsonValue(sysConst.APP_TYPE, row.app_type)}</TableCell>
-                                <TableCell padding="none"
-                                           align="center">{commonUtil.getJsonValue(sysConst.DEVICE_TYPE, row.device_type)}</TableCell>
-                                <TableCell padding="none" align="left">{row.version}</TableCell>
-                                <TableCell padding="none" align="left">{row.version_num}</TableCell>
-                                <TableCell padding="none" align="left">{row.min_version_num}</TableCell>
-                                <TableCell padding="none"
-                                           align="center">{commonUtil.getJsonValue(sysConst.FORCE_UPDATE, row.force_update)}</TableCell>
-                                <TableCell padding="none"
-                                           align="center">{commonUtil.getJsonValue(sysConst.USE_FLAG, row.status)}</TableCell>
-                                <TableCell padding="none" align="center">
+                            <TableRow key={'table-row-' + row.id}>
+                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.APP_TYPE, row.app_type)}</TableCell>
+                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.DEVICE_TYPE, row.device_type)}</TableCell>
+                                <TableCell align="left">{row.version}</TableCell>
+                                <TableCell align="left">{row.version_num}</TableCell>
+                                <TableCell align="left">{row.min_version_num}</TableCell>
+                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.FORCE_UPDATE, row.force_update)}</TableCell>
+                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.USE_FLAG, row.status)}</TableCell>
+                                <TableCell align="center">
                                     {/* 停用/可用 状态 */}
-                                    <Switch
+                                    <Switch color='primary' size="small" name="状态"
                                         checked={row.status==1}
                                         onChange={(e)=>{
                                             changeStatus(row.id, row.status, paramDeviceType, paramStatus)
                                         }}
-                                        name="状态"
-                                        color='primary'
-                                        inputProps={{ 'aria-label': 'secondary checkbox' }}
                                     />
 
                                     {/* 删除按钮 */}
-                                    <IconButton color="primary" edge="start" onClick={() => {
-                                        deleteApp(row.id, paramDeviceType, paramStatus)
-                                    }}>
+                                    <IconButton color="primary" edge="start" size="small" onClick={() => {deleteApp(row.id, paramDeviceType, paramStatus)}}>
                                         <i className="mdi mdi-close mdi-24px"/>
                                     </IconButton>
 
                                     {/* 编辑按钮 */}
-                                    <IconButton color="primary" edge="start" onClick={() => {initModal(row)}}>
+                                    <IconButton color="primary" edge="start" size="small" onClick={() => {initModal(row)}}>
                                         <i className="mdi mdi-table-search mdi-24px"/>
                                     </IconButton>
                                 </TableCell>
@@ -291,7 +270,7 @@ function AppSetting(props) {
 
                         {appSettingReducer.appData.dataList.length === 0 &&
                         <TableRow>
-                            <TableCell colSpan={8} style={{textAlign: 'center'}}>暂无数据</TableCell>
+                            <TableCell colSpan={8} align="center">暂无数据</TableCell>
                         </TableRow>
                         }
                     </TableBody>
@@ -327,15 +306,12 @@ function AppSetting(props) {
                     </>
                 }
             >
-                <Grid container spacing={2}>
+                <Grid container spacing={1}>
                     {pageType === 'edit' && <Grid item sm={12}><Typography color="primary">App编号：{uid}</Typography></Grid>}
                     <Grid item sm={4}>
-                        <FormControl variant="outlined" fullWidth={true} margin="dense">
-                            <InputLabel id="app-type-select-outlined-label">App类型</InputLabel>
-                            <Select
-                                label="App类型"
-                                labelId="app-type-select-outlined-label"
-                                id="app-type-select-outlined"
+                        <FormControl variant="outlined" fullWidth margin="dense">
+                            <InputLabel>App类型</InputLabel>
+                            <Select label="App类型"
                                 value={appType}
                                 onChange={(event, value) => {
                                     setAppType(event.target.value);
@@ -350,12 +326,9 @@ function AppSetting(props) {
                         </FormControl>
                     </Grid>
                     <Grid item xs={4}>
-                        <FormControl variant="outlined" fullWidth={true} margin="dense">
-                            <InputLabel id="sys-type-select-outlined-label">系统类型</InputLabel>
-                            <Select
-                                label="系统类型"
-                                labelId="sys-type-select-outlined-label"
-                                id="sys-type-select-outlined"
+                        <FormControl variant="outlined" fullWidth margin="dense">
+                            <InputLabel>系统类型</InputLabel>
+                            <Select label="系统类型"
                                 value={deviceType}
                                 onChange={(event, value) => {
                                     setDeviceType(event.target.value);
@@ -370,12 +343,9 @@ function AppSetting(props) {
                         </FormControl>
                     </Grid>
                     <Grid item xs={4}>
-                        <FormControl variant="outlined" fullWidth={true} margin="dense">
-                            <InputLabel id="force-update-select-outlined-label">强制更新</InputLabel>
-                            <Select
-                                label="强制更新"
-                                labelId="force-update-select-outlined-label"
-                                id="force-update-select-outlined"
+                        <FormControl variant="outlined" fullWidth margin="dense">
+                            <InputLabel>强制更新</InputLabel>
+                            <Select label="强制更新"
                                 value={forceUpdate}
                                 onChange={(event, value) => {
                                     setForceUpdate(event.target.value);
@@ -391,7 +361,7 @@ function AppSetting(props) {
                     </Grid>
 
                     <Grid item xs={4}>
-                        <TextField label="版本号" fullWidth={true} margin="dense" variant="outlined" value={version}
+                        <TextField label="版本号" fullWidth margin="dense" variant="outlined" value={version}
                                    onChange={(e) => {
                                        setVersion(e.target.value)
                                    }}
@@ -400,7 +370,7 @@ function AppSetting(props) {
                         />
                     </Grid>
                     <Grid item xs={4}>
-                        <TextField label="版本序号" fullWidth={true} margin="dense" variant="outlined" value={versionNum} type="number"
+                        <TextField label="版本序号" fullWidth margin="dense" variant="outlined" value={versionNum} type="number"
                                    onChange={(e) => {
                                        setVersionNum(e.target.value)
                                    }}
@@ -409,7 +379,7 @@ function AppSetting(props) {
                         />
                     </Grid>
                     <Grid item xs={4}>
-                        <TextField label="最低版本号" fullWidth={true} margin="dense" variant="outlined" value={minVersionNum} type="number"
+                        <TextField label="最低版本号" fullWidth margin="dense" variant="outlined" value={minVersionNum} type="number"
                                    onChange={(e) => {
                                        setMinVersionNum(e.target.value)
                                    }}
@@ -419,7 +389,7 @@ function AppSetting(props) {
                     </Grid>
 
                     <Grid item xs={12}>
-                        <TextField label="下载地址" fullWidth={true} margin="dense" variant="outlined" value={url}
+                        <TextField label="下载地址" fullWidth margin="dense" variant="outlined" value={url}
                                    onChange={(e) => {
                                        setUrl(e.target.value)
                                    }}
@@ -429,7 +399,7 @@ function AppSetting(props) {
 
                     </Grid>
                     <Grid item xs={12}>
-                        <TextField label="备注" fullWidth={true} margin="dense" variant="outlined" multiline rows={4} value={remark}
+                        <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={4} value={remark}
                                    onChange={(e) => {
                                        setRemark(e.target.value)
                                    }}

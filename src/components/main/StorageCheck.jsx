@@ -1,6 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
+import {Link} from "react-router-dom";
 // 引入material-ui基础组件
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import {DatePicker} from '@material-ui/pickers';
 import {
     Box,
     Grid,
@@ -18,16 +21,9 @@ import {
     Select,
     Button, Fab, FormControl, InputLabel, MenuItem, makeStyles
 } from "@material-ui/core";
-
 // 引入Dialog
 import {SimpleModal} from "../index";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 import {CommonActionType, StorageCheckActionType} from "../../types";
-import {Link} from "react-router-dom";
-
-import {
-    DatePicker
-} from '@material-ui/pickers';
 
 const storageCheckAction = require('../../actions/main/StorageCheckAction');
 const commonAction = require('../../actions/layout/CommonAction');
@@ -36,19 +32,14 @@ const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
 
 const useStyles = makeStyles((theme) => ({
-    root:{
-        marginBottom: 20,
+    // 标题样式
+    root: {
+        minWidth: 800,
+        paddingBottom: 50
     },
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
-    tableRow: {
-        padding: 5,
-    },
-    head: {
-        fontWeight:'bold',
-        background:'#F7F6F9',
-        borderTop: '2px solid #D4D4D4'
-    },
+    tableHead:customTheme.tableHead,
     pdfPage:customTheme.pdfPage,
     pdfTitle:customTheme.pdfTitle,
     tblHeader:customTheme.tblHeader,
@@ -92,8 +83,6 @@ function StorageCheck(props) {
         // 取得画面 select控件，基础数据
         props.getBaseSelectList();
         props.getStorageCheckList(props.storageCheckReducer.storageCheckData.start);
-
-        console.log(storageCheckReducer.queryParams.dateIdStart=='');
     }, []);
 
     // 模态属性
@@ -188,7 +177,7 @@ function StorageCheck(props) {
 
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
-                <Grid container item xs={10} spacing={3}>
+                <Grid container item xs={10} spacing={1}>
                     <Grid item xs={3}>
                         <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
@@ -212,9 +201,8 @@ function StorageCheck(props) {
 
                     <Grid item xs={3}>
                         <FormControl variant="outlined" fullWidth margin="dense">
-                            <InputLabel id="check-status-select-outlined-label">盘点状态</InputLabel>
-                            <Select labelId="check-status-select-outlined-label"
-                                label="盘点状态"
+                            <InputLabel>盘点状态</InputLabel>
+                            <Select label="盘点状态"
                                 value={storageCheckReducer.queryParams.checkStatus}
                                 onChange={(e, value) => {
                                     dispatch(StorageCheckActionType.setQueryParam({name: "checkStatus", value: e.target.value}));
@@ -230,9 +218,8 @@ function StorageCheck(props) {
 
                     <Grid item xs={3}>
                         <FormControl variant="outlined" fullWidth margin="dense">
-                            <InputLabel id="status-select-outlined-label">完成状态</InputLabel>
-                            <Select labelId="status-select-outlined-label"
-                                label="完成状态"
+                            <InputLabel>完成状态</InputLabel>
+                            <Select label="完成状态"
                                 value={storageCheckReducer.queryParams.status}
                                 onChange={(e, value) => {
                                     dispatch(StorageCheckActionType.setQueryParam({name: "status", value: e.target.value}));
@@ -249,14 +236,14 @@ function StorageCheck(props) {
 
                 {/*查询按钮*/}
                 <Grid item xs={1} style={{textAlign:'right'}}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={queryStorageCheckList}>
+                    <Fab color="primary" size="small" onClick={queryStorageCheckList}>
                         <i className="mdi mdi-magnify mdi-24px"/>
                     </Fab>
                 </Grid>
 
                 {/*追加按钮*/}
                 <Grid item xs={1} style={{textAlign:'right'}}>
-                    <Fab color="primary" aria-label="add" size="small" onClick={() => {initModal()}}>
+                    <Fab color="primary" size="small" onClick={() => {initModal()}}>
                         <i className="mdi mdi-plus mdi-24px"/>
                     </Fab>
                 </Grid>
@@ -264,36 +251,36 @@ function StorageCheck(props) {
 
             {/* 下部分：检索结果显示区域 */}
             <TableContainer component={Paper} style={{marginTop: 20}}>
-                <Table stickyHeader aria-label="sticky table" style={{minWidth: 650}}>
+                <Table stickyHeader size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell padding="default" className={classes.head} align="center">盘点日期</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">操作人员</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">计划盘点数</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">盘点完成数</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">盘点状态</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">完成状态</TableCell>
-                            <TableCell padding="default" className={classes.head} align="center">操作</TableCell>
+                            <TableCell className={classes.tableHead} align="center">盘点日期</TableCell>
+                            <TableCell className={classes.tableHead} align="center">操作人员</TableCell>
+                            <TableCell className={classes.tableHead} align="center">计划盘点数</TableCell>
+                            <TableCell className={classes.tableHead} align="center">盘点完成数</TableCell>
+                            <TableCell className={classes.tableHead} align="center">盘点状态</TableCell>
+                            <TableCell className={classes.tableHead} align="center">完成状态</TableCell>
+                            <TableCell className={classes.tableHead} align="center">操作</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {storageCheckReducer.storageCheckData.dataList.map((row) => (
-                            <TableRow className={classes.tableRow} key={row.id}>
-                                <TableCell padding="none" align="center">{row.date_id == 0 ? '' : row.date_id}</TableCell>
-                                <TableCell padding="none" align="center">{row.real_name}</TableCell>
-                                <TableCell padding="none" align="center">{row.plan_check_count}</TableCell>
-                                <TableCell padding="none" align="center">{row.checked_count}</TableCell>
-                                <TableCell padding="none" align="center">{commonUtil.getJsonValue(sysConst.STORAGE_CHECK_STATUS, row.check_status)}</TableCell>
-                                <TableCell padding="none" align="center">{commonUtil.getJsonValue(sysConst.STORAGE_RET_STATUS, row.status)}</TableCell>
-                                <TableCell padding="none" align="center">
-                                    <IconButton color="primary" edge="start" onClick={()=>{downLoadCsv(row.id)}}>
+                            <TableRow key={row.id}>
+                                <TableCell align="center">{row.date_id == 0 ? '' : row.date_id}</TableCell>
+                                <TableCell align="center">{row.real_name}</TableCell>
+                                <TableCell align="center">{row.plan_check_count}</TableCell>
+                                <TableCell align="center">{row.checked_count}</TableCell>
+                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.STORAGE_CHECK_STATUS, row.check_status)}</TableCell>
+                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.STORAGE_RET_STATUS, row.status)}</TableCell>
+                                <TableCell align="center">
+                                    <IconButton color="primary" edge="start" size="small" onClick={()=>{downLoadCsv(row.id)}}>
                                         <i className="mdi mdi-file-excel mdi-24px"/>
                                     </IconButton>
-                                    <IconButton color="primary" edge="start" onClick={()=>{downLoadPDF(row)}}>
+                                    <IconButton color="primary" edge="start" size="small" onClick={()=>{downLoadPDF(row)}}>
                                         <i className="mdi mdi-file-pdf mdi-24px"/>
                                     </IconButton>
                                     {/* 编辑按钮 */}
-                                    <IconButton color="primary" edge="start">
+                                    <IconButton color="primary" edge="start" size="small">
                                         <Link to={{pathname: '/storage_check/' + row.id}}>
                                             <i className="mdi mdi-table-search mdi-24px"/>
                                         </Link>
@@ -304,7 +291,7 @@ function StorageCheck(props) {
 
                         {storageCheckReducer.storageCheckData.dataList.length === 0 &&
                         <TableRow>
-                            <TableCell colSpan={7} style={{textAlign: 'center'}}>暂无数据</TableCell>
+                            <TableCell colSpan={7} align="center">暂无数据</TableCell>
                         </TableRow>
                         }
                     </TableBody>
@@ -337,6 +324,7 @@ function StorageCheck(props) {
                         <Autocomplete fullWidth
                                       options={commonReducer.storageList}
                                       getOptionLabel={(option) => option.storage_name}
+                                      value={storage}
                                       onChange={(event, value) => {
                                           setStorage(value);
                                           setStorageArea(null);
@@ -347,7 +335,6 @@ function StorageCheck(props) {
                                               props.setStorageAreaList([]);
                                           }
                                       }}
-                                      value={storage}
                                       renderInput={(params) => <TextField {...params} label="仓库" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
@@ -356,10 +343,10 @@ function StorageCheck(props) {
                                       options={commonReducer.storageAreaList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.storage_area_name}
+                                      value={storageArea}
                                       onChange={(event, value) => {
                                           setStorageArea(value);
                                       }}
-                                      value={storageArea}
                                       renderInput={(params) => <TextField {...params} label="仓库分区" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
@@ -368,6 +355,7 @@ function StorageCheck(props) {
                         <Autocomplete fullWidth
                                       options={commonReducer.categoryList}
                                       getOptionLabel={(option) => option.category_name}
+                                      value={category}
                                       onChange={(event, value) => {
                                           setCategory(value);
                                           setCategorySub(null);
@@ -378,7 +366,6 @@ function StorageCheck(props) {
                                               props.setCategorySubList([]);
                                           }
                                       }}
-                                      value={category}
                                       renderInput={(params) => <TextField {...params} label="商品分类" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
@@ -387,10 +374,10 @@ function StorageCheck(props) {
                                       options={commonReducer.categorySubList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.category_sub_name}
+                                      value={categorySub}
                                       onChange={(event, value) => {
                                           setCategorySub(value);
                                       }}
-                                      value={categorySub}
                                       renderInput={(params) => <TextField {...params} label="商品子分类" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
@@ -398,6 +385,7 @@ function StorageCheck(props) {
                         <Autocomplete fullWidth
                                       options={commonReducer.brandList}
                                       getOptionLabel={(option) => option.brand_name}
+                                      value={brand}
                                       onChange={(event, value) => {
                                           setBrand(value);
                                           setBrandModel(null);
@@ -408,7 +396,6 @@ function StorageCheck(props) {
                                               props.setBrandModelList([]);
                                           }
                                       }}
-                                      value={brand}
                                       renderInput={(params) => <TextField {...params} label="品牌" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
@@ -417,10 +404,10 @@ function StorageCheck(props) {
                                       options={commonReducer.brandModelList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.brand_model_name}
+                                      value={brandModel}
                                       onChange={(event, value) => {
                                           setBrandModel(value);
                                       }}
-                                      value={brandModel}
                                       renderInput={(params) => <TextField {...params} label="品牌型号" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
@@ -429,16 +416,16 @@ function StorageCheck(props) {
                         <Autocomplete fullWidth
                                       options={commonReducer.supplierList}
                                       getOptionLabel={(option) => option.supplier_name}
+                                      value={supplier}
                                       onChange={(event, value) => {
                                           setSupplier(value);
                                       }}
-                                      value={supplier}
                                       renderInput={(params) => <TextField {...params} label="供应商" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
 
                     <Grid item xs={12}>
-                        <TextField label="备注" fullWidth={true} margin="dense" variant="outlined" multiline rows={2} value={remark}
+                        <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={remark}
                                    onChange={(e) => {
                                        setRemark(e.target.value)
                                    }}
