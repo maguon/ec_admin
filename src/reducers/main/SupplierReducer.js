@@ -14,7 +14,6 @@ const initialState = {
     // 供应商列表
     supplierArray: []
 };
-
 export default handleActions({
     [SupplierActionType.setSupplierQueryObj]: (state, action) => {
         return {

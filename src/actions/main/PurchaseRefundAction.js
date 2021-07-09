@@ -1,14 +1,12 @@
-import {PurchaseRefundActionType, AppActionType} from '../../types';
-import {apiHost} from "../../config";
 import Swal from "sweetalert2";
+import {apiHost} from "../../config";
+import {PurchaseRefundActionType, AppActionType} from '../../types';
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
-
-export const getPurchaseRefundList = (params) => async (dispatch, getState) => {
+export const getPurchaseRefundList = () => async (dispatch, getState) => {
     try {
-
         // 检索条件：每页数量
         const size = getState().PurchaseRefundReducer.size;
         // 检索条件
@@ -36,12 +34,10 @@ export const getPurchaseRefundList = (params) => async (dispatch, getState) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
-
-export const getPurchaseList = (params) => async (dispatch, getState) => {
+export const getPurchaseList = () => async (dispatch, getState) => {
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchase?'
-
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
@@ -74,7 +70,6 @@ export const getPurchaseItem = (params) => async (dispatch, getState) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
-
 export const addPurchaseRefundItem = (purchaseRefundId,addProduct,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addStorageType,addTransferRemark) => async (dispatch, getState) => {
     try {
         const params = {
@@ -129,7 +124,6 @@ export const updatePurchaseRefundDetailInfo = (putPurchaseRefundId,putPurchaseIt
         Swal.fire("操作失败", err.message, "error");
     }
 };
-
 export const updateRefundStatus = (id) => async (dispatch, getState) => {
     try {
         // 状态
@@ -149,8 +143,3 @@ export const updateRefundStatus = (id) => async (dispatch, getState) => {
         Swal.fire("操作失败", err.message, "error");
     }
 };
-
-
-
-
-

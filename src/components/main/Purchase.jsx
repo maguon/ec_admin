@@ -1,28 +1,16 @@
 import React, {useEffect,useState}from 'react';
 import {connect, useDispatch} from 'react-redux';
-import {SimpleModal} from '../index';
+import {Link} from "react-router-dom";
 import {
-    Button,
-    Divider,
-    Grid,
-    Typography,
-    Paper,
-    TextField,
-    TableContainer,
-    Table,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody, IconButton, FormControl, InputLabel, Select, MenuItem,
+    Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Table, TableHead, TableRow,
+    TableCell, TableBody, IconButton, FormControl, InputLabel, Select, MenuItem, Box
 } from "@material-ui/core";
 import Fab from '@material-ui/core/Fab';
 import {withStyles,makeStyles} from "@material-ui/core/styles";
-import {Link} from "react-router-dom";
-import {PurchaseActionType} from '../../types';
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import {
-    DatePicker
-} from '@material-ui/pickers';
+import {DatePicker} from '@material-ui/pickers';
+import {SimpleModal} from '../index';
+import {PurchaseActionType} from '../../types';
 const PurchaseAction = require('../../actions/main/PurchaseAction');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
@@ -30,25 +18,14 @@ const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
     // 标题样式
     root: {
-        width: `calc(100% - 50px)`,
         paddingLeft: 30
     },
-    // 标题样式
-    pageTitle: {
-        color: '#3C3CC4',
-        fontSize: 20,
-        fontWeight: 'bold'
-    },
-    pageDivider: {
-        height: 1,
-        marginBottom: 15,
-        background: '#7179e6'
-    },
+    pageTitle: customTheme.pageTitle,
+    pageDivider: customTheme.pageDivider,
     selectLabel: {
         fontSize: 10,
         color: 'grey'
     },
-
     select: {
         width: '100%',
     },
@@ -86,7 +63,6 @@ function Purchase (props){
     const {purchaseReducer,getSupplierList,getProductList,getPurchaseList,downLoadPDF,fromDetail} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
-    //添加采购信息
     const [modalOpenFlag, setModalOpenFlag] = useState(false);
     const [transferCostTypeFlag, setTransferCostTypeFlag] = useState(true);
     const [supplier, setSupplier] = useState("");
@@ -94,7 +70,6 @@ function Purchase (props){
     const [transferCostType, setTransferCostType] = useState("");
     const [transferRemark, setTransferRemark] = useState("");
     const [purchaseCountTotal, setPurchaseCountTotal] = useState(0);
-    //查询
     const [validation,setValidation] = useState({});
     const [purchaseItem,setPurchaseItem]  = useState([{product:-1,unitCost:0,unitNumber:0,purchaseCount:0,remark:""}])
     useEffect(()=>{
@@ -124,8 +99,6 @@ function Purchase (props){
         getPurchaseList(purchaseReducer.start);
 
     },[])
-
-    //change
     const setPurchaseItemParams = (index,name,value)=>{
         if(name=='product'){
             dispatch(PurchaseActionType.setPurchaseAddObj({index,name:value}))
@@ -153,7 +126,6 @@ function Purchase (props){
             purchaseItem[index].remark=value;
         }
     }
-
     //查询采购列表
     const getPurchaseArray =() =>{
         getPurchaseList(0);
@@ -206,17 +178,14 @@ function Purchase (props){
             setPurchaseItem(tmpArray);
         }
     }
-
     //上一页
     const getPreSupplierList = () => {
             getPurchaseList(purchaseReducer.start-(purchaseReducer.size-1));
     };
-
     //下一页
     const getNextSupplierList = () => {
         getPurchaseList(purchaseReducer.start+(purchaseReducer.size-1));
     };
-
     return(
         <div className={classes.root}>
             {/* 标题部分 */}
@@ -402,20 +371,20 @@ function Purchase (props){
                                 }
                             </TableBody>
                         </Table>
-
-                        {purchaseReducer.dataSize >=purchaseReducer.size &&
-                        <Button className={classes.button} variant="contained" color="primary"  onClick={getNextSupplierList}>
-                            下一页
-                        </Button>}
-                        {purchaseReducer.start > 0 &&purchaseReducer.dataSize > 0 &&
-                        <Button className={classes.button} variant="contained" color="primary" onClick={getPreSupplierList}>
-                            上一页
-                        </Button>}
-
                     </TableContainer>
                 </Grid>
             </Grid>
-
+            {/* 上下页按钮 */}
+            <Box style={{textAlign: 'right', marginTop: 20}}>
+                {purchaseReducer.dataSize >=purchaseReducer.size &&
+                <Button className={classes.button} variant="contained" color="primary"  onClick={getNextSupplierList}>
+                    下一页
+                </Button>}
+                {purchaseReducer.start > 0 &&purchaseReducer.dataSize > 0 &&
+                <Button className={classes.button} variant="contained" color="primary" onClick={getPreSupplierList}>
+                    上一页
+                </Button>}
+            </Box>
 
             {/*模态框*/}
             <SimpleModal
@@ -647,7 +616,6 @@ function Purchase (props){
             </div>
         </div>
     )
-
 }
 const mapStateToProps = (state, ownProps) => {
     let fromDetail = false;
@@ -659,7 +627,6 @@ const mapStateToProps = (state, ownProps) => {
         fromDetail: fromDetail
     }
 };
-
 const mapDispatchToProps = (dispatch) => ({
     //获取列表
     getPurchaseList: (start) => {
@@ -681,7 +648,5 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(PurchaseActionType.setPurchasePdfData(purchaseInfo));
         dispatch(PurchaseAction.downLoadPDF(purchaseInfo.id,purchaseInfo.supplier_name));
     }
-
 });
-
 export default connect(mapStateToProps, mapDispatchToProps)(Purchase)

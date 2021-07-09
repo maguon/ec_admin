@@ -4,10 +4,8 @@ import Swal from "sweetalert2";
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
-
-
 //供应商
-export const getSupplierList = (params) => async (dispatch, getState) => {
+export const getSupplierList = () => async (dispatch) => {
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/supplier?';
@@ -24,17 +22,14 @@ export const getSupplierList = (params) => async (dispatch, getState) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
-
 //商品分类
 export const getCategoryList = () => async (dispatch) => {
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/categorySub';
-
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-
         if (res.success) {
             dispatch({type: DataDictionaryActionType.setCategoryList, payload: res.rows});
         } else if (!res.success) {
@@ -44,13 +39,11 @@ export const getCategoryList = () => async (dispatch) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
-
 //商品
 export const getProductList = () => async (dispatch) => {
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/product';
-
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
@@ -64,14 +57,11 @@ export const getProductList = () => async (dispatch) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
-
 //品牌
-
 export const getBrandList = () => async (dispatch) => {
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/brandModel';
-
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
@@ -85,5 +75,3 @@ export const getBrandList = () => async (dispatch) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
-
-

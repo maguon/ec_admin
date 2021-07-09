@@ -1,14 +1,11 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config/index';
 import {AdminUserSettingActionType, AppActionType} from '../../types';
-
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
-
 // 系统设置 -> 员工管理 取得画面列表
-export const getUserList = (params) => async (dispatch, getState) => {
-
+export const getUserList = () => async (dispatch, getState) => {
     try {
         // 检索条件：每页数量
         const size = getState().AdminUserSettingReducer.size;
@@ -17,7 +14,6 @@ export const getUserList = (params) => async (dispatch, getState) => {
         paramsObj.gender = paramsObj.gender==-1?'': paramsObj.gender;
         paramsObj.type = paramsObj.type==-1?'': paramsObj.type;
         paramsObj.status = paramsObj.status==-1?'': paramsObj.status;
-
         // 基本检索URL
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/user?size=' + size;
         let conditions = httpUtil.objToUrl(paramsObj);
@@ -38,7 +34,7 @@ export const getUserList = (params) => async (dispatch, getState) => {
 };
 
 //群组查找
-export const getUserTypeList = (params) => async (dispatch) => {
+export const getUserTypeList = () => async (dispatch) => {
     try {
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/typeMenu';
         dispatch({type: AppActionType.showLoadProgress, payload: true});
@@ -71,7 +67,6 @@ export const addUser = (params) => async (dispatch) => {
     }
 };
 
-//系统设置 -> 员工管理  修改员工信息
 export const getUserById = (id) => async (dispatch) => {
     try {
         // 基本检索URL

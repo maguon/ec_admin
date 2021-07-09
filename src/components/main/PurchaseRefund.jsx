@@ -1,39 +1,21 @@
 import React, {useEffect,useState}from 'react';
 import {connect} from 'react-redux';
-import {SimpleModal} from '../index';
+import Swal from "sweetalert2";
 import {
-    Button,
-    Divider,
-    Grid,
-    Typography,
-    Paper,
-    TextField,
-    TableContainer,
-    Table,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody,
-    IconButton,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    FormHelperText,
-    Stepper,
-    Step,
-    StepLabel,
+    Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Table, TableHead, TableRow, TableCell,
+    TableBody, IconButton, FormControl, InputLabel, Select, MenuItem, FormHelperText, Stepper, Step, StepLabel, Box
 } from "@material-ui/core";
 import Fab from '@material-ui/core/Fab';
 import {withStyles,makeStyles} from "@material-ui/core/styles";
-import {PurchaseRefundActionType} from '../../types';
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from "@material-ui/pickers";
-import Swal from "sweetalert2";
+import {SimpleModal} from '../index';
+import {PurchaseRefundActionType} from '../../types';
 const PurchaseRefundAction = require('../../actions/main/PurchaseRefundAction');
 const PurchaseAction = require('../../actions/main/PurchaseAction');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
+const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
     // 标题样式
     root: {
@@ -41,16 +23,8 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: 30
     },
     // 标题样式
-    pageTitle: {
-        color: '#3C3CC4',
-        fontSize: 20,
-        fontWeight: 'bold'
-    },
-    pageDivider: {
-        height: 1,
-        marginBottom: 15,
-        background: '#7179e6'
-    },
+    pageTitle: customTheme.pageTitle,
+    pageDivider: customTheme.pageDivider,
     selectLabel: {
         fontSize: 10,
         color: 'grey'
@@ -129,7 +103,6 @@ function PurchaseRefund (props){
     const [putTransferCostTypeFlag, setPutTransferCostTypeFlag] = useState(true);
     const [putStatus,setPutStatus] = useState('');
     const [putPurchaseId,setPutPurchaseId] = useState('');
-
     useEffect(()=>{
         getProductList();
         getSupplierList();
@@ -245,7 +218,6 @@ function PurchaseRefund (props){
         setAddProduct(-1);
         setPurchaseRefundId('');
     }
-    // 关闭模态
     const modalClose = () => {
         setModalOpenFlag(false);
         setModalDetailOpenFlag(false);
@@ -470,19 +442,20 @@ function PurchaseRefund (props){
                                 }
                             </TableBody>
                         </Table>
-
-                        {purchaseRefundReducer.dataSize >=purchaseRefundReducer.size &&
-                        <Button className={classes.button} variant="contained" color="primary"   size="small" onClick={getNextPurchaseRefundList}>
-                            下一页
-                        </Button>}
-                        {purchaseRefundReducer.queryPurchaseRefundObj.start > 0 &&purchaseRefundReducer.dataSize > 0 &&
-                        <Button className={classes.button} variant="contained" color="primary"  size="small" onClick={getPrePurchaseRefundList}>
-                            上一页
-                        </Button>}
-
                     </TableContainer>
                 </Grid>
             </Grid>
+            {/* 上下页按钮 */}
+            <Box style={{textAlign: 'right', marginTop: 20}}>
+                {purchaseRefundReducer.dataSize >=purchaseRefundReducer.size &&
+                <Button className={classes.button} variant="contained" color="primary"   size="small" onClick={getNextPurchaseRefundList}>
+                    下一页
+                </Button>}
+                {purchaseRefundReducer.queryPurchaseRefundObj.start > 0 &&purchaseRefundReducer.dataSize > 0 &&
+                <Button className={classes.button} variant="contained" color="primary"  size="small" onClick={getPrePurchaseRefundList}>
+                    上一页
+                </Button>}
+            </Box>
 
             {/* 新增退货信息*/}
             <SimpleModal
@@ -817,8 +790,8 @@ function PurchaseRefund (props){
             </SimpleModal>
         </div>
     )
-};
-const mapStateToProps = (state, ownProps) => {
+}
+const mapStateToProps = (state) => {
     return {
         purchaseRefundReducer: state.PurchaseRefundReducer,
         purchaseReducer: state.PurchaseReducer,
@@ -866,8 +839,6 @@ const mapDispatchToProps = (dispatch) => ({
             }
         });
     },
-
-
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PurchaseRefund)

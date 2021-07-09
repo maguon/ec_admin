@@ -1,7 +1,6 @@
 import {handleActions} from 'redux-actions';
 import {DataDictionaryActionType} from '../../types';
 const initialState = {
-
     // 供应商列表
     supplierArray: [],
     //商品分类列表
@@ -11,7 +10,6 @@ const initialState = {
     //品牌列表
     brandArray: [],
 };
-
 export default handleActions({
     [DataDictionaryActionType.setSupplierList]: (state, action) => {
         return {

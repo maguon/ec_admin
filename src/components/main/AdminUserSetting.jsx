@@ -1,81 +1,47 @@
 import Swal from 'sweetalert2';
 import React, {useEffect,useState}from 'react';
 import {connect} from 'react-redux';
-import {AdminUserSettingActionType} from '../../types';
-import {SimpleModal} from '../index';
-import {
-    Button,
-    Divider,
-    Grid,
-    Typography,
-    Paper,
-    TextField,
-    TableContainer,
-    Table,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody, IconButton,
-} from "@material-ui/core";
+import {Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Box} from "@material-ui/core";
 import Fab from '@material-ui/core/Fab';
 import Switch from '@material-ui/core/Switch';
-import {withStyles,makeStyles} from "@material-ui/core/styles";
+import {SimpleModal} from '../index';
+import {makeStyles} from "@material-ui/core/styles";
+import {AdminUserSettingActionType} from '../../types';
 const adminUserSettingAction = require('../../actions/main/AdminUserSettingAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
+const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
-    // 标题样式
     root: {
-        width: `calc(100% - 50px)`,
         paddingLeft: 30
     },
-    // 标题样式
-    pageTitle: {
-        color: '#3C3CC4',
-        fontSize: 20,
-        fontWeight: 'bold'
-    },
-    pageDivider: {
-        height: 1,
-        marginBottom: 15,
-        background: '#7179e6'
-    },
-    selectLabel: {
-        fontSize: 10,
-        color: 'grey'
-    },
-
+    pageTitle: customTheme.pageTitle,
+    pageDivider: customTheme.pageDivider,
     select: {
         width: '100%',
         marginTop:'16px'
     },
-    selectCondition: {
-        width: '100%',
-    },
+    selectCondition: {width: '100%'},
     button:{
         margin:'15px',
         float:'right'
-    }
-}));
-const StyledTableCell = withStyles((theme) => ({
-    head: {
-        fontWeight:'bold',
-        background:'#F7F6F9',
-        borderTop: '2px solid #D4D4D4'
+    },
+     head: {
+         fontWeight:'bold',
+         background:'#F7F6F9',
+         borderTop: '2px solid #D4D4D4'
 
-    }
-}))(TableCell);
+     }
+}));
 //员工管理
 function AdminUserSetting (props) {
     const {adminUserSettingReducer,updateUserStatusInfo,getUserById} = props;
     const classes = useStyles();
-    //查询条件
     const [paramPhone,setParamPhone]=useState("");
     const [paramRealName,setParamRealName]=useState("");
     const [paramType,setParamType]=useState("-1");
     const [paramGender,setParamGender]=useState("-1");
     const [paramStatus,setParamStatus]=useState("-1");
-    //模态框
     const [modalOpenFlag, setModalOpenFlag] = useState(false);
     const [adminUsername, setAdminUsername] = useState("");
     const [type, setType] = useState("");
@@ -83,7 +49,6 @@ function AdminUserSetting (props) {
     const [password, setPassword] = useState("");
     const [gender, setGender] = useState("1");
     const [pageNumber,setPageNumber] = useState(0);
-
     const [validation,setValidation] = useState({});
     //判断新增还是修改
     const [modalCreateFlag, setModalCreateFlag] = useState(false);
@@ -91,7 +56,6 @@ function AdminUserSetting (props) {
     const [id, setId] = useState("");
     //用户状态
     const [status, setStatus] = useState("");
-
     useEffect(()=>{
         const queryObj = {
             realName:paramRealName,
@@ -103,7 +67,10 @@ function AdminUserSetting (props) {
         };
         props.setQueryObj(queryObj);
     },[paramRealName,paramStatus,paramPhone,paramType,paramGender,pageNumber])
-
+    useEffect(()=>{
+        props.getUserList();
+        props.getUserTypeList();
+    },[]);
     //验证()
     const validate = ()=>{
         const validateObj ={}
@@ -155,28 +122,6 @@ function AdminUserSetting (props) {
             updateUserStatusInfo(status,id)
         })
     }
-    // 关闭模态
-    const modalClose = () => {
-        setModalOpenFlag(false);
-    };
-
-    useEffect(()=>{
-        props.getUserList();
-        props.getUserTypeList();
-    },[]);
-
-    const getUserArray =() =>{
-        props.setQueryObj({
-            realName:paramRealName,
-            status:paramStatus,
-            phone :paramPhone,
-            type :paramType,
-            gender :paramGender,
-            start :0})
-        props.getUserList();
-        setPageNumber(0);
-    }
-
     //初始添加模态框值
     const handleAddOpen =(user) =>{
         setModalOpenFlag(true);
@@ -197,7 +142,21 @@ function AdminUserSetting (props) {
             setStatus(user.status);
         }
     }
-
+    // 关闭模态
+    const modalClose = () => {
+        setModalOpenFlag(false);
+    };
+    const getUserArray =() =>{
+        props.setQueryObj({
+            realName:paramRealName,
+            status:paramStatus,
+            phone :paramPhone,
+            type :paramType,
+            gender :paramGender,
+            start :0})
+        props.getUserList();
+        setPageNumber(0);
+    }
     //上一页
     const getPreUserList = () => {
         setPageNumber(pageNumber- (props.adminUserSettingReducer.size-1));
@@ -210,7 +169,6 @@ function AdminUserSetting (props) {
             start :pageNumber- (props.adminUserSettingReducer.size-1)})
         props.getUserList();
     };
-
     //下一页
     const getNextUserList = () => {
         setPageNumber(pageNumber+ (props.adminUserSettingReducer.size-1));
@@ -325,19 +283,18 @@ function AdminUserSetting (props) {
                     </Fab>
                 </Grid>
             </Grid>
-
             {/*主体*/}
             <Grid container spacing={2}>
                 <TableContainer component={Paper} style={{marginTop:20}}>
                     <Table  size={'small'} aria-label="a dense table">
                         <TableHead >
                             <TableRow style={{height:50}}>
-                                <StyledTableCell align="center">手机</StyledTableCell>
-                                <StyledTableCell align="center">用户名称</StyledTableCell>
-                                <StyledTableCell align="center">用户群组</StyledTableCell>
-                                <StyledTableCell align="center">性别</StyledTableCell>
-                                <StyledTableCell align="center">状态</StyledTableCell>
-                                <StyledTableCell align="center">操作</StyledTableCell>
+                                <TableCell className={classes.head} align="center">手机</TableCell>
+                                <TableCell className={classes.head} align="center">用户名称</TableCell>
+                                <TableCell className={classes.head} align="center">用户群组</TableCell>
+                                <TableCell className={classes.head} align="center">性别</TableCell>
+                                <TableCell className={classes.head} align="center">状态</TableCell>
+                                <TableCell className={classes.head} align="center">操作</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -369,18 +326,21 @@ function AdminUserSetting (props) {
                             }
                         </TableBody>
                     </Table>
-
-                    {adminUserSettingReducer.dataSize >= adminUserSettingReducer.size &&
-                    <Button className={classes.button} variant="contained" color="primary"  size="small" onClick={getNextUserList}>
-                        下一页
-                    </Button>}
-                    {adminUserSettingReducer.queryObj.start > 0 && adminUserSettingReducer.dataSize > 0 &&
-                    <Button className={classes.button} variant="contained" color="primary"  size="small" onClick={getPreUserList}>
-                        上一页
-                    </Button>}
-
                 </TableContainer>
             </Grid>
+            {/* 上下页按钮 */}
+            <Box style={{textAlign: 'right', marginTop: 20}}>
+                {adminUserSettingReducer.dataSize >= adminUserSettingReducer.size &&
+                <Button className={classes.button} variant="contained" color="primary"  size="small" onClick={getNextUserList}>
+                    下一页
+                </Button>}
+                {adminUserSettingReducer.queryObj.start > 0 && adminUserSettingReducer.dataSize > 0 &&
+                <Button className={classes.button} variant="contained" color="primary"  size="small" onClick={getPreUserList}>
+                    上一页
+                </Button>}
+            </Box>
+
+
 
             {/*添加或修改用户信息*/}
             <SimpleModal
@@ -549,7 +509,6 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(adminUserSettingAction.updateUserStatus(flag,id))
     }
 });
-
 export default connect(mapStateToProps, mapDispatchToProps)(AdminUserSetting)
 
 

@@ -1,5 +1,4 @@
 import {createAction} from 'redux-actions';
-//查询
 export const getPurchaseRefundList = createAction('GET_PURCHASE_RETURN_LIST');
 export const setPurchaseRefundQueryObj = createAction('SET_PURCHASE_RETURN_QUERY_OBJ');
 export const setPurchaseRefundListDataSize = createAction('SET_PURCHASE_RETURN_LIST_DATA_SIZE');

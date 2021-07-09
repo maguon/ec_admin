@@ -1,6 +1,5 @@
 import {handleActions} from 'redux-actions';
 import {AdminUserSettingActionType} from '../../types';
-
 const initialState = {
     //查询条件
     queryObj:{
@@ -19,10 +18,8 @@ const initialState = {
     adminArray: [],
     //详情
     adminItem:[],
-
     typeArray:[],
 };
-
 export default handleActions({
     [AdminUserSettingActionType.setQueryObj]: (state, action) => {
         return {
@@ -54,5 +51,4 @@ export default handleActions({
             typeArray: action.payload
         }
     },
-
 }, initialState)

@@ -1,46 +1,27 @@
-import React, {useEffect}from 'react';
+import React, {useEffect, useState} from 'react';
 import {connect,useDispatch} from 'react-redux';
-import {SupplierDetailActionType} from '../../types';
-import {
-    Button,
-    Divider,
-    Grid,
-    Typography,
-    TextField,
-    IconButton,
-    AppBar,
-    Tab,
-    Tabs, TableContainer, Paper, Table, TableHead, TableRow, TableBody, TableCell,
-} from "@material-ui/core";
+import {Link, useParams} from "react-router-dom";
+import {Button, Divider, Grid, Typography, TextField, IconButton, AppBar, Tab, Tabs, TableContainer, Paper, Table, TableHead, TableRow, TableBody, TableCell} from "@material-ui/core";
 import TabContext from '@material-ui/lab/TabContext';
 import TabPanel from '@material-ui/lab/TabPanel';
 import {makeStyles, withStyles} from "@material-ui/core/styles";
-import {Link, useParams} from "react-router-dom";
+import {SupplierDetailActionType} from '../../types';
 const commonUtil = require('../../utils/CommonUtil');
 const SupplierDetailAction = require('../../actions/main/SupplierDetailAction');
 const sysConst = require('../../utils/SysConst');
+const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
     // 标题样式
     root: {
-        width: `calc(100% - 50px)`,
         paddingLeft: 30
     },
     // 标题样式
-    pageTitle: {
-        color: '#3C3CC4',
-        fontSize: 20,
-        fontWeight: 'bold'
-    },
-    pageDivider: {
-        height: 1,
-        marginBottom: 15,
-        background: '#7179e6'
-    },
+    pageTitle: customTheme.pageTitle,
+    pageDivider: customTheme.pageDivider,
     selectLabel: {
         fontSize: 10,
         color: 'grey'
     },
-
     select: {
         width: '100%',
     },
@@ -71,10 +52,22 @@ const StyledTableCell = withStyles((theme) => ({
 function SupplierDetail (props){
     const {supplierDetailReducer,getSupplierInfo,updateSupplier,getPurchaseInfo,getPurchaseRefundInfo} = props;
     const dispatch = useDispatch();
+    const {id} = useParams();
     const classes = useStyles();
     const [value, setValue] = React.useState('1');
-    const {id} = useParams();
-    const handleChange = (event, newValue) => {
+    const [settleTypeFlag,setSettleTypeFlag] = useState(true);
+    useEffect(()=>{
+        getSupplierInfo(id);
+    },[]);
+    useEffect(()=>{
+        if(supplierDetailReducer.supplierInfo.settle_type==1){
+            setSettleTypeFlag(false);
+        }else {
+            setSettleTypeFlag(true);
+            dispatch(SupplierDetailActionType.setSupplierInfo({name:'settle_month_day',value:''}))
+        }
+    },[supplierDetailReducer.supplierInfo.settle_type])
+    const changeTab = (event, newValue) => {
         setValue(newValue);
         if(newValue=='2'){
             getPurchaseInfo(supplierDetailReducer.supplierInfo.id);
@@ -83,10 +76,6 @@ function SupplierDetail (props){
             getPurchaseRefundInfo();
         }
     };
-    useEffect(()=>{
-        getSupplierInfo(id);
-    },[]);
-
     return(
         <div className={classes.root}>
             {/* 标题部分 */}
@@ -105,7 +94,7 @@ function SupplierDetail (props){
                 <TabContext value={value}>
                     <AppBar position="static" color="default">
                         <Tabs value={value}
-                              onChange={handleChange}
+                              onChange={changeTab}
                               indicatorColor="primary"
                               textColor="primary"
                               variant="fullWidth">
@@ -318,7 +307,7 @@ function SupplierDetail (props){
                                 </TextField>
                             </Grid>
                             <Grid item xs>
-                                <TextField fullWidth
+                                <TextField fullWidth  disabled={settleTypeFlag}
                                            size="small"
                                            name="settleMonthDay"
                                            type="number"
@@ -428,33 +417,25 @@ function SupplierDetail (props){
             </div>
         </div>
     )
-
 }
-
-const mapStateToProps = (state, ownProps) => {
-    let fromDetail = false;
-    if (typeof ownProps.location.state != 'undefined' && ownProps.location.state != null && ownProps.location.state.fromDetail) {
-        fromDetail = true;
-    }
+const mapStateToProps = (state) => {
     return {
-        supplierDetailReducer: state.SupplierDetailReducer,
-        fromDetail: fromDetail
+        supplierDetailReducer: state.SupplierDetailReducer
     }
 };
 
-const mapDispatchToProps = (dispatch,ownProps) => ({
+const mapDispatchToProps = (dispatch) => ({
     getSupplierInfo: (id) => {
         dispatch(SupplierDetailAction.getSupplierInfo(id));
-    },
-    updateSupplier:()=>{
-        dispatch(SupplierDetailAction.updateSupplier());
     },
     getPurchaseInfo: (id) => {
         dispatch(SupplierDetailAction.getPurchaseInfo(id));
     },
     getPurchaseRefundInfo: (id) => {
         dispatch(SupplierDetailAction.getPurchaseRefundInfo(id));
+    },
+    updateSupplier:()=>{
+        dispatch(SupplierDetailAction.updateSupplier());
     }
 });
-
 export default connect(mapStateToProps, mapDispatchToProps)(SupplierDetail)

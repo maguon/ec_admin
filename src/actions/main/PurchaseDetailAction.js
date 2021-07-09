@@ -63,10 +63,10 @@ export const getPurchaseItemDetailInfo = (params) => async (dispatch, getState) 
 };
 
 //采购管理 -> 修改
-export const updatePurchaseDetailInfo = (params) => async (dispatch, getState) => {
+export const updatePurchaseDetailInfo = () => async (dispatch, getState) => {
     try {
         const params = getState().PurchaseDetailReducer.purchaseDetailInfo;
-        var paramsObj={
+        const paramsObj={
             "remark": params.remark,
             "transferCostType": params.transfer_cost_type,
             "transferCost": params.transfer_cost
@@ -103,7 +103,7 @@ export const updatePurchaseDetailInfoStatus = (id,params) => async (dispatch, ge
 export const updatePurchaseDetailItemInfo = (paramsId,index) => async (dispatch, getState) => {
     try {
         const params = getState().PurchaseDetailReducer.purchaseDetailItemInfo[index];
-        var paramsObj={
+        const paramsObj={
             "unitCost":params.unit_cost,
             "purchaseCount": params.purchase_count,
             "remark": params.remark
@@ -158,7 +158,7 @@ export const getStorageProductArray = (params) => async (dispatch) => {
 };
 export const addRefundDetailItem = (id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType) => async (dispatch) => {
     try {
-        const params = {
+        let params = {
             "remark": addTransferRemark,
             "supplierId": item.supplier_id,
             "productId": item.product_id,
@@ -185,7 +185,6 @@ export const addRefundDetailItem = (id,item,addTransferCostType,addTransferCost,
         Swal.fire("操作失败", err.message, "error");
     }
 };
-
 export const downLoadPDF = (params,id) => async (dispatch) => {
     try {
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/supplier?supplierName='+params;
