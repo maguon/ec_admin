@@ -20,6 +20,7 @@ import Fab from '@material-ui/core/Fab';
 import {withStyles,makeStyles} from "@material-ui/core/styles";
 import {Link} from "react-router-dom";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import Switch from "@material-ui/core/Switch";
 const SupplierAction = require('../../actions/main/SupplierAction');
 const CommonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');
@@ -170,8 +171,8 @@ function Supplier (props){
             <Divider light className={classes.pageDivider}/>
 
             {/*查询条件*/}
-            <Grid container  spacing={3}>
-                <Grid container item xs={10} spacing={3}>
+            <Grid container  spacing={1}>
+                <Grid container item xs={10} spacing={1}>
                     {/*供应商名称*/}
 
                     <Grid item xs={3}>
@@ -216,11 +217,11 @@ function Supplier (props){
             </Grid>
 
             {/*主体*/}
-            <Grid container spacing={2}>
-                <TableContainer component={Paper} style={{marginTop:40}}>
-                    <Table  size={'small'} aria-label="a dense table">
+            <Grid container spacing={1}>
+                <TableContainer component={Paper} style={{marginTop:20}}>
+                    <Table  size='small' aria-label="a dense table">
                         <TableHead >
-                            <TableRow style={{height:60}}>
+                            <TableRow style={{height:50}}>
                                 <StyledTableCell align="center">ID</StyledTableCell>
                                 <StyledTableCell align="center">名称</StyledTableCell>
                                 <StyledTableCell align="center">类型</StyledTableCell>
@@ -244,7 +245,7 @@ function Supplier (props){
                                     <TableCell align="center" >{row.fax}</TableCell>
                                     <TableCell align="center" >{commonUtil.getJsonValue(sysConst.SETTLE_TYPE,row.settle_type)}</TableCell>
                                     <TableCell align="center">
-                                        <IconButton color="primary" edge="start">
+                                        <IconButton color="primary" edge="start" size="small">
                                             <Link to={{pathname: '/supplier/' + row.id}}>
                                                 <i className="mdi mdi-table-search purple-font margin-left10"> </i>
                                             </Link>
@@ -258,11 +259,11 @@ function Supplier (props){
                     </Table>
 
                     {supplierReducer.dataSize >=supplierReducer.size &&
-                    <Button className={classes.button} variant="contained" color="primary"  onClick={getNextSupplierList}>
+                    <Button className={classes.button} variant="contained" color="primary"  size="small" onClick={getNextSupplierList}>
                         下一页
                     </Button>}
                     {supplierReducer.start > 0 &&supplierReducer.dataSize > 0 &&
-                    <Button className={classes.button} variant="contained" color="primary" onClick={getPreSupplierList}>
+                    <Button className={classes.button} variant="contained" color="primary"  size="small" onClick={getPreSupplierList}>
                         上一页
                     </Button>}
 

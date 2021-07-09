@@ -23,6 +23,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
     DatePicker
 } from '@material-ui/pickers';
+import Switch from "@material-ui/core/Switch";
 const PurchaseAction = require('../../actions/main/PurchaseAction');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
@@ -223,8 +224,8 @@ function Purchase (props){
             <Typography gutterBottom className={classes.pageTitle}>采购</Typography>
             <Divider light className={classes.pageDivider}/>
             {/*查询条件*/}
-            <Grid container  spacing={3}>
-                <Grid container item xs={10} spacing={3}>
+            <Grid container  spacing={1}>
+                <Grid container item xs={10} spacing={1}>
                     {/*供应商名称*/}
                     <Grid item xs={3}>
                         <Autocomplete id="condition-category" fullWidth={true}
@@ -341,22 +342,22 @@ function Purchase (props){
                 </Grid>
                 {/*查询按钮*/}
                 <Grid item xs={1} align="center">
-                    <Fab size="small" color="primary" aria-label="add" onClick={() => {getPurchaseArray()}} style={{marginTop: 50}}>
+                    <Fab size="small" color="primary" aria-label="add"  onClick={() => {getPurchaseArray()}} style={{marginTop: 40}}>
                         <i className="mdi mdi-magnify mdi-24px"/>
                     </Fab>
                 </Grid>
                 {/*添加按钮*/}
                 <Grid item xs={1} align="center">
-                    <Fab size="small" color="primary" aria-label="add" onClick={()=>{modalOpenPurchase()}} style={{marginTop: 50}}>
+                    <Fab size="small" color="primary" aria-label="add" onClick={()=>{modalOpenPurchase()}} style={{marginTop: 40}}>
                         <i className="mdi mdi-plus mdi-24px" />
                     </Fab>
                 </Grid>
                 {/*主体*/}
                 <Grid container spacing={2}>
-                    <TableContainer component={Paper} style={{marginTop:40}}>
+                    <TableContainer component={Paper} style={{marginTop:20}}>
                         <Table  size={'small'} aria-label="a dense table">
                             <TableHead >
-                                <TableRow style={{height:60}}>
+                                <TableRow style={{height:40}}>
                                     <StyledTableCell align="center">ID</StyledTableCell>
                                     <StyledTableCell align="center">供应商</StyledTableCell>
                                     <StyledTableCell align="center">开始时间</StyledTableCell>
@@ -386,11 +387,11 @@ function Purchase (props){
                                         <TableCell align="center" >{row.total_cost}</TableCell>
                                         <TableCell align="center" >{commonUtil.getJsonValue(sysConst.PURCHASE_STATUS, row.status)}</TableCell>
                                         <TableCell align="center">
-                                            <IconButton color="primary" edge="start" onClick={()=>{downLoadPDF(row)}}>
+                                            <IconButton color="primary" edge="start"  size="small" onClick={()=>{downLoadPDF(row)}}>
                                                 <i className="mdi mdi-file-pdf mdi-24px"/>
                                             </IconButton>
                                             {/* 详情按钮*/}
-                                            <IconButton color="primary" edge="start">
+                                            <IconButton color="primary" edge="start"  size="small">
                                                 <Link to={{pathname: '/purchase/' + row.id}}>
                                                     <i className="mdi mdi-table-search purple-font margin-left10"> </i>
                                                 </Link>
@@ -641,7 +642,7 @@ function Purchase (props){
                     <Grid item sm={8}>{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE,purchaseReducer.purchasePdfData.transfer_cost_type)}运费:{purchaseReducer.purchasePdfData.transfer_cost}</Grid>
                     <Grid item sm={4}>总价:{purchaseReducer.purchasePdfData.total_cost}</Grid>
                 </Grid>
-                <Grid container spacing={0} style={{paddingTop: 35}}  align='right'>
+                <Grid container spacing={0} style={{paddingTop: 35}}  align='left'>
                      <Grid item sm={12}>备注:{purchaseReducer.purchasePdfData.remark}</Grid>
                 </Grid>
             </div>

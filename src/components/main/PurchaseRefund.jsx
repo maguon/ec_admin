@@ -30,6 +30,7 @@ import {PurchaseRefundActionType} from '../../types';
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from "@material-ui/pickers";
 import Swal from "sweetalert2";
+import Switch from "@material-ui/core/Switch";
 const PurchaseRefundAction = require('../../actions/main/PurchaseRefundAction');
 const PurchaseAction = require('../../actions/main/PurchaseAction');
 const commonUtil = require('../../utils/CommonUtil');
@@ -302,8 +303,8 @@ function PurchaseRefund (props){
             <Typography gutterBottom className={classes.pageTitle}>退货</Typography>
             <Divider light className={classes.pageDivider}/>
             {/*查询条件*/}
-            <Grid container  spacing={3}>
-                <Grid container item xs={10} spacing={3}>
+            <Grid container  spacing={1}>
+                <Grid container item xs={10} spacing={1}>
                     {/*采购单号*/}
                     <Grid item xs>
                         <TextField label="采购单号" fullWidth={true} margin="dense" variant="outlined"  type="search" value={purchaseId}
@@ -409,21 +410,21 @@ function PurchaseRefund (props){
                 </Grid>
                 {/*主体*/}
                 <Grid container spacing={2}>
-                    <TableContainer component={Paper} style={{marginTop:40}}>
+                    <TableContainer component={Paper} style={{marginTop:20}}>
                         <Table  size={'small'} aria-label="a dense table">
                             <TableHead >
-                                <TableRow style={{height:60}}>
+                                <TableRow style={{height:40}}>
                                     <StyledTableCell align="center">ID</StyledTableCell>
                                     <StyledTableCell align="center">采购单号</StyledTableCell>
                                     <StyledTableCell align="center">供应商</StyledTableCell>
                                     <StyledTableCell align="center">商品名称</StyledTableCell>
                                     <StyledTableCell align="center">退货单价</StyledTableCell>
                                     <StyledTableCell align="center">退货数量</StyledTableCell>
-                                    <StyledTableCell align="center">运费支付方式</StyledTableCell>
+                                    <StyledTableCell align="center">运费方式</StyledTableCell>
                                     <StyledTableCell align="center">运费</StyledTableCell>
                                     <StyledTableCell align="center">退款总价</StyledTableCell>
                                     <StyledTableCell align="center">退货盈亏</StyledTableCell>
-                                    <StyledTableCell align="center">退款状态</StyledTableCell>
+                                    <StyledTableCell align="center">退款</StyledTableCell>
                                     <StyledTableCell align="center">退款时间</StyledTableCell>
                                     <StyledTableCell align="center">状态</StyledTableCell>
                                     <StyledTableCell align="center">操作</StyledTableCell>
@@ -449,18 +450,18 @@ function PurchaseRefund (props){
 
                                             {/* 退货状态 */}
                                             {row.status==1 &&
-                                            <IconButton color="primary" edge="start"
+                                            <IconButton color="primary" edge="start"  size="small"
                                                         onClick={() => {updateRefundStatus(row.id)}}>
                                                 <i className="mdi mdi-check mdi-24px"/>
                                             </IconButton>}
                                             {row.status!=1 &&
-                                            <IconButton color="default" edge="start" disabled>
-                                                <i className="mdi mdi-check mdi-24px"/>
+                                            <IconButton color="default" edge="start"  size="small" disabled>
+                                                <i className="mdi mdi-check-circle-outline mdi-24px"/>
                                             </IconButton>}
 
 
                                            {/*  详情按钮*/}
-                                            <IconButton color="primary" edge="start" onClick={() => {handleOpenPurchaseRefund(row);}}>
+                                            <IconButton color="primary" edge="start"  size="small" onClick={() => {handleOpenPurchaseRefund(row);}}>
                                                 <i className="mdi mdi-table-search purple-font margin-left10"> </i>
                                             </IconButton>
                                         </TableCell>
@@ -472,11 +473,11 @@ function PurchaseRefund (props){
                         </Table>
 
                         {purchaseRefundReducer.dataSize >=purchaseRefundReducer.size &&
-                        <Button className={classes.button} variant="contained" color="primary"  onClick={getNextPurchaseRefundList}>
+                        <Button className={classes.button} variant="contained" color="primary"   size="small" onClick={getNextPurchaseRefundList}>
                             下一页
                         </Button>}
                         {purchaseRefundReducer.queryPurchaseRefundObj.start > 0 &&purchaseRefundReducer.dataSize > 0 &&
-                        <Button className={classes.button} variant="contained" color="primary" onClick={getPrePurchaseRefundList}>
+                        <Button className={classes.button} variant="contained" color="primary"  size="small" onClick={getPrePurchaseRefundList}>
                             上一页
                         </Button>}
 

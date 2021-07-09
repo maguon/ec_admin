@@ -231,7 +231,7 @@ function AdminUserSetting (props) {
             <Divider light className={classes.pageDivider}/>
 
             {/*查询条件*/}
-            <Grid container  spacing={3}>
+            <Grid container  spacing={1}>
                 <Grid item xs>
                     <TextField
                         fullWidth={true}
@@ -328,10 +328,10 @@ function AdminUserSetting (props) {
 
             {/*主体*/}
             <Grid container spacing={2}>
-                <TableContainer component={Paper} style={{marginTop:40}}>
+                <TableContainer component={Paper} style={{marginTop:20}}>
                     <Table  size={'small'} aria-label="a dense table">
                         <TableHead >
-                            <TableRow style={{height:60}}>
+                            <TableRow style={{height:50}}>
                                 <StyledTableCell align="center">手机</StyledTableCell>
                                 <StyledTableCell align="center">用户名称</StyledTableCell>
                                 <StyledTableCell align="center">用户群组</StyledTableCell>
@@ -356,9 +356,10 @@ function AdminUserSetting (props) {
                                             }}
                                             name="状态"
                                             color='primary'
+                                            size="small"
                                             inputProps={{ 'aria-label': 'secondary checkbox' }}
                                         />
-                                      <IconButton  color="primary" onClick={() => {getUserById(row.id);handleAddOpen(row);}}><i className="mdi mdi-table-search purple-font margin-left10"
+                                      <IconButton size="small"  color="primary" onClick={() => {getUserById(row.id);handleAddOpen(row);}}><i className="mdi mdi-table-search purple-font margin-left10"
                                         > </i>
                                       </IconButton>
                                     </TableCell>
@@ -370,11 +371,11 @@ function AdminUserSetting (props) {
                     </Table>
 
                     {adminUserSettingReducer.dataSize >= adminUserSettingReducer.size &&
-                    <Button className={classes.button} variant="contained" color="primary"  onClick={getNextUserList}>
+                    <Button className={classes.button} variant="contained" color="primary"  size="small" onClick={getNextUserList}>
                         下一页
                     </Button>}
                     {adminUserSettingReducer.queryObj.start > 0 && adminUserSettingReducer.dataSize > 0 &&
-                    <Button className={classes.button} variant="contained" color="primary" onClick={getPreUserList}>
+                    <Button className={classes.button} variant="contained" color="primary"  size="small" onClick={getPreUserList}>
                         上一页
                     </Button>}
 

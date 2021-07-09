@@ -483,7 +483,7 @@ function PurchaseDetail (props){
                                 <Grid item sm={8}>{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE,purchaseDetailReducer.purchaseDetailInfo.transfer_cost_type)}运费:{purchaseDetailReducer.purchaseDetailInfo.transfer_cost}</Grid>
                                 <Grid item sm={4}>总价:{purchaseDetailReducer.purchaseDetailInfo.total_cost}</Grid>
                             </Grid>
-                            <Grid container spacing={0} style={{paddingTop: 35}}  align='right'>
+                            <Grid container spacing={0} style={{paddingTop: 35}}  align='left'>
                                 <Grid item sm={12}>备注:{purchaseDetailReducer.purchaseDetailInfo.remark}</Grid>
                             </Grid>
                         </div>
@@ -491,9 +491,7 @@ function PurchaseDetail (props){
                     </TabPanel>
                     <TabPanel value='2'>
                         <Grid item xs align="right">
-                            <Fab color="primary" aria-label="add" size="small" onClick={()=>{handleAddOpen()}}>
-                                <i className="mdi mdi-plus mdi-24px"/>
-                            </Fab>
+                            <Fab color="primary" aria-label="add" size="small" onClick={()=>{handleAddOpen()}}>退</Fab>
                         </Grid>
                         <Grid container spacing={2}>
                             <TableContainer component={Paper} style={{marginTop:40}}>
@@ -545,7 +543,7 @@ function PurchaseDetail (props){
                                             <StyledTableCell align="center">退款状态</StyledTableCell>
                                             <StyledTableCell align="center">退货单价</StyledTableCell>
                                             <StyledTableCell align="center">退货数量</StyledTableCell>
-                                            <StyledTableCell align="center">运费支付方式</StyledTableCell>
+                                            <StyledTableCell align="center">运费方式</StyledTableCell>
                                             <StyledTableCell align="center">运费</StyledTableCell>
                                             <StyledTableCell align="center">退款总价</StyledTableCell>
                                             <StyledTableCell align="center">退货盈亏</StyledTableCell>

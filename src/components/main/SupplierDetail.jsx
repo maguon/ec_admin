@@ -386,16 +386,16 @@ function SupplierDetail (props){
                     </TabPanel>
                     <TabPanel value='3'>
                         <Grid container spacing={2}>
-                            <TableContainer component={Paper} style={{marginTop:40}}>
+                            <TableContainer component={Paper} style={{marginTop:20}}>
                                 <Table  size={'small'} aria-label="a dense table">
                                     <TableHead >
-                                        <TableRow style={{height:60}}>
+                                        <TableRow style={{height:50}}>
                                             <StyledTableCell align="center">ID</StyledTableCell>
                                             <StyledTableCell align="center">商品名称</StyledTableCell>
                                             <StyledTableCell align="center">退款状态</StyledTableCell>
                                             <StyledTableCell align="center">退货单价</StyledTableCell>
                                             <StyledTableCell align="center">退货数量</StyledTableCell>
-                                            <StyledTableCell align="center">运费支付方式</StyledTableCell>
+                                            <StyledTableCell align="center">运费支付</StyledTableCell>
                                             <StyledTableCell align="center">运费</StyledTableCell>
                                             <StyledTableCell align="center">退款总价</StyledTableCell>
                                             <StyledTableCell align="center">退货盈亏</StyledTableCell>
