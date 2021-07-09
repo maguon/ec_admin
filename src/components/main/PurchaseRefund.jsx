@@ -30,7 +30,6 @@ import {PurchaseRefundActionType} from '../../types';
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from "@material-ui/pickers";
 import Swal from "sweetalert2";
-import Switch from "@material-ui/core/Switch";
 const PurchaseRefundAction = require('../../actions/main/PurchaseRefundAction');
 const PurchaseAction = require('../../actions/main/PurchaseAction');
 const commonUtil = require('../../utils/CommonUtil');
@@ -413,7 +412,7 @@ function PurchaseRefund (props){
                     <TableContainer component={Paper} style={{marginTop:20}}>
                         <Table  size={'small'} aria-label="a dense table">
                             <TableHead >
-                                <TableRow style={{height:40}}>
+                                <TableRow style={{height:50}}>
                                     <StyledTableCell align="center">ID</StyledTableCell>
                                     <StyledTableCell align="center">采购单号</StyledTableCell>
                                     <StyledTableCell align="center">供应商</StyledTableCell>

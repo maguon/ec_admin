@@ -1,6 +1,6 @@
 import React, {useEffect,useState}from 'react';
 import {connect, useDispatch} from 'react-redux';
-import {CommonActionType, PurchaseActionType, SupplierActionType} from '../../types';
+import {SupplierActionType} from '../../types';
 import {SimpleModal} from '../index';
 import {
     Button,
@@ -20,7 +20,6 @@ import Fab from '@material-ui/core/Fab';
 import {withStyles,makeStyles} from "@material-ui/core/styles";
 import {Link} from "react-router-dom";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import Switch from "@material-ui/core/Switch";
 const SupplierAction = require('../../actions/main/SupplierAction');
 const CommonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');
