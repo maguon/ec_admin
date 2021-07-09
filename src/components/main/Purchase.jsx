@@ -387,7 +387,7 @@ function Purchase (props){
                                         <TableCell align="center" >{commonUtil.getJsonValue(sysConst.PURCHASE_STATUS, row.status)}</TableCell>
                                         <TableCell align="center">
                                             <IconButton color="primary" edge="start"  size="small" onClick={()=>{downLoadPDF(row)}}>
-                                                <i className="mdi mdi-file-pdf mdi-24px"/>
+                                                <i className="mdi mdi-file-pdf"/>
                                             </IconButton>
                                             {/* 详情按钮*/}
                                             <IconButton color="primary" edge="start"  size="small">
@@ -407,7 +407,7 @@ function Purchase (props){
                         <Button className={classes.button} variant="contained" color="primary"  onClick={getNextSupplierList}>
                             下一页
                         </Button>}
-                        {purchaseReducer.queryPurchaseObj.start > 0 &&purchaseReducer.dataSize > 0 &&
+                        {purchaseReducer.start > 0 &&purchaseReducer.dataSize > 0 &&
                         <Button className={classes.button} variant="contained" color="primary" onClick={getPreSupplierList}>
                             上一页
                         </Button>}
