@@ -210,16 +210,16 @@ function PurchaseRefundPay(props) {
                                     {row.payment_status==1 &&
                                     <IconButton color="primary" edge="start" size="small"
                                                 onClick={() => {confirmPay(row.id,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus)}}>
-                                        <i className="mdi mdi-bitcoin mdi-24px"/>
+                                        <i className="mdi mdi-bitcoin"/>
                                     </IconButton>}
                                     {row.payment_status!=1 &&
                                     <IconButton color="default" edge="start" size="small" disabled>
-                                        <i className="mdi mdi-check-circle-outline mdi-24px"/>
+                                        <i className="mdi mdi-check-circle-outline"/>
                                     </IconButton>}
 
                                     {/* 编辑按钮 */}
                                     <IconButton color="primary" edge="start" size="small" onClick={() => {initModal(row)}}>
-                                        <i className="mdi mdi-table-search mdi-24px"/>
+                                        <i className="mdi mdi-table-search"/>
                                     </IconButton>
                                 </TableCell>
                             </TableRow>

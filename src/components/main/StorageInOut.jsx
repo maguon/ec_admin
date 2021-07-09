@@ -39,7 +39,6 @@ const commonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
-
 const useStyles = makeStyles((theme) => ({
     root: customTheme.root,
     title: customTheme.pageTitle,
@@ -55,7 +54,7 @@ function StorageInOut(props) {
     useEffect(() => {
         // 清空reducer
         let purchaseParams = {
-            storageStatus: null,
+            storageStatus: '',
             storage: null,
             storageArea: null,
             supplier: null,
@@ -64,9 +63,9 @@ function StorageInOut(props) {
         };
         dispatch(StorageInOutActionType.setPurchaseParams(purchaseParams));
         let refundParams = {
-            refundStorageFlag: null,
-            paymentStatus: null,
-            transferCostType: null,
+            refundStorageFlag: '',
+            paymentStatus: '',
+            transferCostType: '',
             supplier: null,
             purchaseId: '',
             productId: ''
@@ -74,8 +73,8 @@ function StorageInOut(props) {
         dispatch(StorageInOutActionType.setRefundParams(refundParams));
 
         let storageParams = {
-            storageType: null,
-            storageSubType: null,
+            storageType: '',
+            storageSubType: '',
             storage: null,
             storageArea: null,
             supplier: null,
@@ -247,7 +246,6 @@ function StorageInOut(props) {
         setRefundModalOpen(true);
     };
 
-    // const [validation,setValidation] = useState({});
     const validateRefundModal = ()=>{
         const validateObj ={};
         if (!storageProduct) {
@@ -401,8 +399,8 @@ function StorageInOut(props) {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {storageInOutReducer.purchaseItemStorage.dataList.map((row) => (
-                                    <TableRow key={'table-row-' + row.id}>
+                                {storageInOutReducer.purchaseItemStorage.dataList.map((row, index) => (
+                                    <TableRow key={'table-row-' + index}>
                                         <TableCell align="center">{row.purchase_id}</TableCell>
                                         <TableCell align="center">{row.supplier_name}</TableCell>
                                         <TableCell align="center">{row.product_name}</TableCell>
@@ -413,7 +411,7 @@ function StorageInOut(props) {
                                         <TableCell align="center">
                                             <IconButton color="primary" size="small" edge="start" onClick={() => {initModal(row)}}
                                                         disabled={row.storage_status === sysConst.STORAGE_STATUS[1].value}>
-                                                <i className="mdi mdi-login mdi-24px"/>
+                                                <i className="mdi mdi-login"/>
                                             </IconButton>
                                         </TableCell>
                                     </TableRow>
@@ -561,10 +559,10 @@ function StorageInOut(props) {
                                 <Autocomplete id="condition-supplier" fullWidth
                                               options={commonReducer.supplierList}
                                               getOptionLabel={(option) => option.supplier_name}
+                                              value={storageInOutReducer.refundParams.supplier}
                                               onChange={(event, value) => {
                                                   dispatch(StorageInOutActionType.setRefundParam({name: "supplier", value: value}));
                                               }}
-                                              value={storageInOutReducer.refundParams.supplier}
                                               renderInput={(params) => <TextField {...params} label="供应商" margin="dense" variant="outlined"/>}
                                 />
                             </Grid>
@@ -620,14 +618,13 @@ function StorageInOut(props) {
                                         <TableCell align="center">{row.refund_count}</TableCell>
                                         <TableCell align="center">{commonUtil.getJsonValue(sysConst.REFUND_PAYMENT_STATUS, row.payment_status)}</TableCell>
                                         <TableCell align="center">
-                                            {/* storageProductRelDetail use storage_rel_id */}
                                             {row.storage_rel_id == null &&
                                             <IconButton color="primary" edge="start" size="small" onClick={() => {initRefundModal(row,'')}}>
-                                                <i className="mdi mdi-logout mdi-24px"/>
+                                                <i className="mdi mdi-logout"/>
                                             </IconButton>}
                                             {row.storage_rel_id != null &&
                                             <IconButton color="primary" edge="start" size="small" onClick={() => {initRefundModal(row,'info')}}>
-                                                <i className="mdi mdi-table-of-contents mdi-24px"/>
+                                                <i className="mdi mdi-table-of-contents"/>
                                             </IconButton>}
                                         </TableCell>
                                     </TableRow>
@@ -661,7 +658,6 @@ function StorageInOut(props) {
                                  }
                     >
                         <Grid container spacing={2}>
-
                             <Grid item sm={6}>采购单号：{purchaseRefund.purchase_id}</Grid>
                             <Grid item sm={6}>供应商：{purchaseRefund.supplier_name}</Grid>
                             <Grid item sm={6}>商品：{purchaseRefund.product_name}</Grid>
@@ -702,10 +698,10 @@ function StorageInOut(props) {
                                                   options={storageInOutReducer.storageProductRelList}
                                                   noOptionsText="无选项"
                                                   getOptionLabel={(option) => option.storage_name + '-' + option.storage_area_name + '-' + option.product_name + '-' + option.storage_count}
+                                                  value={storageProduct}
                                                   onChange={(event, value) => {
                                                       setStorageProduct(value);
                                                   }}
-                                                  value={storageProduct}
                                                   renderInput={(params) => <TextField {...params} label="仓库" margin="dense" variant="outlined"
                                                                                       error={validation.storageProduct&&validation.storageProduct!=''}
                                                                                       helperText={validation.storageProduct}
@@ -771,6 +767,7 @@ function StorageInOut(props) {
                                 <Autocomplete id="condition-storage" fullWidth
                                               options={commonReducer.storageList}
                                               getOptionLabel={(option) => option.storage_name}
+                                              value={storageInOutReducer.storageProductDetailParams.storage}
                                               onChange={(event, value) => {
                                                   // 选择时 将当前选中值 赋值 reducer
                                                   dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "storage", value: value}));
@@ -783,7 +780,6 @@ function StorageInOut(props) {
                                                       dispatch(CommonActionType.setStorageAreaList([]));
                                                   }
                                               }}
-                                              value={storageInOutReducer.storageProductDetailParams.storage}
                                               renderInput={(params) => <TextField {...params} label="仓库" margin="dense" variant="outlined"/>}
                                 />
                             </Grid>
@@ -792,10 +788,10 @@ function StorageInOut(props) {
                                               options={commonReducer.storageAreaList}
                                               noOptionsText="无选项"
                                               getOptionLabel={(option) => option.storage_area_name}
+                                              value={storageInOutReducer.storageProductDetailParams.storageArea}
                                               onChange={(event, value) => {
                                                   dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "storageArea", value: value}));
                                               }}
-                                              value={storageInOutReducer.storageProductDetailParams.storageArea}
                                               renderInput={(params) => <TextField {...params} label="仓库分区" margin="dense" variant="outlined"/>}
                                 />
                             </Grid>
@@ -804,10 +800,10 @@ function StorageInOut(props) {
                                 <Autocomplete id="condition-supplier" fullWidth
                                               options={commonReducer.supplierList}
                                               getOptionLabel={(option) => option.supplier_name}
+                                              value={storageInOutReducer.storageProductDetailParams.supplier}
                                               onChange={(event, value) => {
                                                   dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "supplier", value: value}));
                                               }}
-                                              value={storageInOutReducer.storageProductDetailParams.supplier}
                                               renderInput={(params) => <TextField {...params} label="供应商" margin="dense" variant="outlined"/>}
                                 />
                             </Grid>

@@ -275,15 +275,15 @@ function StorageCheck(props) {
                                 <TableCell align="center">{commonUtil.getJsonValue(sysConst.STORAGE_RET_STATUS, row.status)}</TableCell>
                                 <TableCell align="center">
                                     <IconButton color="primary" edge="start" size="small" onClick={()=>{downLoadCsv(row.id)}}>
-                                        <i className="mdi mdi-file-excel mdi-24px"/>
+                                        <i className="mdi mdi-file-excel"/>
                                     </IconButton>
                                     <IconButton color="primary" edge="start" size="small" onClick={()=>{downLoadPDF(row)}}>
-                                        <i className="mdi mdi-file-pdf mdi-24px"/>
+                                        <i className="mdi mdi-file-pdf"/>
                                     </IconButton>
                                     {/* 编辑按钮 */}
                                     <IconButton color="primary" edge="start" size="small">
                                         <Link to={{pathname: '/storage_check/' + row.id}}>
-                                            <i className="mdi mdi-table-search mdi-24px"/>
+                                            <i className="mdi mdi-table-search"/>
                                         </Link>
                                     </IconButton>
                                 </TableCell>

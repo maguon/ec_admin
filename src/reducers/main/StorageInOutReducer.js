@@ -16,7 +16,7 @@ const initialState = {
     // 检索条件
     purchaseParams: {
         // 仓储状态
-        storageStatus: null,
+        storageStatus: '',
         // 仓库
         storage: null,
         // 仓库分区
@@ -40,11 +40,11 @@ const initialState = {
     },
     refundParams: {
         // 退仓状态
-        refundStorageFlag: null,
+        refundStorageFlag: '',
         // 退款状态
-        paymentStatus: null,
+        paymentStatus: '',
         // 运费类型
-        transferCostType: null,
+        transferCostType: '',
         // 供应商
         supplier: null,
         // 采购单ID
@@ -66,9 +66,9 @@ const initialState = {
     },
     storageProductDetailParams: {
         // 仓储区分
-        storageType: null,
+        storageType: '',
         // 仓储子区分
-        storageSubType: null,
+        storageSubType: '',
         // 仓库
         storage: null,
         // 仓库分区

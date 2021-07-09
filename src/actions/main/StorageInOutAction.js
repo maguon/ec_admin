@@ -16,7 +16,7 @@ export const getPurchaseItemStorage = (params) => async (dispatch, getState) => 
         // 检索条件
         const queryParams = getState().StorageInOutReducer.purchaseParams;
         let conditionsObj = {
-            storageStatus: queryParams.storageStatus == null ? '' : queryParams.storageStatus,
+            storageStatus: queryParams.storageStatus,
             storageId: queryParams.storage == null ? '' : queryParams.storage.id,
             storageAreaId: queryParams.storageArea == null ? '' : queryParams.storageArea.id,
             supplierId: queryParams.supplier === null ? '' : queryParams.supplier.id,
@@ -82,9 +82,9 @@ export const getPurchaseRefund = (params) => async (dispatch, getState) => {
         // 检索条件
         const queryParams = getState().StorageInOutReducer.refundParams;
         let conditionsObj = {
-            refundStorageFlag: queryParams.refundStorageFlag == null ? '' : queryParams.refundStorageFlag,
-            paymentStatus: queryParams.paymentStatus == null ? '' : queryParams.paymentStatus,
-            transferCostType: queryParams.transferCostType == null ? '' : queryParams.transferCostType,
+            refundStorageFlag: queryParams.refundStorageFlag,
+            paymentStatus: queryParams.paymentStatus,
+            transferCostType: queryParams.transferCostType,
             supplierId: queryParams.supplier === null ? '' : queryParams.supplier.id,
             purchaseId: queryParams.purchaseId,
             productId: queryParams.productId,
@@ -211,8 +211,8 @@ const getParams = () => (dispatch, getState) => {
     // 检索条件
     const queryParams = getState().StorageInOutReducer.storageProductDetailParams;
     let conditionsObj = {
-        storageType: queryParams.storageType == null ? '' : queryParams.storageType,
-        storageSubType: queryParams.storageSubType == null ? '' : queryParams.storageSubType,
+        storageType: queryParams.storageType,
+        storageSubType: queryParams.storageSubType,
         storageId: queryParams.storage == null ? '' : queryParams.storage.id,
         storageAreaId: queryParams.storageArea == null ? '' : queryParams.storageArea.id,
         supplierId: queryParams.supplier === null ? '' : queryParams.supplier.id,

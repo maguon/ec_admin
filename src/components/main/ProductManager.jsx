@@ -418,7 +418,7 @@ function ProductManager(props) {
                                     {/* 编辑按钮 */}
                                     <IconButton color="primary" edge="start" size="small">
                                         <Link to={{pathname: '/product_manager/' + row.id}}>
-                                            <i className="mdi mdi-table-search mdi-24px"/>
+                                            <i className="mdi mdi-table-search"/>
                                         </Link>
                                     </IconButton>
                                 </TableCell>

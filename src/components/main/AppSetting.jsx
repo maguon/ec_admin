@@ -259,12 +259,12 @@ function AppSetting(props) {
 
                                     {/* 删除按钮 */}
                                     <IconButton color="primary" edge="start" size="small" onClick={() => {deleteApp(row.id, paramDeviceType, paramStatus)}}>
-                                        <i className="mdi mdi-close mdi-24px"/>
+                                        <i className="mdi mdi-close"/>
                                     </IconButton>
 
                                     {/* 编辑按钮 */}
                                     <IconButton color="primary" edge="start" size="small" onClick={() => {initModal(row)}}>
-                                        <i className="mdi mdi-table-search mdi-24px"/>
+                                        <i className="mdi mdi-table-search"/>
                                     </IconButton>
                                 </TableCell>
                             </TableRow>
