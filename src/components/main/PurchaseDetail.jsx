@@ -1,34 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {connect,useDispatch} from 'react-redux';
-import {PurchaseDetailActionType} from '../../types';
-import {
-    Button,
-    Grid,
-    Typography,
-    TextField,
-    IconButton,
-    FormControl,
-    InputLabel,
-    Select,
-    Tab,
-    Tabs,
-    MenuItem,
-    Fab,
-    AppBar,
-    TableContainer,
-    Paper,
-    Table,
-    TableHead,
-    TableRow,
-    TableBody,
-    TableCell, FormHelperText,
-} from "@material-ui/core";
-import {makeStyles, withStyles} from "@material-ui/core/styles";
 import {Link, useParams} from "react-router-dom";
 import Swal from "sweetalert2";
+import {Button, Grid, Typography, TextField, IconButton, FormControl, InputLabel, Select, Tab, Tabs,
+        MenuItem, Fab, AppBar, TableContainer, Paper, Table, TableHead, TableRow, TableBody, TableCell, FormHelperText} from "@material-ui/core";
+import {makeStyles, withStyles} from "@material-ui/core/styles";
 import TabContext from "@material-ui/lab/TabContext";
 import TabPanel from "@material-ui/lab/TabPanel";
 import {SimpleModal} from "../index";
+import {PurchaseDetailActionType} from '../../types';
 const PurchaseDetailAction = require('../../actions/main/PurchaseDetailAction');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
@@ -39,17 +19,8 @@ const useStyles = makeStyles((theme) => ({
         width: `calc(100% - 50px)`,
         paddingLeft: 30
     },
-    // 标题样式
-    pageTitle: {
-        color: '#3C3CC4',
-        fontSize: 20,
-        fontWeight: 'bold'
-    },
-    pageDivider: {
-        height: 1,
-        marginBottom: 15,
-        background: '#7179e6'
-    },
+    pageTitle: customTheme.pageTitle,
+    pageDivider: customTheme.pageDivider,
     pdfPage:customTheme.pdfPage,
     pdfTitle:customTheme.pdfTitle,
     tblHeader:customTheme.tblHeader,
@@ -862,9 +833,7 @@ function PurchaseDetail (props){
             </SimpleModal>
         </div>
     )
-
 }
-
 const mapStateToProps = (state, ownProps) => {
     let fromDetail = false;
     if (typeof ownProps.location.state != 'undefined' && ownProps.location.state != null && ownProps.location.state.fromDetail) {
@@ -919,5 +888,4 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
         dispatch(PurchaseDetailAction.downLoadPDF(name,id))
     }
 });
-
 export default connect(mapStateToProps, mapDispatchToProps)(PurchaseDetail)

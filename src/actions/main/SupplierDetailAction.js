@@ -66,22 +66,22 @@ export const getPurchaseRefundInfo = (params) => async (dispatch, getState) => {
 export const updateSupplier = (params) => async (dispatch, getState) => {
     try {
         const params = getState().SupplierDetailReducer.supplierInfo;
-        var paramsObj={
-            "remark":params.remark,
-            "supplierName": params.supplier_name,
-            "supplierType": params.supplier_type,
-            "contactName": params.contact_name,
-            "email": params.email,
-            "tel": params.tel,
-            "mobile": params.mobile,
-            "fax": params.fax,
-            "address": params.address,
-            "invoiceTitle":params.invoice_title,
-            "invoiceBank": params.invoice_bank,
-            "invoiceBankSer": params.invoice_bank_ser,
-            "invoiceAddress": params.invoice_address,
-            "settleType": params.settle_type,
-            "settleMonthDay": params.settle_month_day==''?0:params.settle_month_day
+        const paramsObj={
+                "remark":params.remark,
+                "supplierName": params.supplier_name,
+                "supplierType": params.supplier_type,
+                "contactName": params.contact_name,
+                "email": params.email,
+                "tel": params.tel,
+                "mobile": params.mobile,
+                "fax": params.fax,
+                "address": params.address,
+                "invoiceTitle":params.invoice_title,
+                "invoiceBank": params.invoice_bank,
+                "invoiceBankSer": params.invoice_bank_ser,
+                "invoiceAddress": params.invoice_address,
+                "settleType": params.settle_type,
+                "settleMonthDay": params.settle_month_day==''?0:params.settle_month_day
         }
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpPut(apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/supplier/'+params.id, paramsObj);

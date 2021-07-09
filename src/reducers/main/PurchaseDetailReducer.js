@@ -22,7 +22,6 @@ const initialState = {
     storageProductArray:[],
     supplierDetailArray: {},
 };
-
 export default handleActions({
     [PurchaseDetailActionType.getPurchaseDetailInfo]: (state, action) => {
         return {
@@ -80,7 +79,4 @@ export default handleActions({
             supplierDetailArray: action.payload
         }
     },
-
-
-
 }, initialState)

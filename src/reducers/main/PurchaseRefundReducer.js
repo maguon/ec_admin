@@ -20,7 +20,6 @@ const initialState = {
     purchaseItem:[],
     productArray:[],
 }
-
 export default handleActions({
     [PurchaseRefundActionType.getPurchaseRefundList]: (state, action) => {
         return {
@@ -52,6 +51,4 @@ export default handleActions({
             productArray: action.payload
         }
     },
-
-
 }, initialState)

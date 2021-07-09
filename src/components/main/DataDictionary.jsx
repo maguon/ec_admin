@@ -1,11 +1,6 @@
 import React, {useEffect}from 'react';
 import {connect} from 'react-redux';
-import {
-    Grid,
-    AppBar,
-    Tab,
-    Tabs, TableContainer, Paper, Table, TableHead, TableRow, TableBody, TableCell,
-} from "@material-ui/core";
+import {Grid,AppBar, Tab,Tabs, TableContainer, Paper, Table, TableHead, TableRow, TableBody, TableCell} from "@material-ui/core";
 import TabContext from '@material-ui/lab/TabContext';
 import TabPanel from '@material-ui/lab/TabPanel';
 import {withStyles} from "@material-ui/core/styles";
@@ -19,17 +14,16 @@ const StyledTableCell = withStyles((theme) => ({
     }
 }))(TableCell);
 //数据字典
-
 function DataDictionary(props){
     const {dataDictionaryReducer,getSupplierList,getCategoryList,getProductList,getBrandList} = props;
     const [value, setValue] = React.useState('1');
+    useEffect(()=>{
+        getSupplierList();
+    },[]);
     const handleChange = (event, newValue) => {
         setValue(newValue);
         newValue=='2'? getCategoryList(): newValue=='3'? getBrandList(): newValue=='4'?getProductList(): getSupplierList();
     };
-    useEffect(()=>{
-        getSupplierList();
-    },[]);
     return(
         <TabContext value={value}>
             <AppBar position="static" color="default">
@@ -166,18 +160,13 @@ function DataDictionary(props){
             </TabPanel>
         </TabContext>
     )
-
 }
-
-
 const mapStateToProps = (state, ownProps) => {
     return {
         dataDictionaryReducer: state.DataDictionaryReducer
     }
 };
-
 const mapDispatchToProps = (dispatch,ownProps) => ({
-
     getSupplierList: () => {
         dispatch(DataDictionaryAction.getSupplierList())
     },
@@ -190,7 +179,5 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
     getBrandList: () => {
         dispatch(DataDictionaryAction.getBrandList())
     }
-
 });
-
 export default connect(mapStateToProps, mapDispatchToProps)(DataDictionary)

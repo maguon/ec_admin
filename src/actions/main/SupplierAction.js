@@ -44,7 +44,7 @@ export const addSupplier = (params) => async (dispatch) => {
         const res = await httpUtil.httpPost(apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/supplier', params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true) {
-            dispatch(getSupplierList());
+            dispatch(getSupplierList(0));
             Swal.fire("增加成功", "", "success");
         } else if (res.success === false) {
             Swal.fire('保存失败', res.msg, 'warning');

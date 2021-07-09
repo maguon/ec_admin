@@ -12,7 +12,6 @@ const initialState = {
         finishDateStart:'',
         finishDateEnd:''
     },
-
     //添加条件
     addPurchaseObj:{
         remark: "",
@@ -46,7 +45,6 @@ const initialState = {
     supplierPdfArray:{},
     purchaseItemArray:[],
 };
-
 export default handleActions({
     [PurchaseActionType.setPurchaseQueryObj]: (state, action) => {
         return {
@@ -76,7 +74,6 @@ export default handleActions({
             addPurchaseObj: addPurchaseInfo
         }
     },
-
     [PurchaseActionType.setPurchaseArray]: (state, action) => {
         return {
             ...state,
@@ -125,6 +122,4 @@ export default handleActions({
            purchaseItemArray: action.payload
         }
     },
-
-
 }, initialState)

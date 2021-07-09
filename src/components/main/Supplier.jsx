@@ -1,7 +1,5 @@
 import React, {useEffect,useState}from 'react';
 import {connect, useDispatch} from 'react-redux';
-import {SupplierActionType} from '../../types';
-import {SimpleModal} from '../index';
 import {
     Button,
     Divider,
@@ -14,38 +12,33 @@ import {
     TableHead,
     TableRow,
     TableCell,
-    TableBody, IconButton,
+    TableBody,
+    IconButton,
+    Box
 } from "@material-ui/core";
 import Fab from '@material-ui/core/Fab';
 import {withStyles,makeStyles} from "@material-ui/core/styles";
 import {Link} from "react-router-dom";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import {SupplierActionType} from '../../types';
+import {SimpleModal} from '../index';
 const SupplierAction = require('../../actions/main/SupplierAction');
 const CommonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
+const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
     // 标题样式
     root: {
-        width: `calc(100% - 50px)`,
         paddingLeft: 30
     },
     // 标题样式
-    pageTitle: {
-        color: '#3C3CC4',
-        fontSize: 20,
-        fontWeight: 'bold'
-    },
-    pageDivider: {
-        height: 1,
-        marginBottom: 15,
-        background: '#7179e6'
-    },
+    pageTitle: customTheme.pageTitle,
+    pageDivider:customTheme.pageDivider,
     selectLabel: {
         fontSize: 10,
         color: 'grey'
     },
-
     select: {
         width: '100%',
     },
@@ -65,7 +58,6 @@ const StyledTableCell = withStyles((theme) => ({
         fontWeight:'bold',
         background:'#F7F6F9',
         borderTop: '2px solid #D4D4D4'
-
     }
 }))(TableCell);
 //供应商
@@ -91,10 +83,28 @@ function Supplier (props){
     const [settleMonthDay, setSettleMonthDay] = useState('');
     const [remark, setRemark] = useState('');
     const [validation,setValidation] = useState({});
-
-
+    const [settleTypeFlag,setSettleTypeFlag] = useState(true);
+    useEffect(()=>{
+       if(settleType==1){
+           setSettleTypeFlag(false);
+       }else {
+           setSettleTypeFlag(true);
+           setSettleMonthDay('');
+       }
+    },[settleType])
+    useEffect(()=>{
+        if (!fromDetail) {
+            let params={
+                supplierId:null,
+                supplierType:null
+            }
+            dispatch(SupplierActionType.setSupplierQueryObjs(params));
+        }
+        props.getSupplierList(supplierReducer.start);
+        props.getBaseSelectList()
+    },[])
     //初始添加模态框值
-    const handleAddOpen =() =>{
+    const modalOpen =() =>{
         setModalOpenFlag(true);
         setSupplierName('');
         setSupplierType(1);
@@ -116,7 +126,6 @@ function Supplier (props){
     const modalClose = () => {
         setModalOpenFlag(false);
     };
-
     //验证()
     const validate = ()=>{
         const validateObj ={}
@@ -126,7 +135,6 @@ function Supplier (props){
         setValidation(validateObj);
         return Object.keys(validateObj).length
     }
-
     //添加供应商
     const addSupplier= ()=>{
         const errorCount = validate();
@@ -135,30 +143,14 @@ function Supplier (props){
             setModalOpenFlag(false);
         }
     }
-
-
-    useEffect(()=>{
-        if (!fromDetail) {
-            let params={
-                supplierId:null,
-                supplierType:null
-            }
-            dispatch(SupplierActionType.setSupplierQueryObjs(params));
-        }
-        props.getSupplierList(supplierReducer.start);
-        props.getBaseSelectList()
-    },[])
-
     //查询供应商列表
     const getSupplierArray =() =>{
         props.getSupplierList(0);
     }
-
     //上一页
     const getPreSupplierList = () => {
         props.getSupplierList(props.supplierReducer.start-(props.supplierReducer.size-1));
     };
-
     //下一页
     const getNextSupplierList = () => {
         props.getSupplierList(props.supplierReducer.start+(props.supplierReducer.size-1));
@@ -168,7 +160,6 @@ function Supplier (props){
             {/* 标题部分 */}
             <Typography gutterBottom className={classes.pageTitle}>供应商</Typography>
             <Divider light className={classes.pageDivider}/>
-
             {/*查询条件*/}
             <Grid container  spacing={1}>
                 <Grid container item xs={10} spacing={1}>
@@ -208,13 +199,12 @@ function Supplier (props){
                 </Grid>
                 {/*添加按钮*/}
                 <Grid item xs={1}>
-                    <Fab size="small" color="primary" aria-label="add" onClick={()=>{handleAddOpen()}}>
+                    <Fab size="small" color="primary" aria-label="add" onClick={()=>{modalOpen()}}>
                         <i className="mdi mdi-plus mdi-24px" />
                     </Fab>
                 </Grid>
 
             </Grid>
-
             {/*主体*/}
             <Grid container spacing={1}>
                 <TableContainer component={Paper} style={{marginTop:20}}>
@@ -256,20 +246,21 @@ function Supplier (props){
                             }
                         </TableBody>
                     </Table>
-
-                    {supplierReducer.dataSize >=supplierReducer.size &&
-                    <Button className={classes.button} variant="contained" color="primary"  size="small" onClick={getNextSupplierList}>
-                        下一页
-                    </Button>}
-                    {supplierReducer.start > 0 &&supplierReducer.dataSize > 0 &&
-                    <Button className={classes.button} variant="contained" color="primary"  size="small" onClick={getPreSupplierList}>
-                        上一页
-                    </Button>}
-
                 </TableContainer>
             </Grid>
+            {/* 上下页按钮 */}
+            <Box style={{textAlign: 'right', marginTop: 20}}>
+                {supplierReducer.dataSize >=supplierReducer.size &&
+                <Button className={classes.button} variant="contained" color="primary"  size="small" onClick={getNextSupplierList}>
+                    下一页
+                </Button>}
+                {supplierReducer.start > 0 &&supplierReducer.dataSize > 0 &&
+                <Button className={classes.button} variant="contained" color="primary"  size="small" onClick={getPreSupplierList}>
+                    上一页
+                </Button>}
+            </Box>
 
-           {/* 添加供应商信息*/}
+            {/* 添加供应商信息*/}
             <SimpleModal
                 title= "新增供应商信息"
                 open={modalOpenFlag}
@@ -498,7 +489,7 @@ function Supplier (props){
                         </TextField>
                     </Grid>
                     <Grid item xs>
-                        <TextField fullWidth
+                        <TextField fullWidth disabled={settleTypeFlag}
                                    size="small"
                                    name="settleMonthDay"
                                    type="number"

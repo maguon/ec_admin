@@ -1,13 +1,12 @@
-import {PurchaseActionType, AppActionType} from '../../types';
-import {apiHost} from "../../config";
 import Swal from "sweetalert2";
+import {apiHost} from "../../config";
+import {PurchaseActionType, AppActionType} from '../../types';
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
-
 // 采购管理 -> 采购 获取供应商列表
-export const getSupplierList = (params) => async (dispatch, getState) => {
+export const getSupplierList = () => async (dispatch) => {
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/supplier?';
@@ -23,9 +22,8 @@ export const getSupplierList = (params) => async (dispatch, getState) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
-
 // 采购管理 -> 采购 获取商品列表
-export const getProductList = (params) => async (dispatch, getState) => {
+export const getProductList = () => async (dispatch) => {
     try {
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/product?';
         dispatch({type: AppActionType.showLoadProgress, payload: true});
@@ -41,11 +39,11 @@ export const getProductList = (params) => async (dispatch, getState) => {
     }
 };
 // 采购管理 -> 采购 增加商品列表
-export const addPurchaseInfo = (supplier,paramsItem,transferCostType,transferCost,remark) => async (dispatch, getState) => {
+export const addPurchaseInfo = (supplier,paramsItem,transferCostType,transferCost,remark) => async (dispatch) => {
     try {
         const paramsPurchase = [];
         for(let i=0;i<paramsItem.length;i++){
-            var obj = {};
+            let obj = {};
             obj.remark = paramsItem[i].remark;
             obj.productId= paramsItem[i].product.split('&')[0];
             obj.productName= paramsItem[i].product.split('&')[1];
@@ -62,7 +60,6 @@ export const addPurchaseInfo = (supplier,paramsItem,transferCostType,transferCos
                 orderId: 0,
                 purchaseItem: paramsPurchase
         };
-        console.log(params)
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchase';
         dispatch({type: AppActionType.showLoadProgress, payload: true});
@@ -78,9 +75,6 @@ export const addPurchaseInfo = (supplier,paramsItem,transferCostType,transferCos
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }
-
-
-
 };
 // 采购管理 -> 采购 取得画面列表
 export const getPurchaseList = (params) => async (dispatch, getState) => {

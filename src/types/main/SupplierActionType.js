@@ -1,5 +1,4 @@
 import {createAction} from 'redux-actions';
-//查询
 export const getSupplierList = createAction('GET_SUPPLIER_LIST');
 export const setSupplierQueryObj= createAction('GET_SUPPLIER_QUERY_OBJ');
 export const setSupplierQueryObjs= createAction('GET_SUPPLIER_QUERY_OBJS');
