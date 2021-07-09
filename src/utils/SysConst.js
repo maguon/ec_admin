@@ -189,6 +189,19 @@ export const STORAGE_OP_EXPORT_TYPE= [
     {value: 25, label: "内部领料出库"},
 ];
 
+export const STORAGE_OP_SUB_TYPE= [
+    {value: 11, label: "采购入库"},
+    {value: 12, label: "移库入库"},
+    {value: 13, label: "盘盈入库"},
+    {value: 14, label: "退单入库"},
+    {value: 15, label: "内部退料入库"},
+    {value: 21, label: "采购退货出库"},
+    {value: 22, label: "移库出库"},
+    {value: 23, label: "盘盈出库"},
+    {value: 24, label: "订单出库"},
+    {value: 25, label: "内部领料出库"},
+];
+
 // 用于权限设定（包含所有机能设定）
 export const ALL_PAGE_LIST = [
     {

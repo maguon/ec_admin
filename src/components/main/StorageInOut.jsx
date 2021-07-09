@@ -14,7 +14,7 @@ import {
     Paper,
     Typography,
     Divider,
-    Button, Fab, makeStyles, AppBar, Tab, FormControl, InputLabel, Select, MenuItem, IconButton, Switch
+    Button, Fab, makeStyles, AppBar, Tab, FormControl, InputLabel, Select, MenuItem, IconButton
 } from "@material-ui/core";
 
 // 引入Dialog
@@ -24,9 +24,7 @@ import {DatePicker} from "@material-ui/pickers";
 import TabList from "@material-ui/lab/TabList";
 import TabPanel from "@material-ui/lab/TabPanel";
 import TabContext from "@material-ui/lab/TabContext";
-import {Link} from "react-router-dom";
 import {SimpleModal} from "../index";
-import Swal from "sweetalert2";
 
 const storageInOutAction = require('../../actions/main/StorageInOutAction');
 const commonAction = require('../../actions/layout/CommonAction');
@@ -37,25 +35,15 @@ const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
     root:{
         marginBottom: 20,
+        minWidth: 800,
     },
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
-    tableRow: {
-        padding: 5,
-    },
-    head: {
-        fontWeight:'bold',
-        background:'#F7F6F9',
-        borderTop: '2px solid #D4D4D4'
-    },
-    tblHeader:customTheme.tblHeader,
-    tblLastHeader:customTheme.tblLastHeader,
-    tblBody:customTheme.tblBody,
-    tblLastBody:customTheme.tblLastBody
+    tableHead: customTheme.tableHead
 }));
 
 function StorageInOut(props) {
-    const {storageInOutReducer, commonReducer} = props;
+    const {storageInOutReducer, commonReducer, downLoadCsv} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
 
@@ -80,6 +68,19 @@ function StorageInOut(props) {
         };
         dispatch(StorageInOutActionType.setRefundParams(refundParams));
 
+        let storageParams = {
+            storageType: null,
+            storageSubType: null,
+            storage: null,
+            storageArea: null,
+            supplier: null,
+            purchaseId: '',
+            productId: '',
+            dateIdStart: '',
+            dateIdEnd: '',
+        };
+        dispatch(StorageInOutActionType.setRefundParams(storageParams));
+
         // 取得画面 select控件，基础数据
         props.getBaseSelectList();
         props.getPurchaseItemStorage(0);
@@ -91,12 +92,23 @@ function StorageInOut(props) {
         setTabValue(newValue);
         switch (newValue) {
             case "purchase":
+                if (storageInOutReducer.purchaseParams.storage != null) {
+                    props.getStorageAreaList(storageInOutReducer.purchaseParams.storage.id);
+                } else {
+                    props.setStorageAreaList([]);
+                }
                 props.getPurchaseItemStorage(0);
                 break;
             case "refund":
                 props.getPurchaseRefund(0);
                 break;
             case "storage":
+                if (storageInOutReducer.storageProductDetailParams.storage != null) {
+                    props.getStorageAreaList(storageInOutReducer.storageProductDetailParams.storage.id);
+                } else {
+                    props.setStorageAreaList([]);
+                }
+                props.getStorageProductRelDetailList(0);
                 break;
             default:
                 break;
@@ -250,6 +262,23 @@ function StorageInOut(props) {
         }
     };
 
+    /** 出入库 TAB */
+
+    // 查询列表，默认第一页
+    const queryStorageProductRelDetailList = () => {
+        props.getStorageProductRelDetailList(0);
+    };
+
+    // 上一页
+    const getSPRDPrePage = () => {
+        props.getStorageProductRelDetailList(props.storageInOutReducer.storageProductDetail.start - (props.storageInOutReducer.storageProductDetail.size - 1));
+    };
+
+    // 下一页
+    const getSPRDNextPage = () => {
+        props.getStorageProductRelDetailList(props.storageInOutReducer.storageProductDetail.start + (props.storageInOutReducer.storageProductDetail.size - 1));
+    };
+
     return (
         <div className={classes.root}>
             {/* 标题部分 */}
@@ -268,7 +297,7 @@ function StorageInOut(props) {
                 {/* 采购入库 */}
                 <TabPanel value="purchase">
                     <Grid container spacing={3}>
-                        <Grid container item xs={11} spacing={3}>
+                        <Grid container item xs={11} spacing={1}>
                             <Grid item xs={2}>
                                 <FormControl variant="outlined" fullWidth margin="dense">
                                     <InputLabel id="check-status-select-outlined-label">仓储状态</InputLabel>
@@ -353,40 +382,40 @@ function StorageInOut(props) {
 
                     {/* 下部分：检索结果显示区域 */}
                     <TableContainer component={Paper} style={{marginTop: 20}}>
-                        <Table stickyHeader aria-label="sticky table" style={{minWidth: 650}}>
+                        <Table stickyHeader size="small">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell padding="default" className={classes.head} align="center">采购单号</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">供应商</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">商品</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">单价</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">仓库</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">仓库分区</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">库存</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">操作</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">采购单号</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">供应商</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">商品</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">单价</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">仓库</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">仓库分区</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">库存</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">操作</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {storageInOutReducer.purchaseItemStorage.dataList.map((row) => (
-                                    <TableRow className={classes.tableRow} key={'table-row-' + row.id} style={{paddingTop:15}}>
-                                        <TableCell padding="" align="center">{row.purchase_id}</TableCell>
-                                        <TableCell padding="" align="center">{row.supplier_name}</TableCell>
-                                        <TableCell padding="" align="center">{row.product_name}</TableCell>
-                                        <TableCell padding="" align="center">{row.unit_cost}</TableCell>
-                                        <TableCell padding="" align="center">{row.storage_name}</TableCell>
-                                        <TableCell padding="" align="center">{row.storage_area_name}</TableCell>
-                                        <TableCell padding="" align="center">{row.storage_count}</TableCell>
-                                        <TableCell padding="none" align="center">
-                                            {row.storage_status === sysConst.STORAGE_STATUS[0].value &&
-                                            <IconButton color="primary" edge="start" onClick={() => {initModal(row)}}>
+                                    <TableRow key={'table-row-' + row.id}>
+                                        <TableCell align="center">{row.purchase_id}</TableCell>
+                                        <TableCell align="center">{row.supplier_name}</TableCell>
+                                        <TableCell align="center">{row.product_name}</TableCell>
+                                        <TableCell align="center">{row.unit_cost}</TableCell>
+                                        <TableCell align="center">{row.storage_name}</TableCell>
+                                        <TableCell align="center">{row.storage_area_name}</TableCell>
+                                        <TableCell align="center">{row.storage_count}</TableCell>
+                                        <TableCell align="center">
+                                            <IconButton color="primary" size="small" edge="start" onClick={() => {initModal(row)}}
+                                                        disabled={row.storage_status === sysConst.STORAGE_STATUS[1].value}>
                                                 <i className="mdi mdi-login mdi-24px"/>
-                                            </IconButton>}
+                                            </IconButton>
                                         </TableCell>
                                     </TableRow>
                                 ))}
                                 {storageInOutReducer.purchaseItemStorage.dataList.length === 0 &&
                                 <TableRow>
-                                    <TableCell colSpan={8} style={{textAlign: 'center'}}>暂无数据</TableCell>
+                                    <TableCell colSpan={8} align="center">暂无数据</TableCell>
                                 </TableRow>}
                             </TableBody>
                         </Table>
@@ -469,7 +498,7 @@ function StorageInOut(props) {
                 {/* 退货出库 */}
                 <TabPanel value="refund">
                     <Grid container spacing={3}>
-                        <Grid container item xs={11} spacing={3}>
+                        <Grid container item xs={11} spacing={1}>
                             <Grid item xs={2}>
                                 <FormControl variant="outlined" fullWidth margin="dense">
                                     <InputLabel id="status-select-outlined-label">退仓状态</InputLabel>
@@ -557,43 +586,43 @@ function StorageInOut(props) {
 
                     {/* 下部分：检索结果显示区域 */}
                     <TableContainer component={Paper} style={{marginTop: 20}}>
-                        <Table stickyHeader aria-label="sticky table" style={{minWidth: 650}}>
+                        <Table stickyHeader size="small">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell padding="default" className={classes.head} align="center">采购单号</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">供应商</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">商品</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">退款日期</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">运费类型</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">运费</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">总成本</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">退货单价</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">退货数量</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">退款状态</TableCell>
-                                    <TableCell padding="default" className={classes.head} align="center">操作</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">采购单号</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">供应商</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">商品</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">退款日期</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">运费类型</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">运费</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">总成本</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">退货单价</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">退货数量</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">退款状态</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">操作</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {storageInOutReducer.purchaseRefundData.dataList.map((row) => (
-                                    <TableRow className={classes.tableRow} key={'table-row-' + row.id} style={{paddingTop:15}}>
-                                        <TableCell padding="none" align="center">{row.purchase_id}</TableCell>
-                                        <TableCell padding="none" align="center">{row.supplier_name}</TableCell>
-                                        <TableCell padding="none" align="center">{row.product_name}</TableCell>
-                                        <TableCell padding="none" align="center">{row.date_id}</TableCell>
-                                        <TableCell padding="none" align="center">{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE, row.transfer_cost_type)}</TableCell>
-                                        <TableCell padding="none" align="center">{row.transfer_cost}</TableCell>
-                                        <TableCell padding="none" align="center">{row.total_cost}</TableCell>
-                                        <TableCell padding="none" align="center">{row.refund_unit_cost}</TableCell>
-                                        <TableCell padding="none" align="center">{row.refund_count}</TableCell>
-                                        <TableCell padding="none" align="center">{commonUtil.getJsonValue(sysConst.REFUND_PAYMENT_STATUS, row.payment_status)}</TableCell>
-                                        <TableCell padding="none" align="center">
+                                    <TableRow key={'table-row-' + row.id}>
+                                        <TableCell align="center">{row.purchase_id}</TableCell>
+                                        <TableCell align="center">{row.supplier_name}</TableCell>
+                                        <TableCell align="center">{row.product_name}</TableCell>
+                                        <TableCell align="center">{row.date_id}</TableCell>
+                                        <TableCell align="center">{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE, row.transfer_cost_type)}</TableCell>
+                                        <TableCell align="center">{row.transfer_cost}</TableCell>
+                                        <TableCell align="center">{row.total_cost}</TableCell>
+                                        <TableCell align="center">{row.refund_unit_cost}</TableCell>
+                                        <TableCell align="center">{row.refund_count}</TableCell>
+                                        <TableCell align="center">{commonUtil.getJsonValue(sysConst.REFUND_PAYMENT_STATUS, row.payment_status)}</TableCell>
+                                        <TableCell align="center">
                                             {/* storageProductRelDetail use storage_rel_id */}
                                             {row.storage_rel_id == null &&
-                                            <IconButton color="primary" edge="start" onClick={() => {initRefundModal(row,'')}}>
+                                            <IconButton color="primary" edge="start" size="small" onClick={() => {initRefundModal(row,'')}}>
                                                 <i className="mdi mdi-logout mdi-24px"/>
                                             </IconButton>}
                                             {row.storage_rel_id != null &&
-                                            <IconButton color="primary" edge="start" onClick={() => {initRefundModal(row,'info')}}>
+                                            <IconButton color="primary" edge="start" size="small" onClick={() => {initRefundModal(row,'info')}}>
                                                 <i className="mdi mdi-table-of-contents mdi-24px"/>
                                             </IconButton>}
                                         </TableCell>
@@ -601,7 +630,7 @@ function StorageInOut(props) {
                                 ))}
                                 {storageInOutReducer.purchaseRefundData.dataList.length === 0 &&
                                 <TableRow>
-                                    <TableCell colSpan={11} style={{textAlign: 'center'}}>暂无数据</TableCell>
+                                    <TableCell colSpan={11} align="center">暂无数据</TableCell>
                                 </TableRow>}
                             </TableBody>
                         </Table>
@@ -615,7 +644,7 @@ function StorageInOut(props) {
                         <Button variant="contained" color="primary" onClick={getRefundNextPage}>下一页</Button>}
                     </Box>
 
-                    <SimpleModal maxWidth={'md'}
+                    <SimpleModal maxWidth={pageType === 'info' ? 'md' : 'sm'}
                                  title="退货出库"
                                  open={refundModalOpen}
                                  onClose={closeRefundModal}
@@ -627,37 +656,44 @@ function StorageInOut(props) {
                                      </>
                                  }
                     >
-                        <Grid container spacing={0}>
-                            <Grid item sm={6} style={{paddingTop: 5}}>采购单号：{purchaseRefund.purchase_id}</Grid>
-                            <Grid item sm={6} style={{paddingTop: 5}}>供应商：{purchaseRefund.supplier_name}</Grid>
-                            <Grid item sm={6} style={{paddingTop: 20}}>商品：{purchaseRefund.product_name}</Grid>
-                            <Grid item sm={6} style={{paddingTop: 20}}>退货数量：{purchaseRefund.refund_count}</Grid>
+                        <Grid container spacing={2}>
+
+                            <Grid item sm={6}>采购单号：{purchaseRefund.purchase_id}</Grid>
+                            <Grid item sm={6}>供应商：{purchaseRefund.supplier_name}</Grid>
+                            <Grid item sm={6}>商品：{purchaseRefund.product_name}</Grid>
+                            <Grid item sm={6}>退货数量：{purchaseRefund.refund_count}</Grid>
 
                             {pageType === 'info' &&
-                                <>
-                                    <Grid item container spacing={0} style={{paddingTop: 20}}>
-                                        <Grid item sm={2} className={classes.tblHeader}>仓库</Grid>
-                                        <Grid item sm={2} className={classes.tblHeader}>仓库分区</Grid>
-
-                                        <Grid item sm={2} className={classes.tblHeader}>操作人员</Grid>
-                                        <Grid item sm={2} className={classes.tblHeader}>操作日期</Grid>
-                                        <Grid item sm={4} className={classes.tblLastHeader}>备注</Grid>
-                                    </Grid>
-
-                                    {storageInOutReducer.storageProductRelDetail.map((row, index) => (
-                                        <Grid item container spacing={0}>
-                                            <Grid item sm={2} className={classes.tblBody}>{row.storage_name}</Grid>
-                                            <Grid item sm={2} className={classes.tblBody}>{row.storage_area_name}</Grid>
-                                            <Grid item sm={2} className={classes.tblBody}>{row.real_name}</Grid>
-                                            <Grid item sm={2} className={classes.tblBody}>{commonUtil.getDate(row.created_on)}</Grid>
-                                            <Grid item sm={4} className={classes.tblLastBody}>{row.remark}</Grid>
-                                        </Grid>
+                            <Table stickyHeader size="small" style={{marginTop: 10}}>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell className={classes.tableHead} align="center">仓库</TableCell>
+                                        <TableCell className={classes.tableHead} align="center">仓库分区</TableCell>
+                                        <TableCell className={classes.tableHead} align="center">操作人员</TableCell>
+                                        <TableCell className={classes.tableHead} align="center">操作日期</TableCell>
+                                        <TableCell className={classes.tableHead} align="center">备注</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {storageInOutReducer.storageProductRelDetail.map((row) => (
+                                        <TableRow key={'table-row-' + row.id}>
+                                            <TableCell align="center">{row.storage_name}</TableCell>
+                                            <TableCell align="center">{row.storage_area_name}</TableCell>
+                                            <TableCell align="center">{row.real_name}</TableCell>
+                                            <TableCell align="center">{commonUtil.getDate(row.created_on)}</TableCell>
+                                            <TableCell align="center">{row.remark}</TableCell>
+                                        </TableRow>
                                     ))}
-                                </>}
+                                    {storageInOutReducer.storageProductRelDetail.length === 0 &&
+                                    <TableRow>
+                                        <TableCell colSpan={5} align="center">暂无数据</TableCell>
+                                    </TableRow>}
+                                </TableBody>
+                            </Table>}
 
                             {pageType !== 'info' &&
                             <>
-                                <Grid item sm={12} style={{paddingTop: 20}}>
+                                <Grid item sm={12}>
                                     <Autocomplete fullWidth
                                                   options={storageInOutReducer.storageProductRelList}
                                                   noOptionsText="无选项"
@@ -684,11 +720,185 @@ function StorageInOut(props) {
 
                 {/* 出入库 */}
                 <TabPanel value="storage">
-                    asdfasdfasdf
+                    <Grid container spacing={3}>
+                        <Grid container item xs={10} spacing={1}>
+                            <Grid item xs={2}>
+                                <FormControl variant="outlined" fullWidth margin="dense">
+                                    <InputLabel id="in-out-select-outlined-label">出/入库</InputLabel>
+                                    <Select labelId="in-out-select-outlined-label"
+                                            label="出/入库"
+                                            value={storageInOutReducer.storageProductDetailParams.storageType}
+                                            onChange={(e, value) => {
+                                                dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "storageType", value: e.target.value}));
+                                                dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "storageSubType", value: null}));
+                                            }}
+                                    >
+                                        <MenuItem value="">请选择</MenuItem>
+                                        {sysConst.STORAGE_OP_TYPE.map((item, index) => (
+                                            <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={2}>
+                                <FormControl variant="outlined" fullWidth margin="dense">
+                                    <InputLabel id="check-status-select-outlined-label">出/入库子分类</InputLabel>
+                                    <Select labelId="check-status-select-outlined-label"
+                                            label="出/入库子分类"
+                                            value={storageInOutReducer.storageProductDetailParams.storageSubType}
+                                            onChange={(e, value) => {
+                                                dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "storageSubType", value: e.target.value}));
+                                            }}
+                                    >
+                                        <MenuItem value="">请选择</MenuItem>
+                                        {storageInOutReducer.storageProductDetailParams.storageType == sysConst.STORAGE_OP_TYPE[0].value &&
+                                        sysConst.STORAGE_OP_IMPORT_TYPE.map((item, index) => (
+                                            <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                        ))}
+                                        {storageInOutReducer.storageProductDetailParams.storageType == sysConst.STORAGE_OP_TYPE[1].value &&
+                                        sysConst.STORAGE_OP_EXPORT_TYPE.map((item, index) => (
+                                            <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <Autocomplete id="condition-storage" fullWidth
+                                              options={commonReducer.storageList}
+                                              getOptionLabel={(option) => option.storage_name}
+                                              onChange={(event, value) => {
+                                                  // 选择时 将当前选中值 赋值 reducer
+                                                  dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "storage", value: value}));
+                                                  // 清空 子分类
+                                                  dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "storageArea", value: null}));
+                                                  // 根据选择内容，刷新 子分类 列表
+                                                  if (value != null) {
+                                                      dispatch(commonAction.getStorageAreaList(value.id));
+                                                  } else {
+                                                      dispatch(CommonActionType.setStorageAreaList([]));
+                                                  }
+                                              }}
+                                              value={storageInOutReducer.storageProductDetailParams.storage}
+                                              renderInput={(params) => <TextField {...params} label="仓库" margin="dense" variant="outlined"/>}
+                                />
+                            </Grid>
+                            <Grid item xs={2}>
+                                <Autocomplete id="condition-storage-area" fullWidth
+                                              options={commonReducer.storageAreaList}
+                                              noOptionsText="无选项"
+                                              getOptionLabel={(option) => option.storage_area_name}
+                                              onChange={(event, value) => {
+                                                  dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "storageArea", value: value}));
+                                              }}
+                                              value={storageInOutReducer.storageProductDetailParams.storageArea}
+                                              renderInput={(params) => <TextField {...params} label="仓库分区" margin="dense" variant="outlined"/>}
+                                />
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <Autocomplete id="condition-supplier" fullWidth
+                                              options={commonReducer.supplierList}
+                                              getOptionLabel={(option) => option.supplier_name}
+                                              onChange={(event, value) => {
+                                                  dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "supplier", value: value}));
+                                              }}
+                                              value={storageInOutReducer.storageProductDetailParams.supplier}
+                                              renderInput={(params) => <TextField {...params} label="供应商" margin="dense" variant="outlined"/>}
+                                />
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <TextField label="采购单ID" fullWidth margin="dense" variant="outlined" type="number" value={storageInOutReducer.storageProductDetailParams.purchaseId}
+                                           onChange={(e)=>{dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "purchaseId", value: e.target.value}))}}/>
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <TextField label="商品ID" fullWidth margin="dense" variant="outlined" type="number" value={storageInOutReducer.storageProductDetailParams.productId}
+                                           onChange={(e)=>{dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "productId", value: e.target.value}))}}/>
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                            okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                            label="操作日期（始）"
+                                            value={storageInOutReducer.storageProductDetailParams.dateIdStart=="" ? null : storageInOutReducer.storageProductDetailParams.dateIdStart}
+                                            onChange={(date)=>{
+                                                dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "dateIdStart", value: date}))
+                                            }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                            okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                            label="操作日期（终）"
+                                            value={storageInOutReducer.storageProductDetailParams.dateIdEnd=="" ? null : storageInOutReducer.storageProductDetailParams.dateIdEnd}
+                                            onChange={(date)=>{
+                                                dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "dateIdEnd", value: date}))
+                                            }}
+                                />
+                            </Grid>
+                        </Grid>
+
+                        {/*查询按钮*/}
+                        <Grid item xs={1} style={{textAlign:'right'}}>
+                            <Fab color="primary" aria-label="add" size="small" onClick={queryStorageProductRelDetailList} style={{marginTop: 30}}>
+                                <i className="mdi mdi-magnify mdi-24px"/>
+                            </Fab>
+                        </Grid>
+
+                        <Grid item xs={1} style={{textAlign:'right'}}>
+                            <Fab color="primary" aria-label="add" size="small" onClick={downLoadCsv} style={{marginTop : 30}}>
+                                <i className="mdi mdi-cloud-download mdi-24px"/>
+                            </Fab>
+                        </Grid>
+                    </Grid>
+
+                    {/* 下部分：检索结果显示区域 */}
+                    <TableContainer component={Paper} style={{marginTop: 20}}>
+                        <Table stickyHeader size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell className={classes.tableHead} align="center">采购单号</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">供应商</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">商品</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">仓库</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">仓库分区</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">出/入库</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">出/入库子分类</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">操作日期</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {storageInOutReducer.storageProductDetail.dataList.map((row) => (
+                                    <TableRow key={'table-row-' + row.id}>
+                                        <TableCell align="center">{row.purchase_id}</TableCell>
+                                        <TableCell align="center">{row.supplier_name}</TableCell>
+                                        <TableCell align="center">{row.product_name}</TableCell>
+                                        <TableCell align="center">{row.storage_name}</TableCell>
+                                        <TableCell align="center">{row.storage_area_name}</TableCell>
+                                        <TableCell align="center">{commonUtil.getJsonValue(sysConst.STORAGE_OP_TYPE, row.storage_type)}</TableCell>
+                                        <TableCell align="center">{commonUtil.getJsonValue(sysConst.STORAGE_OP_SUB_TYPE, row.storage_sub_type)}</TableCell>
+                                        <TableCell align="center">{row.date_id}</TableCell>
+                                    </TableRow>
+                                ))}
+                                {storageInOutReducer.storageProductDetail.dataList.length === 0 &&
+                                <TableRow>
+                                    <TableCell colSpan={8} align="center">暂无数据</TableCell>
+                                </TableRow>}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+
+                    {/* 上下页按钮 */}
+                    <Box style={{textAlign: 'right', marginTop: 20}}>
+                        {storageInOutReducer.storageProductDetail.start > 0 && storageInOutReducer.storageProductDetail.dataSize > 0 &&
+                        <Button variant="contained" color="primary" style={{marginRight: 20}} onClick={getSPRDPrePage}>上一页</Button>}
+                        {storageInOutReducer.storageProductDetail.dataSize >= storageInOutReducer.storageProductDetail.size &&
+                        <Button variant="contained" color="primary" onClick={getSPRDNextPage}>下一页</Button>}
+                    </Box>
                 </TabPanel>
-
-
-
             </TabContext>
         </div>
     )
@@ -705,10 +915,8 @@ const mapDispatchToProps = (dispatch) => ({
     // 取得画面 select控件，基础数据
     getBaseSelectList: () => {
         dispatch(commonAction.getStorageList());
-        dispatch(commonAction.getCategoryList());
-        dispatch(commonAction.getBrandList());
         dispatch(commonAction.getSupplierList());
-        dispatch(commonAction.getProductList(null));
+        // dispatch(commonAction.getProductList(null));
     },
     // select控件，联动检索
     getStorageAreaList: (storageId) => {
@@ -717,19 +925,6 @@ const mapDispatchToProps = (dispatch) => ({
     setStorageAreaList: (value) => {
         dispatch(CommonActionType.setStorageAreaList(value));
     },
-    getCategorySubList: (categoryId) => {
-        dispatch(commonAction.getCategorySubList(categoryId));
-    },
-    setCategorySubList: (value) => {
-        dispatch(CommonActionType.setCategorySubList(value));
-    },
-    getBrandModelList: (brandId) => {
-        dispatch(commonAction.getBrandModelList(brandId));
-    },
-    setBrandModelList: (value) => {
-        dispatch(CommonActionType.setBrandModelList(value));
-    },
-
 
     // 采购入库 TAB
     getPurchaseItemStorage: (dataStart) => {
@@ -754,6 +949,12 @@ const mapDispatchToProps = (dispatch) => ({
     },
 
     // 出入库 TAB
+    getStorageProductRelDetailList: (dataStart) => {
+        dispatch(storageInOutAction.getStorageProductRelDetailList({dataStart}))
+    },
+    downLoadCsv: () => {
+        dispatch(storageInOutAction.downLoadCsv())
+    }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StorageInOut)

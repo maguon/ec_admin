@@ -1,7 +1,6 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
 import {AppActionType, StorageInOutActionType} from '../../types';
-import {getStorageCheckInfo} from "./StorageCheckDetailAction";
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
@@ -171,6 +170,70 @@ export const refundStorage = (data) => async (dispatch, getState) => {
         } else if (!res.success) {
             Swal.fire("修改失败", res.msg, "warning");
         }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const getStorageProductRelDetailList = (params) => async (dispatch, getState) => {
+    try {
+        // 检索条件：开始位置
+        const start = params.dataStart;
+        // 检索条件：每页数量
+        const size = getState().StorageInOutReducer.storageProductDetail.size;
+
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/storageProductRelDetail?start=' + start + '&size=' + size;
+        // 检索条件
+        let conditions =  dispatch(getParams());
+        // 检索URL
+        url = conditions.length > 0 ? url + "&" + conditions : url;
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        let newData = getState().StorageInOutReducer.storageProductDetail;
+        if (res.success) {
+            newData.start = start;
+            newData.dataSize = res.rows.length;
+            newData.dataList = res.rows.slice(0, size - 1);
+            dispatch({type: StorageInOutActionType.setStorageProductDetail, payload: newData});
+        } else if (!res.success) {
+            Swal.fire("获取出入库记录列表失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+const getParams = () => (dispatch, getState) => {
+    // 检索条件
+    const queryParams = getState().StorageInOutReducer.storageProductDetailParams;
+    let conditionsObj = {
+        storageType: queryParams.storageType == null ? '' : queryParams.storageType,
+        storageSubType: queryParams.storageSubType == null ? '' : queryParams.storageSubType,
+        storageId: queryParams.storage == null ? '' : queryParams.storage.id,
+        storageAreaId: queryParams.storageArea == null ? '' : queryParams.storageArea.id,
+        supplierId: queryParams.supplier === null ? '' : queryParams.supplier.id,
+        purchaseId: queryParams.purchaseId,
+        productId: queryParams.productId,
+        dateIdStart: commonUtil.getDateFormat(queryParams.dateIdStart),
+        dateIdEnd: commonUtil.getDateFormat(queryParams.dateIdEnd)
+    };
+    return httpUtil.objToUrl(conditionsObj);
+};
+
+export const downLoadCsv = () => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = 'http://' + apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/storageProductRelDetail.csv?1=1';
+        // 检索条件
+        let conditions =  dispatch(getParams());
+        // 检索URL
+        url = conditions.length > 0 ? url + "&" + conditions : url;
+        window.open(url);
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }

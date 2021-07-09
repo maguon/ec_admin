@@ -54,6 +54,35 @@ const initialState = {
     },
     storageProductRelList: [],
     storageProductRelDetail: [],
+    storageProductDetail: {
+        // 开始位置
+        start: 0,
+        // 每页数量
+        size: 9,
+        // 检索结果数量
+        dataSize: 0,
+        // 数据列表
+        dataList: []
+    },
+    storageProductDetailParams: {
+        // 仓储区分
+        storageType: null,
+        // 仓储子区分
+        storageSubType: null,
+        // 仓库
+        storage: null,
+        // 仓库分区
+        storageArea: null,
+        // 供应商
+        supplier: null,
+        // 采购单ID
+        purchaseId: '',
+        // 商品ID
+        productId: '',
+        // 日期
+        dateIdStart: '',
+        dateIdEnd: '',
+    }
 };
 
 export default handleActions({
@@ -77,7 +106,6 @@ export default handleActions({
             purchaseParams: paramsObj
         }
     },
-
     [StorageInOutActionType.getPurchaseRefundData]: (state, action) => {
         return {
             ...state,
@@ -110,4 +138,24 @@ export default handleActions({
             storageProductRelDetail: action.payload
         }
     },
+    [StorageInOutActionType.setStorageProductDetail]: (state, action) => {
+        return {
+            ...state,
+            storageProductDetail: action.payload
+        }
+    },
+    [StorageInOutActionType.setStorageProductDetailParams]: (state, action) => {
+        return {
+            ...state,
+            storageProductDetailParams: action.payload
+        }
+    },
+    [StorageInOutActionType.setStorageProductDetailParam]: (state, action) => {
+        const {name, value} = action.payload;
+        const paramsObj = {...state.storageProductDetailParams, [name]: value};
+        return {
+            ...state,
+            storageProductDetailParams: paramsObj
+        }
+    }
 }, initialState)

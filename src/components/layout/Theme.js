@@ -56,4 +56,10 @@ export const customTheme = createMuiTheme({
         textAlign: 'center',
         padding: 5
     },
+
+    tableHead: {
+        fontWeight:'bold',
+        background:'#F7F6F9',
+        borderTop: '2px solid #D4D4D4'
+    }
 });
