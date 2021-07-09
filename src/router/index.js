@@ -23,6 +23,7 @@ import {
     AuthoritySetting,
     DataDictionary,
     PurchaseRefund,
+    ServiceSetting,
 } from "../components";
 
 export const routes = [
@@ -79,5 +80,8 @@ export const routesWithHeader = [
     // App系统
     {path: "/app_setting", exact: true, component: AppSetting},
     // 权限管理
-    {path: "/authority_setting", exact: true, component: AuthoritySetting}
+    {path: "/authority_setting", exact: true, component: AuthoritySetting},
+    //服务项目设置
+    {path: "/service_setting", exact: true, component: ServiceSetting},
+
 ];

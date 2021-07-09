@@ -24,6 +24,7 @@ import PurchaseReducer from './main/PurchaseReducer';
 import PurchaseDetailReducer from './main/PurchaseDetailReducer';
 import DataDictionaryReducer from './main/DataDictionaryReducer';
 import PurchaseRefundReducer from './main/PurchaseRefundReducer';
+import ServiceSettingReducer from  './main/ServiceSettingReducer';
 export default combineReducers({
     form: reduxFormReducer,
     AppReducer,
@@ -50,4 +51,5 @@ export default combineReducers({
     PurchaseDetailReducer,
     DataDictionaryReducer,
     PurchaseRefundReducer,
+    ServiceSettingReducer
 });
