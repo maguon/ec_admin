@@ -7,7 +7,7 @@ const initialState = {
         // 开始位置
         start: 0,
         // 每页数量
-        size: 10,
+        size: 11,
         // 检索结果数量
         dataSize: 0,
         // 数据列表
