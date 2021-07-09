@@ -130,7 +130,7 @@ function PurchaseRefundPay(props) {
                     </Grid>
 
                     <Grid item xs={3}>
-                        <TextField label="采购单ID" fullWidth margin="dense" variant="outlined" type="search" value={purchaseId}
+                        <TextField label="采购单ID" fullWidth margin="dense" variant="outlined" type="number" value={purchaseId}
                                    onChange={(e)=>{setPurchaseId(e.target.value)}}/>
                     </Grid>
 

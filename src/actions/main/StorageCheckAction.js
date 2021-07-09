@@ -84,15 +84,15 @@ export const saveModalData = (modalData) => async (dispatch, getState) => {
             const history = createHashHistory();
             history.push('/storage_check/' + res.rows[0].id);
             Swal.fire("保存成功", "", "success");
-            // } else if (!res.success) {
-            //     Swal.fire("保存失败", res.msg, "warning");
+        } else {
+            Swal.fire("保存失败", res.msg, "warning");
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }
 };
 
-export const downLoadCsv = (storageCheckId) => async () => {
+export const downLoadCsv = (storageCheckId) => () => {
     try {
         // 基本检索URL
         let url = 'http://' + apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)

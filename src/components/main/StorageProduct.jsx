@@ -136,7 +136,7 @@ function StorageProduct(props) {
                     </Grid>
 
                     <Grid item xs={3}>
-                        <TextField label="采购单ID" fullWidth margin="dense" variant="outlined" type="search" value={storageProductReducer.queryParams.purchaseId}
+                        <TextField label="采购单ID" fullWidth margin="dense" variant="outlined" type="number" value={storageProductReducer.queryParams.purchaseId}
                              onChange={(e)=>{dispatch(StorageProductActionType.setQueryParams({name: "purchaseId", value: e.target.value}))}}/>
                     </Grid>
 
