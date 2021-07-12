@@ -1,66 +1,32 @@
 import {handleActions} from 'redux-actions';
-import {MainPanelActionType} from '../../types';
+import {StoragePanelActionType} from '../../types';
 
 const initialState = {
-    startDate: '2020-01-01',
-    // 今日新增用户数
-    todayUserCount: 0,
-
-    // 今日发布文章
-    todayArticle: 0,
-    // 今日发布求助
-    todayHelp: 0,
-
-    // 今日评论
-    todayComment: 0,
-    // 今日解答
-    todayAnswer: 0,
-    msgList:[]
+    // 未入库的商品
+    purchaseItemStat: {},
+    // 未出库的商品
+    purchaseRefundStat: {},
+    // 盘点未完成
+    storageCheckStat: {},
 };
 
 export default handleActions({
-    [MainPanelActionType.setTodayUserCount]: (state, action) => {
+    [StoragePanelActionType.getPurchaseItemStat]: (state, action) => {
         return {
             ...state,
-            todayUserCount: action.payload
+            purchaseItemStat: action.payload
         }
     },
-    [MainPanelActionType.setTodayArticle]: (state, action) => {
+    [StoragePanelActionType.getPurchaseRefundStat]: (state, action) => {
         return {
             ...state,
-            todayArticle: action.payload
+            purchaseRefundStat: action.payload
         }
     },
-    [MainPanelActionType.setTodayHelp]: (state, action) => {
+    [StoragePanelActionType.getStorageCheckStat]: (state, action) => {
         return {
             ...state,
-            todayHelp: action.payload
+            storageCheckStat: action.payload
         }
     },
-    [MainPanelActionType.setTodayComment]: (state, action) => {
-        return {
-            ...state,
-            todayComment: action.payload
-        }
-    },
-    [MainPanelActionType.setTodayAnswer]: (state, action) => {
-        return {
-            ...state,
-            todayAnswer: action.payload
-        }
-    },
-    [MainPanelActionType.setMsg]: (state, action) => {
-        return {
-            ...state,
-            msgList: action.payload
-        }
-    }
-
-    ,
-    [MainPanelActionType.setStartDate]: (state, action) => {
-        return {
-            ...state,
-            startDate: action.payload
-        }
-    }
 }, initialState);

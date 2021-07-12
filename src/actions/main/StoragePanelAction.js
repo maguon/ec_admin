@@ -1,22 +1,79 @@
 import Swal from 'sweetalert2';
-import {MainPanelActionType} from '../../types';
+import {AppActionType, StoragePanelActionType} from '../../types';
 import {apiHost} from '../../config';
 
 const httpUtil = require('../../utils/HttpUtils');
-export const getTodayUserCount = () => async (dispatch) => {
-    dispatch({type: MainPanelActionType.setTodayUserCount, payload: {}});
+const localUtil = require('../../utils/LocalUtils');
+const sysConst = require('../../utils/SysConst');
+
+// 未入库的商品
+export const getPurchaseItemStat = () => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/purchaseItemStat?storageStatus=' + sysConst.STORAGE_STATUS[0].value;
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            if (res.rows.length > 0) {
+                dispatch({type: StoragePanelActionType.getPurchaseItemStat, payload: res.rows[0]});
+            } else {
+                dispatch({type: StoragePanelActionType.getPurchaseItemStat, payload: {}});
+            }
+        } else if (!res.success) {
+            Swal.fire("获取未入库的商品信息失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
 };
 
-export const getUserMsg = (params) => async (dispatch) => {
+// 需要出库，但未出库的统计
+export const getPurchaseRefundStat = () => async (dispatch) => {
     try {
-        const res = await httpUtil.httpGet(apiHost + '/api/admin/5dd5f45de240c77601a86b84/msg?start=0&size=21');
-        if (res.success === true) {
-            dispatch({type: MainPanelActionType.setMsg, payload: res.result});
-        } else if (res.success === false) {
-          Swal.fire("登陆失败", res.msg, "warning");
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/purchaseRefundStat?storageType=' + sysConst.STORAGE_TYPE[1].value + '&refundStorageFlag=' + sysConst.REFUND_STORAGE_FLAG[0].value;
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            if (res.rows.length > 0) {
+                dispatch({type: StoragePanelActionType.getPurchaseRefundStat, payload: res.rows[0]});
+            } else {
+                dispatch({type: StoragePanelActionType.getPurchaseRefundStat, payload: {}});
+            }
+        } else if (!res.success) {
+            Swal.fire("获取未出库的商品信息失败", res.msg, "warning");
         }
-      } catch (err) {
-        Swal.fire('操作失败', err.message, 'error');
-      }
-    
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+// 盘点未完成
+export const getStorageCheckStat = () => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/storageCheckStat?status=1';
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            if (res.rows.length > 0) {
+                dispatch({type: StoragePanelActionType.getStorageCheckStat, payload: res.rows[0]});
+            } else {
+                dispatch({type: StoragePanelActionType.getStorageCheckStat, payload: {}});
+            }
+        } else if (!res.success) {
+            Swal.fire("获取盘点未完成信息失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
 };

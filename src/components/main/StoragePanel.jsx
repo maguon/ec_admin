@@ -1,201 +1,85 @@
-import React, {useEffect, useState} from 'react';
-import {connect, useDispatch} from 'react-redux';
-import {Link} from "react-router-dom";
-import Swal from "sweetalert2";
+import React, {useEffect} from 'react';
+import {connect} from 'react-redux';
 // 引入material-ui基础组件
-import {
-    Box,
-    Button,
-    Divider,
-    Fab,
-    FormControl,
-    Grid,
-    IconButton,
-    InputLabel,
-    makeStyles,
-    MenuItem,
-    Paper,
-    Select,
-    Switch,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TextField,
-    Typography
-} from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-// 引入Dialog
-import {SimpleModal} from "../index";
-import {CommonActionType, ProductManagerActionType} from "../../types";
+import {Card, CardContent, Divider, Grid, makeStyles, Typography} from "@material-ui/core";
 
-const productManagerAction = require('../../actions/main/ProductManagerAction');
-const commonAction = require('../../actions/layout/CommonAction');
-const sysConst = require('../../utils/SysConst');
-const commonUtil = require('../../utils/CommonUtil');
+const storagePanelAction = require('../../actions/main/StoragePanelAction');
 const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
     root: customTheme.root,
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
-    tableHead:customTheme.tableHead
+    card:{
+        border:'1px solid #E4E4E4',
+        width: '100%',
+        height: 108
+    }
 }));
 
 function StoragePanel(props) {
-    const {productManagerReducer, commonReducer, changeStatus, fromDetail} = props;
+    const {storagePanelReducer} = props;
     const classes = useStyles();
-    const dispatch = useDispatch();
 
     useEffect(() => {
-        if (!fromDetail) {
-            let queryParams = {
-                category: null,
-                categorySub: null,
-                brand: null,
-                brandModel: null,
-                product: null,
-                standardType: null,
-                status: null
-            };
-            dispatch(ProductManagerActionType.setQueryParams(queryParams));
-        }
-
-        // 取得画面 select控件，基础数据
-        props.getBaseSelectList();
-        dispatch(productManagerAction.getProductList(productManagerReducer.productData.start))
+        props.initData();
     }, []);
-
-    // 模态属性
-    const [modalOpen, setModalOpen] = React.useState(false);
-    // 模态数据
-    const [modalData, setModalData] = React.useState({});
-    // 模态校验
-    const [validation,setValidation] = useState({});
-
-    // 关闭模态
-    const closeModal = () => {
-        if (productManagerReducer.queryParams.category != null) {
-            dispatch(commonAction.getCategorySubList(productManagerReducer.queryParams.category.id));
-        } else {
-            dispatch(CommonActionType.setCategorySubList([]));
-        }
-        if (productManagerReducer.queryParams.brand != null) {
-            dispatch(commonAction.getBrandModelList(productManagerReducer.queryParams.brand.id));
-        } else {
-            dispatch(CommonActionType.setBrandModelList([]));
-        }
-        setModalOpen(false);
-    };
-
-    //初始添加模态框值
-    const initModal =() =>{
-        // 清空check内容
-        setValidation({});
-        // 清空商品子分类
-        dispatch(CommonActionType.setCategorySubList([]));
-        // 清空品牌型号
-        dispatch(CommonActionType.setBrandModelList([]));
-        setModalData({
-            ...modalData,
-            // 商品分类 *
-            category: null,
-            // 商品子分类 *
-            categorySub: null,
-            // 品牌 *
-            brand: null,
-            // 品牌型号 *
-            brandModel: null,
-            // 商品名称 *
-            productName: '',
-            // 商品别名
-            productSName: '',
-            // 产地
-            productAddress: '',
-            // 序列号
-            productSerial: '',
-            // 单位
-            unitName: '',
-            // 售价 *
-            price: '0',
-            // 标准类型 *
-            standardType: 1,
-            // 备注
-            remark: '',
-        });
-        // 设定模态打开
-        setModalOpen(true);
-    };
-
-    const validate = ()=>{
-        const validateObj ={};
-        if (!modalData.category) {
-            validateObj.category ='请选择商品分类';
-        }
-        if (!modalData.categorySub) {
-            validateObj.categorySub ='请选择商品子分类';
-        }
-        if (!modalData.brand) {
-            validateObj.brand ='请选择品牌';
-        }
-        if (!modalData.brandModel) {
-            validateObj.brandModel ='请选择品牌型号';
-        }
-        if (!modalData.productName) {
-            validateObj.productName ='请输入商品名称';
-        }
-        if (!modalData.price) {
-            validateObj.price ='请输入售价';
-        }
-        setValidation(validateObj);
-        return Object.keys(validateObj).length
-    };
-
-    const submitModal= ()=>{
-        const errorCount = validate();
-        if(errorCount===0){
-            dispatch(productManagerAction.saveModalData(modalData));
-            setModalOpen(false);
-        }
-    };
 
     return (
         <div className={classes.root}>
-            {/* 标题部分 */}
             <Typography gutterBottom className={classes.title}>仓储主控</Typography>
             <Divider light className={classes.divider}/>
 
-            {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={2}>
-                <Grid item xs={4}>
-                    asdfasdfasdfasdfasdf
+                <Grid item container xs={4}>
+                    <Card className={classes.card}>
+                        <CardContent>
+                            <Grid container spacing={1}>
+                                <Grid item xs={12}><Typography variant="h5" gutterBottom>未入库的采购</Typography></Grid>
+                                <Grid item xs={6}><Typography color="textSecondary">未入库数：{storagePanelReducer.purchaseItemStat.count}</Typography></Grid>
+                                <Grid item xs={6}><Typography color="textSecondary" align="right">采购数量：{storagePanelReducer.purchaseItemStat.purchase_count}</Typography></Grid>
+                            </Grid>
+                        </CardContent>
+                    </Card>
                 </Grid>
 
+                <Grid item container xs={4}>
+                    <Card className={classes.card}>
+                        <CardContent>
+                            <Grid container spacing={1}>
+                                <Grid item xs={12}><Typography variant="h5" gutterBottom>未出库的退货</Typography></Grid>
+                                <Grid item xs={6}><Typography color="textSecondary">未出库数：{storagePanelReducer.purchaseRefundStat.count}</Typography></Grid>
+                                <Grid item xs={6}><Typography color="textSecondary" align="right">退货数：{storagePanelReducer.purchaseRefundStat.refund_count}</Typography></Grid>
+                            </Grid>
+                        </CardContent>
+                    </Card>
+                </Grid>
+
+                <Grid item container xs={4}>
+                    <Card className={classes.card}>
+                        <CardContent>
+                            <Grid container spacing={1}>
+                                <Grid item xs={12}><Typography variant="h5" gutterBottom>未完成盘点</Typography></Grid>
+                                <Grid item xs={6}><Typography color="textSecondary">未完成数：{storagePanelReducer.storageCheckStat.count}</Typography></Grid>
+                            </Grid>
+                        </CardContent>
+                    </Card>
+                </Grid>
             </Grid>
-
-
         </div>
     )
 }
 
-const mapStateToProps = (state, ownProps) => {
-    let fromDetail = false;
-    if (typeof ownProps.location.state != 'undefined' && ownProps.location.state != null && ownProps.location.state.fromDetail) {
-        fromDetail = true;
-    }
+const mapStateToProps = (state) => {
     return {
-        productManagerReducer: state.ProductManagerReducer,
-        commonReducer: state.CommonReducer,
-        fromDetail: fromDetail
+        storagePanelReducer: state.StoragePanelReducer
     }
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    // 取得画面 select控件，基础数据
-    getBaseSelectList: () => {
-        dispatch(commonAction.getCategoryList());
-        dispatch(commonAction.getBrandList());
+    initData: () => {
+        dispatch(storagePanelAction.getPurchaseItemStat());
+        dispatch(storagePanelAction.getPurchaseRefundStat());
+        dispatch(storagePanelAction.getStorageCheckStat());
     }
 });
 
