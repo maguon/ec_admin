@@ -7,10 +7,10 @@ const localUtil = require('../../utils/LocalUtils');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 
-export const getPurchaseItemStorage = (params) => async (dispatch, getState) => {
+export const getPurchaseItemStorage = (dataStart) => async (dispatch, getState) => {
     try {
         // 检索条件：开始位置
-        const start = params.dataStart;
+        const start = dataStart;
         // 检索条件：每页数量
         const size = getState().StorageInOutReducer.purchaseItemStorage.size;
         // 检索条件
@@ -64,7 +64,7 @@ export const putInStorage = (data) => async (dispatch, getState) => {
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
             Swal.fire("修改成功", "", "success");
-            dispatch(getPurchaseItemStorage({dataStart: getState().StorageInOutReducer.purchaseItemStorage.start}));
+            dispatch(getPurchaseItemStorage(getState().StorageInOutReducer.purchaseItemStorage.start));
         } else if (!res.success) {
             Swal.fire("修改失败", res.msg, "warning");
         }
@@ -73,10 +73,10 @@ export const putInStorage = (data) => async (dispatch, getState) => {
     }
 };
 
-export const getPurchaseRefund = (params) => async (dispatch, getState) => {
+export const getPurchaseRefund = (dataStart) => async (dispatch, getState) => {
     try {
         // 检索条件：开始位置
-        const start = params.dataStart;
+        const start = dataStart;
         // 检索条件：每页数量
         const size = getState().StorageInOutReducer.purchaseRefundData.size;
         // 检索条件
@@ -159,14 +159,14 @@ export const refundStorage = (data) => async (dispatch, getState) => {
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/purchaseRefund/' + data.purchaseRefund.id + '/storageProductRel/'+ data.storageProduct.id  +'/refundStorage';
         const params = {
-            remark: data.refundRemark
+            remark: data.remark
         };
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpPut(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
             Swal.fire("修改成功", "", "success");
-            dispatch(getPurchaseRefund({dataStart: getState().StorageInOutReducer.purchaseRefundData.start}));
+            dispatch(getPurchaseRefund(getState().StorageInOutReducer.purchaseRefundData.start));
         } else if (!res.success) {
             Swal.fire("修改失败", res.msg, "warning");
         }
@@ -175,10 +175,10 @@ export const refundStorage = (data) => async (dispatch, getState) => {
     }
 };
 
-export const getStorageProductRelDetailList = (params) => async (dispatch, getState) => {
+export const getStorageProductRelDetailList = (dataStart) => async (dispatch, getState) => {
     try {
         // 检索条件：开始位置
-        const start = params.dataStart;
+        const start = dataStart;
         // 检索条件：每页数量
         const size = getState().StorageInOutReducer.storageProductDetail.size;
 
