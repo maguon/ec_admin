@@ -35,7 +35,6 @@ const commonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
-
 const useStyles = makeStyles((theme) => ({
     root: customTheme.root,
     title: customTheme.pageTitle,
@@ -50,25 +49,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function StorageCheck(props) {
-    const {storageCheckReducer, commonReducer, saveModalData, downLoadCsv, downLoadPDF, fromDetail} = props;
+    const {storageCheckReducer, commonReducer, downLoadCsv, downLoadPDF, fromDetail} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
-
-    // 查询列表
-    const queryStorageCheckList = () => {
-        // 默认第一页
-        props.getStorageCheckList(0);
-    };
-
-    // 上一页
-    const getPrePage = () => {
-        props.getStorageCheckList(props.storageCheckReducer.storageCheckData.start - (props.storageCheckReducer.storageCheckData.size - 1));
-    };
-
-    // 下一页
-    const getNextPage = () => {
-        props.getStorageCheckList(props.storageCheckReducer.storageCheckData.start + (props.storageCheckReducer.storageCheckData.size - 1));
-    };
 
     useEffect(() => {
         // 详情页面 返回 保留reducer，否则，清空
@@ -88,29 +71,13 @@ function StorageCheck(props) {
 
     // 模态属性
     const [modalOpen, setModalOpen] = React.useState(false);
+    // 模态数据
+    const [storageChkInfo, setStorageChkInfo] = React.useState({});
+
     // 关闭模态
     const closeModal = () => {
         setModalOpen(false);
     };
-
-    // 仓库
-    const [storage, setStorage] = React.useState(null);
-    // 仓库分区
-    const [storageArea, setStorageArea] = React.useState(null);
-    // 商品分类
-    const [category, setCategory] = React.useState(null);
-    // 商品子分类
-    const [categorySub, setCategorySub] = React.useState(null);
-    // 品牌
-    const [brand, setBrand] = React.useState(null);
-    // 品牌型号
-    const [brandModel, setBrandModel] = React.useState(null);
-    // 供应商
-    const [supplier, setSupplier] = React.useState(null);
-    // 备注
-    const [remark, setRemark] = React.useState('');
-    //  描述
-    const [desc, setDesc] = React.useState('全部');
 
     //初始添加模态框值
     const initModal =() =>{
@@ -120,53 +87,50 @@ function StorageCheck(props) {
         props.setCategorySubList([]);
         // 清空品牌型号
         props.setBrandModelList([]);
-
-        setStorage(null);
-        setStorageArea(null);
-        setCategory(null);
-        setCategorySub(null);
-        setBrand(null);
-        setBrandModel(null);
-        setSupplier(null);
-        setRemark('');
+        setStorageChkInfo({
+            ...storageChkInfo,
+            storage: null,
+            storageArea: null,
+            category: null,
+            categorySub: null,
+            brand: null,
+            brandModel: null,
+            supplier: null,
+            remark: ''
+        });
         // 设定模态打开
         setModalOpen(true);
     };
 
-    useEffect(() => {
+    const submitModal= ()=>{
         let desc = "";
-        if (storage != null) {
-            desc = desc + "仓库：" + storage.storage_name + ",";
+        if (storageChkInfo.storage != null) {
+            desc = desc + "仓库：" + storageChkInfo.storage.storage_name + ",";
         }
-        if (storageArea != null) {
-            desc = desc + "仓库分区：" + storageArea.storage_area_name + ",";
+        if (storageChkInfo.storageArea != null) {
+            desc = desc + "仓库分区：" + storageChkInfo.storageArea.storage_area_name + ",";
         }
-        if (category != null) {
-            desc = desc + "商品分类：" + category.category_name + ",";
+        if (storageChkInfo.category != null) {
+            desc = desc + "商品分类：" + storageChkInfo.category.category_name + ",";
         }
-        if (categorySub != null) {
-            desc = desc + "商品子分类：" + categorySub.category_sub_name + ",";
+        if (storageChkInfo.categorySub != null) {
+            desc = desc + "商品子分类：" + storageChkInfo.categorySub.category_sub_name + ",";
         }
-        if (brand != null) {
-            desc = desc + "品牌：" + brand.brand_name + ",";
+        if (storageChkInfo.brand != null) {
+            desc = desc + "品牌：" + storageChkInfo.brand.brand_name + ",";
         }
-        if (brandModel != null) {
-            desc = desc + "品牌型号：" + brandModel.brand_model_name + ",";
+        if (storageChkInfo.brandModel != null) {
+            desc = desc + "品牌型号：" + storageChkInfo.brandModel.brand_model_name + ",";
         }
-        if (supplier != null) {
-            desc = desc + "供应商：" + supplier.supplier_name + ",";
+        if (storageChkInfo.supplier != null) {
+            desc = desc + "供应商：" + storageChkInfo.supplier.supplier_name + ",";
         }
-
         if(desc.length > 0) {
             desc = desc.substr(0, desc.length-1);
         } else {
             desc = "全部";
         }
-        setDesc(desc);
-    }, [storage,storageArea,category,categorySub,brand,brandModel,supplier]);
-
-    const submitModal= ()=>{
-        saveModalData(storage,storageArea,category,categorySub,brand,brandModel,supplier,remark,desc);
+        dispatch(storageCheckAction.saveModalData({...storageChkInfo,desc: desc}));
         setModalOpen(false);
     };
 
@@ -237,7 +201,7 @@ function StorageCheck(props) {
 
                 {/*查询按钮*/}
                 <Grid item xs={1} style={{textAlign:'right'}}>
-                    <Fab color="primary" size="small" onClick={queryStorageCheckList}>
+                    <Fab color="primary" size="small" onClick={()=>{dispatch(storageCheckAction.getStorageCheckList(0))}}>
                         <i className="mdi mdi-magnify mdi-24px"/>
                     </Fab>
                 </Grid>
@@ -302,9 +266,11 @@ function StorageCheck(props) {
             {/* 上下页按钮 */}
             <Box style={{textAlign: 'right', marginTop: 20}}>
                 {storageCheckReducer.storageCheckData.start > 0 && storageCheckReducer.storageCheckData.dataSize > 0 &&
-                <Button variant="contained" color="primary" style={{marginRight: 20}} onClick={getPrePage}>上一页</Button>}
+                <Button variant="contained" color="primary" style={{marginRight: 20}}
+                        onClick={()=>{dispatch(storageCheckAction.getStorageCheckList(storageCheckReducer.storageCheckData.start-(storageCheckReducer.storageCheckData.size-1)))}}>上一页</Button>}
                 {storageCheckReducer.storageCheckData.dataSize >= storageCheckReducer.storageCheckData.size &&
-                <Button variant="contained" color="primary" onClick={getNextPage}>下一页</Button>}
+                <Button variant="contained" color="primary"
+                        onClick={()=>{dispatch(storageCheckAction.getStorageCheckList(storageCheckReducer.storageCheckData.start+(storageCheckReducer.storageCheckData.size-1)))}}>下一页</Button>}
             </Box>
 
             <SimpleModal
@@ -325,13 +291,12 @@ function StorageCheck(props) {
                         <Autocomplete fullWidth
                                       options={commonReducer.storageList}
                                       getOptionLabel={(option) => option.storage_name}
-                                      value={storage}
+                                      value={storageChkInfo.storage}
                                       onChange={(event, value) => {
-                                          setStorage(value);
-                                          setStorageArea(null);
+                                          setStorageChkInfo({...storageChkInfo,storage:value, storageArea:null});
                                           // 仓库有选择时，取得仓库分区， 否则清空
                                           if (value != null) {
-                                              props.getStorageAreaList(value.id);
+                                              dispatch(commonAction.getStorageAreaList(value.id));
                                           } else {
                                               props.setStorageAreaList([]);
                                           }
@@ -344,9 +309,9 @@ function StorageCheck(props) {
                                       options={commonReducer.storageAreaList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.storage_area_name}
-                                      value={storageArea}
+                                      value={storageChkInfo.storageArea}
                                       onChange={(event, value) => {
-                                          setStorageArea(value);
+                                          setStorageChkInfo({...storageChkInfo,storageArea:value});
                                       }}
                                       renderInput={(params) => <TextField {...params} label="仓库分区" margin="dense" variant="outlined"/>}
                         />
@@ -356,13 +321,12 @@ function StorageCheck(props) {
                         <Autocomplete fullWidth
                                       options={commonReducer.categoryList}
                                       getOptionLabel={(option) => option.category_name}
-                                      value={category}
+                                      value={storageChkInfo.category}
                                       onChange={(event, value) => {
-                                          setCategory(value);
-                                          setCategorySub(null);
+                                          setStorageChkInfo({...storageChkInfo,category:value,categorySub:null});
                                           // 商品分类有选择时，取得商品子分类， 否则清空
                                           if (value != null) {
-                                              props.getCategorySubList(value.id);
+                                              dispatch(commonAction.getCategorySubList(value.id));
                                           } else {
                                               props.setCategorySubList([]);
                                           }
@@ -375,9 +339,9 @@ function StorageCheck(props) {
                                       options={commonReducer.categorySubList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.category_sub_name}
-                                      value={categorySub}
+                                      value={storageChkInfo.categorySub}
                                       onChange={(event, value) => {
-                                          setCategorySub(value);
+                                          setStorageChkInfo({...storageChkInfo,categorySub:value});
                                       }}
                                       renderInput={(params) => <TextField {...params} label="商品子分类" margin="dense" variant="outlined"/>}
                         />
@@ -386,13 +350,12 @@ function StorageCheck(props) {
                         <Autocomplete fullWidth
                                       options={commonReducer.brandList}
                                       getOptionLabel={(option) => option.brand_name}
-                                      value={brand}
+                                      value={storageChkInfo.brand}
                                       onChange={(event, value) => {
-                                          setBrand(value);
-                                          setBrandModel(null);
+                                          setStorageChkInfo({...storageChkInfo,brand:value,brandModel:null});
                                           // 品牌有选择时，取得品牌型号， 否则清空
                                           if (value != null) {
-                                              props.getBrandModelList(value.id);
+                                              dispatch(commonAction.getBrandModelList(value.id));
                                           } else {
                                               props.setBrandModelList([]);
                                           }
@@ -405,9 +368,9 @@ function StorageCheck(props) {
                                       options={commonReducer.brandModelList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.brand_model_name}
-                                      value={brandModel}
+                                      value={storageChkInfo.brandModel}
                                       onChange={(event, value) => {
-                                          setBrandModel(value);
+                                          setStorageChkInfo({...storageChkInfo,brandModel:value});
                                       }}
                                       renderInput={(params) => <TextField {...params} label="品牌型号" margin="dense" variant="outlined"/>}
                         />
@@ -417,18 +380,18 @@ function StorageCheck(props) {
                         <Autocomplete fullWidth
                                       options={commonReducer.supplierList}
                                       getOptionLabel={(option) => option.supplier_name}
-                                      value={supplier}
+                                      value={storageChkInfo.supplier}
                                       onChange={(event, value) => {
-                                          setSupplier(value);
+                                          setStorageChkInfo({...storageChkInfo,supplier:value});
                                       }}
                                       renderInput={(params) => <TextField {...params} label="供应商" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
 
                     <Grid item xs={12}>
-                        <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={remark}
+                        <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={storageChkInfo.remark}
                                    onChange={(e) => {
-                                       setRemark(e.target.value)
+                                       setStorageChkInfo({...storageChkInfo,remark:e.target.value});
                                    }}
                         />
                     </Grid>
@@ -493,33 +456,18 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(commonAction.getBrandList());
         dispatch(commonAction.getSupplierList());
     },
-    // select控件，联动检索
-    getStorageAreaList: (storageId) => {
-        dispatch(commonAction.getStorageAreaList(storageId));
-    },
     setStorageAreaList: (value) => {
         dispatch(CommonActionType.setStorageAreaList(value));
     },
-    getCategorySubList: (categoryId) => {
-        dispatch(commonAction.getCategorySubList(categoryId));
-    },
     setCategorySubList: (value) => {
         dispatch(CommonActionType.setCategorySubList(value));
-    },
-    getBrandModelList: (brandId) => {
-        dispatch(commonAction.getBrandModelList(brandId));
     },
     setBrandModelList: (value) => {
         dispatch(CommonActionType.setBrandModelList(value));
     },
 
     getStorageCheckList: (dataStart) => {
-        dispatch(storageCheckAction.getStorageCheckList({dataStart}))
-    },
-    saveModalData: (storage,storageArea,category,categorySub,brand,brandModel,supplier,remark,desc) => {
-        dispatch(storageCheckAction.saveModalData({
-            storage,storageArea,category,categorySub,brand,brandModel,supplier,remark,desc
-        }));
+        dispatch(storageCheckAction.getStorageCheckList(dataStart))
     },
     downLoadCsv: (storageCheckId) => {
         dispatch(storageCheckAction.downLoadCsv(storageCheckId))

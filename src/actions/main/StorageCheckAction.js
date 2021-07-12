@@ -8,10 +8,10 @@ const localUtil = require('../../utils/LocalUtils');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 
-export const getStorageCheckList = (params) => async (dispatch, getState) => {
+export const getStorageCheckList = (dataStart) => async (dispatch, getState) => {
     try {
         // 检索条件：开始位置
-        const start = params.dataStart;
+        const start = dataStart;
         // 检索条件：每页数量
         const size = getState().StorageCheckReducer.storageCheckData.size;
         // 检索条件
