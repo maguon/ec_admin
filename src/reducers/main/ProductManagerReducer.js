@@ -15,48 +15,13 @@ const initialState = {
     },
     // 检索条件
     queryParams: {
-        paramCategory: null,
-        paramCategorySub: null,
-        paramBrand: null,
-        paramBrandModel: null,
-        paramProduct: null,
-        paramStandardType: null,
-        paramStatus: null
-    },
-    // 检索结果
-    modalData: {
-        // 新增 / 修改 区分
-        pageType: '',
-        // 唯一键
-        uid : -1,
-
-        // 商品分类
-        categoryType: null,
-        // 商品子分类
-        categorySubType: null,
-        // 品牌
-        brandType: null,
-        // 品牌型号
-        brandModelType: null,
-        // 商品名称
-        productName: '',
-        // 商品别名
-        productSName: '',
-        // 序列号
-        productSerial: '',
-        // 产地
-        productAddress: '',
-        // 标准类型（标准、非标准）
+        category: null,
+        categorySub: null,
+        brand: null,
+        brandModel: null,
+        product: null,
         standardType: null,
-        // 单位
-        unitName:  '',
-        // 单价
-        price: 0,
-        // 图片
-        image: '',
-        // "barcode": "string",
-        // 备注
-        remark: ''
+        status: null
     }
 };
 
@@ -73,10 +38,12 @@ export default handleActions({
             queryParams: action.payload
         }
     },
-    [ProductManagerActionType.setModalData]: (state, action) => {
+    [ProductManagerActionType.setQueryParam]: (state, action) => {
+        const {name, value} = action.payload;
+        const paramsObj = {...state.queryParams, [name]: value};
         return {
             ...state,
-            modalData: action.payload
+            queryParams: paramsObj
         }
-    }
+    },
 }, initialState)

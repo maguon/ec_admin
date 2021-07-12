@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
+import {connect, useDispatch} from 'react-redux';
 import {Link} from "react-router-dom";
-import {connect} from 'react-redux';
 import Swal from "sweetalert2";
 // 引入material-ui基础组件
 import {
@@ -44,205 +44,108 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ProductManager(props) {
-    const {productManagerReducer, commonReducer, changeStatus, saveModalData, fromDetail} = props;
+    const {productManagerReducer, commonReducer, changeStatus, fromDetail} = props;
     const classes = useStyles();
-
-    // 查询列表
-    const queryProductList = () => {
-        // 默认第一页
-        props.getProductList(0);
-    };
-
-    // 上一页
-    const getPrePage = () => {
-        props.getProductList(props.productManagerReducer.productData.start - (props.productManagerReducer.productData.size - 1));
-    };
-
-    // 下一页
-    const getNextPage = () => {
-        props.getProductList(props.productManagerReducer.productData.start + (props.productManagerReducer.productData.size - 1));
-    };
-
-    // 检索条件
-    const [paramCategory, setParamCategory] = React.useState(null);
-    const [paramCategorySub, setParamCategorySub] = React.useState(null);
-    const [paramBrand, setParamBrand] = React.useState(null);
-    const [paramBrandModel, setParamBrandModel] = React.useState(null);
-    // const [paramProduct, setParamProduct] = React.useState(null);
-    const [paramStandardType, setParamStandardType] = React.useState('');
-    const [paramStatus, setParamStatus] = React.useState('');
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if (!fromDetail) {
-            setParamCategory(null);
-            setParamCategorySub(null);
-            setParamBrand(null);
-            setParamBrandModel(null);
-            setParamStandardType('');
-            setParamStatus('');
-            props.setQueryParams({paramCategory,paramCategorySub,paramBrand,paramBrandModel,paramStandardType,paramStatus});
-        } else {
-            setParamCategory(productManagerReducer.queryParams.paramCategory);
-            setParamCategorySub(productManagerReducer.queryParams.paramCategorySub);
-            setParamBrand(productManagerReducer.queryParams.paramBrand);
-            setParamBrandModel(productManagerReducer.queryParams.paramBrandModel);
-            setParamStandardType(productManagerReducer.queryParams.paramStandardType);
-            setParamStatus(productManagerReducer.queryParams.paramStatus);
+            let queryParams = {
+                category: null,
+                categorySub: null,
+                brand: null,
+                brandModel: null,
+                product: null,
+                standardType: null,
+                status: null
+            };
+            dispatch(ProductManagerActionType.setQueryParams(queryParams));
         }
+
         // 取得画面 select控件，基础数据
         props.getBaseSelectList();
-        let dataStart = props.productManagerReducer.productData.start;
-        props.getProductList(dataStart);
+        dispatch(productManagerAction.getProductList(productManagerReducer.productData.start))
     }, []);
-
-    // const refreshSubOptions = () => {
-    //     // 商品分类有选择时，取得商品子分类， 否则清空
-    //     if (paramCategory != null) {
-    //         props.getCategorySubList(paramCategory.id);
-    //         setParamCategorySub(null);
-    //     } else {
-    //         props.setCategorySubList([]);
-    //         setParamCategorySub(null);
-    //     }
-    //     // 品牌有选择时，取得品牌型号， 否则清空
-    //     if (paramBrand != null) {
-    //         props.getBrandModelList(paramBrand.id);
-    //         setParamBrandModel(null);
-    //     } else {
-    //         props.setBrandModelList([]);
-    //         setParamBrandModel(null);
-    //     }
-    // };
-    // const refreshSelectOptions = () => {
-    //     // 刷新商品子分类,取得品牌型号 列表
-    //     refreshSubOptions();
-    //     // 商品分类/品牌 有1个选择时，取得商品列表，否则清空
-    //     if (paramCategory != null || paramBrand != null) {
-    //         let params = {
-    //             categoryId: paramCategory != null ? paramCategory.id : '',
-    //             categorySubId: paramCategorySub != null ? paramCategorySub.id : '',
-    //             brandId: paramBrand != null ? paramBrand.id : '',
-    //             brandModelId: paramBrandModel != null ? paramBrandModel.id : ''
-    //         };
-    //         props.getCommonProductList(params);
-    //         setParamProduct(null);
-    //     } else {
-    //         props.setCommonProductList([]);
-    //         setParamProduct(null);
-    //     }
-    // };
-
-    // 保存检索条件
-    useEffect(() => {
-        props.setQueryParams({paramCategory,paramCategorySub,paramBrand,paramBrandModel,paramStandardType,paramStatus});
-    }, [paramCategory,paramCategorySub,paramBrand,paramBrandModel,paramStandardType,paramStatus]);
-
-    useEffect(() => {
-        // 商品分类有选择时，取得商品子分类， 否则清空
-        setParamCategorySub(null);
-        if (paramCategory != null) {
-            props.getCategorySubList(paramCategory.id);
-        } else {
-            props.setCategorySubList([]);
-        }
-    }, [paramCategory]);
-
-    useEffect(() => {
-        // 品牌有选择时，取得品牌型号， 否则清空
-        setParamBrandModel(null);
-        if (paramBrand != null) {
-            props.getBrandModelList(paramBrand.id);
-        } else {
-            props.setBrandModelList([]);
-        }
-    }, [paramBrand]);
 
     // 模态属性
     const [modalOpen, setModalOpen] = React.useState(false);
+    // 模态数据
+    const [modalData, setModalData] = React.useState({});
+    // 模态校验
+    const [validation,setValidation] = useState({});
+
     // 关闭模态
     const closeModal = () => {
-        if (paramCategory != null) {
-            props.getCategorySubList(paramCategory.id);
+        if (productManagerReducer.queryParams.category != null) {
+            dispatch(commonAction.getCategorySubList(productManagerReducer.queryParams.category.id));
         } else {
-            props.setCategorySubList([]);
+            dispatch(CommonActionType.setCategorySubList([]));
         }
-        if (paramBrand != null) {
-            props.getBrandModelList(paramBrand.id);
+        if (productManagerReducer.queryParams.brand != null) {
+            dispatch(commonAction.getBrandModelList(productManagerReducer.queryParams.brand.id));
         } else {
-            props.setBrandModelList([]);
+            dispatch(CommonActionType.setBrandModelList([]));
         }
         setModalOpen(false);
     };
-
-    // 商品分类 *
-    const [category, setCategory] = React.useState(null);
-    // 商品子分类 *
-    const [categorySub, setCategorySub] = React.useState(null);
-    // 品牌 *
-    const [brand, setBrand] = React.useState(null);
-    // 品牌型号 *
-    const [brandModel, setBrandModel] = React.useState(null);
-    // 商品名称 *
-    const [productName, setProductName] = React.useState('');
-    // 商品别名
-    const [productSName, setProductSName] = React.useState('');
-    // 产地
-    const [productAddress, setProductAddress] = React.useState('');
-    // 序列号
-    const [productSerial, setProductSerial] = React.useState('');
-    // 单位
-    const [unitName, setUnitName] = React.useState('');
-    // 售价 *
-    const [price, setPrice] = React.useState('0');
-    // 标准类型 *
-    const [standardType, setStandardType] = React.useState(1);
-    // 备注
-    const [remark, setRemark] = React.useState('');
 
     //初始添加模态框值
     const initModal =() =>{
         // 清空check内容
         setValidation({});
         // 清空商品子分类
-        props.setCategorySubList([]);
+        dispatch(CommonActionType.setCategorySubList([]));
         // 清空品牌型号
-        props.setBrandModelList([]);
-        setCategory(null);
-        setCategorySub(null);
-        setBrand(null);
-        setBrandModel(null);
-        setProductName('');
-        setProductSName('');
-        setProductAddress('');
-        setProductSerial('');
-        setUnitName('');
-        setPrice('0');
-        setStandardType(1);
-        setRemark('');
+        dispatch(CommonActionType.setBrandModelList([]));
+        setModalData({
+            ...modalData,
+            // 商品分类 *
+            category: null,
+            // 商品子分类 *
+            categorySub: null,
+            // 品牌 *
+            brand: null,
+            // 品牌型号 *
+            brandModel: null,
+            // 商品名称 *
+            productName: '',
+            // 商品别名
+            productSName: '',
+            // 产地
+            productAddress: '',
+            // 序列号
+            productSerial: '',
+            // 单位
+            unitName: '',
+            // 售价 *
+            price: '0',
+            // 标准类型 *
+            standardType: 1,
+            // 备注
+            remark: '',
+        });
         // 设定模态打开
         setModalOpen(true);
     };
 
-    // 校验
-    const [validation,setValidation] = useState({});
     const validate = ()=>{
         const validateObj ={};
-        if (!category) {
+        if (!modalData.category) {
             validateObj.category ='请选择商品分类';
         }
-        if (!categorySub) {
+        if (!modalData.categorySub) {
             validateObj.categorySub ='请选择商品子分类';
         }
-        if (!brand) {
+        if (!modalData.brand) {
             validateObj.brand ='请选择品牌';
         }
-        if (!brandModel) {
+        if (!modalData.brandModel) {
             validateObj.brandModel ='请选择品牌型号';
         }
-        if (!productName) {
+        if (!modalData.productName) {
             validateObj.productName ='请输入商品名称';
         }
-        if (!price) {
+        if (!modalData.price) {
             validateObj.price ='请输入售价';
         }
         setValidation(validateObj);
@@ -252,7 +155,7 @@ function ProductManager(props) {
     const submitModal= ()=>{
         const errorCount = validate();
         if(errorCount===0){
-            saveModalData(category, categorySub, brand, brandModel, productName, productSName, productAddress, productSerial, unitName, price, standardType, remark);
+            dispatch(productManagerAction.saveModalData(modalData));
             setModalOpen(false);
         }
     };
@@ -270,10 +173,16 @@ function ProductManager(props) {
                         <Autocomplete fullWidth
                                       options={commonReducer.categoryList}
                                       getOptionLabel={(option) => option.category_name}
+                                      value={productManagerReducer.queryParams.category}
                                       onChange={(event, value) => {
-                                          setParamCategory(value);
+                                          dispatch(ProductManagerActionType.setQueryParam({name: "category", value: value}));
+                                          dispatch(ProductManagerActionType.setQueryParam({name: "categorySub", value: null}));
+                                          if (value != null) {
+                                              dispatch(commonAction.getCategorySubList(value.id));
+                                          } else {
+                                              dispatch(CommonActionType.setCategorySubList([]));
+                                          }
                                       }}
-                                      value={paramCategory}
                                       renderInput={(params) => <TextField {...params} label="商品分类" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
@@ -282,10 +191,10 @@ function ProductManager(props) {
                                       options={commonReducer.categorySubList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.category_sub_name}
+                                      value={productManagerReducer.queryParams.categorySub}
                                       onChange={(event, value) => {
-                                          setParamCategorySub(value);
+                                          dispatch(ProductManagerActionType.setQueryParam({name: "categorySub", value: value}));
                                       }}
-                                      value={paramCategorySub}
                                       renderInput={(params) => <TextField {...params} label="商品子分类" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
@@ -294,10 +203,17 @@ function ProductManager(props) {
                         <Autocomplete fullWidth
                                       options={commonReducer.brandList}
                                       getOptionLabel={(option) => option.brand_name}
+                                      value={productManagerReducer.queryParams.brand}
                                       onChange={(event, value) => {
-                                          setParamBrand(value);
+                                          dispatch(ProductManagerActionType.setQueryParam({name: "brand", value: value}));
+                                          dispatch(ProductManagerActionType.setQueryParam({name: "brandModel", value: null}));
+                                          // 品牌有选择时，取得品牌型号， 否则清空
+                                          if (value != null) {
+                                              dispatch(commonAction.getBrandModelList(value.id));
+                                          } else {
+                                              dispatch(CommonActionType.setBrandModelList([]));
+                                          }
                                       }}
-                                      value={paramBrand}
                                       renderInput={(params) => <TextField {...params} label="品牌" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
@@ -306,34 +222,21 @@ function ProductManager(props) {
                                       options={commonReducer.brandModelList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.brand_model_name}
+                                      value={productManagerReducer.queryParams.brandModel}
                                       onChange={(event, value) => {
-                                          setParamBrandModel(value);
+                                          dispatch(ProductManagerActionType.setQueryParam({name: "brandModel", value: value}));
                                       }}
-                                      value={paramBrandModel}
                                       renderInput={(params) => <TextField {...params} label="品牌型号" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
-
-                    {/*<Grid item xs={3}>*/}
-                    {/*    <Autocomplete id="condition-product" fullWidth*/}
-                    {/*                  options={commonReducer.productList}*/}
-                    {/*                  noOptionsText="无选项"*/}
-                    {/*                  getOptionLabel={(option) => option.product_name}*/}
-                    {/*                  onChange={(event, value) => {*/}
-                    {/*                      setParamProduct(value);*/}
-                    {/*                  }}*/}
-                    {/*                  value={paramProduct}*/}
-                    {/*                  renderInput={(params) => <TextField {...params} label="商品" margin="dense" variant="outlined"/>}*/}
-                    {/*    />*/}
-                    {/*</Grid>*/}
 
                     <Grid item xs={2}>
                         <FormControl variant="outlined" fullWidth margin="dense">
                             <InputLabel>标准类型</InputLabel>
                             <Select label="标准类型"
-                                value={paramStandardType}
-                                onChange={(event, value) => {
-                                    setParamStandardType(event.target.value);
+                                value={productManagerReducer.queryParams.standardType}
+                                onChange={(e, value) => {
+                                    dispatch(ProductManagerActionType.setQueryParam({name: "standardType", value: e.target.value}));
                                 }}
                             >
                                 <MenuItem value="">请选择</MenuItem>
@@ -348,9 +251,9 @@ function ProductManager(props) {
                         <FormControl variant="outlined" fullWidth margin="dense">
                             <InputLabel>状态</InputLabel>
                             <Select label="状态"
-                                value={paramStatus}
-                                onChange={(event, value) => {
-                                    setParamStatus(event.target.value);
+                                value={productManagerReducer.queryParams.status}
+                                onChange={(e, value) => {
+                                    dispatch(ProductManagerActionType.setQueryParam({name: "status", value: e.target.value}));
                                 }}
                             >
                                 <MenuItem value="">请选择</MenuItem>
@@ -364,7 +267,7 @@ function ProductManager(props) {
 
                 {/*查询按钮*/}
                 <Grid item xs={1} style={{textAlign: 'right'}}>
-                    <Fab color="primary" size="small" onClick={queryProductList}>
+                    <Fab color="primary" size="small" onClick={()=>{dispatch(productManagerAction.getProductList(0))}}>
                         <i className="mdi mdi-magnify mdi-24px"/>
                     </Fab>
                 </Grid>
@@ -437,9 +340,11 @@ function ProductManager(props) {
             {/* 上下页按钮 */}
             <Box style={{textAlign: 'right', marginTop: 20}}>
                 {productManagerReducer.productData.start > 0 && productManagerReducer.productData.dataSize > 0 &&
-                <Button variant="contained" color="primary" style={{marginRight: 20}} onClick={getPrePage}>上一页</Button>}
+                <Button variant="contained" color="primary" style={{marginRight: 20}}
+                        onClick={()=>{dispatch(productManagerAction.getProductList(productManagerReducer.productData.start-(productManagerReducer.productData.size-1)))}}>上一页</Button>}
                 {productManagerReducer.productData.dataSize >= productManagerReducer.productData.size &&
-                <Button variant="contained" color="primary" onClick={getNextPage}>下一页</Button>}
+                <Button variant="contained" color="primary"
+                        onClick={()=>{dispatch(productManagerAction.getProductList(productManagerReducer.productData.start+(productManagerReducer.productData.size-1)))}}>下一页</Button>}
             </Box>
 
             {/* 模态：新增/修改 */}
@@ -461,14 +366,14 @@ function ProductManager(props) {
                         <Autocomplete fullWidth
                                       options={commonReducer.categoryList}
                                       getOptionLabel={(option) => option.category_name}
-                                      value={category}
+                                      value={modalData.category}
                                       onChange={(event, value) => {
-                                          setCategory(value);
+                                          setModalData({...modalData,category:value, categorySub: null});
                                           // 商品分类有选择时，取得商品子分类， 否则清空
                                           if (value != null) {
-                                              props.getCategorySubList(value.id);
+                                              dispatch(commonAction.getCategorySubList(value.id));
                                           } else {
-                                              props.setCategorySubList([]);
+                                              dispatch(CommonActionType.setCategorySubList([]));
                                           }
                                       }}
                                       renderInput={(params) => <TextField {...params} label="商品分类" margin="dense" variant="outlined"
@@ -481,12 +386,9 @@ function ProductManager(props) {
                                       options={commonReducer.categorySubList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.category_sub_name}
-                                      value={categorySub}
+                                      value={modalData.categorySub}
                                       onChange={(event, value) => {
-                                          setCategorySub(value);
-                                          if (value == null) {
-                                              props.getCategorySubList(category.id);
-                                          }
+                                          setModalData({...modalData,categorySub:value});
                                       }}
                                       renderInput={(params) => <TextField {...params} label="商品子分类" margin="dense" variant="outlined"
                                                                           error={validation.categorySub&&validation.categorySub!=''}
@@ -497,14 +399,14 @@ function ProductManager(props) {
                         <Autocomplete fullWidth
                                       options={commonReducer.brandList}
                                       getOptionLabel={(option) => option.brand_name}
-                                      value={brand}
+                                      value={modalData.brand}
                                       onChange={(event, value) => {
-                                          setBrand(value);
+                                          setModalData({...modalData,brand:value, brandModel: null});
                                           // 品牌有选择时，取得品牌型号， 否则清空
                                           if (value != null) {
-                                              props.getBrandModelList(value.id);
+                                              dispatch(commonAction.getBrandModelList(value.id));
                                           } else {
-                                              props.setBrandModelList([]);
+                                              dispatch(CommonActionType.setBrandModelList([]));
                                           }
                                       }}
                                       renderInput={(params) => <TextField {...params} label="品牌" margin="dense" variant="outlined"
@@ -517,12 +419,9 @@ function ProductManager(props) {
                                       options={commonReducer.brandModelList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.brand_model_name}
-                                      value={brandModel}
+                                      value={modalData.brandModel}
                                       onChange={(event, value) => {
-                                          setBrandModel(value);
-                                          if (value == null) {
-                                              props.getBrandModelList(brand.id);
-                                          }
+                                          setModalData({...modalData,brandModel:value});
                                       }}
                                       renderInput={(params) => <TextField {...params} label="品牌型号" margin="dense" variant="outlined"
                                                                           error={validation.brandModel&&validation.brandModel!=''}
@@ -531,33 +430,33 @@ function ProductManager(props) {
                     </Grid>
 
                     <Grid item sm={6}>
-                        <TextField label="商品名称" fullWidth margin="dense" variant="outlined" value={productName}
+                        <TextField label="商品名称" fullWidth margin="dense" variant="outlined" value={modalData.productName}
                                    onChange={(e) => {
-                                       setProductName(e.target.value)
+                                       setModalData({...modalData,productName:e.target.value});
                                    }}
                                    error={validation.productName&&validation.productName!=''}
                                    helperText={validation.productName}
                         />
                     </Grid>
                     <Grid item sm={6}>
-                        <TextField label="商品别名" fullWidth margin="dense" variant="outlined" value={productSName}
+                        <TextField label="商品别名" fullWidth margin="dense" variant="outlined" value={modalData.productSName}
                                    onChange={(e) => {
-                                       setProductSName(e.target.value)
+                                       setModalData({...modalData,productSName:e.target.value});
                                    }}
                         />
                     </Grid>
                     <Grid item sm={6}>
-                        <TextField label="产地" fullWidth margin="dense" variant="outlined" value={productAddress}
+                        <TextField label="产地" fullWidth margin="dense" variant="outlined" value={modalData.productAddress}
                                    onChange={(e) => {
-                                       setProductAddress(e.target.value)
+                                       setModalData({...modalData,productAddress:e.target.value});
                                    }}
                         />
                     </Grid>
 
                     <Grid item sm={6}>
-                        <TextField label="序列号" fullWidth margin="dense" variant="outlined" value={productSerial}
+                        <TextField label="序列号" fullWidth margin="dense" variant="outlined" value={modalData.productSerial}
                                    onChange={(e) => {
-                                       setProductSerial(e.target.value)
+                                       setModalData({...modalData,productSerial:e.target.value});
                                    }}
                         />
                     </Grid>
@@ -565,9 +464,9 @@ function ProductManager(props) {
                         <FormControl variant="outlined" fullWidth margin="dense">
                             <InputLabel>标准类型</InputLabel>
                             <Select label="标准类型"
-                                value={standardType}
-                                onChange={(event, value) => {
-                                    setStandardType(event.target.value);
+                                value={modalData.standardType}
+                                onChange={(e, value) => {
+                                    setModalData({...modalData,standardType:e.target.value});
                                 }}
                             >
                                 {sysConst.STANDARD_TYPE.map((item, index) => (
@@ -577,25 +476,25 @@ function ProductManager(props) {
                         </FormControl>
                     </Grid>
                     <Grid item sm={3}>
-                        <TextField label="单位" fullWidth margin="dense" variant="outlined" value={unitName}
+                        <TextField label="单位" fullWidth margin="dense" variant="outlined" value={modalData.unitName}
                                    onChange={(e) => {
-                                       setUnitName(e.target.value)
+                                       setModalData({...modalData,unitName:e.target.value});
                                    }}
                         />
                     </Grid>
                     <Grid item sm={3}>
-                        <TextField label="售价" fullWidth margin="dense" variant="outlined" type="number" value={price}
+                        <TextField label="售价" fullWidth margin="dense" variant="outlined" type="number" value={modalData.price}
                                    onChange={(e) => {
-                                       setPrice(e.target.value)
+                                       setModalData({...modalData,price:e.target.value});
                                    }}
                                    error={validation.price&&validation.price!=''}
                                    helperText={validation.price}
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={remark}
+                        <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={modalData.remark}
                                    onChange={(e) => {
-                                       setRemark(e.target.value)
+                                       setModalData({...modalData,remark:e.target.value});
                                    }}
                         />
                     </Grid>
@@ -623,32 +522,6 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(commonAction.getCategoryList());
         dispatch(commonAction.getBrandList());
     },
-    // select控件，联动检索
-    getCategorySubList: (categoryId) => {
-        dispatch(commonAction.getCategorySubList(categoryId));
-    },
-    setCategorySubList: (value) => {
-        dispatch(CommonActionType.setCategorySubList(value));
-    },
-    getBrandModelList: (brandId) => {
-        dispatch(commonAction.getBrandModelList(brandId));
-    },
-    setBrandModelList: (value) => {
-        dispatch(CommonActionType.setBrandModelList(value));
-    },
-    // getCommonProductList: (queryParams) => {
-    //     dispatch(commonAction.getProductList(queryParams));
-    // },
-    // setCommonProductList: (value) => {
-    //     dispatch(CommonActionType.setProductList(value));
-    // },
-
-    setQueryParams: (value) => {
-        dispatch(ProductManagerActionType.setQueryParams(value));
-    },
-    getProductList: (dataStart) => {
-        dispatch(productManagerAction.getProductList({dataStart}))
-    },
     changeStatus: (id, status) => {
         Swal.fire({
             title: status === 1 ? "确定停用该数据？" : "确定重新启用该数据？",
@@ -662,11 +535,6 @@ const mapDispatchToProps = (dispatch) => ({
                 dispatch(productManagerAction.changeStatus(id, status));
             }
         });
-    },
-    saveModalData: (category, categorySub, brand, brandModel, productName, productSName, productAddress, productSerial, unitName, price, standardType, remark) => {
-        dispatch(productManagerAction.saveModalData({
-            category, categorySub, brand, brandModel, productName, productSName, productAddress, productSerial, unitName, price, standardType, remark
-        }));
     }
 });
 
