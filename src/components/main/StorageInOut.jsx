@@ -82,7 +82,7 @@ function StorageInOut(props) {
             dateIdStart: '',
             dateIdEnd: '',
         };
-        dispatch(StorageInOutActionType.setRefundParams(storageParams));
+        dispatch(StorageInOutActionType.setStorageProductDetailParams(storageParams));
 
         // 取得画面 select控件，基础数据
         props.getBaseSelectList();
