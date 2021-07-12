@@ -4,6 +4,7 @@ import AppReducer from './layout/AppReducer';
 import CommonReducer from './layout/CommonReducer';
 import LoginReducer from './login/LoginReducer';
 import MainPanelReducer from './main/MainPanelReducer';
+import StoragePanelReducer from './main/StoragePanelReducer';
 import CategoryManagerReducer from './main/CategoryManagerReducer';
 import BrandManagerReducer from './main/BrandManagerReducer';
 import StorageReducer from './main/StorageReducer';
@@ -31,6 +32,7 @@ export default combineReducers({
     CommonReducer,
     LoginReducer,
     MainPanelReducer,
+    StoragePanelReducer,
     CategoryManagerReducer,
     BrandManagerReducer,
     StorageReducer,

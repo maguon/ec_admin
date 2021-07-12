@@ -2,6 +2,7 @@ import * as AppActionType from './layout/AppActionType';
 import * as CommonActionType from './layout/CommonActionType';
 import * as LoginActionType from './login/LoginActionType';
 import * as MainPanelActionType from './main/MainPanelActionType'
+import * as StoragePanelActionType from './main/StoragePanelActionType'
 import * as CategoryManagerActionType from './main/CategoryManagerActionType'
 import * as BrandManagerActionType from './main/BrandManagerActionType'
 import * as StorageActionType from './main/StorageActionType'
@@ -28,6 +29,7 @@ export {
     CommonActionType,
     LoginActionType,
     MainPanelActionType,
+    StoragePanelActionType,
     CategoryManagerActionType,
     BrandManagerActionType,
     StorageActionType,

@@ -8,6 +8,7 @@ import Login from './login/Login';
 import Register from './login/Register';
 import ResetPassword from './login/ResetPassword';
 import MainPanel from './main/MainPanel';
+import StoragePanel from './main/StoragePanel';
 import AuthoritySetting from './main/AuthoritySetting';
 import ErrorPanel from './main/ErrorPanel';
 import AdminUserSetting from "./main/AdminUserSetting";
@@ -43,6 +44,7 @@ export {
     Register,
     ResetPassword,
     MainPanel,
+    StoragePanel,
     ErrorPanel,
     AuthoritySetting,
     AdminUserSetting,

@@ -212,6 +212,13 @@ export const ALL_PAGE_LIST = [
         "usable": false
     },
     {
+        "link": "/storage_panel",
+        "label": "主控面板",
+        "icon": "mdi-store",
+        "children": [],
+        "usable": false
+    },
+    {
         "label": "公共数据",
         "icon": "mdi-chart-line",
         "children": [
