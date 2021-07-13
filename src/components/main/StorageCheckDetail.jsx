@@ -4,12 +4,16 @@ import {connect, useDispatch} from 'react-redux';
 import Swal from "sweetalert2";
 // 引入material-ui基础组件
 import {Button, Divider, Grid, IconButton, makeStyles, TextField, Typography} from "@material-ui/core";
-import {StorageCheckDetailActionType} from "../../types";
+import {CommonActionType, StorageCheckDetailActionType} from "../../types";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import {SimpleModal} from "../index";
+import {DatePicker} from "@material-ui/pickers";
 
 const storageCheckDetailAction = require('../../actions/main/StorageCheckDetailAction');
 const storageCheckAction = require('../../actions/main/StorageCheckAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
+const commonAction = require('../../actions/layout/CommonAction');
 const customTheme = require('../layout/Theme').customTheme;
 
 const useStyles = makeStyles((theme) => ({
@@ -25,14 +29,79 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function StorageCheck(props) {
-    const {storageCheckDetailReducer, saveStorageCheck, saveStorageCheckRel, confirmCheck, downLoadCsv, downLoadPDF} = props;
+    const {storageCheckDetailReducer, commonReducer, saveStorageCheckRel, confirmCheck, downLoadCsv, downLoadPDF} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     const {id} = useParams();
 
     useEffect(() => {
+        props.getBaseSelectList();
         props.getStorageCheckInfo(id);
     }, []);
+
+    // 模态属性
+    const [modalOpen, setModalOpen] = React.useState(false);
+    // 模态数据
+    const [modalData, setModalData] = React.useState({});
+    // 模态校验
+    const [validation,setValidation] = React.useState({});
+
+    // 关闭模态
+    const closeModal = () => {
+        setModalOpen(false);
+    };
+
+    //初始添加模态框值
+    const initModal =(storageCheckId) =>{
+        // 清空仓库分区
+        dispatch(CommonActionType.setStorageAreaList([]));
+        setModalData({
+            ...modalData,
+            storageCheckId: storageCheckId,
+            storage: null,
+            storageArea: null,
+            supplier: null,
+            product: null,
+            checkCount: '',
+            unitCost: '',
+            storageDateId: null,
+            remark: ''
+        });
+        // 设定模态打开
+        setModalOpen(true);
+    };
+
+    const validateModal = ()=>{
+        const validateObj ={};
+        if (!modalData.storage) {
+            validateObj.storage ='请选择仓库';
+        }
+        if (!modalData.storageArea) {
+            validateObj.storageArea ='请选择仓库分区';
+        }
+        if (!modalData.product) {
+            validateObj.product ='请选择商品';
+        }
+        if (!modalData.checkCount) {
+            validateObj.checkCount ='请输入盘点数';
+        }
+        if (!modalData.unitCost) {
+            validateObj.unitCost ='请输入商品单价';
+        }
+        if (!modalData.storageDateId) {
+            validateObj.storageDateId ='请输入仓储日期';
+        }
+        setValidation(validateObj);
+        return Object.keys(validateObj).length
+    };
+
+    const submitModal= ()=>{
+        const errorCount = validateModal();
+        if(errorCount===0){
+            dispatch(storageCheckDetailAction.saveModalData(modalData));
+            setModalOpen(false);
+        }
+    };
 
     return (
         <div className={classes.root}>
@@ -81,9 +150,8 @@ function StorageCheck(props) {
                 {storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[0].value &&
                 <Grid item xs={12}>
                     <Button variant="contained" color="primary" style={{float:'right', marginLeft: 20}} onClick={()=>{confirmCheck(storageCheckDetailReducer.storageCheckInfo)}}>完成</Button>
-                    <Button variant="contained" color="primary" style={{float:'right',marginLeft: 20}} onClick={saveStorageCheck}>保存</Button>
+                    <Button variant="contained" color="primary" style={{float:'right',marginLeft: 20}} onClick={()=>{dispatch(storageCheckDetailAction.saveStorageCheck())}}>保存</Button>
                 </Grid>}
-                {storageCheckDetailReducer.detailList.length > 0 &&
                 <Grid item xs={12}>
                     <Typography color={"primary"}>盘点详情
                         <IconButton color="primary" edge="start" style={{marginLeft:1}} onClick={()=>{downLoadCsv(storageCheckDetailReducer.storageCheckInfo.id)}}>
@@ -92,9 +160,10 @@ function StorageCheck(props) {
                         <IconButton color="primary" edge="start" onClick={()=>{downLoadPDF(storageCheckDetailReducer.storageCheckInfo.id)}}>
                             <i className="mdi mdi-file-pdf mdi-24px"/>
                         </IconButton>
+                        {storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[0].value &&
+                        <IconButton color="primary" edge="start" size="small" onClick={()=>{initModal(storageCheckDetailReducer.storageCheckInfo.id)}}>盈</IconButton>}
                     </Typography>
-
-                </Grid>}
+                </Grid>
             </Grid>
 
             {/* 下部分 */}
@@ -146,6 +215,127 @@ function StorageCheck(props) {
                 </Grid>
             ))}
 
+            <SimpleModal
+                maxWidth={'sm'}
+                title="新增盘盈入库"
+                open={modalOpen}
+                onClose={closeModal}
+                showFooter={true}
+                footer={
+                    <>
+                        <Button variant="contained" color="primary" onClick={submitModal}>确定</Button>
+                        <Button variant="contained" onClick={closeModal}>关闭</Button>
+                    </>
+                }
+            >
+                <Grid container spacing={2}>
+                    <Grid item sm={6}>
+                        <Autocomplete fullWidth
+                                      options={commonReducer.storageList}
+                                      getOptionLabel={(option) => option.storage_name}
+                                      value={modalData.storage}
+                                      onChange={(event, value) => {
+                                          setModalData({...modalData,storage:value, storageArea:null});
+                                          // 仓库有选择时，取得仓库分区， 否则清空
+                                          if (value != null) {
+                                              dispatch(commonAction.getStorageAreaList(value.id));
+                                          } else {
+                                              dispatch(CommonActionType.setStorageAreaList([]));
+                                          }
+                                      }}
+                                      renderInput={(params) => <TextField {...params} label="仓库" margin="dense" variant="outlined"
+                                                                          error={validation.storage&&validation.storage!=''}
+                                                                          helperText={validation.storage}
+                                      />}
+                        />
+                    </Grid>
+                    <Grid item sm={6}>
+                        <Autocomplete fullWidth
+                                      options={commonReducer.storageAreaList}
+                                      noOptionsText="无选项"
+                                      getOptionLabel={(option) => option.storage_area_name}
+                                      value={modalData.storageArea}
+                                      onChange={(event, value) => {
+                                          setModalData({...modalData,storageArea:value});
+                                      }}
+                                      renderInput={(params) => <TextField {...params} label="仓库分区" margin="dense" variant="outlined"
+                                                                          error={validation.storageArea&&validation.storageArea!=''}
+                                                                          helperText={validation.storageArea}
+                                      />}
+                        />
+                    </Grid>
+
+                    <Grid item sm={6}>
+                        <Autocomplete fullWidth
+                                      options={commonReducer.supplierList}
+                                      getOptionLabel={(option) => option.supplier_name}
+                                      value={modalData.supplier}
+                                      onChange={(event, value) => {
+                                          setModalData({...modalData,supplier:value});
+                                      }}
+                                      renderInput={(params) => <TextField {...params} label="供应商" margin="dense" variant="outlined"/>}
+                        />
+                    </Grid>
+                    <Grid item sm={6}>
+                        <Autocomplete fullWidth
+                                      options={commonReducer.productList}
+                                      getOptionLabel={(option) => option.product_name}
+                                      value={modalData.product}
+                                      onChange={(event, value) => {
+                                          setModalData({...modalData,product:value});
+                                      }}
+                                      renderInput={(params) => <TextField {...params} label="商品" margin="dense" variant="outlined"
+                                                                          error={validation.product&&validation.product!=''}
+                                                                          helperText={validation.product}
+                                      />}
+                        />
+                    </Grid>
+
+                    <Grid item sm={6}>
+                        <TextField label="商品单价" fullWidth margin="dense" variant="outlined" type="number"
+                                   value={modalData.unitCost}
+                                   onChange={(e) => {
+                                       setModalData({...modalData,unitCost:e.target.value});
+                                   }}
+                                   error={validation.unitCost&&validation.unitCost!=''}
+                                   helperText={validation.unitCost}
+                        />
+                    </Grid>
+
+                    <Grid item sm={6}>
+                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                    okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                    label="仓储日期"
+                                    value={modalData.storageDateId == '' ? null : modalData.storageDateId}
+                                    onChange={(date)=>{
+                                        setModalData({...modalData,storageDateId:date});
+                                    }}
+                                    error={validation.storageDateId&&validation.storageDateId!=''}
+                                    helperText={validation.storageDateId}
+                        />
+                    </Grid>
+
+                    <Grid item sm={6}>
+                        <TextField label="盘点数" fullWidth margin="dense" variant="outlined" type="number"
+                                   value={modalData.checkCount}
+                                   onChange={(e) => {
+                                       setModalData({...modalData,checkCount:e.target.value});
+                                   }}
+                                   error={validation.checkCount&&validation.checkCount!=''}
+                                   helperText={validation.checkCount}
+                        />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={modalData.remark}
+                                   onChange={(e) => {
+                                       setModalData({...modalData,remark:e.target.value});
+                                   }}
+                        />
+                    </Grid>
+                </Grid>
+            </SimpleModal>
+
             {/* PDF 输出用 DIV */}
             <div id="pdf" className={classes.pdfPage} style={{marginTop: -99999}}>
                 <Grid container spacing={0}>
@@ -186,17 +376,22 @@ function StorageCheck(props) {
 
 const mapStateToProps = (state) => {
     return {
-        storageCheckDetailReducer: state.StorageCheckDetailReducer
+        storageCheckDetailReducer: state.StorageCheckDetailReducer,
+        commonReducer: state.CommonReducer
     }
 };
 
 const mapDispatchToProps = (dispatch) => ({
+    // 取得画面 select控件，基础数据
+    getBaseSelectList: () => {
+        dispatch(commonAction.getStorageList());
+        dispatch(commonAction.getSupplierList());
+        dispatch(commonAction.getProductList(null));
+    },
+
     getStorageCheckInfo: (id) => {
         dispatch(storageCheckDetailAction.getStorageCheckInfo(id));
         dispatch(storageCheckDetailAction.getStorageCheckRelList(id));
-    },
-    saveStorageCheck: () => {
-        dispatch(storageCheckDetailAction.saveStorageCheck());
     },
     saveStorageCheckRel: (id, checkCount, remark) => {
         if (checkCount === '') {

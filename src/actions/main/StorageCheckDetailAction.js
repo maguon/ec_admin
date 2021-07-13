@@ -121,3 +121,35 @@ export const downLoadPDF = (storageCheckId) => async () => {
         Swal.fire("操作失败", err.message, "error");
     }
 };
+
+export const saveModalData = (modalData) => async (dispatch) => {
+    try {
+        let params = {
+            storageCheckId: modalData.storageCheckId,
+            storageId: modalData.storage.id,
+            storageAreaId: modalData.storageArea.id,
+            supplierId: modalData.supplier == null ? '' : modalData.supplier.id,
+            productId: modalData.product.id,
+            productName: modalData.product.product_name,
+            checkCount: modalData.checkCount,
+            storageDateId: commonUtil.getDateFormat(modalData.storageDateId),
+            unitCost: modalData.unitCost,
+            remark: modalData.remark
+        };
+
+        // 基本url
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageCheckRel';
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpPost(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success && res.rows.length > 0) {
+            Swal.fire("保存成功", "", "success");
+            dispatch(getStorageCheckInfo(modalData.storageCheckId));
+            dispatch(getStorageCheckRelList(modalData.storageCheckId));
+        } else {
+            Swal.fire("保存失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
