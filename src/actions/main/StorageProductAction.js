@@ -48,7 +48,7 @@ export const getStorageProductList = (params) => async (dispatch, getState) => {
             dispatch({type: StorageProductActionType.setStorageProductData, payload: productData});
 
             // 取得统计数据
-            url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageProductRelStatistics';
+            url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageProductRelStat';
             url = conditions.length > 0 ? url + "?" + conditions : url;
             dispatch({type: AppActionType.showLoadProgress, payload: true});
             res = await httpUtil.httpGet(url);
