@@ -201,7 +201,23 @@ export const STORAGE_OP_SUB_TYPE= [
     {value: 24, label: "订单出库"},
     {value: 25, label: "内部领料出库"},
 ];
-
+//服务类型
+export const SERVICE_TYPE= [
+    {value: 1, label: "正常"},
+    {value: 2, label: "快捷"}
+];
+//服务价格类型
+export const SERVICE_PRICE_TYPE= [
+    {value: 1, label: "固定售价"},
+    {value: 2, label: "单价数量"}
+];
+//销售提成类型
+export const SALE_PERF_TYPE= [
+    {value: 1, label: "无提成"},
+    {value: 2, label: "固定提成"},
+    {value: 3, label: "营业额提成"},
+    {value: 4, label: "毛利提成"}
+];
 // 用于权限设定（包含所有机能设定）
 export const ALL_PAGE_LIST = [
     {
@@ -338,6 +354,12 @@ export const ALL_PAGE_LIST = [
                 "usable": false
             },
             {
+                "link": "/service_setting",
+                "name": "服务项目设置",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
+            {
                 "link": "/app_setting",
                 "name": "App系统",
                 "icon": "mdi-chevron-right",
@@ -349,12 +371,6 @@ export const ALL_PAGE_LIST = [
                 "icon": "mdi-chevron-right",
                 "usable": false
             },
-            {
-                "link": "/service_setting",
-                "name": "服务项目设置",
-                "icon": "mdi-chevron-right",
-                "usable": false
-            }
         ]
     }
 ];
