@@ -809,7 +809,7 @@ function StorageInOut(props) {
                             <TableBody>
                                 {storageInOutReducer.storageProductDetail.dataList.map((row) => (
                                     <TableRow key={'table-row-' + row.id}>
-                                        <TableCell align="center">{row.purchase_id}</TableCell>
+                                        <TableCell align="center">{row.purchase_id == 0 ? '' : row.purchase_id}</TableCell>
                                         <TableCell align="center">{row.supplier_name}</TableCell>
                                         <TableCell align="center">{row.product_name}</TableCell>
                                         <TableCell align="center">{row.storage_name}</TableCell>
