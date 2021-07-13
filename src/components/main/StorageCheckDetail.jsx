@@ -53,8 +53,11 @@ function StorageCheck(props) {
 
     //初始添加模态框值
     const initModal =(storageCheckId) =>{
+        // 清check内容
+        setValidation({});
         // 清空仓库分区
         dispatch(CommonActionType.setStorageAreaList([]));
+        // 初始化模态数据
         setModalData({
             ...modalData,
             storageCheckId: storageCheckId,
