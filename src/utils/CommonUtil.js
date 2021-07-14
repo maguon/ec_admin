@@ -146,6 +146,11 @@ function isNumber(val){
    return regPos.test(val) || regNeg.test(val);
 }
 
+export const isPhone = (phone) => {
+   let phoneReg=/^1[3-9]\d{9}$/;
+   return phoneReg.test(phone);
+};
+
 /**
  * 在本地进行文件保存
  * @param  {String} data     要保存到本地的文件数据
