@@ -2,16 +2,7 @@ import React, {useEffect} from 'react';
 import {connect} from 'react-redux';
 import clsx from "clsx";
 // 引入material-ui基础组件
-import {
-    makeStyles,
-    AppBar,
-    Menu,
-    MenuItem,
-    Badge,
-    Toolbar,
-    IconButton,
-    Typography,
-} from "@material-ui/core";
+import {AppBar, Badge, IconButton, makeStyles, Menu, MenuItem, Toolbar, Typography,} from "@material-ui/core";
 import {AccountModal} from "../index";
 import {webName} from "../../config";
 
@@ -68,13 +59,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
 /**
  * UI组件：主画面头部。
  */
 function Header(props) {
     // 组件属性
     const {logout, drawerOpen, handleDrawerOpen} = props;
+    const classes = useStyles();
 
     useEffect(() => {
         const userId = localUtil.getSessionItem(sysConst.LOGIN_USER_ID);
@@ -94,15 +85,15 @@ function Header(props) {
 
     // 手机模式时,菜单属性
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+    // 修改密码，属性
+    const [accountModalOpenFlag, setAccountModalOpenFlag] = React.useState(false);
+
     const handleMobileMenuOpen = (event) => {
         setMobileMoreAnchorEl(event.currentTarget);
     };
     const handleMobileMenuClose = (event) => {
         setMobileMoreAnchorEl(null);
     };
-
-    // 修改密码，属性
-    const [accountModalOpenFlag, setAccountModalOpenFlag] = React.useState(false);
     const openAccountModal = (event) => {
         setAccountModalOpenFlag(true);
     };
@@ -124,11 +115,11 @@ function Header(props) {
             onClose={handleMobileMenuClose}
         >
             {/* 用户信息 */}
-            <MenuItem onClick={logout}>
+            <MenuItem onClick={openAccountModal}>
                 <IconButton color="inherit">
                     <i className="mdi mdi-account-circle mdi-36px"/>
                 </IconButton>
-                <p>Profile</p>
+                <p>Account</p>
             </MenuItem>
 
             {/* 退出 */}
@@ -140,8 +131,6 @@ function Header(props) {
             </MenuItem>
         </Menu>
     );
-
-    const classes = useStyles();
 
     return (
         <div className={classes.grow}>
@@ -215,7 +204,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
     // 取得登录用户基本信息
     getLoginInfo: (userId) => {
-        dispatch(appAction.getCurrentUser({userId: userId}));
+        dispatch(appAction.getCurrentUser(userId));
         dispatch(appAction.getCurrentUserMenu());
     },
     // 退出
