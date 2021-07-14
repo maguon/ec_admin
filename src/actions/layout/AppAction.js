@@ -55,7 +55,23 @@ export const getCurrentUserMenu = () => async (dispatch) => {
     }
 };
 
-export const changePassword = (originPassword, newPassword) => async (dispatch, getState) => {
+export const sendSms = (phone) => async (dispatch) => {
+    try {
+        // 状态
+        let url = apiHost + '/api/phone/' + phone + '/passwordSms';
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpPost(url, {});
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (!res.success) {
+            Swal.fire("发送失败", res.msg, "warning");
+        }
+        return true;
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const changePassword = (originPassword, newPassword) => async (dispatch) => {
     try {
         const params = {
             originPassword: originPassword,
@@ -63,6 +79,23 @@ export const changePassword = (originPassword, newPassword) => async (dispatch, 
         };
         // 状态
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/password';
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpPut(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        return res;
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const updatePassword = (data) => async (dispatch) => {
+    try {
+        const params = {
+            code: data.code,
+            newPassword: data.password
+        };
+        // 状态
+        let url = apiHost + '/api/phone/' + data.phone + '/password';
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpPut(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
