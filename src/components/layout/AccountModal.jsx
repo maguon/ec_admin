@@ -1,12 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import {Button, Grid, TextField} from '@material-ui/core';
 import {SimpleModal} from '../'
+import Swal from "sweetalert2";
 
 const appAction = require('../../actions/layout/AppAction');
 
 const AccountModal = (props) => {
-    const {openFlag, closeAccountModal, changePassword} = props;
+    const {openFlag, closeAccountModal} = props;
+    const dispatch = useDispatch();
     // 模态数据
     const [modalData, setModalData] = useState({});
     // 模态校验
@@ -44,11 +46,16 @@ const AccountModal = (props) => {
         return Object.keys(validateObj).length
     };
 
-    const submitModal = () => {
+    const submitModal = async () => {
         const errorCount = validateModal();
         if (errorCount === 0) {
-            changePassword(modalData);
-            closeAccountModal();
+            let res = await dispatch(appAction.changePassword(modalData.password, modalData.newPassword));
+            if (res.success) {
+                Swal.fire("修改成功", "", "success");
+                closeAccountModal();
+            } else if (!res.success) {
+                Swal.fire("修改失败", res.msg, "warning");
+            }
         }
     };
 
@@ -105,9 +112,6 @@ const mapStateToProps = () => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    changePassword: (modalData) => {
-        dispatch(appAction.changePassword(modalData.password, modalData.newPassword));
-    }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AccountModal)
