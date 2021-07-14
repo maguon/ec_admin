@@ -371,6 +371,12 @@ export const ALL_PAGE_LIST = [
                 "icon": "mdi-chevron-right",
                 "usable": false
             },
+            {
+                "link": "/upload",
+                "name": "文件上传",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            }
         ]
     }
 ];

@@ -35,6 +35,61 @@ export const downLoadPDF = (dom, fileName) => {
       pdf.save(fileName);
    });
 };
+//表头验证
+export const titleFilter =(headerArray,colObjs) =>{
+   if (colObjs.length != headerArray.length) {
+      return false;
+   } else {
+      for (let i in headerArray) {
+         if (colObjs[i].name != headerArray[i]) {
+            return false
+         }
+      }
+   }
+}
+// 主体条件判断
+export const ContentFilter = function (contentArray,colObjs) {
+   const tableContentErrorFilter=[];
+   const tableContentFilter=[];
+   let rightNumber=0;
+   let errorNumber=0;
+   for (let i = 0; i < contentArray.length; i++) {
+      let flag=true;
+      let isNumber;
+      for (let j = 0; j < colObjs.length; j++) {
+         if (colObjs[j].require) {
+            if (contentArray[i].data[j] == null && contentArray[i].data[j].length == 0) {
+               errorNumber=errorNumber+1;
+               tableContentErrorFilter.push(contentArray[i]);
+               flag=false;
+               break;
+            }
+         }
+         if (contentArray[i].data[j] == '' || isNaN(contentArray[i].data[j])) {
+            isNumber= "string" ;
+         } else {
+            isNumber= "number";
+         }
+         if (colObjs[j].type != isNumber && contentArray[i].data[j] != '' &&colObjs[j].require ) {
+            errorNumber=errorNumber+1;
+            tableContentErrorFilter.push(contentArray[i]);
+            flag=false;
+            break;
+         }
+         if (colObjs[j].type=='string'&&(colObjs[j].length && colObjs[j].length != contentArray[i].data[j].length)) {
+            errorNumber=errorNumber+1;
+            tableContentErrorFilter.push(contentArray[i]);
+            flag=false;
+            break;
+         }
+      }
+      if (flag == true) {
+         rightNumber=rightNumber + 1;
+         tableContentFilter.push(contentArray[i]);
+      }
+   }
+   return {tableContentErrorFilter,tableContentFilter}
+};
 
 export const getJsonValue = (original, key) => {
    let ret = '未知';

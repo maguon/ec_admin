@@ -25,6 +25,7 @@ import {
     DataDictionary,
     PurchaseRefund,
     ServiceSetting,
+    UpLoadFile
 } from "../components";
 
 export const routes = [
@@ -86,4 +87,5 @@ export const routesWithHeader = [
     //服务项目设置
     {path: "/service_setting", exact: true, component: ServiceSetting},
 
+    {path: "/upload", exact: true, component: UpLoadFile},
 ];

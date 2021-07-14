@@ -31,6 +31,7 @@ import PurchaseDetail from './main/PurchaseDetail'
 import DataDictionary from  './main/DataDictionary';
 import PurchaseRefund from './main/PurchaseRefund';
 import ServiceSetting from  './main/ServiceSetting';
+import UpLoadFile from './main/UpLoadFile'
 import NestedList from "./utils/NestedList";
 
 export {
@@ -67,5 +68,6 @@ export {
     DataDictionary,
     PurchaseRefund,
     ServiceSetting,
+    UpLoadFile,
     NestedList
 }
