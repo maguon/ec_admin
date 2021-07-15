@@ -22,10 +22,10 @@ const getParams = () => (dispatch, getState) => {
     return httpUtil.objToUrl(conditionsObj);
 };
 
-export const getStorageProductList = (params) => async (dispatch, getState) => {
+export const getStorageProductList = (dataStart) => async (dispatch, getState) => {
     try {
         // 检索条件：开始位置
-        const start = params.dataStart;
+        const start = dataStart;
         // 检索条件：每页数量
         const size = getState().StorageProductReducer.storageProductData.size;
 
@@ -76,6 +76,31 @@ export const downLoadCsv = () => async (dispatch) => {
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
         window.open(url);
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const moveProduct = (data) => async (dispatch, getState) => {
+    try {
+        // 状态
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/storageProductRel/' + data.storageProduct.id + '/storageMove';
+        const params = {
+            moveStorageId: data.storage == null ? '' : data.storage.id,
+            moveStorageAreaId: data.storageArea == null ? '' : data.storageArea.id,
+            moveCount: data.count,
+            remark: data.remark
+        };
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpPut(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            Swal.fire("修改成功", "", "success");
+            dispatch(getStorageProductList(getState().StorageProductReducer.storageProductData.start));
+        } else if (!res.success) {
+            Swal.fire("修改失败", res.msg, "warning");
+        }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }
