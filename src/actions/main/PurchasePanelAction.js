@@ -11,7 +11,7 @@ export const getPurchaseItemStat = () => async (dispatch) => {
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/purchaseStat?status=[1,3]';
+            + '/purchaseStat?status='+sysConst.PURCHASE_STATUS[0].value+','+sysConst.PURCHASE_STATUS[1].value;
 
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpGet(url);
@@ -35,7 +35,7 @@ export const getPurchaseRefundStat = () => async (dispatch) => {
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/purchaseRefundStat?storageType=' + sysConst.STORAGE_TYPE[1].value + '&refundStorageFlag=' + sysConst.REFUND_STORAGE_FLAG[0].value;
+            + '/purchaseRefundStat?status=' + sysConst.REFUND_STATUS[0].value;
 
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpGet(url);

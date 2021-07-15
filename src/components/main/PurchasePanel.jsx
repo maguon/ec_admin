@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     card:{
         border:'1px solid #E4E4E4',
         width: '100%',
-        height: 128
+        height: 108
     }
 }));
 
@@ -34,10 +34,8 @@ function StoragePanel(props) {
                         <CardContent>
                             <Grid container spacing={1}>
                                 <Grid item xs={12}><Typography variant="h5" gutterBottom>未完成的采购</Typography></Grid>
-                                <Grid item xs={6}><Typography color="textSecondary">运费：{PurchasePanelReducer.purchaseItemStat.transfer_cost}</Typography></Grid>
+                                <Grid item xs={6}><Typography color="textSecondary" >未完成数：{PurchasePanelReducer.purchaseItemStat.count}</Typography></Grid>
                                 <Grid item xs={6}><Typography color="textSecondary" align="right">商品金额：{PurchasePanelReducer.purchaseItemStat.product_cost}</Typography></Grid>
-                                <Grid item xs={6}><Typography color="textSecondary">总价：{PurchasePanelReducer.purchaseItemStat.total_cost}</Typography></Grid>
-                                <Grid item xs={6}><Typography color="textSecondary" align="right">数量：{PurchasePanelReducer.purchaseItemStat.count}</Typography></Grid>
                             </Grid>
                         </CardContent>
                     </Card>
@@ -48,8 +46,8 @@ function StoragePanel(props) {
                         <CardContent>
                             <Grid container spacing={1}>
                                 <Grid item xs={12}><Typography variant="h5" gutterBottom>未完成的退货</Typography></Grid>
-                                <Grid item xs={6}><Typography color="textSecondary">未出库数：{PurchasePanelReducer.purchaseRefundStat.count}</Typography></Grid>
-                                <Grid item xs={6}><Typography color="textSecondary" align="right">退货数：{PurchasePanelReducer.purchaseRefundStat.refund_count}</Typography></Grid>
+                                <Grid item xs={6}><Typography color="textSecondary">未完成数：{PurchasePanelReducer.purchaseRefundStat.count}</Typography></Grid>
+                                <Grid item xs={6}><Typography color="textSecondary" align="right">退款总价：{PurchasePanelReducer.purchaseRefundStat.total_cost}</Typography></Grid>
                             </Grid>
                         </CardContent>
                     </Card>
