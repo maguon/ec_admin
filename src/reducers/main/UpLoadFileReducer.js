@@ -5,7 +5,12 @@ const initialState = {
         failedCase:0,
         successedInsert:0,
     },
-    uploadFlag:false
+    categoryArray:{
+        failedCase:0,
+        successedInsert:0,
+    },
+    uploadFlag:false,
+    categoryUploadFlag:false,
 }
 export default handleActions({
     [UpLoadFileActionType.setArray]: (state, action) => {
@@ -18,6 +23,18 @@ export default handleActions({
         return {
             ...state,
             uploadFlag: action.payload
+        }
+    },
+    [UpLoadFileActionType.setCategoryArray]: (state, action) => {
+        return {
+            ...state,
+            categoryArray: action.payload
+        }
+    },
+    [UpLoadFileActionType.setCategoryUpLoadFlag]: (state, action) => {
+        return {
+            ...state,
+            categoryUploadFlag: action.payload
         }
     },
 }, initialState)
