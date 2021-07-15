@@ -1,7 +1,6 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
 import {AppActionType, StorageProductActionType} from '../../types';
-import {getPurchaseItemStorage} from "./StorageInOutAction";
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
@@ -84,7 +83,6 @@ export const downLoadCsv = () => async (dispatch) => {
 
 export const moveProduct = (data) => async (dispatch, getState) => {
     try {
-        console.log('',data);
         // 状态
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/storageProductRel/' + data.storageProduct.id + '/storageMove';
