@@ -4,6 +4,7 @@ import {
     ResetPassword,
     MainPanel,
     StoragePanel,
+    FinancePanel,
     CategoryManager,
     BrandManager,
     Storage,
@@ -39,6 +40,7 @@ export const routesWithHeader = [
     /** 综合页面 */
     {path: "/", exact: true, component: MainPanel},
     {path: "/storage_panel", exact: true, component: StoragePanel},
+    {path: "/finance_panel", exact: true, component: FinancePanel},
 
     /** 采购管理 */
     //采购

@@ -235,6 +235,13 @@ export const ALL_PAGE_LIST = [
         "usable": false
     },
     {
+        "link": "/finance_panel",
+        "label": "主控面板",
+        "icon": "mdi-currency-cny",
+        "children": [],
+        "usable": false
+    },
+    {
         "label": "公共数据",
         "icon": "mdi-chart-line",
         "children": [

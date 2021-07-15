@@ -25,6 +25,7 @@ import * as DataDictionaryActionType from './main/DataDictionaryActionType';
 import * as PurchaseRefundActionType from './main/PurchaseRefundActionType';
 import * as ServiceSettingActionType from './main/ServiceSettingActionType';
 import * as UpLoadFileActionType from './main/UpLoadFileActionType';
+import * as FinancePanelActionType from './main/FinancePanelActionType';
 export {
     AppActionType,
     CommonActionType,
@@ -52,5 +53,6 @@ export {
     DataDictionaryActionType,
     PurchaseRefundActionType,
     ServiceSettingActionType,
-    UpLoadFileActionType
+    UpLoadFileActionType,
+    FinancePanelActionType,
 }

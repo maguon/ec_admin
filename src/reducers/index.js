@@ -27,6 +27,7 @@ import DataDictionaryReducer from './main/DataDictionaryReducer';
 import PurchaseRefundReducer from './main/PurchaseRefundReducer';
 import ServiceSettingReducer from  './main/ServiceSettingReducer';
 import UpLoadFileReducer from './main/UpLoadFileReducer';
+import FinancePanelReducer from './main/FinancePanelReducer';
 export default combineReducers({
     form: reduxFormReducer,
     AppReducer,
@@ -55,5 +56,6 @@ export default combineReducers({
     DataDictionaryReducer,
     PurchaseRefundReducer,
     ServiceSettingReducer,
-    UpLoadFileReducer
+    UpLoadFileReducer,
+    FinancePanelReducer
 });
