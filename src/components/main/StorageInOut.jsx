@@ -803,6 +803,8 @@ function StorageInOut(props) {
                                     <TableCell className={classes.tableHead} align="center">仓库分区</TableCell>
                                     <TableCell className={classes.tableHead} align="center">出/入库</TableCell>
                                     <TableCell className={classes.tableHead} align="center">出/入库子分类</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">数量</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">操作人员</TableCell>
                                     <TableCell className={classes.tableHead} align="center">操作日期</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -816,7 +818,9 @@ function StorageInOut(props) {
                                         <TableCell align="center">{row.storage_area_name}</TableCell>
                                         <TableCell align="center">{commonUtil.getJsonValue(sysConst.STORAGE_OP_TYPE, row.storage_type)}</TableCell>
                                         <TableCell align="center">{commonUtil.getJsonValue(sysConst.STORAGE_OP_SUB_TYPE, row.storage_sub_type)}</TableCell>
-                                        <TableCell align="center">{row.date_id}</TableCell>
+                                        <TableCell align="center">{row.storage_count}</TableCell>
+                                        <TableCell align="center">{row.real_name}</TableCell>
+                                        <TableCell align="center">{commonUtil.getDateTime(row.created_on)}</TableCell>
                                     </TableRow>
                                 ))}
                                 {storageInOutReducer.storageProductDetail.dataList.length === 0 &&
