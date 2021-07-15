@@ -2,13 +2,13 @@ import React, {useEffect,useState}from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {
     Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Table, TableHead, TableRow,
-    TableCell, TableBody, IconButton, FormControl, InputLabel, Select, MenuItem, Box, Switch, AppBar, Tabs, Tab
+    TableCell, TableBody, IconButton,Box, Switch, AppBar, Tabs, Tab
 } from "@material-ui/core";
 import Fab from '@material-ui/core/Fab';
 import {withStyles,makeStyles} from "@material-ui/core/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {SimpleModal} from '../index';
-import {ProductManagerActionType, ServiceSettingActionType} from '../../types';
+import {ServiceSettingActionType} from '../../types';
 import Swal from "sweetalert2";
 import TabContext from "@material-ui/lab/TabContext";
 import TabPanel from "@material-ui/lab/TabPanel";
@@ -330,6 +330,9 @@ function ServiceSetting (props){
         const errorCount =validateProduct();
         if(errorCount==0){
             addProduct({productArray,productCount,modifyId,modifyServiceName});
+            setProductArray(null);
+            setProductCount('');
+
         }
     }
     //下一页
@@ -549,7 +552,7 @@ function ServiceSetting (props){
                             确定
                         </Button>
                         <Button onClick={modalClose} color="primary" autoFocus>
-                            取消
+                            关闭
                         </Button>
                     </>
                 }
@@ -1056,7 +1059,7 @@ function ServiceSetting (props){
                             确定
                         </Button>:'' }
                         <Button onClick={modifyModalClose} color="primary" autoFocus>
-                            取消
+                            关闭
                         </Button>
                     </>
                 }
@@ -1590,7 +1593,7 @@ function ServiceSetting (props){
                             <Grid item xs={1}>
                                 <IconButton color="primary" edge="start"  size="medium" style={{marginTop:5}}
                                             onClick={() => {addProductItem()}}>
-                                    <i className="mdi mdi-check mdi-24px"/>
+                                    <i className="mdi mdi-plus mdi-24px"/>
                                 </IconButton>
                             </Grid>
                         </Grid>

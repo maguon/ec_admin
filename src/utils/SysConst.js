@@ -235,6 +235,13 @@ export const ALL_PAGE_LIST = [
         "usable": false
     },
     {
+        "link": "/purchase_panel",
+        "label": "主控面板",
+        "icon": "mdi-weight-kilogram",
+        "children": [],
+        "usable": false
+    },
+    {
         "link": "/finance_panel",
         "label": "主控面板",
         "icon": "mdi-currency-cny",
@@ -361,6 +368,12 @@ export const ALL_PAGE_LIST = [
                 "usable": false
             },
             {
+                "link": "/upload",
+                "name": "数据导入",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
+            {
                 "link": "/service_setting",
                 "name": "服务项目设置",
                 "icon": "mdi-chevron-right",
@@ -378,12 +391,7 @@ export const ALL_PAGE_LIST = [
                 "icon": "mdi-chevron-right",
                 "usable": false
             },
-            {
-                "link": "/upload",
-                "name": "文件上传",
-                "icon": "mdi-chevron-right",
-                "usable": false
-            }
+
         ]
     }
 ];

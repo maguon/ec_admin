@@ -165,18 +165,39 @@ function UpLoadFile (props) {
                           indicatorColor="primary"
                           textColor="primary"
                           variant="fullWidth">
-                        <Tab label="品牌名称" value="1" />
-                        <Tab label="分类名称"   value="2" />
+                        <Tab label="导入说明" value="1" />
+                        <Tab label="品牌导入" value="2" />
+                        <Tab label="分类导入"   value="3" />
                     </Tabs>
                 </AppBar>
                 <TabPanel value='1'>
+                    <Grid container xs={12} spacing={3} style={{marginTop:'50px'}}>
+                        <Grid item xs={3}></Grid>
+                        <Grid item xs={6} style={{color:'#F44336',fontSize:'20px'}}>
+                            <Grid item xs={12} align='center' style={{paddingBottom:'20px',borderBottom: '1px solid #ccc' ,fontSize:'30px',color:'#3f51b5'}} >数据导入须知</Grid>
+                            <Grid item xs={12} style={{marginTop:'30px',marginLeft:'30px'}}>
+                                <i className="mdi  mdi-checkbox-multiple-blank-circle" style={{color:'#3f51b5'}}></i>
+                                上传得数据表格必须为csv格式的文件,不支持excel格式的表格文件上传;
+                            </Grid>
+                            <Grid item xs={12} style={{marginTop:'30px',marginLeft:'30px'}}>
+                                <i className="mdi  mdi-checkbox-multiple-blank-circle" style={{color:'#3f51b5'}}></i>
+                                上传得数据表格,必须遵守模板的数据表头顺序，若顺序错误将无法上传;
+                            </Grid>
+                            <Grid item xs={12} style={{marginTop:'30px',marginLeft:'30px'}}>
+                                <i className="mdi  mdi-checkbox-multiple-blank-circle" style={{color:'#3f51b5'}}></i>
+                                导入的数据各字段分为必填项(不得为空)和选填项(可为空);
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </TabPanel>
+                <TabPanel value='2'>
                     {/*品牌上传文件*/}
                     <div className='brand'>
                         {/*按钮*/}
                         <Grid container xs={12} spacing={3}>
                             <Grid item xs={6} align='left'>
                                 <Button variant="contained"  color="primary" onClick={() => {downLoadBrandCsv()}}>
-                                    下载模板格式
+                                    品牌导入模板
                                 </Button>
                             </Grid>
                             <Grid item xs={6} align='right'>
@@ -191,7 +212,7 @@ function UpLoadFile (props) {
                                         setInputFile(file);
                                         return (
                                             <Button variant="contained"  color="primary" onClick={handleOpenDialog}>
-                                                批量数据导入
+                                                批量品牌数据导入
                                             </Button>
                                         )}}
                                 </CSVReader>
@@ -249,38 +270,43 @@ function UpLoadFile (props) {
 
                         </div>
                         {/*大图*/}
-                        <TableContainer component={Paper} style={{marginTop:'100px',width:'40%',marginLeft:'30%'}}>
+                        <div style={{marginTop:'100px'}}>
+                            <b style={{width:'60%',marginLeft:'30%'}}>品牌导入模板字段的解释说明:</b>
+                            <TableContainer component={Paper} style={{width:'40%',marginLeft:'30%'}}>
                             <Table  size={'small'} aria-label="a dense table">
                                 <TableHead >
                                     <TableRow style={{height:50}}>
+                                        <TableCell className={classes.head} align="center"></TableCell>
                                         <TableCell className={classes.head} align="center">品牌名称</TableCell>
-
                                         <TableCell className={classes.head} align="center">备注</TableCell>
 
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     <TableRow >
+                                        <TableCell align="center" ><b>例如</b></TableCell>
                                         <TableCell align="center" >马自达cx4</TableCell>
                                         <TableCell align="center" >统一售卖</TableCell>
                                     </TableRow>
                                     <TableRow >
+                                        <TableCell align="center" ><b>解释说明</b></TableCell>
                                         <TableCell align="center" >该字段为品牌名称</TableCell>
                                         <TableCell align="center" >该字段为此品牌备注</TableCell>
                                     </TableRow>
                                 </TableBody>
                             </Table>
                         </TableContainer>
+                        </div>
                     </div>
                 </TabPanel>
-                <TabPanel value='2'>
+                <TabPanel value='3'>
                     {/*分类上传文件*/}
                     <div className='category'>
                         {/*按钮*/}
                         <Grid container xs={12} spacing={3}>
                             <Grid item xs={6} align='left'>
                                 <Button variant="contained"  color="primary" onClick={() => {downLoadCategoryCsv()}}>
-                                    下载模板格式
+                                    分类导入模板
                                 </Button>
                             </Grid>
                             <Grid item xs={6} align='right'>
@@ -295,7 +321,7 @@ function UpLoadFile (props) {
                                         setInputFileCategory(file);
                                         return (
                                             <Button variant="contained"  color="primary" onClick={handleOpenDialog}>
-                                                批量数据导入
+                                                批量分类数据导入
                                             </Button>
                                         )}}
                                 </CSVReader>
@@ -352,28 +378,34 @@ function UpLoadFile (props) {
 
                         </div>
                         {/*大图*/}
-                        <TableContainer component={Paper} style={{marginTop:'100px',width:'40%',marginLeft:'30%'}}>
-                            <Table  size={'small'} aria-label="a dense table">
-                                <TableHead >
-                                    <TableRow style={{height:50}}>
-                                        <TableCell className={classes.head} align="center">分类名称</TableCell>
+                        <div style={{marginTop:'100px'}}>
+                            <b style={{width:'60%',marginLeft:'30%'}}>分类导入模板字段的解释说明:</b>
+                            <TableContainer component={Paper} style={{marginTop:'10px',width:'40%',marginLeft:'30%'}}>
+                                <Table  size={'small'} aria-label="a dense table">
+                                    <TableHead >
+                                        <TableRow style={{height:50}}>
+                                            <TableCell className={classes.head} align="center"></TableCell>
+                                            <TableCell className={classes.head} align="center">分类名称</TableCell>
+                                            <TableCell className={classes.head} align="center">备注</TableCell>
 
-                                        <TableCell className={classes.head} align="center">备注</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        <TableRow >
+                                            <TableCell align="center" ><b>例如</b></TableCell>
+                                            <TableCell align="center" >轿车</TableCell>
+                                            <TableCell align="center" >打折商品</TableCell>
+                                        </TableRow>
+                                        <TableRow >
+                                            <TableCell align="center" ><b>解释说明</b></TableCell>
+                                            <TableCell align="center" >分类名称(必填)</TableCell>
+                                            <TableCell align="center" >分类名称备注(选填)200字内</TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </div>
 
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    <TableRow >
-                                        <TableCell align="center" >轿车</TableCell>
-                                        <TableCell align="center" >打折商品</TableCell>
-                                    </TableRow>
-                                    <TableRow >
-                                        <TableCell align="center" >该字段为分类名称</TableCell>
-                                        <TableCell align="center" >该字段为此分类名称备注</TableCell>
-                                    </TableRow>
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
                     </div>
                 </TabPanel>
             </TabContext>

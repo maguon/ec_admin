@@ -85,7 +85,7 @@ export const addPurchaseRefundItem = (purchaseRefundId,addProduct,addTransferCos
             "orderId": 0
         };
         // 基本url
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchase/'+purchaseRefundId+'/purchaseItem/'+addProduct.product_item_id+'/purchaseRefund';
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchase/'+purchaseRefundId+'/purchaseItem/'+addProduct.purchase_item_id+'/purchaseRefund';
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpPost(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});

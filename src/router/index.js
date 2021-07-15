@@ -26,7 +26,8 @@ import {
     DataDictionary,
     PurchaseRefund,
     ServiceSetting,
-    UpLoadFile
+    UpLoadFile,
+    PurchasePanel
 } from "../components";
 
 export const routes = [
@@ -40,6 +41,7 @@ export const routesWithHeader = [
     /** 综合页面 */
     {path: "/", exact: true, component: MainPanel},
     {path: "/storage_panel", exact: true, component: StoragePanel},
+    {path: "/purchase_panel", exact: true, component:PurchasePanel},
     {path: "/finance_panel", exact: true, component: FinancePanel},
 
     /** 采购管理 */

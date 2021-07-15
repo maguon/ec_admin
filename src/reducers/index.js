@@ -28,6 +28,7 @@ import PurchaseRefundReducer from './main/PurchaseRefundReducer';
 import ServiceSettingReducer from  './main/ServiceSettingReducer';
 import UpLoadFileReducer from './main/UpLoadFileReducer';
 import FinancePanelReducer from './main/FinancePanelReducer';
+import PurchasePanelReducer from './main/PurchasePanelReducer';
 export default combineReducers({
     form: reduxFormReducer,
     AppReducer,
@@ -57,5 +58,6 @@ export default combineReducers({
     PurchaseRefundReducer,
     ServiceSettingReducer,
     UpLoadFileReducer,
-    FinancePanelReducer
+    FinancePanelReducer,
+    PurchasePanelReducer
 });

@@ -26,6 +26,7 @@ import * as PurchaseRefundActionType from './main/PurchaseRefundActionType';
 import * as ServiceSettingActionType from './main/ServiceSettingActionType';
 import * as UpLoadFileActionType from './main/UpLoadFileActionType';
 import * as FinancePanelActionType from './main/FinancePanelActionType';
+import * as PurchasePanelActionType from './main/PurchasePanelActionType';
 export {
     AppActionType,
     CommonActionType,
@@ -55,4 +56,5 @@ export {
     ServiceSettingActionType,
     UpLoadFileActionType,
     FinancePanelActionType,
+    PurchasePanelActionType,
 }

@@ -32,7 +32,8 @@ import DataDictionary from  './main/DataDictionary';
 import PurchaseRefund from './main/PurchaseRefund';
 import ServiceSetting from  './main/ServiceSetting';
 import FinancePanel from  './main/FinancePanel';
-import UpLoadFile from './main/UpLoadFile'
+import UpLoadFile from './main/UpLoadFile';
+import PurchasePanel from './main/PurchasePanel';
 import NestedList from "./utils/NestedList";
 
 export {
@@ -71,5 +72,6 @@ export {
     ServiceSetting,
     FinancePanel,
     UpLoadFile,
+    PurchasePanel,
     NestedList
 }

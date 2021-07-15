@@ -481,8 +481,6 @@ function PurchaseRefund (props){
                         </div>
                     ) : (
                         <div>
-
-
                             {/*第一步添加ID*/}
                             <div style={{display:activeStep==0?'block':'none'}}>
 
@@ -569,7 +567,7 @@ function PurchaseRefund (props){
                                                 error={validationStep.addProduct&&validationStep.addProduct!=''&&validationStep.addProduct!='-1' }
                                             >  <MenuItem key={-1} value={-1}>请选择</MenuItem>
                                                 {purchaseRefundReducer.productArray.map((item, index) => (
-                                                    item.storage_product_id==null?<MenuItem key={item.id} value={item}>{item.product_name}(未入库)</MenuItem>:<MenuItem key={item.id} value={item}>{item.product_name}(已入库){item.storage_count}</MenuItem>
+                                                    item.storage_product_id==null?<MenuItem key={item.id} value={item}>{item.product_name}(未入库)</MenuItem>:<MenuItem key={item.id} value={item}>{item.product_name}(已入库-{item.storage_count})</MenuItem>
                                                 ))}
                                             </Select>
                                             {(validationStep.addProduct&&validationStep.addProduct!=''&&validationStep.addProduct!='-1' && <FormHelperText style={{color: 'red'}}>{validationStep.addProduct}</FormHelperText>)}
@@ -614,18 +612,17 @@ function PurchaseRefund (props){
                                     </Grid>
                                 </Grid>
                             </div>
-                            <div>
-                                <Button
-                                    disabled={activeStep === 0}
-                                    onClick={handleBack}
-                                    className={classes.backButton}
-                                >
-                                    返回
-                                </Button>
-                                <Button variant="contained" color="primary"  onClick={() => {handleNext(activeStep)}}>
-                                    {activeStep === steps.length - 1 ? '完成' : '下一步'}
-                                </Button>
-                            </div>
+                            <Grid container xs={12} spacing={3}>
+                                <Grid item xs={6} align='right'>
+                                    <Button style={{display:activeStep==0?'block':'none'}} onClick={modalClose}>关闭</Button>
+                                    <Button style={{display:activeStep==!0?'block':'none'}} onClick={handleBack}>返回</Button>
+                                </Grid>
+                                <Grid item xs={6} align='left'>
+                                    <Button variant="contained" color="primary"  onClick={() => {handleNext(activeStep)}}>
+                                        {activeStep === steps.length - 1 ? '完成' : '下一步'}
+                                    </Button>
+                                </Grid>
+                            </Grid>
                         </div>
                     )}
                 </div>
