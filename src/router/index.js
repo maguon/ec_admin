@@ -27,7 +27,8 @@ import {
     PurchaseRefund,
     ServiceSetting,
     UpLoadFile,
-    PurchasePanel
+    PurchasePanel,
+    ClientAgent,
 } from "../components";
 
 export const routes = [
@@ -90,6 +91,7 @@ export const routesWithHeader = [
     {path: "/authority_setting", exact: true, component: AuthoritySetting},
     //服务项目设置
     {path: "/service_setting", exact: true, component: ServiceSetting},
+    {path: "/client_agent", exact: true, component: ClientAgent},
 
     {path: "/upload", exact: true, component: UpLoadFile},
 ];

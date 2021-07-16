@@ -27,6 +27,7 @@ import * as ServiceSettingActionType from './main/ServiceSettingActionType';
 import * as UpLoadFileActionType from './main/UpLoadFileActionType';
 import * as FinancePanelActionType from './main/FinancePanelActionType';
 import * as PurchasePanelActionType from './main/PurchasePanelActionType';
+import * as ClientAgentActionType from './main/ClientAgentActionType';
 export {
     AppActionType,
     CommonActionType,
@@ -57,4 +58,5 @@ export {
     UpLoadFileActionType,
     FinancePanelActionType,
     PurchasePanelActionType,
+    ClientAgentActionType
 }

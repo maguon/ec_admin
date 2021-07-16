@@ -34,6 +34,7 @@ import ServiceSetting from  './main/ServiceSetting';
 import FinancePanel from  './main/FinancePanel';
 import UpLoadFile from './main/UpLoadFile';
 import PurchasePanel from './main/PurchasePanel';
+import ClientAgent from  './main/ClientAgent';
 import NestedList from "./utils/NestedList";
 
 export {
@@ -73,5 +74,6 @@ export {
     FinancePanel,
     UpLoadFile,
     PurchasePanel,
+    ClientAgent,
     NestedList
 }

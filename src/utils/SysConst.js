@@ -374,6 +374,12 @@ export const ALL_PAGE_LIST = [
                 "usable": false
             },
             {
+                "link": "/client_agent",
+                "name": "客户中心",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
+            {
                 "link": "/service_setting",
                 "name": "服务项目设置",
                 "icon": "mdi-chevron-right",
