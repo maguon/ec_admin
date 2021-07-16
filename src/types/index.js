@@ -29,6 +29,9 @@ import * as FinancePanelActionType from './main/FinancePanelActionType';
 import * as PurchasePanelActionType from './main/PurchasePanelActionType';
 import * as ClientAgentActionType from './main/ClientAgentActionType';
 import * as PurchaseStatActionType from './main/PurchaseStatActionType';
+import * as CreateClientAgentModelActionType from './main/model/CreateClientAgentModelActionType';
+import * as UpdateClientAgentModelActionType from './main/model/UpdateClientAgentModelActionType';
+
 
 export {
     AppActionType,
@@ -62,4 +65,6 @@ export {
     PurchasePanelActionType,
     ClientAgentActionType,
     PurchaseStatActionType,
+    CreateClientAgentModelActionType,
+    UpdateClientAgentModelActionType
 }

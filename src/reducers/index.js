@@ -31,6 +31,8 @@ import FinancePanelReducer from './main/FinancePanelReducer';
 import PurchasePanelReducer from './main/PurchasePanelReducer';
 import ClientAgentReducer from './main/ClientAgentReducer';
 import PurchaseStatReducer from './main/PurchaseStatReducer';
+import CreateClientAgentModelReducer from './main/model/CreateClientAgentModelReducer';
+import UpdateClientAgentModelReducer from  './main/model/UpdateClientAgentModelReducer';
 
 export default combineReducers({
     form: reduxFormReducer,
@@ -64,5 +66,7 @@ export default combineReducers({
     FinancePanelReducer,
     PurchasePanelReducer,
     ClientAgentReducer,
-    PurchaseStatReducer
+    PurchaseStatReducer,
+    CreateClientAgentModelReducer,
+    UpdateClientAgentModelReducer
 });
