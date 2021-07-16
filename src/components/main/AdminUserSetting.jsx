@@ -1,11 +1,9 @@
-import Swal from 'sweetalert2';
 import React, {useEffect,useState}from 'react';
 import {connect} from 'react-redux';
-import {Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Box} from "@material-ui/core";
-import Fab from '@material-ui/core/Fab';
-import Switch from '@material-ui/core/Switch';
-import {SimpleModal} from '../index';
+import Swal from 'sweetalert2';
+import {Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Box,Fab,Switch} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
+import {SimpleModal} from '../index';
 import {AdminUserSettingActionType} from '../../types';
 const adminUserSettingAction = require('../../actions/main/AdminUserSettingAction');
 const sysConst = require('../../utils/SysConst');

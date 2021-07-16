@@ -1,7 +1,6 @@
 import Swal from 'sweetalert2';
 import {AppActionType, PurchasePanelActionType} from '../../types';
 import {apiHost} from '../../config';
-
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');

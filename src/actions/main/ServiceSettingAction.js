@@ -82,7 +82,7 @@ export const addServiceSetting = (params) => async (dispatch, getState) => {
         Swal.fire("操作失败", err.message, "error");
     }
 };
-export const updateServiceSetting = (params) => async (dispatch, getState) => {
+export const updateServiceSettingItem = (params) => async (dispatch, getState) => {
     try {
         const paramsObj={
             "remark": params.modifyRemarks,

@@ -1,27 +1,11 @@
 import React, {useEffect,useState}from 'react';
 import {connect, useDispatch} from 'react-redux';
-import {
-    Button,
-    Divider,
-    Grid,
-    Typography,
-    Paper,
-    TextField,
-    TableContainer,
-    Table,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody,
-    IconButton,
-    Box
-} from "@material-ui/core";
-import Fab from '@material-ui/core/Fab';
-import {withStyles,makeStyles} from "@material-ui/core/styles";
 import {Link} from "react-router-dom";
+import {Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Box,Fab} from "@material-ui/core";
+import {withStyles,makeStyles} from "@material-ui/core/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import {SupplierActionType} from '../../types';
 import {SimpleModal} from '../index';
+import {SupplierActionType} from '../../types';
 const SupplierAction = require('../../actions/main/SupplierAction');
 const CommonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');
@@ -65,7 +49,6 @@ function Supplier (props){
     const {commonReducer,supplierReducer,fromDetail} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
-    //添加供应商
     const [modalOpenFlag, setModalOpenFlag] = useState(false);
     const [supplierName, setSupplierName] = useState('');
     const [supplierType, setSupplierType] = useState(1);

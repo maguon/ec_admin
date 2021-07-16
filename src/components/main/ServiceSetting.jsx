@@ -1,17 +1,16 @@
 import React, {useEffect,useState}from 'react';
 import {connect, useDispatch} from 'react-redux';
+import Swal from "sweetalert2";
 import {
     Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Table, TableHead, TableRow,
-    TableCell, TableBody, IconButton,Box, Switch, AppBar, Tabs, Tab
+    TableCell, TableBody, IconButton,Box, Switch, AppBar, Tabs, Tab,Fab
 } from "@material-ui/core";
-import Fab from '@material-ui/core/Fab';
 import {withStyles,makeStyles} from "@material-ui/core/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import {SimpleModal} from '../index';
-import {ServiceSettingActionType} from '../../types';
-import Swal from "sweetalert2";
 import TabContext from "@material-ui/lab/TabContext";
 import TabPanel from "@material-ui/lab/TabPanel";
+import {SimpleModal} from '../index';
+import {ServiceSettingActionType} from '../../types';
 const ServiceSettingAction = require('../../actions/main/ServiceSettingAction');
 const PurchaseAction = require('../../actions/main/PurchaseAction');
 const commonUtil = require('../../utils/CommonUtil');
@@ -106,7 +105,6 @@ function ServiceSetting (props){
     const [modifyCheckPerfRatio,setModifyCheckPerfRatio] = useState('');
     const [modifyRemarks,setModifyRemarks] = useState('');
     const [modifyId,setModifyId] = useState('');
-    const [status, setStatus] = useState("");
     const [value, setValue] = React.useState('1');
     const [productArray, setProductArray] = React.useState(null);
     const [productCount, setProductCount] = React.useState('');
@@ -267,7 +265,6 @@ function ServiceSetting (props){
         setModifyCheckPerfFixed(item.check_perf_fixed)
         setModifyCheckPerfRatio(item.check_perf_ratio)
         setModifyRemarks(item.remark)
-        setStatus(item.status);
         setProductArray(null);
         setProductCount('');
         setValue('1');
@@ -1055,7 +1052,7 @@ function ServiceSetting (props){
                 showFooter={true}
                 footer={
                     <>
-                        {status!=0&&modifyModalOpenFlag==true? <Button variant="contained" onClick={() => {updateServiceSetting()}}  color="primary">
+                        {modifyModalOpenFlag==true? <Button variant="contained" onClick={() => {updateServiceSetting()}}  color="primary">
                             确定
                         </Button>:'' }
                         <Button onClick={modifyModalClose} color="primary" autoFocus>
@@ -1656,7 +1653,7 @@ const mapDispatchToProps = (dispatch) => ({
     updateServiceSettingItem:({modifyId,modifyRemarks,modifyServiceName,modifyServiceType,modifyServicePriceType,modifyFixedPrice,modifyUnitPrice,modifyServicePriceCount,modifyServiceCostType, modifyFixedCost,
                                   modifyUnitCost, modifyServiceCostCount,modifyTotalPrice,modifyTotalCost, modifySalePerfType, modifySalePerfFixed, modifySalePerfRatio, modifyDeployPerfType, modifyDeployPerfFixed, modifyDeployPerfRatio, modifyCheckPerfType, modifyCheckPerfFixed, modifyCheckPerfRatio,
                               })=>{
-        dispatch(ServiceSettingAction.updateServiceSetting({modifyId,modifyRemarks,modifyServiceName,modifyServiceType,modifyServicePriceType,modifyFixedPrice,modifyUnitPrice,modifyServicePriceCount,modifyServiceCostType, modifyFixedCost,
+        dispatch(ServiceSettingAction.updateServiceSettingItem({modifyId,modifyRemarks,modifyServiceName,modifyServiceType,modifyServicePriceType,modifyFixedPrice,modifyUnitPrice,modifyServicePriceCount,modifyServiceCostType, modifyFixedCost,
             modifyUnitCost, modifyServiceCostCount,modifyTotalPrice,modifyTotalCost, modifySalePerfType, modifySalePerfFixed, modifySalePerfRatio, modifyDeployPerfType, modifyDeployPerfFixed, modifyDeployPerfRatio, modifyCheckPerfType, modifyCheckPerfFixed, modifyCheckPerfRatio,
         }))
     },
