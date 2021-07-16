@@ -23,18 +23,10 @@ const drawerWidth = 240;
 // 组件样式
 const useStyles = makeStyles((theme) => ({
     // 抽屉
-    drawer: {
-        width: drawerWidth,
-        flexShrink: 0,
-    },
-    drawerPaper: {
-        width: drawerWidth,
-    },
+    drawer: {width: drawerWidth,flexShrink: 0},
+    drawerPaper: {width: drawerWidth},
     // 用户头像
-    avatar: {
-        width: 128,
-        height: 128,
-    },
+    avatar: {width: 48,height: 48},
     // 菜单部分 有滚动条
     menuList: {
         width: drawerWidth - 1,
@@ -66,13 +58,14 @@ function Navigation(props) {
             classes={{paper: classes.drawerPaper}}
         >
             {/* 抽屉上部分：用户信息 */}
-            <Grid container spacing={3}>
-                <Grid item xs={12} style={{marginLeft: 54}}>
+            <Grid container spacing={1}>
+                <Grid item xs={12} style={{marginLeft: 96,marginTop: 20}}>
                     <Avatar src={avatarUrl} className={classes.avatar}/>
                 </Grid>
-                <Grid item xs={12} style={{textAlign: 'center'}}>{appReducer.currentUser.user_name}
-                </Grid>
-                <Grid item xs={12} style={{textAlign: 'center'}}>{appReducer.currentUser.phone}</Grid>
+
+                <Grid item xs={12} style={{textAlign: 'center',fontSize: 12}}>{appReducer.currentUser.type_name}</Grid>
+                <Grid item xs={12} style={{textAlign: 'center',fontSize: 12}}>{appReducer.currentUser.real_name}</Grid>
+                <Grid item xs={12} style={{textAlign: 'center',fontSize: 12}}>{appReducer.currentUser.phone}</Grid>
             </Grid>
             {/* 分割线 */}
             <Divider style={{marginTop: 20}}/>

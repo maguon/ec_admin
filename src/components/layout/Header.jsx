@@ -162,11 +162,11 @@ function Header(props) {
 
                     {/* 桌面模式，菜单 */}
                     <div className={classes.sectionDesktop}>
-                        <IconButton color="inherit" component="span">
-                            <Badge badgeContent={4} color="secondary">
-                                <i className="mdi mdi-clipboard-list mdi-36px"/>
-                            </Badge>
-                        </IconButton>
+                        {/*<IconButton color="inherit" component="span">*/}
+                        {/*    <Badge badgeContent={4} color="secondary">*/}
+                        {/*        <i className="mdi mdi-clipboard-list mdi-36px"/>*/}
+                        {/*    </Badge>*/}
+                        {/*</IconButton>*/}
                         <IconButton color="inherit" component="span" onClick={openAccountModal}>
                             <i className="mdi mdi-account-circle mdi-36px"/>
                         </IconButton>
