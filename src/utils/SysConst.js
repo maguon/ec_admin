@@ -60,6 +60,12 @@ export const REACT_SELECT_SEARCH_STYLE = {
     })
 };
 
+// 统计用：日期范围
+export const DATE_RANGE = [
+    {value: 30, label: "近30天"},
+    {value: 10, label: "近10天"}
+];
+
 // 性别
 export const GENDER = [
     {value: 0, label: "女"},

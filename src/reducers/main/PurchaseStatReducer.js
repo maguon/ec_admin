@@ -1,25 +1,22 @@
 import {handleActions} from 'redux-actions';
-import {StorageInOutActionType} from '../../types';
+import {PurchaseStatActionType} from '../../types';
 
 const initialState = {
-    // 检索结果
-    purchaseItemStorage: {
-        // 开始位置
-        start: 0,
-        // 每页数量
-        size: 11,
-        // 检索结果数量
-        dataSize: 0,
-        // 数据列表
-        dataList: []
-    },
+    statPurchaseByMonth: [],
+    statPurchaseByDay: []
 };
 
 export default handleActions({
-    [StorageInOutActionType.getPurchaseItemStorageData]: (state, action) => {
+    [PurchaseStatActionType.getStatPurchaseByMonth]: (state, action) => {
         return {
             ...state,
-            purchaseItemStorage: action.payload
+            statPurchaseByMonth: action.payload
         }
     },
+    [PurchaseStatActionType.getStatPurchaseByDay]: (state, action) => {
+        return {
+            ...state,
+            statPurchaseByDay: action.payload
+        }
+    }
 }, initialState)
