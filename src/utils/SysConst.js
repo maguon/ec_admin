@@ -260,9 +260,24 @@ export const ALL_PAGE_LIST = [
             }
         ]
     },
+
+    {
+        "label": "统计",
+        "icon": "mdi-chart-line",
+        "children": [
+            {
+                "link": "/purchase_stat",
+                "name": "采购统计",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            }
+        ]
+    },
+
+
     {
         "label": "采购管理",
-        "icon": "mdi-chart-line",
+        "icon": "mdi-shopping",
         "children": [
             {
                 "link": "/purchase",
@@ -304,7 +319,7 @@ export const ALL_PAGE_LIST = [
     },
     {
         "label": "仓库管理",
-        "icon": "mdi-chart-line",
+        "icon": "mdi-home-variant",
         "children": [
             {
                 "link": "/storage_product",
@@ -334,7 +349,7 @@ export const ALL_PAGE_LIST = [
     },
     {
         "label": "财务管理",
-        "icon": "mdi-chart-line",
+        "icon": "mdi-cash-multiple",
         "children": [
             {
                 "link": "/purchase_pay",

@@ -28,6 +28,8 @@ import * as UpLoadFileActionType from './main/UpLoadFileActionType';
 import * as FinancePanelActionType from './main/FinancePanelActionType';
 import * as PurchasePanelActionType from './main/PurchasePanelActionType';
 import * as ClientAgentActionType from './main/ClientAgentActionType';
+import * as PurchaseStatActionType from './main/PurchaseStatActionType';
+
 export {
     AppActionType,
     CommonActionType,
@@ -58,5 +60,6 @@ export {
     UpLoadFileActionType,
     FinancePanelActionType,
     PurchasePanelActionType,
-    ClientAgentActionType
+    ClientAgentActionType,
+    PurchaseStatActionType,
 }

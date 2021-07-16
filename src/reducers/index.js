@@ -30,6 +30,8 @@ import UpLoadFileReducer from './main/UpLoadFileReducer';
 import FinancePanelReducer from './main/FinancePanelReducer';
 import PurchasePanelReducer from './main/PurchasePanelReducer';
 import ClientAgentReducer from './main/ClientAgentReducer';
+import PurchaseStatReducer from './main/PurchaseStatReducer';
+
 export default combineReducers({
     form: reduxFormReducer,
     AppReducer,
@@ -61,5 +63,6 @@ export default combineReducers({
     UpLoadFileReducer,
     FinancePanelReducer,
     PurchasePanelReducer,
-    ClientAgentReducer
+    ClientAgentReducer,
+    PurchaseStatReducer
 });

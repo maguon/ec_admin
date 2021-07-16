@@ -36,6 +36,7 @@ import UpLoadFile from './main/UpLoadFile';
 import PurchasePanel from './main/PurchasePanel';
 import ClientAgent from  './main/ClientAgent';
 import NestedList from "./utils/NestedList";
+import PurchaseStat from './main/PurchaseStat';
 
 export {
     Header,
@@ -75,5 +76,6 @@ export {
     UpLoadFile,
     PurchasePanel,
     ClientAgent,
-    NestedList
+    NestedList,
+    PurchaseStat,
 }

@@ -29,6 +29,7 @@ import {
     UpLoadFile,
     PurchasePanel,
     ClientAgent,
+    PurchaseStat
 } from "../components";
 
 export const routes = [
@@ -44,6 +45,9 @@ export const routesWithHeader = [
     {path: "/storage_panel", exact: true, component: StoragePanel},
     {path: "/purchase_panel", exact: true, component:PurchasePanel},
     {path: "/finance_panel", exact: true, component: FinancePanel},
+
+    /** 统计 */
+    {path: "/purchase_stat", exact: true, component: PurchaseStat},
 
     /** 采购管理 */
     //采购
