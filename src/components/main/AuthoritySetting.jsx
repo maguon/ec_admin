@@ -133,14 +133,14 @@ function AuthoritySetting (props) {
                                             onChange={(e) => {changeMenuChk(e, item.link)}}
                                         />
                                     }
-                                    label={item.label}
+                                    label={<span><i className={'mdi ' + item.icon}/>{item.label}</span>}
                                 />
                             </Grid>}
 
                             {/* 含子菜单的样式 */}
                             {item.children.length > 0 &&
                             <Grid item container xs={12} key={'has_child_container' + index}>
-                                <Grid item xs={12} key={'has_child_item' + index}><b>{item.label}</b></Grid>
+                                <Grid item xs={12} key={'has_child_item' + index}><b><span><i className={'mdi ' + item.icon}/>{item.label}</span></b></Grid>
                                 {item.children.map(function (menu, key) {
                                     return (
                                         <Grid item xs={3} key={'has_child_item' + index + key}>
@@ -151,7 +151,7 @@ function AuthoritySetting (props) {
                                                         onChange={(e) => {changeMenuChk(e, menu.link)}}
                                                     />
                                                 }
-                                                label={menu.name}
+                                                label={<span><i className={'mdi ' + menu.icon}/>{menu.name}</span>}
                                             />
                                         </Grid>
                                     )
