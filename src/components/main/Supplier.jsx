@@ -81,10 +81,11 @@ function Supplier (props){
                 supplierId:null,
                 supplierType:null
             }
-            dispatch(SupplierActionType.setSupplierQueryObjs(params));
+            dispatch(SupplierActionType.setSupplierQueryObj(params));
         }
-        props.getSupplierList(supplierReducer.start);
         props.getBaseSelectList()
+        props.getSupplierList(supplierReducer.start);
+
     },[])
     //初始添加模态框值
     const modalOpen =() =>{
@@ -348,7 +349,7 @@ function Supplier (props){
                         <TextField fullWidth
                                    size="small"
                                    name="mobile"
-                                   type="text"
+                                   type="number"
                                    label="手机"
                                    variant="outlined"
                                    onChange={(e)=>{
@@ -420,7 +421,7 @@ function Supplier (props){
                         <TextField fullWidth
                                    size="small"
                                    name="invoiceBankSer"
-                                   type="text"
+                                   type="number"
                                    label="开户账号"
                                    variant="outlined"
                                    onChange={(e)=>{

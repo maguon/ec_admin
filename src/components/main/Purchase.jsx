@@ -82,18 +82,19 @@ function Purchase (props){
     },[transferCostType]);
     useEffect(()=>{
         if (!fromDetail) {
-            let params={
-                supplierId:'',
-                storageStatus:null,
-                paymentStatus:null,
-                status:null,
+            let queryPurchaseObj={
+                supplierId:null,
+                storageStatus:'-1',
+                paymentStatus:'-1',
+                status:'-1',
                 planDateStart :'',
                 planDateEnd:'',
                 finishDateStart:'',
                 finishDateEnd:''
             }
-            dispatch(PurchaseActionType.setPurchaseQueryObjs(params));
+            dispatch(PurchaseActionType.setPurchaseQueryObj(queryPurchaseObj));
         }
+        getSupplierList();
         getPurchaseList(purchaseReducer.start);
 
     },[])
@@ -176,6 +177,13 @@ function Purchase (props){
             setPurchaseItem(tmpArray);
         }
     }
+    const deleteItem =(index,item) =>{
+       /* let tmpArray=  purchaseItem.splice(purchaseItem.findIndex(e => e==item), 1);*/
+
+      let tep=  purchaseItem.filter(e=>e!=item)
+
+        setPurchaseItem(tep);
+    }
     //上一页
     const getPreSupplierList = () => {
             getPurchaseList(purchaseReducer.start-(purchaseReducer.size-1));
@@ -194,7 +202,8 @@ function Purchase (props){
                 <Grid container item xs={10} spacing={1}>
                     {/*供应商名称*/}
                     <Grid item xs={3}>
-                        <Autocomplete id="condition-category" fullWidth={true}
+                        <Autocomplete fullWidth
+                                      id="condition-category"
                                       options={purchaseReducer.supplierArray}
                                       getOptionLabel={(option) => option.supplier_name}
                                       value={purchaseReducer.queryPurchaseObj.supplierId}
@@ -547,6 +556,11 @@ function Purchase (props){
                                 value={item.remark}
                                 onChange={(e)=>setPurchaseItemParams(index,'remark',e.target.value)}
                             />
+                        </Grid>
+                        <Grid item xs={1} align='center'>
+                            <IconButton color="secondary" edge="start" size="small"  style={{paddingTop:'18px'}} onClick={()=>{deleteItem(index,item)}}>
+                                <i className="mdi mdi-delete purple-font"> </i>
+                            </IconButton>
                         </Grid>
                     </Grid>
                 ))}

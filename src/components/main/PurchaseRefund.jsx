@@ -1,5 +1,5 @@
 import React, {useEffect,useState}from 'react';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import Swal from "sweetalert2";
 import {
     Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Table, TableHead, TableRow, TableCell,
@@ -58,6 +58,7 @@ const StyledTableCell = withStyles((theme) => ({
 function PurchaseRefund (props){
     const {purchaseReducer,purchaseRefundReducer,getPurchaseRefundList,getProductList,getSupplierList,getPurchaseList,addPurchaseRefundItem,getPurchaseItem,updateRefundStatus,updatePurchaseRefundDetailInfo} = props;
     const classes = useStyles();
+    const dispatch = useDispatch();
     const [pageNumber,setPageNumber] = useState(0);
     //采购单号
     const [purchaseId, setPurchaseId] = React.useState(null);
@@ -84,7 +85,7 @@ function PurchaseRefund (props){
     const [activeStep, setActiveStep] = React.useState(0);
     const [addStorageType, setAddStorageType] = useState(0);
     const [addTransferRemark, setAddTransferRemark] = useState('');
-    const [addProduct, setAddProduct] = useState(-1);
+    const [addProduct, setAddProduct] = useState('');
     const [validationStep,setValidationStep] = useState({});
     const steps = ['填写采购ID', '填写商品详情'];
     //修改
@@ -101,6 +102,7 @@ function PurchaseRefund (props){
     const [putTransferCostTypeFlag, setPutTransferCostTypeFlag] = useState(true);
     const [putStatus,setPutStatus] = useState('');
     const [putPurchaseId,setPutPurchaseId] = useState('');
+
     useEffect(()=>{
         getProductList();
         getSupplierList();
@@ -138,18 +140,20 @@ function PurchaseRefund (props){
             setPutTransferCost(0);
         }
     },[putTransferCostType]);
+    useEffect(()=>{
+        validateStep();
+    },[addPurchaseCount])
+
     //验证()
     const validate = ()=>{
         const validateObj ={};
         if(!purchaseRefundId){
             validateObj.purchaseRefundId='请输入采购ID';
         }else {
-            let arrnew = [];
-            purchaseRefundReducer.purchaseItem.forEach(e => {
-                arrnew.push(e.id)
-            })
-            if(arrnew.includes(purchaseRefundId)){
+            let result = purchaseRefundReducer.purchaseItem.some(item=>item.id===purchaseRefundId);
+            if(result){
                 getPurchaseItem(purchaseRefundId);
+                setAddProduct("-1");
                 setActiveStep((prevActiveStep) => prevActiveStep + 1);
             }else {
                 validateObj.purchaseRefundId='请输入正确的采购ID';
@@ -160,11 +164,14 @@ function PurchaseRefund (props){
     }
     const validateStep = ()=> {
         const validateStepObj = {};
-        if (addProduct == '-1') {
+        if (addProduct=='-1') {
             validateStepObj.addProduct = '请输入商品';
         }
         if (addPurchaseCount < 0) {
             validateStepObj.addPurchaseCount = '请输入大于0的退货数量';
+        }
+        if(addProduct&&addProduct.storage_count&&addProduct.storage_count<addPurchaseCount){
+            validateStepObj.addPurchaseCount = '请输入小于库存的退货数量';
         }
         if (addUnitCost < 0) {
             validateStepObj.addUnitCost = '请输入大于0的退货单价';
@@ -213,7 +220,7 @@ function PurchaseRefund (props){
         setAddPurchaseCount(0);
         setAddStorageType(0);
         setAddTransferRemark('');
-        setAddProduct(-1);
+        setAddProduct("");
         setPurchaseRefundId('');
     }
     const modalClose = () => {
@@ -225,6 +232,7 @@ function PurchaseRefund (props){
         setModalDetailOpenFlag(false);
     }
     const handleOpenPurchaseRefund=(item) =>{
+        dispatch(PurchaseRefundAction.getStorageProductRel(item.storage_rel_id))
         setModalDetailOpenFlag(true);
         setPutSupplier(item.supplier_name);
         setPutProduct(item.product_name);
@@ -307,7 +315,7 @@ function PurchaseRefund (props){
                     </Grid>
                     {/*退款状态*/}
                     <Grid item xs>
-                        <FormControl variant="outlined" fullWidth={true} margin="dense">
+                        <FormControl variant="outlined" fullWidth margin="dense">
                             <InputLabel id="status-select-outlined-label">退款状态</InputLabel>
                             <Select
                                 label="退款状态"
@@ -327,7 +335,7 @@ function PurchaseRefund (props){
                     </Grid>
                     {/*退货状态*/}
                     <Grid item xs>
-                        <FormControl variant="outlined" fullWidth={true} margin="dense">
+                        <FormControl variant="outlined" fullWidth margin="dense">
                             <InputLabel id="status-select-outlined-label">退货状态</InputLabel>
                             <Select
                                 label="退货状态"
@@ -498,9 +506,9 @@ function PurchaseRefund (props){
                                 />
                             </div>
                             {/*第二步添加商品详情*/}
-                            <div style={{display:activeStep==1?'block':'none',margin:'20px 0'}}>
+                            <div style={{display:activeStep==!0?'block':'none',margin:'20px 0'}}>
                                 <Grid  container spacing={3} >
-                                    <Grid item xs>
+                                    <Grid item xs={3}>
                                         <FormControl variant="outlined" fullWidth={true} margin="dense">
                                             <InputLabel id="standard-select-outlined-label" shrink>运费类型</InputLabel>
                                             <Select
@@ -518,7 +526,7 @@ function PurchaseRefund (props){
                                             </Select>
                                         </FormControl>
                                     </Grid>
-                                    <Grid item xs>
+                                    <Grid item xs={3}>
                                         <TextField type="number" label="运费" disabled={addTransferCostTypeFlag} fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                                    value={addTransferCost}
                                                    onChange={(e) => {
@@ -526,12 +534,12 @@ function PurchaseRefund (props){
                                                    }}
                                         />
                                     </Grid>
-                                    <Grid item xs>
+                                    <Grid item xs={3}>
                                         <TextField label="总价" fullWidth={true} disabled={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                                    value={Number(addUnitCost*addPurchaseCount)-Number(addTransferCost)}
                                         />
                                     </Grid>
-                                    <Grid item xs>
+                                    <Grid item xs={3}>
                                         <FormControl variant="outlined" fullWidth={true} margin="dense">
                                             <InputLabel id="standard-select-outlined-label" shrink>是否出库</InputLabel>
                                             <Select
@@ -551,7 +559,7 @@ function PurchaseRefund (props){
                                     </Grid>
                                 </Grid>
                                 <Grid  container spacing={3}>
-                                    <Grid item xs>
+                                    <Grid item xs={3}>
                                         <FormControl variant="outlined" fullWidth={true} margin="dense">
                                             <InputLabel id="standard-select-outlined-label" shrink>商品</InputLabel>
                                             <Select
@@ -562,16 +570,16 @@ function PurchaseRefund (props){
                                                 onChange={(e)=>{
                                                     setAddProduct(e.target.value)
                                                 }}
-                                                error={validationStep.addProduct&&validationStep.addProduct!=''&&validationStep.addProduct!='-1' }
+                                                error={validationStep.addProduct&&validationStep.addProduct!=null}
                                             >  <MenuItem key={-1} value={-1}>请选择</MenuItem>
                                                 {purchaseRefundReducer.productArray.map((item, index) => (
-                                                    item.storage_product_id==null?<MenuItem key={item.id} value={item}>{item.product_name}(未入库)</MenuItem>:<MenuItem key={item.id} value={item}>{item.product_name}(已入库-{item.storage_count})</MenuItem>
+                                                    item.storage_product_id==null?<MenuItem key={'productRefund-'+item.id} value={item}>{item.product_name}(未入库)</MenuItem>:<MenuItem key={item.id} value={item}>{item.product_name}(已入库-{item.storage_count})</MenuItem>
                                                 ))}
                                             </Select>
                                             {(validationStep.addProduct&&validationStep.addProduct!=''&&validationStep.addProduct!='-1' && <FormHelperText style={{color: 'red'}}>{validationStep.addProduct}</FormHelperText>)}
                                         </FormControl>
                                     </Grid>
-                                    <Grid item xs>
+                                    <Grid item xs={3}>
                                         <TextField type="number" label="退货单价" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                                    value={addUnitCost}
                                                    onChange={(e) => {
@@ -581,7 +589,7 @@ function PurchaseRefund (props){
                                                    helperText={validationStep.addUnitCost}
                                         />
                                     </Grid>
-                                    <Grid item xs>
+                                    <Grid item xs={3}>
                                         <TextField type="number" label="退货数量" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                                    value={addPurchaseCount}
                                                    onChange={(e) => {
@@ -591,14 +599,14 @@ function PurchaseRefund (props){
                                                    helperText={validationStep.addPurchaseCount}
                                         />
                                     </Grid>
-                                    <Grid item xs>
+                                    <Grid item xs={3}>
                                         <TextField type="number" disabled={true} label="退货总价" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                                    value={Number(addPurchaseCount)*Number(addUnitCost)}
                                         />
                                     </Grid>
                                 </Grid>
                                 <Grid  container spacing={3}>
-                                    <Grid item xs>
+                                    <Grid item xs={12}>
                                         <TextField
                                             fullWidth={true}
                                             margin="dense"
@@ -610,7 +618,7 @@ function PurchaseRefund (props){
                                     </Grid>
                                 </Grid>
                             </div>
-                            <Grid container xs={12} spacing={3}>
+                            <Grid container  spacing={3}>
                                 <Grid item xs={6} align='right'>
                                     <Button style={{display:activeStep==0?'block':'none'}} onClick={modalClose}>关闭</Button>
                                     <Button style={{display:activeStep==!0?'block':'none'}} onClick={handleBack}>返回</Button>
@@ -649,13 +657,13 @@ function PurchaseRefund (props){
                     <Grid  container spacing={3}>
                         <Grid item xs>
                             <FormControl variant="outlined"   disabled={true} fullWidth={true} margin="dense">
-                                <InputLabel id="standard-select-outlined-label" shrink>采购单号</InputLabel>
+                                <InputLabel id="standard-select-outlined-label" shrink>退货ID</InputLabel>
                                 <TextField fullWidth
                                            disabled={true}
                                            size="small"
                                            name="supplierName"
                                            type="text"
-                                           label="采购单号"
+                                           label="退货ID"
                                            variant="outlined"
                                            value={putPurchaseId}
 
@@ -769,8 +777,6 @@ function PurchaseRefund (props){
                             </Select>
                         </FormControl>
                     </Grid>
-                </Grid>
-                <Grid  container spacing={3}>
                     <Grid item xs>
                         <TextField
                             fullWidth={true}
@@ -782,6 +788,32 @@ function PurchaseRefund (props){
                         />
                     </Grid>
                 </Grid>
+                <Table stickyHeader size="small" style={{marginTop: 10}}>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell className={classes.tableHead} align="center">仓库</TableCell>
+                            <TableCell className={classes.tableHead} align="center">仓库分区</TableCell>
+                            <TableCell className={classes.tableHead} align="center">操作人员</TableCell>
+                            <TableCell className={classes.tableHead} align="center">操作日期</TableCell>
+                            <TableCell className={classes.tableHead} align="center">备注</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {purchaseRefundReducer.storageProductRelArray.map((row) => (
+                            <TableRow key={'table-row-' + row.id}>
+                                <TableCell align="center">{row.storage_name}</TableCell>
+                                <TableCell align="center">{row.storage_area_name}</TableCell>
+                                <TableCell align="center">{row.real_name}</TableCell>
+                                <TableCell align="center">{commonUtil.getDate(row.created_on)}</TableCell>
+                                <TableCell align="center">{row.remark}</TableCell>
+                            </TableRow>
+                        ))}
+                        {purchaseRefundReducer.storageProductRelArray.length === 0 &&
+                        <TableRow>
+                            <TableCell colSpan={5} align="center">暂无数据</TableCell>
+                        </TableRow>}
+                    </TableBody>
+                </Table>
             </SimpleModal>
         </div>
     )

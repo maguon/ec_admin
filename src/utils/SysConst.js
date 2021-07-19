@@ -296,6 +296,12 @@ export const ALL_PAGE_LIST = [
                 "usable": false
             },
             {
+                "link": "/supplier",
+                "name": "供应商",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
+            {
                 "link": "/category_manager",
                 "name": "商品分类",
                 "icon": "mdi-chevron-right",
@@ -313,12 +319,6 @@ export const ALL_PAGE_LIST = [
                 "icon": "mdi-chevron-right",
                 "usable": false
             },
-            {
-                "link": "/supplier",
-                "name": "供应商",
-                "icon": "mdi-chevron-right",
-                "usable": false
-            }
         ]
     },
     {

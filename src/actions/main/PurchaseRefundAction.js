@@ -143,3 +143,25 @@ export const updateRefundStatus = (id) => async (dispatch, getState) => {
         Swal.fire("操作失败", err.message, "error");
     }
 };
+export const getStorageProductRel = (id) => async (dispatch) => {
+    try {
+        if(id==null){
+            dispatch({type: PurchaseRefundActionType.setStorageProductRelArray, payload:[]});
+        }else {
+            // 基本检索URL
+            let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+                + '/storageProductRelDetail?storageProductRelDetailId=' + id;
+
+            dispatch({type: AppActionType.showLoadProgress, payload: true});
+            let res = await httpUtil.httpGet(url);
+            dispatch({type: AppActionType.showLoadProgress, payload: false});
+            if (res.success) {
+                dispatch({type: PurchaseRefundActionType.setStorageProductRelArray, payload: res.rows});
+            } else if (!res.success) {
+                Swal.fire("获取仓库商品详情失败", res.msg, "warning");
+            }
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};

@@ -19,6 +19,7 @@ const initialState = {
     purchaseRefundArray:[],
     purchaseItem:[],
     productArray:[],
+    storageProductRelArray:[]
 }
 export default handleActions({
     [PurchaseRefundActionType.getPurchaseRefundList]: (state, action) => {
@@ -51,4 +52,11 @@ export default handleActions({
             productArray: action.payload
         }
     },
+    [PurchaseRefundActionType.setStorageProductRelArray]: (state, action) => {
+        return {
+            ...state,
+            storageProductRelArray: action.payload
+        }
+    },
+
 }, initialState)
