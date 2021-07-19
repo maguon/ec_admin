@@ -268,19 +268,6 @@ export const ALL_PAGE_LIST = [
         "usable": false
     },
     {
-        "label": "公共数据",
-        "icon": "mdi-chart-line",
-        "children": [
-            {
-                "link": "/user_statistic",
-                "name": "新增用户",
-                "icon": "mdi-chevron-right",
-                "usable": false
-            }
-        ]
-    },
-
-    {
         "label": "统计",
         "icon": "mdi-chart-line",
         "children": [
@@ -292,8 +279,6 @@ export const ALL_PAGE_LIST = [
             }
         ]
     },
-
-
     {
         "label": "采购管理",
         "icon": "mdi-shopping",

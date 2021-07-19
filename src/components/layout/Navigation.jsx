@@ -2,21 +2,10 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {NavLink} from "react-router-dom";
 // 文件服务器地址
-import {apiHost} from '../../config';
 // 引入嵌套列表组件
 import {NestedList} from '../index';
 // 引入material-ui基础组件
-import {
-    Drawer,
-    Grid,
-    Avatar,
-    Divider,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    makeStyles
-} from "@material-ui/core";
+import {Avatar, Divider, Drawer, Grid, List, ListItem, ListItemIcon, ListItemText, makeStyles} from "@material-ui/core";
 
 // 抽屉宽度
 const drawerWidth = 240;
@@ -27,6 +16,10 @@ const useStyles = makeStyles((theme) => ({
     drawerPaper: {width: drawerWidth},
     // 用户头像
     avatar: {width: 48,height: 48},
+    avatarBg: {
+        color: 'FFFFFF',
+        backgroundColor: '#0942c4'
+    },
     // 菜单部分 有滚动条
     menuList: {
         width: drawerWidth - 1,
@@ -41,14 +34,6 @@ function Navigation(props) {
     const classes = useStyles();
     const {appReducer, handleDrawerClose, drawerOpen} = props;
 
-    // 取得头像，若不存在，则使用默认头像 TODO 后期修改
-    let avatarUrl;
-    if (appReducer.currentUser && appReducer.currentUser.avatar_image) {
-        avatarUrl = "http://" + apiHost + "/api/image/" + appReducer.currentUser.avatar_image;
-    } else {
-        avatarUrl = "/assets/images/avatar.png"
-    }
-
     return (
         <Drawer
             className={classes.drawer}
@@ -60,7 +45,9 @@ function Navigation(props) {
             {/* 抽屉上部分：用户信息 */}
             <Grid container spacing={1}>
                 <Grid item xs={12} style={{marginLeft: 96,marginTop: 20}}>
-                    <Avatar src={avatarUrl} className={classes.avatar}/>
+                    <Avatar className={classes.avatarBg}>
+                        {(appReducer.currentUser.real_name && appReducer.currentUser.real_name.length > 0) ? appReducer.currentUser.real_name.substr(0,1) : ''}
+                    </Avatar>
                 </Grid>
 
                 <Grid item xs={12} style={{textAlign: 'center',fontSize: 12}}>{appReducer.currentUser.type_name}</Grid>
