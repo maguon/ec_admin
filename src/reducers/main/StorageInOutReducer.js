@@ -13,6 +13,7 @@ const initialState = {
         // 数据列表
         dataList: []
     },
+    purchaseItemRefund:[],
     // 检索条件
     purchaseParams: {
         // 仓储状态
@@ -90,6 +91,12 @@ export default handleActions({
         return {
             ...state,
             purchaseItemStorage: action.payload
+        }
+    },
+    [StorageInOutActionType.getPurchaseItemRefund]: (state, action) => {
+        return {
+            ...state,
+            purchaseItemRefund: action.payload
         }
     },
     [StorageInOutActionType.setPurchaseParams]: (state, action) => {

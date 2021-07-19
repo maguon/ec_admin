@@ -30,6 +30,7 @@ import {DatePicker} from "@material-ui/pickers";
 import TabList from "@material-ui/lab/TabList";
 import TabPanel from "@material-ui/lab/TabPanel";
 import TabContext from "@material-ui/lab/TabContext";
+import Alert from '@material-ui/lab/Alert';
 // 引入Dialog
 import {SimpleModal} from "../index";
 import {CommonActionType, StorageInOutActionType} from "../../types";
@@ -43,12 +44,18 @@ const useStyles = makeStyles((theme) => ({
     root: customTheme.root,
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
-    tableHead: customTheme.tableHead
+    tableHead: customTheme.tableHead,
 }));
+
+// 修改MuiAlert组件 的【.MuiAlert-message】样式
+const useStyle = makeStyles({
+    message:{width: '100%'}
+}, { name: 'MuiAlert' });
 
 function StorageInOut(props) {
     const {storageInOutReducer, commonReducer, downLoadCsv} = props;
     const classes = useStyles();
+    useStyle();
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -137,18 +144,19 @@ function StorageInOut(props) {
         setModalOpen(false);
     };
 
-    //初始添加模态框值
+    // 采购入库 TAB: 采购商品入库
     const initModal =(item) =>{
         // 清空仓库分区
         props.setStorageAreaList([]);
+        // 根据purchase_item_id 取得退货信息
+        dispatch(storageInOutAction.getPurchaseItemRefund(item.purchase_item_id));
         // 清check内容
         setValidation({});
         // 页面属性
-        setModalData({...modalData,purchaseItem:item,storage:null,storageArea:null,remark:''});
+        setModalData({purchaseItem:item,storage:null,storageArea:null,productCnt:'',remark:''});
         // 设定模态打开
         setModalOpen(true);
     };
-
 
     const validate = ()=>{
         const validateObj ={};
@@ -157,6 +165,11 @@ function StorageInOut(props) {
         }
         if (!modalData.storageArea) {
             validateObj.storageArea ='请选择仓库分区';
+        }
+        if (!modalData.productCnt) {
+            validateObj.productCnt ='请输入入库数';
+        } else if (modalData.productCnt > modalData.purchaseItem.purchase_count) {
+            validateObj.productCnt ='入库数不能比采购数量大';
         }
         setValidation(validateObj);
         return Object.keys(validateObj).length
@@ -328,6 +341,7 @@ function StorageInOut(props) {
                                     <TableCell className={classes.tableHead} align="center">采购单号</TableCell>
                                     <TableCell className={classes.tableHead} align="center">供应商</TableCell>
                                     <TableCell className={classes.tableHead} align="center">商品</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">数量</TableCell>
                                     <TableCell className={classes.tableHead} align="center">单价</TableCell>
                                     <TableCell className={classes.tableHead} align="center">仓库</TableCell>
                                     <TableCell className={classes.tableHead} align="center">仓库分区</TableCell>
@@ -341,6 +355,7 @@ function StorageInOut(props) {
                                         <TableCell align="center">{row.purchase_id}</TableCell>
                                         <TableCell align="center">{row.supplier_name}</TableCell>
                                         <TableCell align="center">{row.product_name}</TableCell>
+                                        <TableCell align="center">{row.purchase_count}</TableCell>
                                         <TableCell align="center">{row.unit_cost}</TableCell>
                                         <TableCell align="center">{row.storage_name}</TableCell>
                                         <TableCell align="center">{row.storage_area_name}</TableCell>
@@ -371,7 +386,7 @@ function StorageInOut(props) {
                                 onClick={()=>{dispatch(storageInOutAction.getPurchaseItemStorage(storageInOutReducer.purchaseItemStorage.start+(storageInOutReducer.purchaseItemStorage.size-1)))}}>下一页</Button>}
                     </Box>
 
-                    <SimpleModal maxWidth={'sm'}
+                    <SimpleModal maxWidth={'md'}
                         title="采购商品入库"
                         open={modalOpen}
                         onClose={closeModal}
@@ -383,12 +398,27 @@ function StorageInOut(props) {
                             </>
                         }
                     >
-                        <Grid container spacing={2}>
+                        <Grid container spacing={1}>
                             <Grid item sm={6}>采购单号：{modalData.purchaseItem.purchase_id}</Grid>
                             <Grid item sm={6}>供应商：{modalData.purchaseItem.supplier_name}</Grid>
                             <Grid item sm={6}>商品：{modalData.purchaseItem.product_name}</Grid>
+                            <Grid item sm={6}>操作人：{modalData.purchaseItem.real_name}</Grid>
                             <Grid item sm={6}>单价：{modalData.purchaseItem.unit_cost}</Grid>
-                            <Grid item sm={6}>
+                            <Grid item sm={6}>数量：{modalData.purchaseItem.purchase_count}</Grid>
+                            {storageInOutReducer.purchaseItemRefund.map((row, index) => (
+                            <Grid item sm={12}>
+                                <Alert severity="warning">
+                                    <Grid container spacing={1} key={index}>
+                                        <Grid item xs={6}>退货：{row.product_name}</Grid>
+                                        <Grid item xs={3}>{commonUtil.getDateTime(row.created_on)}</Grid>
+                                        <Grid item xs={2}>数量：{row.refund_count}</Grid>
+                                        <Grid item xs={1}>{commonUtil.getJsonValue(sysConst.REFUND_STATUS,row.status)}</Grid>
+                                    </Grid>
+                                </Alert>
+                            </Grid>
+                            ))}
+
+                            <Grid item sm={5}>
                                 <Autocomplete fullWidth
                                               options={commonReducer.storageList}
                                               getOptionLabel={(option) => option.storage_name}
@@ -408,7 +438,7 @@ function StorageInOut(props) {
                                               />}
                                 />
                             </Grid>
-                            <Grid item sm={6}>
+                            <Grid item sm={5}>
                                 <Autocomplete fullWidth
                                               options={commonReducer.storageAreaList}
                                               noOptionsText="无选项"
@@ -423,7 +453,13 @@ function StorageInOut(props) {
                                               />}
                                 />
                             </Grid>
-
+                            <Grid item sm={2}>
+                                <TextField label="入库数" fullWidth margin="dense" variant="outlined" type="number" value={modalData.productCnt}
+                                           onChange={(e)=>{setModalData({...modalData, productCnt: e.target.value})}}
+                                           error={validation.productCnt&&validation.productCnt!=''}
+                                           helperText={validation.productCnt}
+                                />
+                            </Grid>
                             <Grid item xs={12}>
                                 <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={modalData.remark}
                                            onChange={(e) => {setModalData({...modalData, remark: e.target.value})}}/>
@@ -869,7 +905,6 @@ const mapDispatchToProps = (dispatch) => ({
     setStorageAreaList: (value) => {
         dispatch(CommonActionType.setStorageAreaList(value));
     },
-
     // 出入库 TAB
     downLoadCsv: () => {
         dispatch(storageInOutAction.downLoadCsv())

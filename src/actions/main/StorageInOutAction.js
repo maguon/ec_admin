@@ -49,6 +49,25 @@ export const getPurchaseItemStorage = (dataStart) => async (dispatch, getState) 
     }
 };
 
+export const getPurchaseItemRefund = (purchaseItemId) => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/purchaseRefund?purchaseItemId=' + purchaseItemId;
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: StorageInOutActionType.getPurchaseItemRefund, payload: res.rows});
+        } else if (!res.success) {
+            Swal.fire("获取退货列表失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
 export const putInStorage = (data) => async (dispatch, getState) => {
     try {
         // 状态
@@ -57,6 +76,7 @@ export const putInStorage = (data) => async (dispatch, getState) => {
         const params = {
             storageId: data.storage == null ? '' : data.storage.id,
             storageAreaId: data.storageArea == null ? '' : data.storageArea.id,
+            storageCount: data.productCnt,
             remark: data.remark
         };
         dispatch({type: AppActionType.showLoadProgress, payload: true});

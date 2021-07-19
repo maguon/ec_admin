@@ -1,6 +1,7 @@
 import {createAction} from 'redux-actions';
 
 export const getPurchaseItemStorageData = createAction('GET_STORAGE_IN_OUT_PURCHASE_DATA');
+export const getPurchaseItemRefund = createAction('GET_STORAGE_IN_OUT_PURCHASE_ITEM_REFUND');
 export const setPurchaseParams = createAction('SET_STORAGE_IN_OUT_PURCHASE_QUERY_PARAMS');
 export const setPurchaseParam = createAction('SET_STORAGE_IN_OUT_PURCHASE_QUERY_PARAM');
 export const getPurchaseRefundData = createAction('GET_STORAGE_IN_OUT_PURCHASE_REFUND_DATA');
