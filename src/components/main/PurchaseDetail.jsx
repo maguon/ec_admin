@@ -409,7 +409,7 @@ function PurchaseDetail (props){
                                 <Button variant="contained" color="secondary"  onClick={() => {updateStatus(id,3)}}>开始处理</Button>
                             </Grid>
                             <Grid item xs  align="center"  style={{display:purchaseDetailReducer.purchaseDetailInfo.status==3?'block':'none',marginTop:'30px'}}>
-                                <Button variant="contained" color="secondary"  onClick={() => {updateStatus(id,7)}}>处理</Button>
+                                <Button variant="contained" color="secondary"  onClick={() => {updateStatus(id,7)}}>完成</Button>
                             </Grid>
                             <Grid item xs={4}></Grid>
                         </Grid>

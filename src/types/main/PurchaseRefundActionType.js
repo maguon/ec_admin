@@ -4,4 +4,6 @@ export const setPurchaseRefundQueryObj = createAction('SET_PURCHASE_RETURN_QUERY
 export const setPurchaseRefundListDataSize = createAction('SET_PURCHASE_RETURN_LIST_DATA_SIZE');
 export const setPurchaseItem = createAction('SET_PURCHASE_ITEM');
 export const setProductArray = createAction('SET_PRODUCT_ARRAY');
+export const setStorageProductRelArray = createAction('SET_STORAGE_PRODUCT_REL_ARRAY');
+
 

@@ -53,7 +53,6 @@ export const getPurchaseRefundInfo = (params) => async (dispatch, getState) => {
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true && res.rows.length>0) {
             dispatch({type: SupplierDetailActionType.getPurchaseRefundInfo, payload: res.rows.slice(0,10)});
-            console.log(res.rows.slice(0,10))
         } else if (res.success === false) {
             Swal.fire('获取供应商信息失败', res.msg, 'warning');
         }

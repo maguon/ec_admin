@@ -4,9 +4,9 @@ const initialState = {
     //查询条件
     queryPurchaseObj:{
         supplierId:null,
-        storageStatus:'',
-        paymentStatus:'',
-        status:'',
+        storageStatus:'-1',
+        paymentStatus:'-1',
+        status:'-1',
         planDateStart :'',
         planDateEnd:'',
         finishDateStart:'',

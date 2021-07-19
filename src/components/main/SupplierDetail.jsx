@@ -73,7 +73,7 @@ function SupplierDetail (props){
             getPurchaseInfo(supplierDetailReducer.supplierInfo.id);
         }
         if(newValue=='3'){
-            getPurchaseRefundInfo();
+            getPurchaseRefundInfo(supplierDetailReducer.supplierInfo.id);
         }
     };
     return(
