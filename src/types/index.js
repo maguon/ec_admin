@@ -30,7 +30,7 @@ import * as PurchasePanelActionType from './main/PurchasePanelActionType';
 import * as ClientAgentActionType from './main/ClientAgentActionType';
 import * as PurchaseStatActionType from './main/PurchaseStatActionType';
 import * as CreateClientAgentModelActionType from './main/model/CreateClientAgentModelActionType';
-import * as UpdateClientAgentModelActionType from './main/model/UpdateClientAgentModelActionType';
+import * as ClientAgentDetailActionType from './main/ClientAgentDetailActionType';
 
 
 export {
@@ -66,5 +66,5 @@ export {
     ClientAgentActionType,
     PurchaseStatActionType,
     CreateClientAgentModelActionType,
-    UpdateClientAgentModelActionType
+    ClientAgentDetailActionType
 }

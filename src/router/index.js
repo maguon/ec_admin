@@ -29,6 +29,7 @@ import {
     UpLoadFile,
     PurchasePanel,
     ClientAgent,
+    ClientAgentDetail,
     PurchaseStat
 } from "../components";
 
@@ -96,6 +97,6 @@ export const routesWithHeader = [
     //服务项目设置
     {path: "/service_setting", exact: true, component: ServiceSetting},
     {path: "/client_agent", exact: true, component: ClientAgent},
-
+    {path: "/client_agent/:id", exact: true, component: ClientAgentDetail},
     {path: "/upload", exact: true, component: UpLoadFile},
 ];

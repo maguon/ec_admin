@@ -38,7 +38,7 @@ import ClientAgent from  './main/ClientAgent';
 import NestedList from "./utils/NestedList";
 import PurchaseStat from './main/PurchaseStat';
 import CreateClientAgentModel from './main/model/CreateClientAgentModel';
-import UpdateClientAgentModel from './main/model/UpdateClientAgentModel';
+import ClientAgentDetail from './main/ClientAgentDetail';
 export {
     Header,
     Footer,
@@ -78,7 +78,7 @@ export {
     PurchasePanel,
     ClientAgent,
     CreateClientAgentModel,
-    UpdateClientAgentModel,
+    ClientAgentDetail,
     NestedList,
     PurchaseStat,
 }

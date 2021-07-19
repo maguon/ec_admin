@@ -1,15 +1,15 @@
 import {handleActions} from 'redux-actions';
 import {CreateClientAgentModelActionType} from '../../../types';
 const initialState = {
-    setFlag:'',
+    flag:false,
     remark: "",
     name: "",
-    clientType: '',
+    clientType: '1',
     tel: "",
     address: "",
     idSerial: "",
     salesUserId: null,
-    sourceType: '',
+    sourceType: '1',
     currentUserArray:[]
 };
 export default handleActions({
@@ -20,67 +20,51 @@ export default handleActions({
         }
     },
     [CreateClientAgentModelActionType.setRemark]: (state, action) => {
-        const {name, value} = action.payload;
-        const paramsObj = {...state.remark, [name]: value};
         return {
             ...state,
-            remark: paramsObj
+            remark: action.payload
         }
     },
     [CreateClientAgentModelActionType.setName]: (state, action) => {
-        const {name, value} = action.payload;
-        const paramsObj = {...state.name, [name]: value};
         return {
             ...state,
-            name: paramsObj
+            name: action.payload
         }
     },
     [CreateClientAgentModelActionType.setClientType]: (state, action) => {
-        const {name, value} = action.payload;
-        const paramsObj = {...state.clientType, [name]: value};
         return {
             ...state,
-            clientType: paramsObj
+            clientType: action.payload
         }
     },
     [CreateClientAgentModelActionType.setTel]: (state, action) => {
-        const {name, value} = action.payload;
-        const paramsObj = {...state.tel, [name]: value};
         return {
             ...state,
-            tel: paramsObj
+            tel: action.payload
         }
     },
     [CreateClientAgentModelActionType.setAddress]: (state, action) => {
-        const {name, value} = action.payload;
-        const paramsObj = {...state.address, [name]: value};
         return {
             ...state,
-            address: paramsObj
+            address: action.payload
         }
     },
     [CreateClientAgentModelActionType.setIdSerial]: (state, action) => {
-        const {name, value} = action.payload;
-        const paramsObj = {...state.idSerial, [name]: value};
         return {
             ...state,
-            idSerial: paramsObj
+            idSerial: action.payload
         }
     },
     [CreateClientAgentModelActionType.setSalesUserId]: (state, action) => {
-        const {name, value} = action.payload;
-        const paramsObj = {...state.salesUserId, [name]: value};
         return {
             ...state,
-            salesUserId: paramsObj
+            salesUserId: action.payload
         }
     },
     [CreateClientAgentModelActionType.setSourceType]: (state, action) => {
-        const {name, value} = action.payload;
-        const paramsObj = {...state.sourceType, [name]: value};
         return {
             ...state,
-            sourceType: paramsObj
+            sourceType: action.payload
         }
     },
     [CreateClientAgentModelActionType.getCurrentUser]: (state, action) => {

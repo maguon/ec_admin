@@ -61,7 +61,7 @@ function PurchaseRefund (props){
     const dispatch = useDispatch();
     const [pageNumber,setPageNumber] = useState(0);
     //采购单号
-    const [purchaseId, setPurchaseId] = React.useState(null);
+    const [purchaseId, setPurchaseId] = React.useState('');
     // 供应商
     const [supplier, setSupplier] = React.useState(null);
     //商品
@@ -284,7 +284,7 @@ function PurchaseRefund (props){
                 <Grid container item xs={10} spacing={1}>
                     {/*采购单号*/}
                     <Grid item xs>
-                        <TextField label="采购单号" fullWidth={true} margin="dense" variant="outlined"  type="search" value={purchaseId}
+                        <TextField label="采购单号" fullWidth={true} margin="dense" variant="outlined"  type="number" value={purchaseId}
                                    onChange={(e)=>setPurchaseId(e.target.value)}
                         />
                     </Grid>

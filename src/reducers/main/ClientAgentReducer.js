@@ -4,7 +4,7 @@ const initialState = {
     //查询条件
     queryClientObj:{
         clientType :null,
-        idSerial :null,
+        idSerial :'',
         dateIdStart :'',
         dateIdEnd :'',
         sourceType :null,

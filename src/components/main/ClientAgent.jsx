@@ -1,14 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import Swal from "sweetalert2";
-import {Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Table, TableHead, TableRow,TableCell, TableBody,Box, Switch,Fab} from "@material-ui/core";
+import {Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Table, TableHead, TableRow,TableCell, TableBody,Box, Switch,Fab, IconButton,} from "@material-ui/core";
 import {withStyles,makeStyles} from "@material-ui/core/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from '@material-ui/pickers';
 import {ClientAgentActionType} from '../../types';
 import {CreateClientAgentModel} from "../index";
+import {Link} from "react-router-dom";
 const ClientAgentAction = require('../../actions/main/ClientAgentAction');
-const CreateClientModelAction =require('../../actions/main/model/CreateClientAgentModelAction')
+const CreateClientModelAction =require('../../actions/main/model/CreateClientAgentModelAction');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 const customTheme = require('../layout/Theme').customTheme;
@@ -39,10 +40,9 @@ const StyledTableCell = withStyles((theme) => ({
     }
 }))(TableCell);
 function ClientAgent (props) {
-    const {clientAgentReducer,getClientList,changeStatus,modalOpenItem} = props;
+    const {clientAgentReducer,getClientList,changeStatus,openCreateClientModel,openUpdateClientModel} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
-    const [modalOpenFlag, setModalOpenFlag] = useState(false);
 
     useEffect(()=>{
         getClientList(clientAgentReducer.start);
@@ -51,8 +51,10 @@ function ClientAgent (props) {
         getClientList(0);
     }
     const modalOpen=()=>{
-        setModalOpenFlag(true);
-        modalOpenItem(true);
+        openCreateClientModel();
+    }
+    const handlePutOpen=(item)=>{
+        openUpdateClientModel(item);
     }
     //下一页
     const getNextClientList = () => {
@@ -84,14 +86,13 @@ function ClientAgent (props) {
                     </Grid>
                     {/*身份证号*/}
                     <Grid item xs>
-                        <TextField label="身份证号" fullWidth={true} margin="dense" variant="outlined"  type="search"
-                                   value={clientAgentReducer.queryClientObj.idSerial}
-                                   onChange={(e,value) => {
-                                       dispatch(ClientAgentActionType.setClientAgentQueryObjs({name: "idSerial", value: value}));
-                                   }}
+                        <TextField fullWidth={true} margin="dense" variant="outlined" label="手机" type='number'
+                            value={clientAgentReducer.queryClientObj.idSerial}
+                            onChange={(e,value) => {
+                                dispatch(ClientAgentActionType.setClientAgentQueryObjs({name: "idSerial", value: value}));
+                            }}
                         />
                     </Grid>
-
                     {/*客户来源*/}
                     <Grid item  xs>
                         <Autocomplete fullWidth={true}
@@ -146,11 +147,11 @@ function ClientAgent (props) {
                 </Grid>
                 {/*追加按钮*/}
                 <Grid item xs={1} style={{textAlign: 'right',marginTop:10}}>
-                    <Fab color="primary" size="small"  onClick={() => {modalOpen(modalOpenFlag)}}>
+                    <Fab color="primary" size="small"  onClick={() => {modalOpen()}}>
                             <i className="mdi mdi-plus mdi-24px"/>
                     </Fab>
                 </Grid>
-                <CreateClientAgentModel style={{display:modalOpenFlag?'block':'none'}}/>
+                <CreateClientAgentModel/>
             </Grid>
             {/*主体*/}
             <Grid container spacing={1}>
@@ -165,18 +166,17 @@ function ClientAgent (props) {
                                 <StyledTableCell align="center">联系人</StyledTableCell>
                                 <StyledTableCell align="center">电话</StyledTableCell>
                                 <StyledTableCell align="center">创建时间</StyledTableCell>
-                                <StyledTableCell align="center">状态</StyledTableCell>
                                 <StyledTableCell align="center">操作</StyledTableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {clientAgentReducer.clientArray.length > 0 &&clientAgentReducer.clientArray.map((row) => (
-                                <TableRow key={row.id}>
+                            {clientAgentReducer.clientArray.length > 0 &&clientAgentReducer.clientArray.map((row,index) => (
+                                <TableRow key={index}>
                                     <TableCell align="center" >{row.id}</TableCell>
                                     <TableCell align="center" >{row.id_serial}</TableCell>
                                     <TableCell align="center" >{commonUtil.getJsonValue(sysConst.CLIENT_TYPE,row.client_type)}</TableCell>
                                     <TableCell align="center" >{commonUtil.getJsonValue(sysConst.SOURCE_TYPE,row.source_type)}</TableCell>
-                                    <TableCell align="center" >{row.sales_user_id}</TableCell>
+                                    <TableCell align="center" >{row.sales_real_name}</TableCell>
                                     <TableCell align="center" >{row.tel}</TableCell>
                                     <TableCell align="center" >{row.date_id}</TableCell>
                                     <TableCell align="center">
@@ -185,13 +185,15 @@ function ClientAgent (props) {
                                                 checked={row.status==sysConst.USE_FLAG[1].value}
                                                 onChange={(e)=>{changeStatus(row.id, row.status)}}
                                         />
-                                      {/*  <IconButton color="primary" edge="start" size="small"onClick={() => {handlePutOpen(row)}}>
-                                            <i className="mdi mdi-table-search purple-font margin-left10"> </i>
-                                        </IconButton>*/}
+                                        <IconButton color="primary" edge="start" size="small">
+                                            <Link to={{pathname: '/client_agent/' + row.id}}>
+                                                <i className="mdi mdi-table-search"/>
+                                            </Link>
+                                        </IconButton>
                                     </TableCell>
                                 </TableRow>))}
                             {clientAgentReducer.clientArray.length === 0 &&
-                            <TableRow style={{height:60}}><TableCell align="center" colSpan="9">暂无数据</TableCell></TableRow>
+                            <TableRow style={{height:60}}><TableCell align="center" colSpan="8">暂无数据</TableCell></TableRow>
                             }
                         </TableBody>
                     </Table>
@@ -234,8 +236,8 @@ const mapDispatchToProps = (dispatch) => ({
             }
         });
     },
-    modalOpenItem: (flag) => {
-        dispatch(CreateClientModelAction.openCreateClientModel(flag));
-    }
+    openCreateClientModel: () => {
+        dispatch(CreateClientModelAction.openCreateClientModel());
+    },
 });
 export default connect(mapStateToProps, mapDispatchToProps)(ClientAgent)
