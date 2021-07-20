@@ -374,6 +374,18 @@ export const ALL_PAGE_LIST = [
         ]
     },
     {
+        "label": "客户中心",
+        "icon": "mdi-account-multiple",
+        "children": [
+            {
+                "link": "/client_agent",
+                "name": "客户集群",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
+        ]
+    },
+    {
         "link": "/data_dictionary",
         "label": "数据字典",
         "icon": "mdi-book-multiple",
@@ -393,12 +405,6 @@ export const ALL_PAGE_LIST = [
             {
                 "link": "/upload",
                 "name": "数据导入",
-                "icon": "mdi-chevron-right",
-                "usable": false
-            },
-            {
-                "link": "/client_agent",
-                "name": "客户中心",
                 "icon": "mdi-chevron-right",
                 "usable": false
             },
