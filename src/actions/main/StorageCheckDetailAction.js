@@ -114,14 +114,6 @@ export const changeStorageCheckStatus = (storageCheckId, status) => async (dispa
     }
 };
 
-export const downLoadPDF = (storageCheckId) => async () => {
-    try {
-        commonUtil.downLoadPDF(document.getElementById("pdf"),'仓库盘点详情-' + storageCheckId + '.pdf');
-    } catch (err) {
-        Swal.fire("操作失败", err.message, "error");
-    }
-};
-
 export const saveModalData = (modalData) => async (dispatch) => {
     try {
         let params = {

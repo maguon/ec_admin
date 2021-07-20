@@ -19,13 +19,7 @@ const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
     root: customTheme.root,
     title: customTheme.pageTitle,
-    divider: customTheme.pageDivider,
-    pdfPage:customTheme.pdfPage,
-    pdfTitle:customTheme.pdfTitle,
-    tblHeader:customTheme.tblHeader,
-    tblLastHeader:customTheme.tblLastHeader,
-    tblBody:customTheme.tblBody,
-    tblLastBody:customTheme.tblLastBody
+    divider: customTheme.pageDivider
 }));
 
 function StorageCheck(props) {
@@ -160,7 +154,7 @@ function StorageCheck(props) {
                         <IconButton color="primary" edge="start" style={{marginLeft:1}} onClick={()=>{downLoadCsv(storageCheckDetailReducer.storageCheckInfo.id)}}>
                             <i className="mdi mdi-file-excel mdi-24px"/>
                         </IconButton>
-                        <IconButton color="primary" edge="start" onClick={()=>{downLoadPDF(storageCheckDetailReducer.storageCheckInfo.id)}}>
+                        <IconButton color="primary" edge="start" onClick={()=>{downLoadPDF(storageCheckDetailReducer.storageCheckInfo,storageCheckDetailReducer.detailList)}}>
                             <i className="mdi mdi-file-pdf mdi-24px"/>
                         </IconButton>
                         {storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[0].value &&
@@ -340,41 +334,6 @@ function StorageCheck(props) {
                     </Grid>
                 </Grid>
             </SimpleModal>
-
-            {/* PDF 输出用 DIV */}
-            <div id="pdf" className={classes.pdfPage} style={{marginTop: -99999}}>
-                <Grid container spacing={0}>
-                    <Grid item sm={12} className={classes.pdfTitle}>仓库盘点</Grid>
-                    <Grid item sm={2}><img style={{width: 120,paddingLeft:30}} src="/logo120.png"  alt=""/></Grid>
-                    <Grid item container sm={10} spacing={0}>
-                        <Grid item sm={6}><b>盘点ID：</b>{storageCheckDetailReducer.storageCheckInfo.id}</Grid>
-                        <Grid item sm={6}><b>计划盘点数：</b>{storageCheckDetailReducer.storageCheckInfo.plan_check_count}</Grid>
-                        <Grid item sm={6}><b>操作人员：</b>{storageCheckDetailReducer.storageCheckInfo.real_name}</Grid>
-                        <Grid item sm={6}><b>盘点创建时间：</b>{commonUtil.getDateTime(storageCheckDetailReducer.storageCheckInfo.created_on)}</Grid>
-                        <Grid item sm={12}><b>盘点描述：</b>{storageCheckDetailReducer.storageCheckInfo.check_desc}</Grid>
-                    </Grid>
-                </Grid>
-
-                <Grid container spacing={0} style={{paddingTop: 15}}>
-                    <Grid item sm={2} className={classes.tblHeader}>仓库</Grid>
-                    <Grid item sm={2} className={classes.tblHeader}>仓库分区</Grid>
-                    <Grid item sm={2} className={classes.tblHeader}>商品</Grid>
-                    <Grid item sm={1} className={classes.tblHeader}>库存数</Grid>
-                    <Grid item sm={1} className={classes.tblHeader}>盘点数</Grid>
-                    <Grid item sm={4} className={classes.tblLastHeader}>备注</Grid>
-                </Grid>
-
-                {storageCheckDetailReducer.detailList.map((row, index) => (
-                    <Grid container spacing={0}>
-                        <Grid item sm={2} className={classes.tblBody}>{row.storage_name}</Grid>
-                        <Grid item sm={2} className={classes.tblBody}>{row.storage_area_name}</Grid>
-                        <Grid item sm={2} className={classes.tblBody}>{row.product_name}</Grid>
-                        <Grid item sm={1} className={classes.tblBody}>{row.storage_count}</Grid>
-                        <Grid item sm={1} className={classes.tblBody}>{row.check_count}</Grid>
-                        <Grid item sm={4} className={classes.tblLastBody}>{row.remark}</Grid>
-                    </Grid>
-                ))}
-            </div>
         </div>
     )
 }
@@ -416,8 +375,8 @@ const mapDispatchToProps = (dispatch) => ({
     downLoadCsv: (storageCheckId) => {
         dispatch(storageCheckAction.downLoadCsv(storageCheckId))
     },
-    downLoadPDF: (storageCheckId) => {
-        dispatch(storageCheckDetailAction.downLoadPDF(storageCheckId))
+    downLoadPDF: (storageCheckInfo, dataList) => {
+        dispatch(storageCheckAction.downLoadPDF(storageCheckInfo, dataList))
     }
 });
 

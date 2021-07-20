@@ -40,12 +40,12 @@ const useStyles = makeStyles((theme) => ({
     title: customTheme.pageTitle,
     divider: customTheme.pageDivider,
     tableHead:customTheme.tableHead,
-    pdfPage:customTheme.pdfPage,
-    pdfTitle:customTheme.pdfTitle,
-    tblHeader:customTheme.tblHeader,
-    tblLastHeader:customTheme.tblLastHeader,
-    tblBody:customTheme.tblBody,
-    tblLastBody:customTheme.tblLastBody
+    // pdfPage:customTheme.pdfPage,
+    // pdfTitle:customTheme.pdfTitle,
+    // tblHeader:customTheme.tblHeader,
+    // tblLastHeader:customTheme.tblLastHeader,
+    // tblBody:customTheme.tblBody,
+    // tblLastBody:customTheme.tblLastBody
 }));
 
 function StorageCheck(props) {
@@ -399,39 +399,39 @@ function StorageCheck(props) {
             </SimpleModal>
 
             {/* PDF 输出用 DIV */}
-            <div id="pdf" className={classes.pdfPage} style={{marginTop: -99998}}>
-                <Grid container spacing={0}>
-                    <Grid item sm={12} className={classes.pdfTitle}>仓库盘点</Grid>
-                    <Grid item sm={2}><img style={{width: 120,paddingLeft:30}} src="/logo120.png"  alt=""/></Grid>
-                    <Grid item container sm={10} spacing={0}>
-                        <Grid item sm={6}><b>盘点ID：</b>{storageCheckReducer.pdfData.id}</Grid>
-                        <Grid item sm={6}><b>计划盘点数：</b>{storageCheckReducer.pdfData.plan_check_count}</Grid>
-                        <Grid item sm={6}><b>操作人员：</b>{storageCheckReducer.pdfData.real_name}</Grid>
-                        <Grid item sm={6}><b>盘点创建时间：</b>{commonUtil.getDateTime(storageCheckReducer.pdfData.created_on)}</Grid>
-                        <Grid item sm={12}><b>盘点描述：</b>{storageCheckReducer.pdfData.check_desc}</Grid>
-                    </Grid>
-                </Grid>
+            {/*<div id="pdf" className={classes.pdfPage} style={{marginTop: -1}}>*/}
+            {/*    <Grid container spacing={0}>*/}
+            {/*        <Grid item sm={12} className={classes.pdfTitle}>仓库盘点</Grid>*/}
+            {/*        <Grid item sm={2}><img style={{width: 120,paddingLeft:30}} src="/logo120.png"  alt=""/></Grid>*/}
+            {/*        <Grid item container sm={10} spacing={0}>*/}
+            {/*            <Grid item sm={6}><b>盘点ID：</b>{storageCheckReducer.pdfData.id}</Grid>*/}
+            {/*            <Grid item sm={6}><b>计划盘点数：</b>{storageCheckReducer.pdfData.plan_check_count}</Grid>*/}
+            {/*            <Grid item sm={6}><b>操作人员：</b>{storageCheckReducer.pdfData.real_name}</Grid>*/}
+            {/*            <Grid item sm={6}><b>盘点创建时间：</b>{commonUtil.getDateTime(storageCheckReducer.pdfData.created_on)}</Grid>*/}
+            {/*            <Grid item sm={12}><b>盘点描述：</b>{storageCheckReducer.pdfData.check_desc}</Grid>*/}
+            {/*        </Grid>*/}
+            {/*    </Grid>*/}
 
-                <Grid container spacing={0} style={{paddingTop: 15}}>
-                    <Grid item sm={2} className={classes.tblHeader}>仓库</Grid>
-                    <Grid item sm={2} className={classes.tblHeader}>仓库分区</Grid>
-                    <Grid item sm={2} className={classes.tblHeader}>商品</Grid>
-                    <Grid item sm={1} className={classes.tblHeader}>库存数</Grid>
-                    <Grid item sm={1} className={classes.tblHeader}>盘点数</Grid>
-                    <Grid item sm={4} className={classes.tblLastHeader}>备注</Grid>
-                </Grid>
+            {/*    <Grid container spacing={0} style={{paddingTop: 15}}>*/}
+            {/*        <Grid item sm={2} className={classes.tblHeader}>仓库</Grid>*/}
+            {/*        <Grid item sm={2} className={classes.tblHeader}>仓库分区</Grid>*/}
+            {/*        <Grid item sm={2} className={classes.tblHeader}>商品</Grid>*/}
+            {/*        <Grid item sm={1} className={classes.tblHeader}>库存数</Grid>*/}
+            {/*        <Grid item sm={1} className={classes.tblHeader}>盘点数</Grid>*/}
+            {/*        <Grid item sm={4} className={classes.tblLastHeader}>备注</Grid>*/}
+            {/*    </Grid>*/}
 
-                {storageCheckReducer.pdfDataList.map((row, index) => (
-                    <Grid container spacing={0}>
-                        <Grid item sm={2} className={classes.tblBody}>{row.storage_name}</Grid>
-                        <Grid item sm={2} className={classes.tblBody}>{row.storage_area_name}</Grid>
-                        <Grid item sm={2} className={classes.tblBody}>{row.product_name}</Grid>
-                        <Grid item sm={1} className={classes.tblBody}>{row.storage_count}</Grid>
-                        <Grid item sm={1} className={classes.tblBody}>{row.check_count}</Grid>
-                        <Grid item sm={4} className={classes.tblLastBody}>{row.remark}</Grid>
-                    </Grid>
-                ))}
-            </div>
+            {/*    {storageCheckReducer.pdfDataList.map((row, index) => (*/}
+            {/*        <Grid container spacing={0}>*/}
+            {/*            <Grid item sm={2} className={classes.tblBody}>{row.storage_name}</Grid>*/}
+            {/*            <Grid item sm={2} className={classes.tblBody}>{row.storage_area_name}</Grid>*/}
+            {/*            <Grid item sm={2} className={classes.tblBody}>{row.product_name}</Grid>*/}
+            {/*            <Grid item sm={1} className={classes.tblBody}>{row.storage_count}</Grid>*/}
+            {/*            <Grid item sm={1} className={classes.tblBody}>{row.check_count}</Grid>*/}
+            {/*            <Grid item sm={4} className={classes.tblLastBody}>{row.remark}</Grid>*/}
+            {/*        </Grid>*/}
+            {/*    ))}*/}
+            {/*</div>*/}
         </div>
     )
 }
@@ -473,8 +473,8 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(storageCheckAction.downLoadCsv(storageCheckId))
     },
     downLoadPDF: (storageCheckInfo) => {
-        dispatch(StorageCheckActionType.setPdfData(storageCheckInfo));
-        dispatch(storageCheckAction.downLoadPDF(storageCheckInfo.id));
+        // dispatch(StorageCheckActionType.setPdfData(storageCheckInfo));
+        dispatch(storageCheckAction.downLoadPDF(storageCheckInfo, null));
     }
 });
 

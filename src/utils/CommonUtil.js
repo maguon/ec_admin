@@ -1,6 +1,49 @@
 import html2canvas from "html2canvas";
 import {jsPDF} from "jspdf";
 
+// jsPDF 初期化，默认使用黑体字
+export const initJSPDF = () => {
+   const doc = new jsPDF();
+   doc.addFont('simhei.ttf', 'simhei', 'normal');
+   doc.setFont('simhei');
+   return doc;
+};
+
+// 将指定文件生成base64
+export const getImgBase64 = async (imgSrc) => {
+   let base64 = "";
+   let img = new Image();
+   img.src = imgSrc;
+   let promise = new Promise(resolve => {
+      img.onload = () => {
+         let canvas = document.createElement("canvas");
+         canvas.width = img.width;
+         canvas.height = img.height;
+         canvas.getContext("2d").drawImage(img, 0, 0, img.width, img.height);
+         base64 = canvas.toDataURL("image/png");
+         resolve(base64)
+      };
+   });
+   await promise;
+   return base64;
+};
+
+// 将指定文件下载
+export const download = (fileContent, fileName) => {
+   // 利用 Buffer 转为对象
+   const buf = Buffer.from(fileContent);
+   // 再输入到 Blob 生成文件
+   let blob = new Blob([buf], {type: 'application/pdf'});
+   let a = document.createElement('a');
+   // 指定生成的文件名
+   a.download = fileName;
+   a.href = URL.createObjectURL(blob);
+   document.body.appendChild(a);
+   a.click();
+   document.body.removeChild(a);
+};
+
+// 使用canvas，将HTML内容，生成为PDF文件
 export const downLoadPDF = (dom, fileName) => {
    // 取得滚动条距离顶部位置
    let scrollTop = getScrollTop();
@@ -30,11 +73,11 @@ export const downLoadPDF = (dom, fileName) => {
       // 画面尺寸小于 一页，则默认为A4，否则：设定指定高度画面
       let pdf = new jsPDF('', 'pt', contentHeight < htmlPageHeight ? 'a4' : [pdfPageWidth, pdfPageHeight + 30]);
       pdf.addImage(pageData, 'JPEG', 0, 0, pdfPageWidth, pdfPageHeight);
-
       // 保存PDF文件
       pdf.save(fileName);
    });
 };
+
 //表头验证
 export const titleFilter =(headerArray,colObjs) =>{
    if (colObjs.length != headerArray.length) {
