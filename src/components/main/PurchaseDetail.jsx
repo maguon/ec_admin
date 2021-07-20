@@ -315,7 +315,7 @@ function PurchaseDetail (props){
                             </Grid>
                             <Grid item xs={2}>
                                 <TextField type="number" label="运费" disabled={transferCostTypeFlag} fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                           value={purchaseDetailReducer.purchaseDetailInfo.transfer_cost}
+                                           value={purchaseDetailReducer.purchaseDetailInfo.transfer_cost>9999999.99?0:purchaseDetailReducer.purchaseDetailInfo.transfer_cost<0?0:purchaseDetailReducer.purchaseDetailInfo.transfer_cost}
                                            onChange={(e) => {
                                                dispatch(PurchaseDetailActionType.setPurchaseDetailInfo({name: "transfer_cost",value: e.target.value}))
                                            }}
@@ -348,7 +348,7 @@ function PurchaseDetail (props){
                                 </Grid>
                                 <Grid item xs>
                                     <TextField type="number" label="商品单价" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                               value={item.unit_cost}
+                                               value={item.unit_cost>9999999.99?0:item.unit_cost<0?0:item.unit_cost}
                                                onChange={(e) => {
                                                    dispatch(PurchaseDetailActionType.setPurchaseDetailItemInfo({index,name: "unit_cost",value: e.target.value}))
                                                }}
@@ -364,7 +364,7 @@ function PurchaseDetail (props){
                                 </Grid>
                                 <Grid item xs>
                                     <TextField type="number" disabled={true} label="商品总价" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                               value={Number(item.unit_cost)*Number(item.purchase_count)}
+                                               value={Number(item.unit_cost>9999999.99?0:item.unit_cost<0?0:item.unit_cost)*Number(item.purchase_count)}
                                     />
                                 </Grid>
                                 <Grid item xs={4}>
@@ -442,7 +442,7 @@ function PurchaseDetail (props){
                                 <Grid item sm={4} className={classes.tblLastHeader}>备注</Grid>
                             </Grid>
                             {purchaseDetailReducer.purchaseDetailItemInfo.map((row, index) => (
-                                <Grid container spacing={0}>
+                                <Grid container spacing={0} key={index}>
                                     <Grid item sm={2} className={classes.tblBody}>{row.product_name}</Grid>
                                     <Grid item sm={2} className={classes.tblBody}>{row.unit_cost}</Grid>
                                     <Grid item sm={2} className={classes.tblBody}>{row.purchase_count}</Grid>
@@ -599,7 +599,7 @@ function PurchaseDetail (props){
                     </Grid>
                     <Grid item xs>
                         <TextField type="number" label="运费" disabled={addTransferCostTypeFlag} fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                   value={addTransferCost}
+                                   value={addTransferCost>9999999.99?0:addTransferCost<0?0:addTransferCost}
                                    onChange={(e) => {
                                        setAddTransferCost(e.target.value)
                                    }}
@@ -607,7 +607,7 @@ function PurchaseDetail (props){
                     </Grid>
                     <Grid item xs>
                         <TextField label="总价" fullWidth={true} disabled={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                   value={Number(addUnitCost*addPurchaseCount)-Number(addTransferCost)}
+                                   value={Number(addUnitCost>9999999.99?0:addUnitCost<0?0:addUnitCost*addPurchaseCount>9999999.99?0:addPurchaseCount<0?0:addPurchaseCount)-Number(addTransferCost>9999999.99?0:addTransferCost<0?0:addTransferCost)}
                         />
                     </Grid>
                 </Grid>
@@ -635,7 +635,7 @@ function PurchaseDetail (props){
                     </Grid>
                     <Grid item xs>
                         <TextField type="number" label="退货单价" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                   value={addUnitCost}
+                                   value={addUnitCost>9999999.99?0:addUnitCost<0?0:addUnitCost}
                                    onChange={(e) => {
                                        setAddUnitCost(e.target.value)
                                    }}
@@ -643,7 +643,7 @@ function PurchaseDetail (props){
                     </Grid>
                     <Grid item xs>
                         <TextField type="number" label="退货数量" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                   value={addPurchaseCount}
+                                   value={addPurchaseCount>9999999.99?0:addPurchaseCount<0?0:addPurchaseCount}
                                    onChange={(e) => {
                                        setAddPurchaseCount(e.target.value)
                                    }}
@@ -653,7 +653,7 @@ function PurchaseDetail (props){
                     </Grid>
                     <Grid item xs>
                         <TextField type="number" disabled={true} label="退货总价" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                   value={Number(addPurchaseCount)*Number(addUnitCost)}
+                                   value={Number(addPurchaseCount>9999999.99?0:addPurchaseCount<0?0:addPurchaseCount)*Number(addUnitCost>9999999.99?0:addUnitCost<0?0:addUnitCost)}
                         />
                     </Grid>
                 </Grid>
@@ -743,7 +743,7 @@ function PurchaseDetail (props){
                     </Grid>
                     <Grid item xs>
                         <TextField type="number" label="运费" disabled={addTransferCostTypeFlag} fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                   value={addTransferCost}
+                                   value={addTransferCost>9999999.99?0:addTransferCost<0?0:addTransferCost}
                                    onChange={(e) => {
                                        setAddTransferCost(e.target.value)
                                    }}
@@ -751,7 +751,7 @@ function PurchaseDetail (props){
                     </Grid>
                     <Grid item xs>
                         <TextField label="总价" fullWidth={true} disabled={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                   value={Number(addUnitCost*addPurchaseCount)-Number(addTransferCost)}
+                                   value={Number(addUnitCost>9999999.99?0:addUnitCost<0?0:addUnitCost*addPurchaseCount>9999999.99?0:addPurchaseCount<0?0:addPurchaseCount)-Number(addTransferCost>9999999.99?0:addTransferCost<0?0:addTransferCost)}
                         />
                     </Grid>
                 </Grid>
@@ -776,7 +776,7 @@ function PurchaseDetail (props){
                     </Grid>
                     <Grid item xs>
                         <TextField type="number" label="退货单价" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                   value={addUnitCost}
+                                   value={addUnitCost>9999999.99?0:addUnitCost<0?0:addUnitCost}
                                    onChange={(e) => {
                                        setAddUnitCost(e.target.value)
                                    }}
@@ -784,7 +784,7 @@ function PurchaseDetail (props){
                     </Grid>
                     <Grid item xs>
                         <TextField type="number" label="退货数量" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                   value={addPurchaseCount}
+                                   value={addPurchaseCount>9999999.99?0:addPurchaseCount<0?0:addPurchaseCount}
                                    onChange={(e) => {
                                        setAddPurchaseCount(e.target.value)
                                    }}
@@ -794,7 +794,7 @@ function PurchaseDetail (props){
                     </Grid>
                     <Grid item xs>
                         <TextField type="number" disabled={true} label="退货总价" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                   value={Number(addPurchaseCount)*Number(addUnitCost)}
+                                   value={Number(addPurchaseCount>9999999.99?0:addPurchaseCount<0?0:addPurchaseCount)*Number(addUnitCost>9999999.99?0:addUnitCost<0?0:addUnitCost)}
                         />
                     </Grid>
                 </Grid>

@@ -1,8 +1,7 @@
 import React, {useEffect,useState}from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Link} from "react-router-dom";
-import {
-    Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Table, TableHead, TableRow,
+import {Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Table, TableHead, TableRow,
     TableCell, TableBody, IconButton, FormControl, InputLabel, Select, MenuItem, Box,Fab} from "@material-ui/core";
 import {withStyles,makeStyles} from "@material-ui/core/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -134,6 +133,7 @@ function Purchase (props){
         setModalOpenFlag(true);
         setSupplier('-1');
         setTransferCostType('1');
+        setPurchaseCountTotal(0);
         setTransferRemark('');
         setPurchaseItem([{product:-1,unitCost:0,unitNumber:0,purchaseCount:0,remark:""}]);
     }
@@ -178,11 +178,8 @@ function Purchase (props){
         }
     }
     const deleteItem =(index,item) =>{
-       /* let tmpArray=  purchaseItem.splice(purchaseItem.findIndex(e => e==item), 1);*/
-
-      let tep=  purchaseItem.filter(e=>e!=item)
-
-        setPurchaseItem(tep);
+      let tep=purchaseItem.filter(e=>e!=item)
+      setPurchaseItem(tep);
     }
     //上一页
     const getPreSupplierList = () => {
@@ -457,13 +454,14 @@ function Purchase (props){
                     </Grid>
                     <Grid item xs>
                         <TextField
+                            step="0.01"
                             fullWidth={true}
                             disabled={transferCostTypeFlag}
                             text='number'
                             margin="dense"
                             variant="outlined"
                             label="运费"
-                            value={transferCost}
+                            value={transferCost>9999999.99?0:transferCost<0?0:transferCost}
                             onChange={(e)=>setTransferCost(e.target.value)}
                         />
                     </Grid>
@@ -475,7 +473,7 @@ function Purchase (props){
                             margin="dense"
                             variant="outlined"
                             label="总价"
-                            value={Number(transferCost)+Number(purchaseCountTotal)}
+                            value={Number(transferCost>9999999.99?0:transferCost<0?0:transferCost)+Number(purchaseCountTotal)}
                         />
                     </Grid>
                     <Grid item xs  align="center" className={classes.addCategory}>
