@@ -21,6 +21,7 @@ export const getClientList = (params) => async (dispatch, getState) => {
             dateIdEnd: commonUtil.formatDate(paramsObj.dateIdEnd, 'yyyyMMdd'),
             sourceType:paramsObj.sourceType==null?'':paramsObj.sourceType.value,
             status:paramsObj.status==null?'':paramsObj.status.value,
+            idSerial:paramsObj.idSerial
         };
         let conditions = httpUtil.objToUrl(paramsObject);
         // 检索URL

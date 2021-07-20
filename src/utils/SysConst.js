@@ -234,7 +234,11 @@ export const CLIENT_TYPE= [
     {value: 1, label: "普通客户"},
     {value: 2, label: "大客户"}
 ];
-
+//发票类型
+export const INVOICE_TYPE=[
+    {value: 1, label: "企业"},
+    {value: 2, label: "个人"}
+]
 
 
 // 用于权限设定（包含所有机能设定）

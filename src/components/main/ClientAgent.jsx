@@ -1,13 +1,13 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {connect, useDispatch} from 'react-redux';
+import {Link} from "react-router-dom";
 import Swal from "sweetalert2";
 import {Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Table, TableHead, TableRow,TableCell, TableBody,Box, Switch,Fab, IconButton,} from "@material-ui/core";
 import {withStyles,makeStyles} from "@material-ui/core/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from '@material-ui/pickers';
-import {ClientAgentActionType} from '../../types';
 import {CreateClientAgentModel} from "../index";
-import {Link} from "react-router-dom";
+import {ClientAgentActionType} from '../../types';
 const ClientAgentAction = require('../../actions/main/ClientAgentAction');
 const CreateClientModelAction =require('../../actions/main/model/CreateClientAgentModelAction');
 const commonUtil = require('../../utils/CommonUtil');
@@ -40,11 +40,21 @@ const StyledTableCell = withStyles((theme) => ({
     }
 }))(TableCell);
 function ClientAgent (props) {
-    const {clientAgentReducer,getClientList,changeStatus,openCreateClientModel,openUpdateClientModel} = props;
+    const {clientAgentReducer,getClientList,changeStatus,openCreateClientModel,fromDetail} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
-
     useEffect(()=>{
+        if (!fromDetail) {
+            let queryClientObj={
+                clientType :null,
+                idSerial :'',
+                dateIdStart :'',
+                dateIdEnd :'',
+                sourceType :null,
+                status:null
+            }
+            dispatch(ClientAgentActionType.setClientAgentQueryObj(queryClientObj));
+        }
         getClientList(clientAgentReducer.start);
     },[])
     const clientArray =() =>{
@@ -52,9 +62,6 @@ function ClientAgent (props) {
     }
     const modalOpen=()=>{
         openCreateClientModel();
-    }
-    const handlePutOpen=(item)=>{
-        openUpdateClientModel(item);
     }
     //下一页
     const getNextClientList = () => {
@@ -84,15 +91,6 @@ function ClientAgent (props) {
                                       renderInput={(params) => <TextField {...params} label="客户类型" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
-                    {/*身份证号*/}
-                    <Grid item xs>
-                        <TextField fullWidth={true} margin="dense" variant="outlined" label="手机" type='number'
-                            value={clientAgentReducer.queryClientObj.idSerial}
-                            onChange={(e,value) => {
-                                dispatch(ClientAgentActionType.setClientAgentQueryObjs({name: "idSerial", value: value}));
-                            }}
-                        />
-                    </Grid>
                     {/*客户来源*/}
                     <Grid item  xs>
                         <Autocomplete fullWidth={true}
@@ -105,6 +103,16 @@ function ClientAgent (props) {
                                       renderInput={(params) => <TextField {...params} label="客户来源" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
+                    {/*身份证号*/}
+                    <Grid item xs>
+                        <TextField fullWidth={true} margin="dense" variant="outlined" label="身份证号"
+                            value={clientAgentReducer.queryClientObj.idSerial}
+                            onChange={(e,value) => {
+                                dispatch(ClientAgentActionType.setClientAgentQueryObjs({name: "idSerial", value: e.target.value}));
+                            }}
+                        />
+                    </Grid>
+
                     {/*状态status*/}
                     <Grid item  xs>
                         <Autocomplete fullWidth={true}
@@ -160,9 +168,10 @@ function ClientAgent (props) {
                         <TableHead >
                             <TableRow style={{height:50}}>
                                 <StyledTableCell align="center">ID</StyledTableCell>
-                                <StyledTableCell align="center">身份证号</StyledTableCell>
+                                <StyledTableCell align="center">客户名称</StyledTableCell>
                                 <StyledTableCell align="center">客户类型</StyledTableCell>
                                 <StyledTableCell align="center">客户来源</StyledTableCell>
+                                <StyledTableCell align="center">身份证号</StyledTableCell>
                                 <StyledTableCell align="center">联系人</StyledTableCell>
                                 <StyledTableCell align="center">电话</StyledTableCell>
                                 <StyledTableCell align="center">创建时间</StyledTableCell>
@@ -173,9 +182,10 @@ function ClientAgent (props) {
                             {clientAgentReducer.clientArray.length > 0 &&clientAgentReducer.clientArray.map((row,index) => (
                                 <TableRow key={index}>
                                     <TableCell align="center" >{row.id}</TableCell>
-                                    <TableCell align="center" >{row.id_serial}</TableCell>
+                                    <TableCell align="center" >{row.name}</TableCell>
                                     <TableCell align="center" >{commonUtil.getJsonValue(sysConst.CLIENT_TYPE,row.client_type)}</TableCell>
                                     <TableCell align="center" >{commonUtil.getJsonValue(sysConst.SOURCE_TYPE,row.source_type)}</TableCell>
+                                    <TableCell align="center" >{row.id_serial}</TableCell>
                                     <TableCell align="center" >{row.sales_real_name}</TableCell>
                                     <TableCell align="center" >{row.tel}</TableCell>
                                     <TableCell align="center" >{row.date_id}</TableCell>
@@ -193,7 +203,7 @@ function ClientAgent (props) {
                                     </TableCell>
                                 </TableRow>))}
                             {clientAgentReducer.clientArray.length === 0 &&
-                            <TableRow style={{height:60}}><TableCell align="center" colSpan="8">暂无数据</TableCell></TableRow>
+                            <TableRow style={{height:60}}><TableCell align="center" colSpan="9">暂无数据</TableCell></TableRow>
                             }
                         </TableBody>
                     </Table>
@@ -214,8 +224,13 @@ function ClientAgent (props) {
     )
 }
 const mapStateToProps = (state, ownProps) => {
+    let fromDetail = false;
+    if (typeof ownProps.location.state != 'undefined' && ownProps.location.state != null && ownProps.location.state.fromDetail) {
+        fromDetail = true;
+    }
     return {
         clientAgentReducer: state.ClientAgentReducer,
+        fromDetail: fromDetail
     }
 };
 const mapDispatchToProps = (dispatch) => ({
