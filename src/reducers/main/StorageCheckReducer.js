@@ -19,9 +19,7 @@ const initialState = {
         dateIdEnd: '',
         checkStatus: null,
         status: null
-    },
-    pdfData: {},
-    pdfDataList: []
+    }
 };
 
 export default handleActions({
@@ -43,18 +41,6 @@ export default handleActions({
         return {
             ...state,
             queryParams: action.payload
-        }
-    },
-    [StorageCheckActionType.setPdfData]: (state, action) => {
-        return {
-            ...state,
-            pdfData: action.payload
-        }
-    },
-    [StorageCheckActionType.setPdfDataList]: (state, action) => {
-        return {
-            ...state,
-            pdfDataList: action.payload
         }
     }
 }, initialState)

@@ -154,7 +154,7 @@ function StorageCheck(props) {
                         <IconButton color="primary" edge="start" style={{marginLeft:1}} onClick={()=>{downLoadCsv(storageCheckDetailReducer.storageCheckInfo.id)}}>
                             <i className="mdi mdi-file-excel mdi-24px"/>
                         </IconButton>
-                        <IconButton color="primary" edge="start" onClick={()=>{downLoadPDF(storageCheckDetailReducer.storageCheckInfo,storageCheckDetailReducer.detailList)}}>
+                        <IconButton color="primary" edge="start" onClick={()=>{downLoadPDF(storageCheckDetailReducer.storageCheckInfo)}}>
                             <i className="mdi mdi-file-pdf mdi-24px"/>
                         </IconButton>
                         {storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[0].value &&
@@ -165,7 +165,7 @@ function StorageCheck(props) {
 
             {/* 下部分 */}
             {storageCheckDetailReducer.detailList.map((row, index) => (
-                <Grid container spacing={1}>
+                <Grid container spacing={1} key={index}>
                     <Grid item sm={2}>
                         <TextField label="仓库" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }} disabled
                                    value={row.storage_name}/>
@@ -375,8 +375,8 @@ const mapDispatchToProps = (dispatch) => ({
     downLoadCsv: (storageCheckId) => {
         dispatch(storageCheckAction.downLoadCsv(storageCheckId))
     },
-    downLoadPDF: (storageCheckInfo, dataList) => {
-        dispatch(storageCheckAction.downLoadPDF(storageCheckInfo, dataList))
+    downLoadPDF: (storageCheckInfo) => {
+        dispatch(storageCheckAction.downLoadPDF(storageCheckInfo))
     }
 });
 

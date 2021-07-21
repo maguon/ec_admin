@@ -473,8 +473,7 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(storageCheckAction.downLoadCsv(storageCheckId))
     },
     downLoadPDF: (storageCheckInfo) => {
-        // dispatch(StorageCheckActionType.setPdfData(storageCheckInfo));
-        dispatch(storageCheckAction.downLoadPDF(storageCheckInfo, null));
+        dispatch(storageCheckAction.downLoadPDF(storageCheckInfo));
     }
 });
 
