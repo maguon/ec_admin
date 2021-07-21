@@ -104,7 +104,7 @@ export const downLoadCsv = (storageCheckId) => () => {
     }
 };
 
-export const downLoadPDF = (storageCheckInfo, dataList) => async (dispatch) => {
+export const downLoadPDF = (storageCheckInfo) => async (dispatch) => {
     try {
         const doc = commonUtil.initJSPDF();
         // 标题部分，白色背景，居中，粗体，20号字
@@ -149,23 +149,18 @@ export const downLoadPDF = (storageCheckInfo, dataList) => async (dispatch) => {
             {header: '备注', dataKey: 'remark'},
         ];
 
-        if (dataList == null) {
-            // 基本检索URL
-            let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-                + '/storageCheckRel?storageCheckId=' + storageCheckInfo.id;
-            dispatch({type: AppActionType.showLoadProgress, payload: true});
-            const res = await httpUtil.httpGet(url);
-            if (res.success) {
-                doc.autoTable({columns:columnsDef, body:res.rows, didParseCell:function (data) {data.cell.styles.font = 'simhei'}});
-                doc.save('仓库盘点详情-' + storageCheckInfo.id + '.pdf');
-            } else if (!res.success) {
-                Swal.fire("获取仓库盘点详细列表失败", res.msg, "warning");
-            }
-            dispatch({type: AppActionType.showLoadProgress, payload: false});
-        } else {
-            doc.autoTable({columns:columnsDef, body:dataList, didParseCell:function (data) {data.cell.styles.font = 'simhei'}});
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/storageCheckRel?storageCheckId=' + storageCheckInfo.id;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        if (res.success) {
+            doc.autoTable({columns:columnsDef, body:res.rows, didParseCell:function (data) {data.cell.styles.font = 'simhei'}});
             doc.save('仓库盘点详情-' + storageCheckInfo.id + '.pdf');
+        } else if (!res.success) {
+            Swal.fire("获取仓库盘点详细列表失败", res.msg, "warning");
         }
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }
