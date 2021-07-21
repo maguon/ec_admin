@@ -576,54 +576,6 @@ function Purchase (props){
                     </Grid>
                 </Grid>
             </SimpleModal>
-
-            {/* PDF 输出用 DIV */}
-            <div id="purchaseItemId" className={classes.pdfPage} style={{marginTop: -99999}}>
-                <Grid container spacing={0}>
-                    <Grid item sm={12} className={classes.pdfTitle}>采购单</Grid>
-                    <Grid item sm={2}><img style={{width: 120,paddingLeft:30,marginTop:15}} src="/logo120.png"  alt=""/></Grid>
-                    <Grid item container sm={10} spacing={0}>
-                        <Grid item sm={6}><b>采购单号：</b>{purchaseReducer.purchasePdfData.id}</Grid>
-                        <Grid item sm={6}><b>操作人员：</b>{purchaseReducer.purchasePdfData.op_user}</Grid>
-                        <Grid item sm={6}><b>供应商名称：</b>{purchaseReducer.purchasePdfData.supplier_name}</Grid>
-                        <Grid item sm={6}><b>联系人姓名：</b>{purchaseReducer.supplierPdfArray.contact_name}</Grid>
-                        <Grid item sm={6}><b>手机：</b>{purchaseReducer.supplierPdfArray.mobile}</Grid>
-                        <Grid item sm={6}><b>邮箱：</b>{purchaseReducer.supplierPdfArray.email}</Grid>
-                        <Grid item sm={6}><b>电话：</b>{purchaseReducer.supplierPdfArray.tel}</Grid>
-                        <Grid item sm={6}><b>传真：</b>{purchaseReducer.supplierPdfArray.fax}</Grid>
-                        <Grid item sm={12}><b>地址：</b>{purchaseReducer.supplierPdfArray.address}</Grid>
-                        <Grid item sm={6}><b>公司抬头：</b>{purchaseReducer.supplierPdfArray.invoice_title}</Grid>
-                        <Grid item sm={6}><b>开户行：</b>{purchaseReducer.supplierPdfArray.invoice_bank}</Grid>
-                        <Grid item sm={6}><b>开户行账号：</b>{purchaseReducer.supplierPdfArray.invoice_bank_ser}</Grid>
-                        <Grid item sm={6}><b>开户地址：</b>{purchaseReducer.supplierPdfArray.invoice_address}</Grid>
-                    </Grid>
-                </Grid>
-
-                <Grid container spacing={0} style={{paddingTop: 25}}>
-                    <Grid item sm={2} className={classes.tblHeader}>商品名称</Grid>
-                    <Grid item sm={2} className={classes.tblHeader}>单价</Grid>
-                    <Grid item sm={2} className={classes.tblHeader}>数量</Grid>
-                    <Grid item sm={2} className={classes.tblHeader}>总价</Grid>
-                    <Grid item sm={4} className={classes.tblLastHeader}>备注</Grid>
-                </Grid>
-                {purchaseReducer.purchaseItemArray.map((row, index) => (
-                    <Grid container spacing={0}>
-                        <Grid item sm={2} className={classes.tblBody}>{row.product_name}</Grid>
-                        <Grid item sm={2} className={classes.tblBody}>{row.unit_cost}</Grid>
-                        <Grid item sm={2} className={classes.tblBody}>{row.purchase_count}</Grid>
-                        <Grid item sm={2} className={classes.tblBody}>{Number(row.unit_cost*row.purchase_count)}</Grid>
-                        <Grid item sm={4} className={classes.tblLastBody}>{row.remark}</Grid>
-                    </Grid>
-                ))}
-
-                <Grid container spacing={0} style={{paddingTop: 35}}  align='right'>
-                    <Grid item sm={8}>{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE,purchaseReducer.purchasePdfData.transfer_cost_type)}运费:{purchaseReducer.purchasePdfData.transfer_cost}</Grid>
-                    <Grid item sm={4}>总价:{purchaseReducer.purchasePdfData.total_cost}</Grid>
-                </Grid>
-                <Grid container spacing={0} style={{paddingTop: 35}}  align='left'>
-                     <Grid item sm={12}>备注:{purchaseReducer.purchasePdfData.remark}</Grid>
-                </Grid>
-            </div>
         </div>
     )
 }
@@ -656,7 +608,7 @@ const mapDispatchToProps = (dispatch) => ({
     },
     downLoadPDF: (purchaseInfo) => {
         dispatch(PurchaseActionType.setPurchasePdfData(purchaseInfo));
-        dispatch(PurchaseAction.downLoadPDF(purchaseInfo.id,purchaseInfo.supplier_name));
+        dispatch(PurchaseAction.downLoadPDF(purchaseInfo,null,purchaseInfo.supplier_name));
     }
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Purchase)

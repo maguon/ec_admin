@@ -10,6 +10,7 @@ import TabPanel from "@material-ui/lab/TabPanel";
 import {SimpleModal} from "../index";
 import {PurchaseDetailActionType} from '../../types';
 const PurchaseDetailAction = require('../../actions/main/PurchaseDetailAction');
+const PurchaseAction =require('../../actions/main/PurchaseAction');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 const customTheme = require('../layout/Theme').customTheme;
@@ -21,12 +22,6 @@ const useStyles = makeStyles((theme) => ({
     },
     pageTitle: customTheme.pageTitle,
     pageDivider: customTheme.pageDivider,
-    pdfPage:customTheme.pdfPage,
-    pdfTitle:customTheme.pdfTitle,
-    tblHeader:customTheme.tblHeader,
-    tblLastHeader:customTheme.tblLastHeader,
-    tblBody:customTheme.tblBody,
-    tblLastBody:customTheme.tblLastBody
 }));
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -397,7 +392,7 @@ function PurchaseDetail (props){
                         <Grid  container spacing={3}>
                             <Grid item xs={4}></Grid>
                             <Grid item xs align='center' style={{marginTop:'15px'}}>
-                                <IconButton color="primary" edge="start" onClick={()=>{downLoadPDF(purchaseDetailReducer.purchaseDetailInfo.supplier_name,purchaseDetailReducer.purchaseDetailInfo.id)}}>
+                                <IconButton color="primary" edge="start" onClick={()=>{downLoadPDF(purchaseDetailReducer.purchaseDetailInfo,purchaseDetailReducer.purchaseDetailItemInfo,purchaseDetailReducer.purchaseDetailInfo.supplier_name)}}>
                                     <i className="mdi mdi-file-pdf" style={{fontSize:40}}/>
                                 </IconButton>
                             </Grid>
@@ -884,8 +879,8 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
     addRefundDetailItem:(id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType)=>{
         dispatch(PurchaseDetailAction.addRefundDetailItem(id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType))
     },
-    downLoadPDF: (name,id) => {
-        dispatch(PurchaseDetailAction.downLoadPDF(name,id))
+    downLoadPDF: (purchaseDetailInfo,purchaseDetailItemInfo,name) => {
+        dispatch(PurchaseAction.downLoadPDF(purchaseDetailInfo,purchaseDetailItemInfo,name))
     }
 });
 export default connect(mapStateToProps, mapDispatchToProps)(PurchaseDetail)

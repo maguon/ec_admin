@@ -4,7 +4,6 @@ import {AppActionType, PurchaseDetailActionType} from '../../types';
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
-const commonUtil = require('../../utils/CommonUtil');
 // 采购管理详情 -> 获取采购信息
 export const getPurchaseDetailInfo = (params) => async (dispatch, getState) => {
     try {
@@ -180,20 +179,6 @@ export const addRefundDetailItem = (id,item,addTransferCostType,addTransferCost,
             Swal.fire("保存成功", "", "success");
         } else if (!res.success) {
             Swal.fire('保存失败', res.msg, 'warning');
-        }
-    } catch (err) {
-        Swal.fire("操作失败", err.message, "error");
-    }
-};
-export const downLoadPDF = (params,id) => async (dispatch) => {
-    try {
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/supplier?supplierName='+params;
-        const res = await httpUtil.httpGet(url);
-        if (res.success) {
-            dispatch({type: PurchaseDetailActionType.getSupplierDetailArray, payload: res.rows[0]});
-            commonUtil.downLoadPDF(document.getElementById("purchaseId"),'采购单详情-' + id + '.pdf');
-        } else if (!res.success) {
-            Swal.fire("获取采购详细列表失败", res.msg, "warning");
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
