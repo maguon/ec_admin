@@ -244,13 +244,6 @@ export const INVOICE_TYPE=[
 // 用于权限设定（包含所有机能设定）
 export const ALL_PAGE_LIST = [
     {
-        "link": "/",
-        "label": "综合页面",
-        "icon": "mdi-cards-variant",
-        "children": [],
-        "usable": false
-    },
-    {
         "link": "/storage_panel",
         "label": "主控面板",
         "icon": "mdi-store",
