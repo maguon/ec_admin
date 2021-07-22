@@ -16,6 +16,8 @@ import AppSetting from "./main/AppSetting";
 import CategoryManager from "./main/CategoryManager";
 import BrandManager from "./main/BrandManager";
 import Storage from "./main/Storage";
+import Order from "./main/Order";
+import OrderDetail from "./main/OrderDetail";
 import ProductManager from "./main/ProductManager";
 import ProductManagerDetail from "./main/ProductManagerDetail";
 import PurchasePay from "./main/PurchasePay";
@@ -60,6 +62,8 @@ export {
     CategoryManager,
     BrandManager,
     Storage,
+    Order,
+    OrderDetail,
     ProductManager,
     ProductManagerDetail,
     PurchasePay,

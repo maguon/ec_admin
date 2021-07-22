@@ -8,6 +8,8 @@ import {
     CategoryManager,
     BrandManager,
     Storage,
+    Order,
+    OrderDetail,
     StorageProduct,
     StorageInOut,
     StorageCheck,
@@ -49,8 +51,10 @@ export const routesWithHeader = [
     {path: "/purchase_panel", exact: true, component:PurchasePanel},
     {path: "/finance_panel", exact: true, component: FinancePanel},
 
-    /** 统计 */
-    {path: "/purchase_stat", exact: true, component: PurchaseStat},
+    /** 订单管理 */
+    // 订单信息
+    {path: "/order", exact: true, component: Order},
+    {path: "/order/:id", exact: true, component: OrderDetail},
 
     /** 采购管理 */
     //采购
@@ -92,6 +96,8 @@ export const routesWithHeader = [
     {path: "/client_agent", exact: true, component: ClientAgent},
     {path: "/client_agent/:id", exact: true, component: ClientAgentDetail},
 
+    /** 统计 */
+    {path: "/purchase_stat", exact: true, component: PurchaseStat},
     /** 数据字典 */
     {path: "/data_dictionary", exact: true, component: DataDictionary},
 

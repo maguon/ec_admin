@@ -265,15 +265,15 @@ export const ALL_PAGE_LIST = [
         "usable": false
     },
     {
-        "label": "统计",
-        "icon": "mdi-chart-line",
+        "label": "订单管理",
+        "icon": "mdi-newspaper",
         "children": [
             {
-                "link": "/purchase_stat",
-                "name": "采购统计",
+                "link": "/order",
+                "name": "订单信息",
                 "icon": "mdi-chevron-right",
                 "usable": false
-            }
+            },
         ]
     },
     {
@@ -382,6 +382,18 @@ export const ALL_PAGE_LIST = [
                 "icon": "mdi-chevron-right",
                 "usable": false
             },
+        ]
+    },
+    {
+        "label": "统计",
+        "icon": "mdi-chart-line",
+        "children": [
+            {
+                "link": "/purchase_stat",
+                "name": "采购统计",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            }
         ]
     },
     {

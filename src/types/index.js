@@ -6,6 +6,8 @@ import * as StoragePanelActionType from './main/StoragePanelActionType'
 import * as CategoryManagerActionType from './main/CategoryManagerActionType'
 import * as BrandManagerActionType from './main/BrandManagerActionType'
 import * as StorageActionType from './main/StorageActionType'
+import * as OrderActionType from './main/OrderActionType'
+import * as OrderDetailActionType from './main/OrderDetailActionType'
 import * as ProductManagerActionType from './main/ProductManagerActionType'
 import * as StorageProductActionType from './main/StorageProductActionType'
 import * as StorageInOutActionType from './main/StorageInOutActionType'
@@ -19,8 +21,8 @@ import * as AdminUserSettingActionType from "./main/AdminUserSettingActionType";
 import * as AppSettingActionType from "./main/AppSettingActionType";
 import * as SupplierActionType from './main/SupplierActionType';
 import * as SupplierDetailActionType from './main/SupplierDetailActionType';
-import * as PurchaseActionType from  './main/PurchaseActionType';
-import * as PurchaseDetailActionType from  './main/PurchaseDetailActionType';
+import * as PurchaseActionType from './main/PurchaseActionType';
+import * as PurchaseDetailActionType from './main/PurchaseDetailActionType';
 import * as DataDictionaryActionType from './main/DataDictionaryActionType';
 import * as PurchaseRefundActionType from './main/PurchaseRefundActionType';
 import * as ServiceSettingActionType from './main/ServiceSettingActionType';
@@ -33,6 +35,7 @@ import * as CreateClientAgentModelActionType from './main/model/CreateClientAgen
 import * as ClientAgentDetailActionType from './main/ClientAgentDetailActionType';
 import * as ClientInformationActionType from './main/ClientInformationActionType';
 import * as ClientInformationDetailActionType from './main/ClientInformationDetailActionType';
+
 export {
     AppActionType,
     CommonActionType,
@@ -42,6 +45,8 @@ export {
     CategoryManagerActionType,
     BrandManagerActionType,
     StorageActionType,
+    OrderActionType,
+    OrderDetailActionType,
     ProductManagerActionType,
     StorageProductActionType,
     StorageInOutActionType,
