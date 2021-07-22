@@ -33,7 +33,8 @@ import ClientAgentReducer from './main/ClientAgentReducer';
 import PurchaseStatReducer from './main/PurchaseStatReducer';
 import CreateClientAgentModelReducer from './main/model/CreateClientAgentModelReducer';
 import ClientAgentDetailReducer from  './main/ClientAgentDetailReducer';
-
+import ClientInformationReducer from './main/ClientInformationReducer';
+import ClientInformationDetailReducer from './main/ClientInformationDetailReducer';
 export default combineReducers({
     form: reduxFormReducer,
     AppReducer,
@@ -68,5 +69,7 @@ export default combineReducers({
     ClientAgentReducer,
     PurchaseStatReducer,
     CreateClientAgentModelReducer,
-    ClientAgentDetailReducer
+    ClientAgentDetailReducer,
+    ClientInformationReducer,
+    ClientInformationDetailReducer
 });

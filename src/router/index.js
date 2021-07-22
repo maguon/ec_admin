@@ -30,7 +30,9 @@ import {
     PurchasePanel,
     ClientAgent,
     ClientAgentDetail,
-    PurchaseStat
+    ClientInformation,
+    ClientInformationDetail,
+    PurchaseStat,
 } from "../components";
 
 export const routes = [
@@ -84,6 +86,12 @@ export const routesWithHeader = [
     // 采购退款
     {path: "/purchase_refund_pay", exact: true, component: PurchaseRefundPay},
 
+    /** 客户服务 */
+    {path: "/client_information", exact: true, component: ClientInformation},
+    {path: "/client_information/:id", exact: true, component: ClientInformationDetail},
+    {path: "/client_agent", exact: true, component: ClientAgent},
+    {path: "/client_agent/:id", exact: true, component: ClientAgentDetail},
+
     /** 数据字典 */
     {path: "/data_dictionary", exact: true, component: DataDictionary},
 
@@ -96,7 +104,5 @@ export const routesWithHeader = [
     {path: "/authority_setting", exact: true, component: AuthoritySetting},
     //服务项目设置
     {path: "/service_setting", exact: true, component: ServiceSetting},
-    {path: "/client_agent", exact: true, component: ClientAgent},
-    {path: "/client_agent/:id", exact: true, component: ClientAgentDetail},
     {path: "/upload", exact: true, component: UpLoadFile},
 ];

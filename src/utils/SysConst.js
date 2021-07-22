@@ -371,6 +371,12 @@ export const ALL_PAGE_LIST = [
         "icon": "mdi-account-multiple",
         "children": [
             {
+                "link": "/client_information",
+                "name": "客户信息",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
+            {
                 "link": "/client_agent",
                 "name": "客户集群",
                 "icon": "mdi-chevron-right",

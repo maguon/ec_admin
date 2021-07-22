@@ -11,6 +11,7 @@ const initialState = {
     storageAreaList: [],
     supplierList: [],
     supplierInfo: {},
+    clientList:[],
 };
 
 export default handleActions({
@@ -68,4 +69,11 @@ export default handleActions({
             supplierInfo: action.payload
         }
     },
+    [CommonActionType.setClientList]: (state, action) => {
+        return {
+            ...state,
+            clientList: action.payload
+        }
+    },
+
 }, initialState);

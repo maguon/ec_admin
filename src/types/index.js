@@ -31,8 +31,8 @@ import * as ClientAgentActionType from './main/ClientAgentActionType';
 import * as PurchaseStatActionType from './main/PurchaseStatActionType';
 import * as CreateClientAgentModelActionType from './main/model/CreateClientAgentModelActionType';
 import * as ClientAgentDetailActionType from './main/ClientAgentDetailActionType';
-
-
+import * as ClientInformationActionType from './main/ClientInformationActionType';
+import * as ClientInformationDetailActionType from './main/ClientInformationDetailActionType';
 export {
     AppActionType,
     CommonActionType,
@@ -66,5 +66,7 @@ export {
     ClientAgentActionType,
     PurchaseStatActionType,
     CreateClientAgentModelActionType,
-    ClientAgentDetailActionType
+    ClientAgentDetailActionType,
+    ClientInformationActionType,
+    ClientInformationDetailActionType
 }

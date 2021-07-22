@@ -39,6 +39,8 @@ import NestedList from "./utils/NestedList";
 import PurchaseStat from './main/PurchaseStat';
 import CreateClientAgentModel from './main/model/CreateClientAgentModel';
 import ClientAgentDetail from './main/ClientAgentDetail';
+import ClientInformation from './main/ClientInformation';
+import ClientInformationDetail from './main/ClientInformationDetail'
 export {
     Header,
     Footer,
@@ -79,6 +81,8 @@ export {
     ClientAgent,
     CreateClientAgentModel,
     ClientAgentDetail,
+    ClientInformation,
     NestedList,
     PurchaseStat,
+    ClientInformationDetail
 }
