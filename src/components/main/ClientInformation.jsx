@@ -91,6 +91,15 @@ function ClientInformation (props) {
     const modalOpenModal=()=>{
         getClientAgent();
         setModalOpenFlag(true);
+        setClientAgentId(null);
+        setRemark('');
+        setClientSerial('');
+        setClientSerialDetail('');
+        setSourceType('-1');
+        setTel('');
+        setName('');
+        setAddress('');
+        setReferUser(null);
     }
     // 关闭模态
     const modalClose = () => {
