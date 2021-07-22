@@ -23,15 +23,21 @@ const useStyles = makeStyles((theme) => ({
     // 菜单部分 有滚动条
     menuList: {
         width: drawerWidth - 1,
-        maxHeight: `calc(100% - 240px)`,
+        maxHeight: `calc(100% - 170px)`,
         backgroundColor: theme.palette.background.paper,
         position: 'relative',
         overflow: 'auto',
     },
 }));
 
+// 修改 MuiDrawer 组件 的【.MuiDrawer-paper】样式
+const useStyle = makeStyles({
+    paper: {overflowY: 'visible'}
+}, {name: 'MuiDrawer'});
+
 function Navigation(props) {
     const classes = useStyles();
+    useStyle();
     const {appReducer, handleDrawerClose, drawerOpen} = props;
 
     return (
