@@ -15,10 +15,28 @@ const initialState = {
     },
     // 检索条件
     queryParams: {
-        dateIdStart: '',
-        dateIdEnd: '',
-        checkStatus: null,
-        status: null
+        // 订单编号
+        orderId: '',
+        // 订单状态
+        status: null,
+        // 订单类型
+        orderType: null,
+        // 接单人（用户信息）
+        reUser: null,
+        // 客户集群
+        clientAgent: null,
+        // 客户
+        client: null,
+        // 客户电话
+        clientTel: '',
+        // 车牌
+        clientSerial: '',
+        // 创建日期
+        dateStart: '',
+        dateEnd: '',
+        // 完成日期
+        finDateStart: '',
+        finDateEnd: ''
     }
 };
 

@@ -10,3 +10,6 @@ export const setStorageAreaList = createAction('SET_COMMON_STORAGE_AREA_LIST');
 export const setSupplierList = createAction('SET_COMMON_SUPPLIER_LIST');
 export const setSupplierInfo = createAction('SET_COMMON_SUPPLIER_INFO');
 export const setClientList =createAction('SET_CLIENT_LIST');
+export const setClientAgentList =createAction('SET_CLIENT_AGENT_LIST');
+export const setSaleServiceList =createAction('SET_SALE_SERVICE_LIST');
+export const setUserList =createAction('SET_USER_LIST');

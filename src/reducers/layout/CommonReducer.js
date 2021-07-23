@@ -12,6 +12,9 @@ const initialState = {
     supplierList: [],
     supplierInfo: {},
     clientList:[],
+    clientAgentList:[],
+    saleServiceList:[],
+    userList:[],
 };
 
 export default handleActions({
@@ -75,5 +78,22 @@ export default handleActions({
             clientList: action.payload
         }
     },
-
+    [CommonActionType.setClientAgentList]: (state, action) => {
+        return {
+            ...state,
+            clientAgentList: action.payload
+        }
+    },
+    [CommonActionType.setSaleServiceList]: (state, action) => {
+        return {
+            ...state,
+            saleServiceList: action.payload
+        }
+    },
+    [CommonActionType.setUserList]: (state, action) => {
+        return {
+            ...state,
+            userList: action.payload
+        }
+    },
 }, initialState);
