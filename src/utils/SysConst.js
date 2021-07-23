@@ -238,8 +238,31 @@ export const CLIENT_TYPE= [
 export const INVOICE_TYPE=[
     {value: 1, label: "企业"},
     {value: 2, label: "个人"}
-]
+];
 
+export const SERVICE_ITEM_STATUS = {
+    unprocessed: 1 ,//未处理
+    processing :3 ,//处理中，以派工
+    processed :5 ,//施工完，未验收
+    checked:7 ,  //验收完成
+};
+
+export const PROD_ITEM_STATUS = {
+    normal : 1 ,//未领取
+    complete :3 ,//已领取
+};
+
+export const ORDER_STATUS = {
+    normal: 1 ,//未处理
+    processing :3 ,//处理中
+    checking : 5 ,//处理完，未结算
+    complete :7 //处理完成
+};
+
+export const ORDER_PAYMENT_STATUS = {
+    normal :1 ,//未付款
+    complete :7 //付款完成
+};
 
 // 用于权限设定（包含所有机能设定）
 export const ALL_PAGE_LIST = [
