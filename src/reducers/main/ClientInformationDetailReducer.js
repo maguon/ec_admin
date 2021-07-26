@@ -14,7 +14,10 @@ const initialState = {
         source_type:0,
     },
     referUserInfo:[],
-    clientAgentInfo:[]
+    clientAgentInfo:[],
+    orderInfo:[],
+    orderItemProdInfo:[],
+    orderItemServiceInfo:[]
 };
 
 export default handleActions({
@@ -48,5 +51,22 @@ export default handleActions({
             clientAgentInfo: action.payload
         }
     },
-
+    [ClientInformationDetailActionType.getOrderList]: (state, action) => {
+        return {
+            ...state,
+            orderInfo: action.payload
+        }
+    },
+    [ClientInformationDetailActionType.getOrderItemProdList]: (state, action) => {
+        return {
+            ...state,
+            orderItemProdInfo: action.payload
+        }
+    },
+    [ClientInformationDetailActionType.getOrderItemServiceList]: (state, action) => {
+        return {
+            ...state,
+            orderItemServiceInfo: action.payload
+        }
+    },
 }, initialState)

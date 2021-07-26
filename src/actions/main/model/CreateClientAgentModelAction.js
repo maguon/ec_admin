@@ -6,7 +6,7 @@ const httpUtil = require('../../../utils/HttpUtils');
 const localUtil = require('../../../utils/LocalUtils');
 const sysConst = require('../../../utils/SysConst');
 
-// 新增客户中心画面 初期
+// 新增客户集群画面 初期
 export const openCreateClientModel = () => async (dispatch) => {
     dispatch({type: CreateClientAgentModelActionType.setFlag, payload: true});
     dispatch({type: CreateClientAgentModelActionType.setRemark, payload: ''});

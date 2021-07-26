@@ -38,7 +38,7 @@ function CreateClientModel (props) {
     }
     return(
         <SimpleModal
-            title= "添加客户中心信息"
+            title= "添加客户集群信息"
             open={createClientModelReducer.flag}
             onClose={modalClose}
             showFooter={true}

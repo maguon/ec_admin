@@ -74,7 +74,7 @@ function ClientAgent (props) {
     return(
         <div className={classes.root}>
             {/* 标题部分 */}
-            <Typography gutterBottom className={classes.pageTitle}>客户中心</Typography>
+            <Typography gutterBottom className={classes.pageTitle}>客户集群</Typography>
             <Divider light className={classes.pageDivider}/>
             {/*查询条件*/}
             <Grid container  spacing={1}>

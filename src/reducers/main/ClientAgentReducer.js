@@ -15,7 +15,7 @@ const initialState = {
     size: 11,
     // 检索结果数量
     dataSize: 0,
-    // 客户中心列表
+    // 客户集群列表
     clientArray: [],
 };
 export default handleActions({

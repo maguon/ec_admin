@@ -172,7 +172,7 @@ function ClientAgentDetail (props){
                         <i className="mdi mdi-arrow-left-bold"></i>
                     </IconButton>
                 </Link>
-                客户中心 - {clientAgentDetailReducer.clientAgentInfo.name}({clientAgentDetailReducer.clientAgentInfo.id})
+                客户集群 - {clientAgentDetailReducer.clientAgentInfo.name}({clientAgentDetailReducer.clientAgentInfo.id})
             </Typography>
             <div className={classes.pageDivider}></div>
             {/*选项卡*/}
@@ -184,7 +184,7 @@ function ClientAgentDetail (props){
                               indicatorColor="primary"
                               textColor="primary"
                               variant="fullWidth">
-                            <Tab label="客户中心" value="1" />
+                            <Tab label="客户集群" value="1" />
                             <Tab label="发票"   value="2" />
                         </Tabs>
                     </AppBar>

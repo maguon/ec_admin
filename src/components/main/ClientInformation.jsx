@@ -48,7 +48,7 @@ function ClientInformation (props) {
     const [remark, setRemark] = useState('');
     const [clientSerial, setClientSerial] = useState('');
     const [clientSerialDetail, setClientSerialDetail] = useState('');
-    const [sourceType, setSourceType] = useState('-1');
+    const [sourceType, setSourceType] = useState('1');
     const [tel, setTel] = useState('');
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
@@ -95,7 +95,7 @@ function ClientInformation (props) {
         setRemark('');
         setClientSerial('');
         setClientSerialDetail('');
-        setSourceType('-1');
+        setSourceType('1');
         setTel('');
         setName('');
         setAddress('');

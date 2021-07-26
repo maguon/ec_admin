@@ -119,7 +119,7 @@ export const addClientInformation = (params) => async (dispatch) => {
             "modelName": "",
             "clientAgentId": params.clientAgentId==null?'':params.clientAgentId.id,
             "referUser":params.referUser==null?'':params.referUser.id,
-            "sourceType": params.sourceType=='-1'?'':params.sourceType,
+            "sourceType": params.sourceType,
         };
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/client';
