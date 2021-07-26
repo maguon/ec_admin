@@ -180,6 +180,7 @@ function Purchase (props){
         const errorCount = validate(purchaseItem.length);
         if(errorCount==0){
             setModalOpenFlag(false);
+            setPurchaseItem([{product:-1,unitCost:0,unitNumber:0,purchaseCount:0,remark:""}]);
             setValidation({validateItem:[{product:'',unitCost:'',unitNumber:''}]});
             props.addPurchaseInfo(supplier,purchaseItem,transferCostType,transferCost,transferRemark);
         }
