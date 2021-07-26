@@ -116,88 +116,129 @@ function ServiceSetting (props){
     useEffect(()=>{
         if(servicePriceType==1){
             setServicePriceFlag(false);
-            setTotalPrice(fixedPrice)
+            setTotalPrice(fixedPrice);
+            setUnitPrice(0);
+            setServicePriceCount(0);
         }else {
             setServicePriceFlag(true)
             setTotalPrice(unitPrice*servicePriceCount);
+            setFixedPrice(0);
         }
         if(serviceCostType==1){
             setServiceCostFlag(false)
             setTotalCost(fixedCost)
+            setUnitCost(0);
+            setServiceCostCount(0);
         }else {
             setServiceCostFlag(true)
             setTotalCost(unitCost*serviceCostCount);
+            setFixedCost(0);
         }
         if(salePerfType==1){
             setSalePerfTypeFlag(1)
+            setSalePerfFixed(0);
+            setSalePerfRatio(0);
         }else if(salePerfType==2){
-            setSalePerfTypeFlag(2)
+            setSalePerfTypeFlag(2);
+            setSalePerfRatio(0);
         }else if(salePerfType==3){
             setSalePerfTypeFlag(3)
+            setSalePerfFixed(0);
         }else {
             setSalePerfTypeFlag(4)
+            setSalePerfFixed(0);
         }
         if(deployPerfType==1){
             setDeployPerfTypeFlag(1)
+            setDeployPerfFixed(0)
+            setDeployPerfRatio(0)
         }else if(deployPerfType==2){
             setDeployPerfTypeFlag(2)
+            setDeployPerfRatio(0)
         }else if(deployPerfType==3){
             setDeployPerfTypeFlag(3)
+            setDeployPerfFixed(0)
         }else {
             setDeployPerfTypeFlag(4)
+            setDeployPerfFixed(0)
         }
         if(checkPerfType==1){
             setCheckPerfTypeFlag(1)
+            setCheckPerfFixed(0)
+            setCheckPerfRatio(0)
         }else if(checkPerfType==2){
             setCheckPerfTypeFlag(2)
+            setCheckPerfRatio(0)
         }else if(checkPerfType==3){
             setCheckPerfTypeFlag(3)
+            setCheckPerfFixed(0)
         }else {
             setCheckPerfTypeFlag(4)
+            setCheckPerfFixed(0)
         }
     },[servicePriceType,serviceCostType,salePerfType,checkPerfType,deployPerfType,fixedPrice,unitPrice,servicePriceCount,fixedCost,unitCost,serviceCostCount])
     useEffect(()=>{
         if(modifyServicePriceType==1){
             setModifyServicePriceFlag(false);
             setModifyTotalPrice(modifyFixedPrice);
-
+            setModifyUnitPrice(0);
+            setModifyServicePriceCount(0);
         }else {
             setModifyServicePriceFlag(true)
             setModifyTotalPrice(modifyUnitPrice*modifyServicePriceCount);
+            setModifyFixedPrice(0);
         }
         if(modifyServiceCostType==1){
             setModifyServiceCostFlag(false)
             setModifyTotalCost(modifyFixedCost)
+            setModifyUnitCost(0);
+            setModifyServiceCostCount(0);
         }else {
             setModifyServiceCostFlag(true)
             setModifyTotalCost(modifyUnitCost*modifyServiceCostCount);
+            setModifyFixedCost(0);
         }
         if(modifySalePerfType==1){
             setModifySalePerfTypeFlag(1)
+            setModifySalePerfFixed(0);
+            setModifySalePerfRatio(0);
         }else if(modifySalePerfType==2){
             setModifySalePerfTypeFlag(2)
+            setModifySalePerfRatio(0)
         }else if(modifySalePerfType==3){
             setModifySalePerfTypeFlag(3)
+            setModifySalePerfFixed(0);
         }else {
             setModifySalePerfTypeFlag(4)
+            setModifySalePerfFixed(0);
         }
         if(modifyDeployPerfType==1){
             setModifyDeployPerfTypeFlag(1)
+            setModifyDeployPerfFixed(0);
+            setModifyDeployPerfRatio(0);
         }else if(modifyDeployPerfType==2){
             setModifyDeployPerfTypeFlag(2)
+            setModifyDeployPerfRatio(0);
         }else if(modifyDeployPerfType==3){
             setModifyDeployPerfTypeFlag(3)
+            setModifyDeployPerfFixed(0);
         }else {
             setModifyDeployPerfTypeFlag(4)
+            setModifyDeployPerfFixed(0);
         }
         if(modifyCheckPerfType==1){
             setModifyCheckPerfTypeFlag(1)
+            setModifyCheckPerfFixed(0);
+            setModifyCheckPerfRatio(0);
         }else if(modifyCheckPerfType==2){
             setModifyCheckPerfTypeFlag(2)
+            setModifyCheckPerfRatio(0);
         }else if(modifyCheckPerfType==3){
             setModifyCheckPerfTypeFlag(3)
+            setModifyCheckPerfFixed(0);
         }else {
             setModifyCheckPerfTypeFlag(4)
+            setModifyCheckPerfFixed(0);
         }
     },[modifyServicePriceType,modifyServiceCostType,modifySalePerfType,modifyDeployPerfType,modifyCheckPerfType,modifyFixedCost,modifyUnitCost,modifyServiceCostCount,modifyUnitPrice,modifyServicePriceCount,modifyFixedPrice])
     const handleChange = (event, newValue) => {
