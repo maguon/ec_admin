@@ -67,8 +67,9 @@ function Purchase (props){
     const [transferCostType, setTransferCostType] = useState("");
     const [transferRemark, setTransferRemark] = useState("");
     const [purchaseCountTotal, setPurchaseCountTotal] = useState(0);
-    const [validation,setValidation] = useState({});
+    const [validationSupplier,setValidationSupplier] = useState({});
     const [purchaseItem,setPurchaseItem]  = useState([{product:-1,unitCost:0,unitNumber:0,purchaseCount:0,remark:""}])
+    const [validation,setValidation] = useState({validateItem:[{product:'',unitCost:'',unitNumber:''}]});
     useEffect(()=>{
         getSupplierList();
         getProductList();
@@ -130,12 +131,14 @@ function Purchase (props){
     }
     //初始添加模态框值
     const modalOpenPurchase =() =>{
+        setValidationSupplier({});
         setModalOpenFlag(true);
         setSupplier('-1');
         setTransferCostType('1');
         setPurchaseCountTotal(0);
         setTransferRemark('');
         setPurchaseItem([{product:-1,unitCost:0,unitNumber:0,purchaseCount:0,remark:""}]);
+        setValidation({validateItem:[{product:'',unitCost:'',unitNumber:''}]});
     }
     // 关闭模态
     const modalClose = () => {
@@ -143,31 +146,42 @@ function Purchase (props){
     };
     //验证()
     const validate = (index)=>{
+        let errors = 0;
         const validateObj ={};
         if (supplier=='-1'||supplier=='') {
             validateObj.supplier ='请输入供应商';
+            errors++;
         }
         for(let i=0;i<index;i++){
+            validation.validateItem[i].product='';
+            validation.validateItem[i].unitCost='';
+            validation.validateItem[i].unitNumber='';
             if(purchaseItem[i].product=='-1'||purchaseItem[i].product==''){
-                validateObj.product='请输入供应商';
+                validation.validateItem[i].product='请输入商品';
+                errors++;
             }
             if(!purchaseItem[i].unitCost){
-                validateObj.unitCost='请输入商品单价';
+                validation.validateItem[i].unitCost='请输入商品单价';
+                errors++;
             }
             if (!purchaseItem[i].unitNumber) {
-               validateObj.unitNumber ='请输入商品数量';
+                validation.validateItem[i].unitNumber ='请输入商品数量';
+                errors++;
+
             }
         }
 
-        setValidation(validateObj);
-        return Object.keys(validateObj).length
+        setValidationSupplier(validateObj);
+        setValidation({...validation});
+        return errors
     }
     //添加采购
     const addPurchase= ()=>{
         const errorCount = validate(purchaseItem.length);
         if(errorCount==0){
-            props.addPurchaseInfo(supplier,purchaseItem,transferCostType,transferCost,transferRemark);
             setModalOpenFlag(false);
+            setValidation({validateItem:[{product:'',unitCost:'',unitNumber:''}]});
+            props.addPurchaseInfo(supplier,purchaseItem,transferCostType,transferCost,transferRemark);
         }
     }
     const addCategoryItem = () =>{
@@ -175,6 +189,7 @@ function Purchase (props){
         const errorCount = validate(tmpArray.length-1);
         if(errorCount==0){
             setPurchaseItem(tmpArray);
+            validation.validateItem.push({product:'',unitCost:'',unitNumber:''});
         }
     }
     const deleteItem =(index,item) =>{
@@ -422,8 +437,8 @@ function Purchase (props){
                                        native: true,
                                    }}
                                    variant="outlined"
-                                   error={validation.supplier&&validation.supplier!=''}
-                                   helperText={validation.supplier}
+                                   error={validationSupplier.supplier&&validationSupplier.supplier!=''}
+                                   helperText={validationSupplier.supplier}
                         >
                             <option key={-1} value={-1}>请选择</option>
                             {purchaseReducer.supplierArray.map((option) => (
@@ -457,7 +472,7 @@ function Purchase (props){
                             step="0.01"
                             fullWidth={true}
                             disabled={transferCostTypeFlag}
-                            text='number'
+                            type='number'
                             margin="dense"
                             variant="outlined"
                             label="运费"
@@ -469,7 +484,7 @@ function Purchase (props){
                         <TextField
                             disabled={true}
                             fullWidth={true}
-                            text='number'
+                            type='number'
                             margin="dense"
                             variant="outlined"
                             label="总价"
@@ -496,8 +511,8 @@ function Purchase (props){
                                            native: true,
                                        }}
                                        variant="outlined"
-                                       error={validation.product&&validation.product!=''}
-                                       helperText={validation.product}
+                                       error={validation.validateItem[index].product!=''}
+                                       helperText={validation.validateItem[index].product}
                             >
                                 <option key={-1} value={-1}>请选择</option>
                                 {purchaseReducer.productArray.map((option) => (
@@ -510,33 +525,33 @@ function Purchase (props){
                         <Grid item xs>
                             <TextField
                                 fullWidth={true}
-                                text='number'
+                                type='number'
                                 margin="dense"
                                 variant="outlined"
                                 label="商品单价"
                                 value={item.unitCost}
                                 onChange={(e)=>setPurchaseItemParams(index,'unitCost',e.target.value)}
-                                error={validation.unitCost&&validation.unitCost!=''}
-                                helperText={validation.unitCost}
+                                error={validation.validateItem[index].unitCost!=''}
+                                helperText={validation.validateItem[index].unitCost}
                             />
                         </Grid>
                         <Grid item xs>
                             <TextField
                                 fullWidth={true}
-                                text='number'
+                                type='number'
                                 margin="dense"
                                 variant="outlined"
                                 label="商品数量"
                                 value={item.unitNumber}
                                 onChange={(e)=>setPurchaseItemParams(index,'unitNumber',e.target.value)}
-                                error={validation.unitNumber&&validation.unitNumber!=''}
-                                helperText={validation.unitNumber}
+                                error={validation.validateItem[index].unitNumber!=''}
+                                helperText={validation.validateItem[index].unitNumber}
                             />
                         </Grid>
                         <Grid item xs>
                             <TextField
                                 disabled={true}
-                                text='number'
+                                type='number'
                                 fullWidth={true}
                                 margin="dense"
                                 variant="outlined"
