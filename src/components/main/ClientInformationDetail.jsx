@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {connect,useDispatch} from 'react-redux';
 import {Link, useParams} from "react-router-dom";
-import {Button, Grid, Typography, TextField, IconButton, AppBar, Tab, Tabs,Accordion,AccordionSummary,AccordionDetails} from "@material-ui/core";
+import {Button, Grid, Typography, TextField, IconButton, AppBar, Tab, Tabs,Accordion,AccordionSummary} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import TabContext from '@material-ui/lab/TabContext';
 import TabPanel from '@material-ui/lab/TabPanel';
@@ -302,48 +302,48 @@ function ClientInformationDetail (props){
                                 <div style={{padding:'30px'}}>
                                     <Grid container  spacing={3}>
                                         <Grid item xs align='left'>接单人:{row.re_user_name}</Grid>
-                                        <Grid item xs align='right'>客户备注:{row.client_remark}</Grid>
-                                        <Grid item xs align='right'>备注:{row.op_remark}</Grid>
+                                        <Grid item xs align='right'>时间:{row.date_id}</Grid>
                                     </Grid>
-                                    <h4>产品:</h4>
-                                    {clientInformationDetailReducer.orderItemProdInfo.map((item,index) => (
-                                        item.order_id==row.id?
-                                            <Grid container  spacing={3}>
-                                                <Grid item xs align='left'>名称:{item.prod_name}</Grid>
-                                                <Grid item xs align='left'>单价:{item.unit_price}</Grid>
-                                                <Grid item xs align='left'>数量:{item.prod_count}</Grid>
-                                                <Grid item xs align='left'>折扣:{item.discount_prod_price}</Grid>
-                                                <Grid item xs align='left'>实际价格:{item.actual_prod_price}</Grid>
-                                                <Grid item xs align='left'>时间:{item.date_id}</Grid>
-                                                <Grid item xs align='left'>销售:{item.sale_user_name}</Grid>
-                                            </Grid>
-                                            :''
-                                    ))}
-
-
+                                    <Grid container  spacing={3}>
+                                        <Grid item xs align='left'>客户备注:{row.client_remark}</Grid>
+                                    </Grid>
+                                    <Grid container  spacing={3}>
+                                        <Grid item xs align='left'>备注:{row.op_remark}</Grid>
+                                    </Grid>
                                     <h4>服务:</h4>
                                     {clientInformationDetailReducer.orderItemServiceInfo.map((service,index) => (
                                         service.order_id==row.id?
                                             <Grid>
                                                 <Grid container  spacing={3}>
-                                                    <Grid item xs align='left'>名称:{service.sale_service_name}</Grid>
-                                                    <Grid item xs align='left'>固定价格:{service.fixed_price}</Grid>
-                                                    <Grid item xs align='left'>单价:{service.unit_price}</Grid>
-                                                    <Grid item xs align='left'>数量:{service.service_count}</Grid>
-                                                    <Grid item xs align='left'>总价:{service.service_price}</Grid>
-                                                    <Grid item xs align='left'>折扣:{service.discount_service_price}</Grid>
-                                                    <Grid item xs align='left'>实际价格:{service.actual_service_price}</Grid>
+                                                    <Grid item xs={2} align='left'>名称:{service.sale_service_name}</Grid>
+                                                    {service.fixed_price=='0.00'?<div>
+                                                            <Grid item xs={2} align='left'>单价:{service.unit_price}</Grid>
+                                                            <Grid item xs={2} align='left'>数量:{service.service_count}</Grid>
+                                                        </div>
+                                                        :<Grid item xs={2} align='left'>固定价格:{service.fixed_price}</Grid>}
+                                                    <Grid item xs={2} align='left'>总价:{service.service_price}</Grid>
+                                                    <Grid item xs={2} align='left'>折扣:{service.discount_service_price}</Grid>
+                                                    <Grid item xs={2} align='left'>实际价格:{service.actual_service_price}</Grid>
                                                 </Grid>
 
                                                 <Grid container  spacing={3}>
-                                                    <Grid item xs align='left'>销售:{service.sale_user_name}</Grid>
-                                                    <Grid item xs align='left'>销售提成:{service.sale_perf}</Grid>
-                                                    <Grid item xs align='left'>施工:{service.deploy_user_name}</Grid>
-                                                    <Grid item xs align='left'>施工提成:{service.deploy_perf}</Grid>
-                                                    <Grid item xs align='left'>验收:{service.check_user_name}</Grid>
-                                                    <Grid item xs align='left'>验收提成:{service.check_perf}</Grid>
-                                                    <Grid item xs align='left'>时间:{service.date_id}/{service.fin_date_id}</Grid>
+                                                    <Grid item xs={2} align='left'>销售:{service.sale_user_name}</Grid>
+                                                    <Grid item xs={2} align='left'>施工:{service.deploy_user_name}</Grid>
+                                                    <Grid item xs={2} align='left'>验收:{service.check_user_name}</Grid>
                                                 </Grid>
+                                            </Grid>
+                                            :''
+                                    ))}
+                                    <h4>商品:</h4>
+                                    {clientInformationDetailReducer.orderItemProdInfo.map((item,index) => (
+                                        item.order_id==row.id?
+                                            <Grid container  spacing={3}>
+                                                <Grid item xs={2} align='left'>名称:{item.prod_name}</Grid>
+                                                <Grid item xs={2} align='left'>单价:{item.unit_price}</Grid>
+                                                <Grid item xs={2} align='left'>数量:{item.prod_count}</Grid>
+                                                <Grid item xs={2} align='left'>折扣:{item.discount_prod_price}</Grid>
+                                                <Grid item xs={2} align='left'>实际价格:{item.actual_prod_price}</Grid>
+                                                <Grid item xs={2} align='left'>销售:{item.sale_user_name}</Grid>
                                             </Grid>
                                             :''
                                     ))}
