@@ -64,11 +64,13 @@ function ClientInformation (props) {
                 dateIdStart :'',
                 dateIdEnd :'',
                 sourceType :null,
-                status:null
+                status:null,
+                clientAgentId:null
             }
             dispatch(ClientInformationActionType.setClientInformationQueryObj(queryClientObj));
         }
         getUserArray();
+        getClientAgent();
         getClientInformationList(clientInformationReducer.start);
     },[]);
     //验证()
@@ -89,7 +91,6 @@ function ClientInformation (props) {
         getClientInformationList(0);
     }
     const modalOpenModal=()=>{
-        getClientAgent();
         setModalOpenFlag(true);
         setClientAgentId(null);
         setRemark('');
@@ -128,18 +129,6 @@ function ClientInformation (props) {
             {/*查询条件*/}
             <Grid container  spacing={1}>
                 <Grid container item xs={10} spacing={1}>
-                    {/*推荐人 referUser*/}
-                    <Grid item xs>
-                        <Autocomplete fullWidth
-                                      options={clientInformationReducer.referUserArray}
-                                      getOptionLabel={(option) => option.real_name}
-                                      value={clientInformationReducer.queryClientObj.referUser}
-                                      onChange={(e,value) => {
-                                          dispatch(ClientInformationActionType.setClientInformationQueryObjs({name:'referUser',value:value}));
-                                      }}
-                                      renderInput={(params) => <TextField {...params} label="推荐人" margin="dense" variant="outlined"/>}
-                                      />
-                    </Grid>
                     {/*车牌号*/}
                     <Grid item xs>
                         <TextField fullWidth={true} margin="dense" variant="outlined" label="车牌号"
@@ -158,18 +147,6 @@ function ClientInformation (props) {
                                    }}
                         />
                     </Grid>
-                    {/*客户来源*/}
-                    <Grid item  xs>
-                        <Autocomplete fullWidth={true}
-                                      options={sysConst.SOURCE_TYPE}
-                                      getOptionLabel={(option) => option.label}
-                                      value={clientInformationReducer.queryClientObj.sourceType}
-                                      onChange={(e,value) => {
-                                          dispatch(ClientInformationActionType.setClientInformationQueryObjs({name: "sourceType", value: value}));
-                                      }}
-                                      renderInput={(params) => <TextField {...params} label="客户来源" margin="dense" variant="outlined"/>}
-                        />
-                    </Grid>
                     {/*电话*/}
                     <Grid item xs>
                         <TextField fullWidth={true} margin="dense" variant="outlined" label="电话号" type='number'
@@ -179,6 +156,45 @@ function ClientInformation (props) {
                                    }}
                         />
                     </Grid>
+                    {/*推荐人 referUser*/}
+                    <Grid item xs>
+                        <Autocomplete fullWidth
+                                      options={clientInformationReducer.referUserArray}
+                                      getOptionLabel={(option) => option.real_name}
+                                      value={clientInformationReducer.queryClientObj.referUser}
+                                      onChange={(e,value) => {
+                                          dispatch(ClientInformationActionType.setClientInformationQueryObjs({name:'referUser',value:value}));
+                                      }}
+                                      renderInput={(params) => <TextField {...params} label="推荐人" margin="dense" variant="outlined"/>}
+                                      />
+                    </Grid>
+
+                    {/*客户来源*/}
+                    <Grid item  xs>
+                        <Autocomplete fullWidth
+                                      options={sysConst.SOURCE_TYPE}
+                                      getOptionLabel={(option) => option.label}
+                                      value={clientInformationReducer.queryClientObj.sourceType}
+                                      onChange={(e,value) => {
+                                          dispatch(ClientInformationActionType.setClientInformationQueryObjs({name: "sourceType", value: value}));
+                                      }}
+                                      renderInput={(params) => <TextField {...params} label="客户来源" margin="dense" variant="outlined"/>}
+                        />
+                    </Grid>
+                    {/*客户集群*/}
+                    <Grid item  xs>
+                        <Autocomplete fullWidth
+                                      options={clientInformationReducer.clientAgentArray}
+                                      getOptionLabel={(option) => option.name}
+                                      value={clientInformationReducer.queryClientObj.clientAgentId}
+                                      onChange={(e,value) => {
+                                          dispatch(ClientInformationActionType.setClientInformationQueryObjs({name: "clientAgentId", value: value}));
+                                      }}
+                                      renderInput={(params) => <TextField {...params} label="客户集群" margin="dense" variant="outlined"/>}
+                        />
+                    </Grid>
+
+
 
                     {/*状态status*/}
                     <Grid item  xs>
@@ -236,10 +252,11 @@ function ClientInformation (props) {
                                 <StyledTableCell align="center">ID</StyledTableCell>
                                 <StyledTableCell align="center">车牌号</StyledTableCell>
                                 <StyledTableCell align="center">VIN</StyledTableCell>
+                                <StyledTableCell align="center">电话</StyledTableCell>
                                {/* <StyledTableCell align="center">类型名称</StyledTableCell>*/}
                                 <StyledTableCell align="center">客户来源</StyledTableCell>
+                                <StyledTableCell align="center">客户集群</StyledTableCell>
                                 <StyledTableCell align="center">用户</StyledTableCell>
-                                <StyledTableCell align="center">电话</StyledTableCell>
                                 <StyledTableCell align="center">地址</StyledTableCell>
                                 <StyledTableCell align="center">推荐人</StyledTableCell>
                                 <StyledTableCell align="center">创建时间</StyledTableCell>
@@ -252,10 +269,11 @@ function ClientInformation (props) {
                                     <TableCell align="center" >{row.id}</TableCell>
                                     <TableCell align="center" >{row.client_serial}</TableCell>
                                     <TableCell align="center" >{row.client_serial_detail}</TableCell>
+                                    <TableCell align="center" >{row.tel}</TableCell>
                                     {/*<TableCell align="center" >{row.model_name}</TableCell>*/}
                                     <TableCell align="center" >{commonUtil.getJsonValue(sysConst.SOURCE_TYPE,row.source_type)}</TableCell>
+                                    <TableCell align="center" >{row.client_agent_name}</TableCell>
                                     <TableCell align="center" >{row.name}</TableCell>
-                                    <TableCell align="center" >{row.tel}</TableCell>
                                     <TableCell align="center" >{row.address}</TableCell>
                                     <TableCell align="center" >{row.refer_real_name}</TableCell>
                                     <TableCell align="center" >{row.date_id}</TableCell>
@@ -273,7 +291,7 @@ function ClientInformation (props) {
                                     </TableCell>
                                 </TableRow>))}
                             {clientInformationReducer.clientInformationArray.length === 0 &&
-                            <TableRow style={{height:60}}><TableCell align="center" colSpan="10">暂无数据</TableCell></TableRow>
+                            <TableRow style={{height:60}}><TableCell align="center" colSpan="11">暂无数据</TableCell></TableRow>
                             }
                         </TableBody>
                     </Table>

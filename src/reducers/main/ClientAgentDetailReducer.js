@@ -14,6 +14,7 @@ const initialState = {
     },
     currentUserArray:[],
     invoiceArray:[],
+    clientArray:[],
 };
 
 export default handleActions({
@@ -45,4 +46,11 @@ export default handleActions({
             invoiceArray: action.payload
         }
     },
+    [ClientAgentDetailActionType.getClientInfo]: (state, action) => {
+        return {
+            ...state,
+            clientArray: action.payload
+        }
+    },
+
 }, initialState)

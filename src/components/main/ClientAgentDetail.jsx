@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 function ClientAgentDetail (props){
-    const {clientAgentDetailReducer,updateClientAgent,getClientAgentInfo,getClientAgentArray,getInvoiceList} = props;
+    const {clientAgentDetailReducer,updateClientAgent,getClientAgentInfo,getClientInfo,getClientAgentArray,getInvoiceList} = props;
     const dispatch = useDispatch();
     const {id} = useParams();
     const classes = useStyles();
@@ -81,6 +81,9 @@ function ClientAgentDetail (props){
             getClientAgentInfo(id);
         }
         if(newValue==2){
+            getClientInfo(id)
+        }
+        if(newValue==3){
             getInvoiceList(id)
         }
     };
@@ -185,7 +188,8 @@ function ClientAgentDetail (props){
                               textColor="primary"
                               variant="fullWidth">
                             <Tab label="客户集群" value="1" />
-                            <Tab label="发票"   value="2" />
+                            <Tab label="客户信息" value="2" />
+                            <Tab label="发票"   value="3" />
                         </Tabs>
                     </AppBar>
                     <TabPanel value='1'>
@@ -306,6 +310,46 @@ function ClientAgentDetail (props){
                         </Grid>
                     </TabPanel>
                     <TabPanel value='2'>
+                        <Grid container spacing={2}>
+                            <TableContainer component={Paper} style={{marginTop:40}}>
+                                <Table stickyHeader aria-label="sticky table" style={{minWidth: 650}}>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell align="center">ID</TableCell>
+                                            <TableCell align="center">车牌号</TableCell>
+                                            <TableCell align="center">VIN</TableCell>
+                                            <TableCell align="center">电话</TableCell>
+                                            <TableCell align="center">客户来源</TableCell>
+                                            <TableCell align="center">用户</TableCell>
+                                            <TableCell align="center">地址</TableCell>
+                                            <TableCell align="center">推荐人</TableCell>
+                                            <TableCell align="center">创建时间</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {clientAgentDetailReducer.clientArray.map((row) => (
+                                            <TableRow className={classes.tableRow} key={'table-row-' + row.id} style={{paddingTop:15}}>
+                                                <TableCell align="center" >{row.id}</TableCell>
+                                                <TableCell align="center" >{row.client_serial}</TableCell>
+                                                <TableCell align="center" >{row.client_serial_detail}</TableCell>
+                                                <TableCell align="center" >{row.tel}</TableCell>
+                                                <TableCell align="center" >{commonUtil.getJsonValue(sysConst.SOURCE_TYPE,row.source_type)}</TableCell>
+                                                <TableCell align="center" >{row.name}</TableCell>
+                                                <TableCell align="center" >{row.address}</TableCell>
+                                                <TableCell align="center" >{row.refer_real_name}</TableCell>
+                                                <TableCell align="center" >{row.date_id}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                        {clientAgentDetailReducer.clientArray.length === 0 &&
+                                        <TableRow>
+                                            <TableCell colSpan={9} style={{textAlign: 'center'}}>暂无数据</TableCell>
+                                        </TableRow>}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Grid>
+                    </TabPanel>
+                    <TabPanel value='3'>
                         <Grid item xs align="right">
                             <Fab color="primary" aria-label="add" size="small" onClick={()=>{addInvoiceModalOpen()}}>
                                 <i className="mdi mdi-plus mdi-24px" />
@@ -631,6 +675,9 @@ const mapDispatchToProps = (dispatch) => ({
     },
     getClientAgentInfo:(id)=>{
         dispatch(ClientAgentDetailAction.getClientAgentInfo(id));
+    },
+    getClientInfo:(id)=>{
+        dispatch(ClientAgentDetailAction.getClientInfo(id));
     },
     updateClientAgent:(id)=>{
         dispatch(ClientAgentDetailAction.updateClientAgent(id));

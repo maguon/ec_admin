@@ -44,6 +44,7 @@ export const getClientInformationList=(params)=>async (dispatch,getState) => {
             dateIdStart: commonUtil.formatDate(paramsObj.dateIdStart, 'yyyyMMdd'),
             dateIdEnd: commonUtil.formatDate(paramsObj.dateIdEnd, 'yyyyMMdd'),
             sourceType:paramsObj.sourceType==null?'':paramsObj.sourceType.value,
+            clientAgentId:paramsObj.clientAgentId==null?'':paramsObj.clientAgentId.id,
             status:paramsObj.status==null?'':paramsObj.status.value,
         };
         let conditions = httpUtil.objToUrl(paramsObject);

@@ -10,7 +10,8 @@ const initialState = {
         dateIdStart :'',
         dateIdEnd :'',
         sourceType :null,
-        status:null
+        status:null,
+        clientAgentId:null
     },
     start :0,
     // 每页数量
