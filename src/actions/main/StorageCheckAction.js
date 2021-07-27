@@ -156,7 +156,9 @@ export const downLoadPDF = (storageCheckInfo) => async (dispatch) => {
         const res = await httpUtil.httpGet(url);
         if (res.success) {
             doc.autoTable({columns:columnsDef, body:res.rows, didParseCell:function (data) {data.cell.styles.font = 'simhei'}});
-            doc.save('仓库盘点详情-' + storageCheckInfo.id + '.pdf');
+            let base64 = doc.output('datauristring');
+            let pdfWindow = window.open("");
+            pdfWindow.document.write("<iframe width='100%' height='100%' src='" + base64 +"'></iframe>")
         } else if (!res.success) {
             Swal.fire("获取仓库盘点详细列表失败", res.msg, "warning");
         }
