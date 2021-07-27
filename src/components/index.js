@@ -42,7 +42,9 @@ import PurchaseStat from './main/PurchaseStat';
 import CreateClientAgentModel from './main/model/CreateClientAgentModel';
 import ClientAgentDetail from './main/ClientAgentDetail';
 import ClientInformation from './main/ClientInformation';
-import ClientInformationDetail from './main/ClientInformationDetail'
+import ClientInformationDetail from './main/ClientInformationDetail';
+import OrderStat from './main/OrderStat';
+import ClientStat from './main/ClientStat';
 export {
     Header,
     Footer,
@@ -88,5 +90,7 @@ export {
     ClientInformation,
     NestedList,
     PurchaseStat,
-    ClientInformationDetail
+    ClientInformationDetail,
+    OrderStat,
+    ClientStat
 }

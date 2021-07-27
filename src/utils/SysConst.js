@@ -421,6 +421,18 @@ export const ALL_PAGE_LIST = [
                 "name": "采购统计",
                 "icon": "mdi-chevron-right",
                 "usable": false
+            },
+            {
+                "link": "/order_stat",
+                "name": "订单统计",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
+            {
+                "link": "/client_stat",
+                "name": "客户统计",
+                "icon": "mdi-chevron-right",
+                "usable": false
             }
         ]
     },

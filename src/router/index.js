@@ -35,6 +35,8 @@ import {
     ClientInformation,
     ClientInformationDetail,
     PurchaseStat,
+    OrderStat,
+    ClientStat,
 } from "../components";
 
 export const routes = [
@@ -98,6 +100,8 @@ export const routesWithHeader = [
 
     /** 统计 */
     {path: "/purchase_stat", exact: true, component: PurchaseStat},
+    {path: "/order_stat", exact: true, component: OrderStat},
+    {path: "/client_stat", exact: true, component: ClientStat},
     /** 数据字典 */
     {path: "/data_dictionary", exact: true, component: DataDictionary},
 
