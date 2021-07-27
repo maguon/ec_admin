@@ -1,62 +1,81 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
-import {AppActionType, StorageCheckDetailActionType} from '../../types';
+import {AppActionType, OrderDetailActionType} from '../../types';
+import 'jspdf-autotable'
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 
-export const getStorageCheckInfo = (storageCheckId) => async (dispatch) => {
+export const getOrderInfo = (orderId) => async (dispatch) => {
     try {
         // 基本检索URL
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/storageCheck?storageCheckId=' + storageCheckId;
-
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/order?orderId=' + orderId;
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
             if (res.rows.length > 0) {
-                dispatch({type: StorageCheckDetailActionType.getStorageCheckInfo, payload: res.rows[0]});
+                dispatch({type: OrderDetailActionType.getOrderInfo, payload: res.rows[0]});
+                dispatch(getOrderItemProd(orderId));
+                dispatch(getOrderItemService(orderId));
             } else {
-                dispatch({type: StorageCheckDetailActionType.getStorageCheckInfo, payload: {}});
+                dispatch({type: OrderDetailActionType.getOrderInfo, payload: {}});
             }
         } else if (!res.success) {
-            Swal.fire("获取仓库盘点信息失败", res.msg, "warning");
+            Swal.fire("获取订单信息失败", res.msg, "warning");
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }
 };
 
-export const getStorageCheckRelList = (storageCheckId) => async (dispatch) => {
+export const getOrderItemProd = (orderId) => async (dispatch) => {
     try {
         // 基本检索URL
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/storageCheckRel?storageCheckId=' + storageCheckId;
-
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderItemProd?orderId=' + orderId;
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
-            dispatch({type: StorageCheckDetailActionType.getDetailList, payload: res.rows});
+            dispatch({type: OrderDetailActionType.getOrderProdList, payload: res.rows});
         } else if (!res.success) {
-            Swal.fire("获取仓库盘点详细列表失败", res.msg, "warning");
+            Swal.fire("获取订单商品列表失败", res.msg, "warning");
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }
 };
 
-export const saveStorageCheck = () => async (dispatch, getState) => {
+export const getOrderItemService = (orderId) => async (dispatch) => {
     try {
-        const storageCheckInfo = getState().StorageCheckDetailReducer.storageCheckInfo;
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderItemService?orderId=' + orderId;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: OrderDetailActionType.getOrderSerVList, payload: res.rows});
+        } else if (!res.success) {
+            Swal.fire("获取订单服务列表失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const saveOrder = () => async (dispatch, getState) => {
+    try {
+        const orderInfo = getState().OrderDetailReducer.orderInfo;
         const params = {
-            remark: storageCheckInfo.remark
+            reUserId: orderInfo.reUser == null ? '' : orderInfo.reUser.id,
+            reUserName: orderInfo.reUser == null ? '' : orderInfo.reUser.real_name,
+            clientRemark: orderInfo.clientRemark,
+            opRemark: orderInfo.opRemark,
         };
         // 基本url
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageCheck/' + storageCheckInfo.id;
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/order/' + orderInfo.id;
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpPut(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
@@ -70,42 +89,18 @@ export const saveStorageCheck = () => async (dispatch, getState) => {
     }
 };
 
-export const saveStorageCheckRel = (data) => async (dispatch, getState) => {
-    try {
-        const storageCheckInfo = getState().StorageCheckDetailReducer.storageCheckInfo;
-        const params = {
-            checkCount: data.checkCount,
-            remark: data.remark
-        };
-        // 基本url
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageCheckRel/' + data.id;
-        dispatch({type: AppActionType.showLoadProgress, payload: true});
-        let res = await httpUtil.httpPut(url, params);
-        dispatch({type: AppActionType.showLoadProgress, payload: false});
-        if (res.success) {
-            Swal.fire("保存成功", "", "success");
-            dispatch(getStorageCheckInfo(storageCheckInfo.id));
-            dispatch(getStorageCheckRelList(storageCheckInfo.id));
-        } else if (!res.success) {
-            Swal.fire("保存失败", res.msg, "warning");
-        }
-    } catch (err) {
-        Swal.fire("操作失败", err.message, "error");
-    }
-};
-
-export const changeStorageCheckStatus = (storageCheckId, status) => async (dispatch) => {
+export const changeOrderStatus = (orderId, status) => async (dispatch) => {
     try {
         // 状态
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/storageCheck/' + storageCheckId + '/status?status=' + status;
+            + '/order/' + orderId + '/status?status=' + status;
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpPut(url, {});
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
             Swal.fire("修改成功", "", "success");
             // 刷新
-            dispatch(getStorageCheckInfo(storageCheckId));
+            dispatch(getOrderInfo(orderId));
         } else if (!res.success) {
             Swal.fire("修改失败", res.msg, "warning");
         }
@@ -114,33 +109,284 @@ export const changeStorageCheckStatus = (storageCheckId, status) => async (dispa
     }
 };
 
-export const saveModalData = (modalData) => async (dispatch) => {
+export const saveOrderItemService = (data) => async (dispatch) => {
+    try {
+        const params = {
+            discountServicePrice: data.discount_service_price,
+            orderItemType: 1,
+            remark: data.remark
+        };
+        // 基本url
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderItemService/' + data.id;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpPut(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            Swal.fire("保存成功", "", "success");
+            dispatch(getOrderInfo(data.order_id));
+        } else if (!res.success) {
+            Swal.fire("保存失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const saveOrderItemProd = (data) => async (dispatch) => {
+    try {
+        const params = {
+            discountProdPrice: data.discount_prod_price,
+            prodCount: data.prod_count,
+            remark: data.remark
+        };
+        // 基本url
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderItemProd/' + data.id;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpPut(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            Swal.fire("保存成功", "", "success");
+            dispatch(getOrderInfo(data.order_id));
+        } else if (!res.success) {
+            Swal.fire("保存失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const addOrderItemService = (orderId, data) => async (dispatch) => {
     try {
         let params = {
-            storageCheckId: modalData.storageCheckId,
-            storageId: modalData.storage.id,
-            storageAreaId: modalData.storageArea.id,
-            supplierId: modalData.supplier == null ? '' : modalData.supplier.id,
-            productId: modalData.product.id,
-            productName: modalData.product.product_name,
-            checkCount: modalData.checkCount,
-            storageDateId: commonUtil.getDateFormat(modalData.storageDateId),
-            unitCost: modalData.unitCost,
-            remark: modalData.remark
+            clientId: data.clientId,
+            clientAgentId: data.clientAgentId,
+            orderItemType: 1,
+            saleServiceId: data.saleServiceId,
+            saleServiceName: data.saleServiceName,
+            discountServicePrice: data.discountServicePrice,
+            remark: data.remark
         };
-
-        // 基本url
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageCheckRel';
+        const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/order/' + orderId + '/orderItemService';
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpPost(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-        if (res.success && res.rows.length > 0) {
+        if (res.success) {
+            dispatch(getOrderInfo(orderId));
             Swal.fire("保存成功", "", "success");
-            dispatch(getStorageCheckInfo(modalData.storageCheckId));
-            dispatch(getStorageCheckRelList(modalData.storageCheckId));
         } else {
             Swal.fire("保存失败", res.msg, "warning");
         }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const addOrderItemProd = (orderId, data) => async (dispatch) => {
+    try {
+        let params = {
+            clientId: data.clientId,
+            clientAgentId: data.clientAgentId,
+            orderItemType: 1,
+            prodId: data.prodId,
+            prodName: data.prodName,
+            prodCount: data.prodCount,
+            discountProdPrice: data.discountProdPrice,
+            remark: data.remark
+        };
+        // 基本url
+        const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/order/' + orderId + '/orderItemProd';
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpPost(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch(getOrderInfo(orderId));
+            Swal.fire("保存成功", "", "success");
+        } else {
+            Swal.fire("保存失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const deleteOrderItemService = (data) => async (dispatch) => {
+    try {
+        const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/order/' + data.order_id + '/orderItemService/' + data.id;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpDelete(url, {});
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            Swal.fire("删除成功", "", "success");
+            // 刷新
+            dispatch(getOrderInfo(data.order_id));
+        } else if (!res.success) {
+            Swal.fire('删除失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const deleteOrderItemProd = (data) => async (dispatch) => {
+    try {
+        const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/order/' + data.order_id + '/orderItemProd/' + data.id;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpDelete(url, {});
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            Swal.fire("删除成功", "", "success");
+            // 刷新
+            dispatch(getOrderInfo(data.order_id));
+        } else if (!res.success) {
+            Swal.fire('删除失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const saveModalData = (modalData) => async (dispatch) => {
+    try {
+        let params;
+        // 基本url
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/orderItemService/' + modalData.orderItemService.id;
+        if (modalData.orderStatus === sysConst.ORDER_STATUS[1].value) {
+            params = {
+                deployUserId: modalData.deployUser == null ? '' : modalData.deployUser.id,
+                deployUserName: modalData.deployUser == null ? '' : modalData.deployUser.real_name
+            };
+            url = url + '/deploy';
+        } else {
+            params = {
+                checkUserId: modalData.checkUser == null ? '' : modalData.checkUser.id,
+                checkUserName: modalData.checkUser == null ? '' : modalData.checkUser.real_name
+            };
+            url = url + '/check';
+        }
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpPut(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            Swal.fire("保存成功", "", "success");
+            dispatch(getOrderInfo(modalData.orderItemService.order_id));
+        } else {
+            Swal.fire("保存失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const downLoadPDF = (orderId) => async (dispatch, getState) => {
+    try {
+        await dispatch(getOrderInfo(orderId));
+        await dispatch(getOrderItemProd(orderId));
+        await dispatch(getOrderItemService(orderId));
+
+        const orderInfo = getState().OrderDetailReducer.orderInfo;
+        const orderSerVList = getState().OrderDetailReducer.orderSerVList;
+        const orderProdList = getState().OrderDetailReducer.orderProdList;
+
+        const doc = commonUtil.initJSPDF();
+        // 标题部分，白色背景，居中，粗体，20号字
+        doc.autoTable({
+            startY: 10,
+            body: [[{content: '订单信息',styles: {halign: 'center', fillColor: 255, fontStyle: 'bold', fontSize: 20}}]],
+            didParseCell: function (data) {
+                data.cell.styles.font = 'simhei'
+            },
+        });
+
+        // 取得logo图片值
+        let base64Img = await commonUtil.getImgBase64('/logo120.png');
+        // 头部内容
+        doc.autoTable({
+            body: [
+                [{content: '',rowSpan: 3,styles: {halign: 'center', cellWidth: 28}},'订单编号：' + orderInfo.id, {content: '客户姓名：' + orderInfo.client_name,styles: {halign: 'right'}}],
+                ['客户电话：' + orderInfo.client_tel, {content: '车牌：' + orderInfo.client_serial, styles: {halign: 'right'}}],
+                ['',''],
+            ],
+            didParseCell: function (data) {
+                // 黑体
+                data.cell.styles.font = 'simhei';
+                // 白底
+                data.cell.styles.fillColor = 255
+            },
+            didDrawCell: (data) => {
+                // body第一个单元格，添加图片
+                if (data.section === 'body' && data.column.index === 0) {
+                    doc.addImage(base64Img, 'JPEG', data.cell.x + 2, data.cell.y + 2, 20, 20)
+                }
+            },
+        });
+
+        if (orderSerVList.length > 0) {
+            let bodyList = [];
+            orderSerVList.forEach((item) => {
+                bodyList.push(
+                    [
+                        item.sale_service_name,
+                        item.fixed_price == 0 ? item.unit_price + ' * ' + item.service_count : item.fixed_price + ' * 1',
+                        item.discount_service_price,
+                        item.actual_service_price,
+                        item.remark,
+                    ]);
+            });
+            bodyList.push([
+                {content: '服务费：' + orderInfo.service_price, colSpan: 2, styles: {halign: 'right'}},
+                {content: '折扣：' + orderInfo.discount_service_price, colSpan: 2, styles: {halign: 'right'}},
+                {content: '实际费用：' + orderInfo.actual_service_price, styles: {halign: 'right'}},
+            ]);
+            doc.autoTable({
+                head: [['服务', '售价', '折扣', '实际价格', '备注']],
+                body: bodyList,
+                didParseCell: function (data) {data.cell.styles.font = 'simhei'}
+            });
+        }
+
+        if (orderProdList.length > 0) {
+            let bodyList = [];
+            orderProdList.forEach((item) => {
+                bodyList.push(
+                    [
+                        item.prod_name,
+                        item.unit_price,
+                        item.prod_count,
+                        item.discount_prod_price,
+                        item.actual_prod_price,
+                        item.remark,
+                    ]);
+            });
+            bodyList.push([
+                {content: '商品金额：' + orderInfo.prod_price, colSpan: 2, styles: {halign: 'right'}},
+                {content: '折扣：' + orderInfo.discount_prod_price, colSpan: 2, styles: {halign: 'right'}},
+                {content: '实际费用：' + orderInfo.actual_prod_price, colSpan: 2, styles: {halign: 'right'}},
+            ]);
+            doc.autoTable({
+                head: [['商品', '价格', '数量', '折扣', '实际价格', '备注']],
+                body: bodyList,
+                didParseCell: function (data) {data.cell.styles.font = 'simhei'}
+            });
+        }
+
+        doc.autoTable({
+            body: [[{content: '合计：' + orderInfo.total_actual_price,styles: {halign: 'right', fillColor: 255}}]],
+            didParseCell: function (data) {data.cell.styles.font = 'simhei'},
+        });
+
+        doc.autoTable({
+            body: [[{content: '订单备注：' + orderInfo.client_remark,styles: {halign: 'left', fillColor: 255}}]],
+            didParseCell: function (data) {data.cell.styles.font = 'simhei'},
+        });
+
+        let base64 = doc.output('datauristring');
+        let pdfWindow = window.open("");
+        pdfWindow.document.write("<iframe width='100%' height='100%' src='" + base64 +"'></iframe>")
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }

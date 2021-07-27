@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Link} from "react-router-dom";
+import Swal from "sweetalert2";
 // 引入material-ui基础组件
 import {
     Box,
@@ -31,10 +32,10 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from '@material-ui/pickers';
 // 引入Dialog
 import {SimpleModal} from "../index";
-import {CommonActionType, OrderActionType} from "../../types";
-import Swal from "sweetalert2";
+import {OrderActionType} from "../../types";
 
 const orderAction = require('../../actions/main/OrderAction');
+const orderDetailAction = require('../../actions/main/OrderDetailAction');
 const commonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
@@ -122,7 +123,7 @@ function Order(props) {
             // 折扣
             discountServicePrice: 0,
             // 暂时固定值
-            orderItemType: '1',
+            orderItemType: 1,
             // 服务ID
             saleServiceId: '',
             // 服务名称
@@ -145,12 +146,14 @@ function Order(props) {
             // 商品名称
             prodId: '',
             prodName: '',
+            // 数量
+            prodCnt: 1,
             // 折扣
             discountProdPrice: 0,
             // 暂时固定值
-            orderItemType: '1',
+            orderItemType: 1,
             // 销售人员
-            saleUserId: '',
+            saleUserId: 0,
             saleUserName: '',
             // 备注
             remark: ''
@@ -165,7 +168,7 @@ function Order(props) {
             for (let i =0; i < ret.length; i++) {
                 validation.productList.push({productInfo: '', discountProdPrice: ''});
                 setValidation({...validation});
-                modalData.productList.push({...defaultProduct,price:ret[i].price,productInfo:{id:ret[i].product_id,product_name: ret[i].product_name}});
+                modalData.productList.push({...defaultProduct,price:ret[i].price,prodId:ret[i].product_id,prodName:ret[i].product_name,prodCnt:ret[i].product_count,productInfo:{id:ret[i].product_id,product_name: ret[i].product_name}});
                 setModalData({...modalData});
                 // 计算实际价格
                 calcProdPrice(i);
@@ -276,7 +279,8 @@ function Order(props) {
     // 计算
     const calcProdPrice =(index) =>{
         if (modalData.productList[index].productInfo) {
-            let realPrice = parseFloat(modalData.productList[index].price || 0) + parseFloat(modalData.productList[index].discountProdPrice || 0);
+            let realPrice = (modalData.productList[index].price * modalData.productList[index].prodCnt)
+                + parseFloat(modalData.productList[index].discountProdPrice || 0);
             modalData.productList[index].realPrice = realPrice.toFixed(2);
         }
         setModalData({...modalData});
@@ -419,18 +423,26 @@ function Order(props) {
                     </Grid>
                 </Grid>
 
-                {/*查询按钮*/}
-                <Grid item xs={1} style={{textAlign:'right',marginTop:30}}>
-                    <Fab color="primary" size="small" onClick={()=>{dispatch(orderAction.getOrderList(0))}}>
-                        <i className="mdi mdi-magnify mdi-24px"/>
-                    </Fab>
-                </Grid>
+                <Grid item xs={2} container style={{textAlign:'right',marginTop:30}}>
+                    {/*查询按钮*/}
+                    <Grid item xs={4}>
+                        <Fab color="primary" size="small" onClick={()=>{dispatch(orderAction.getOrderList(0))}}>
+                            <i className="mdi mdi-magnify mdi-24px"/>
+                        </Fab>
+                    </Grid>
 
-                {/*追加按钮*/}
-                <Grid item xs={1} style={{textAlign:'right',marginTop:30}}>
-                    <Fab color="primary" size="small" onClick={initModal}>
-                        <i className="mdi mdi-plus mdi-24px"/>
-                    </Fab>
+                    {/*追加按钮*/}
+                    <Grid item xs={4}>
+                        <Fab color="primary" size="small" onClick={initModal}>
+                            <i className="mdi mdi-plus mdi-24px"/>
+                        </Fab>
+                    </Grid>
+
+                    <Grid item xs={4}>
+                        <Fab color="primary" size="small" onClick={()=>{dispatch(orderAction.downLoadCsv())}}>
+                            <i className="mdi mdi-cloud-download mdi-24px"/>
+                        </Fab>
+                    </Grid>
                 </Grid>
             </Grid>
 
@@ -474,12 +486,9 @@ function Order(props) {
                                 <TableCell align="center">{row.date_id}</TableCell>
                                 <TableCell align="center">{row.fin_date_id}</TableCell>
                                 <TableCell align="center">
-                                    {/*<IconButton color="primary" edge="start" size="small" onClick={()=>{downLoadCsv(row.id)}}>*/}
-                                    {/*    <i className="mdi mdi-file-excel"/>*/}
-                                    {/*</IconButton>*/}
-                                    {/*<IconButton color="primary" edge="start" size="small" onClick={()=>{downLoadPDF(row)}}>*/}
-                                    {/*    <i className="mdi mdi-file-pdf"/>*/}
-                                    {/*</IconButton>*/}
+                                    <IconButton color="primary" edge="start" size="small" onClick={()=>{dispatch(orderDetailAction.downLoadPDF(row.id))}}>
+                                        <i className="mdi mdi-file-pdf"/>
+                                    </IconButton>
                                     {/* 编辑按钮 */}
                                     <IconButton color="primary" edge="start" size="small">
                                         <Link to={{pathname: '/order/' + row.id}}><i className="mdi mdi-table-search"/></Link>
@@ -687,6 +696,8 @@ function Order(props) {
                                                   onChange={(event, value) => {
                                                       modalData.productList[index].productInfo = value;
                                                       modalData.productList[index].price = value.price;
+                                                      modalData.productList[index].prodId = value.id;
+                                                      modalData.productList[index].prodName = value.product_name;
                                                       calcProdPrice(index);
                                                   }}
                                                   renderInput={(params) => <TextField {...params} label="商品名称" margin="dense" variant="outlined"
@@ -696,8 +707,17 @@ function Order(props) {
                                     />
                                 </Grid>
 
-                                <Grid item xs={2}>
+                                <Grid item xs={1}>
                                     <TextField label="价格" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={item.price}/>
+                                </Grid>
+
+                                <Grid item xs={1}>
+                                    <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prodCnt}
+                                               onChange={(e)=>{
+                                                   modalData.productList[index].prodCnt = e.target.value || 1;
+                                                   calcProdPrice(index);
+                                               }}
+                                    />
                                 </Grid>
 
                                 <Grid item xs={2}>

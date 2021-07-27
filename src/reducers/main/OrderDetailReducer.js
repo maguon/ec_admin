@@ -1,39 +1,37 @@
 import {handleActions} from 'redux-actions';
-import {StorageCheckDetailActionType} from '../../types';
+import {OrderDetailActionType} from '../../types';
 
 const initialState = {
-    storageCheckInfo: {},
-    detailList: []
+    orderInfo: {reUser:{},opUser:{}},
+    orderSerVList: [],
+    orderProdList: []
 };
 
 export default handleActions({
-    [StorageCheckDetailActionType.getStorageCheckInfo]: (state, action) => {
+    [OrderDetailActionType.getOrderInfo]: (state, action) => {
         return {
             ...state,
-            storageCheckInfo: action.payload
+            orderInfo: {...action.payload, reUser:{id:action.payload.re_user_id,real_name:action.payload.re_user_name}}
         }
     },
-    [StorageCheckDetailActionType.getDetailList]: (state, action) => {
-        return {
-            ...state,
-            detailList: action.payload
-        }
-    },
-    [StorageCheckDetailActionType.setStorageCheckInfo]: (state, action) => {
+    [OrderDetailActionType.setOrderInfo]: (state, action) => {
         const {name, value} = action.payload;
-        const storageCheckObj = {...state.storageCheckInfo, [name]: value};
+        const newData = {...state.orderInfo, [name]: value};
         return {
             ...state,
-            storageCheckInfo: storageCheckObj
+            orderInfo: newData
         }
     },
-    [StorageCheckDetailActionType.setDetailList]: (state, action) => {
-        const {name, value, index} = action.payload;
-        let newDetailList = state.detailList;
-        newDetailList[index][name] = value;
+    [OrderDetailActionType.getOrderSerVList]: (state, action) => {
         return {
             ...state,
-            detailList: newDetailList
+            orderSerVList: action.payload
+        }
+    },
+    [OrderDetailActionType.getOrderProdList]: (state, action) => {
+        return {
+            ...state,
+            orderProdList: action.payload
         }
     },
 }, initialState)
