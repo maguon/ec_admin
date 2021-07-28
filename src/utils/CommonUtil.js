@@ -2,11 +2,50 @@ import html2canvas from "html2canvas";
 import {jsPDF} from "jspdf";
 
 // jsPDF 初期化，默认使用黑体字
-export const initJSPDF = () => {
+export const initJSPDF = async (pdfTitle, bodyHeader, headerStyle) => {
    const doc = new jsPDF();
    doc.addFont('simhei.ttf', 'simhei', 'normal');
    doc.setFont('simhei');
+
+   // 标题部分，白色背景，居中，粗体，20号字
+   doc.autoTable({
+      startY: 10,
+      body: [[{content: pdfTitle, styles: {halign: 'center', fillColor: 255, fontStyle: 'bold', fontSize: 20}}]],
+      didParseCell: function (data) {
+         data.cell.styles.font = 'simhei'
+      },
+   });
+   if (bodyHeader != null) {
+      // 取得logo图片值
+      let base64Img = await getImgBase64('/logo120.png');
+      // 头部内容
+      doc.autoTable({
+         body: bodyHeader,
+         didParseCell: function (data) {
+            if (headerStyle != null) {
+               data.cell.styles.fontSize = headerStyle.fontSize;
+               data.cell.styles.cellPadding=headerStyle.cellPadding;
+            }
+            // 黑体字
+            data.cell.styles.font = 'simhei';
+            // 白底
+            data.cell.styles.fillColor = 255;
+         },
+         didDrawCell: (data) => {
+            // body第一个单元格，添加图片
+            if (data.section === 'body' && data.column.index === 0) {
+               doc.addImage(base64Img, 'JPEG', data.cell.x + 2, data.cell.y + 2, 20, 20)
+            }
+         },
+      });
+   }
    return doc;
+};
+
+export const previewPDF = (doc) => {
+   let base64 = doc.output('datauristring');
+   let pdfWindow = window.open("pdf.html");
+   pdfWindow.localStorage.setItem('pdfData',base64);
 };
 
 // 将指定文件生成base64

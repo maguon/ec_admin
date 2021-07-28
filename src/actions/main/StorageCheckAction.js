@@ -2,7 +2,6 @@ import {createHashHistory, createBrowserHistory} from 'history';
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
 import {AppActionType, StorageCheckActionType} from '../../types';
-import 'jspdf-autotable'
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
@@ -106,38 +105,13 @@ export const downLoadCsv = (storageCheckId) => () => {
 
 export const downLoadPDF = (storageCheckInfo) => async (dispatch) => {
     try {
-        const doc = commonUtil.initJSPDF();
-        // 标题部分，白色背景，居中，粗体，20号字
-        doc.autoTable({
-            startY: 10,
-            body: [[{content: '仓库盘点',styles: {halign: 'center', fillColor: 255, fontStyle: 'bold', fontSize: 20}}]],
-            didParseCell: function (data) {
-                data.cell.styles.font = 'simhei'
-            },
-        });
-
-        // 取得logo图片值
-        let base64Img = await commonUtil.getImgBase64('/logo120.png');
-        // 头部内容
-        doc.autoTable({
-            body: [
-                [{content: '',rowSpan: 3,styles: {halign: 'center', cellWidth: 28}}, '盘点ID：' + storageCheckInfo.id,{content: '计划盘点数：' + storageCheckInfo.plan_check_count,styles: {halign: 'right'}}],
-                ['操作人员：' + storageCheckInfo.real_name, {content: '盘点创建时间：' + commonUtil.getDateTime(storageCheckInfo.created_on), styles: {halign: 'right'}}],
-                [{content: '盘点描述：' + storageCheckInfo.check_desc, colSpan: 3, styles: {halign: 'left'}}],
-            ],
-            didParseCell: function (data) {
-                // 黑体
-                data.cell.styles.font = 'simhei';
-                // 白底
-                data.cell.styles.fillColor = 255
-            },
-            didDrawCell: (data) => {
-                // body第一个单元格，添加图片
-                if (data.section === 'body' && data.column.index === 0) {
-                    doc.addImage(base64Img, 'JPEG', data.cell.x + 2, data.cell.y + 2, 20, 20)
-                }
-            },
-        });
+        // 初始化jsPdf，并输出title，logo，以及body 头部
+        let bodyHeader = [
+            [{content: '',rowSpan: 3,styles: {halign: 'center', cellWidth: 28}}, '盘点ID：' + storageCheckInfo.id,{content: '计划盘点数：' + storageCheckInfo.plan_check_count,styles: {halign: 'right'}}],
+            ['操作人员：' + storageCheckInfo.real_name, {content: '盘点创建时间：' + commonUtil.getDateTime(storageCheckInfo.created_on), styles: {halign: 'right'}}],
+            [{content: '盘点描述：' + storageCheckInfo.check_desc, colSpan: 3, styles: {halign: 'left'}}],
+        ];
+        const doc = await commonUtil.initJSPDF('仓库盘点', bodyHeader, null);
 
         // 定义表头， header：表头文字，dataKey：列数据定义
         let columnsDef = [
@@ -156,9 +130,7 @@ export const downLoadPDF = (storageCheckInfo) => async (dispatch) => {
         const res = await httpUtil.httpGet(url);
         if (res.success) {
             doc.autoTable({columns:columnsDef, body:res.rows, didParseCell:function (data) {data.cell.styles.font = 'simhei'}});
-            let base64 = doc.output('datauristring');
-            let pdfWindow = window.open("");
-            pdfWindow.document.write("<iframe width='100%' height='100%' src='" + base64 +"'></iframe>")
+            commonUtil.previewPDF(doc);
         } else if (!res.success) {
             Swal.fire("获取仓库盘点详细列表失败", res.msg, "warning");
         }

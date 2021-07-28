@@ -1,7 +1,6 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
 import {AppActionType, OrderDetailActionType} from '../../types';
-import 'jspdf-autotable'
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
@@ -287,43 +286,17 @@ export const downLoadPDF = (orderId) => async (dispatch, getState) => {
         await dispatch(getOrderInfo(orderId));
         await dispatch(getOrderItemProd(orderId));
         await dispatch(getOrderItemService(orderId));
-
         const orderInfo = getState().OrderDetailReducer.orderInfo;
         const orderSerVList = getState().OrderDetailReducer.orderSerVList;
         const orderProdList = getState().OrderDetailReducer.orderProdList;
 
-        const doc = commonUtil.initJSPDF();
-        // 标题部分，白色背景，居中，粗体，20号字
-        doc.autoTable({
-            startY: 10,
-            body: [[{content: '订单信息',styles: {halign: 'center', fillColor: 255, fontStyle: 'bold', fontSize: 20}}]],
-            didParseCell: function (data) {
-                data.cell.styles.font = 'simhei'
-            },
-        });
-
-        // 取得logo图片值
-        let base64Img = await commonUtil.getImgBase64('/logo120.png');
-        // 头部内容
-        doc.autoTable({
-            body: [
-                [{content: '',rowSpan: 3,styles: {halign: 'center', cellWidth: 28}},'订单编号：' + orderInfo.id, {content: '客户姓名：' + orderInfo.client_name,styles: {halign: 'right'}}],
-                ['客户电话：' + orderInfo.client_tel, {content: '车牌：' + orderInfo.client_serial, styles: {halign: 'right'}}],
-                ['',''],
-            ],
-            didParseCell: function (data) {
-                // 黑体
-                data.cell.styles.font = 'simhei';
-                // 白底
-                data.cell.styles.fillColor = 255
-            },
-            didDrawCell: (data) => {
-                // body第一个单元格，添加图片
-                if (data.section === 'body' && data.column.index === 0) {
-                    doc.addImage(base64Img, 'JPEG', data.cell.x + 2, data.cell.y + 2, 20, 20)
-                }
-            },
-        });
+        // 初始化jsPdf，并输出title，logo，以及body 头部
+        let bodyHeader = [
+            [{content: '',rowSpan: 3,styles: {halign: 'center', cellWidth: 28}},'订单编号：' + orderInfo.id, {content: '客户姓名：' + orderInfo.client_name,styles: {halign: 'right'}}],
+            ['客户电话：' + orderInfo.client_tel, {content: '车牌：' + orderInfo.client_serial, styles: {halign: 'right'}}],
+            ['',''],
+        ];
+        const doc = await commonUtil.initJSPDF('订单信息', bodyHeader, null);
 
         if (orderSerVList.length > 0) {
             let bodyList = [];
@@ -348,7 +321,6 @@ export const downLoadPDF = (orderId) => async (dispatch, getState) => {
                 didParseCell: function (data) {data.cell.styles.font = 'simhei'}
             });
         }
-
         if (orderProdList.length > 0) {
             let bodyList = [];
             orderProdList.forEach((item) => {
@@ -373,20 +345,18 @@ export const downLoadPDF = (orderId) => async (dispatch, getState) => {
                 didParseCell: function (data) {data.cell.styles.font = 'simhei'}
             });
         }
-
         doc.autoTable({
             body: [[{content: '合计：' + orderInfo.total_actual_price,styles: {halign: 'right', fillColor: 255}}]],
             didParseCell: function (data) {data.cell.styles.font = 'simhei'},
         });
-
         doc.autoTable({
             body: [[{content: '订单备注：' + orderInfo.client_remark,styles: {halign: 'left', fillColor: 255}}]],
             didParseCell: function (data) {data.cell.styles.font = 'simhei'},
         });
-
-        let base64 = doc.output('datauristring');
-        let pdfWindow = window.open("");
-        pdfWindow.document.write("<iframe width='100%' height='100%' src='" + base64 +"'></iframe>")
+        commonUtil.previewPDF(doc);
+        // let base64 = doc.output('datauristring');
+        // let pdfWindow = window.open('blob:http://localhost:9910/064fc7d4-7030-4bb6-a159-c2823aa9b690');
+        // pdfWindow.document.write("<iframe type='application/pdf' width='100%' height='100%' src='" + base64 +"'></iframe>");
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }

@@ -128,46 +128,47 @@ export const downLoadPDF = (params,dataList,name) => async (dispatch) => {
             Swal.fire("获取采购详细列表失败", res.msg, "warning");
         }
 
-        const doc = commonUtil.initJSPDF();
+        let bodyHeader = [
+            [{content: '',rowSpan:7,styles: {halign: 'center', cellWidth: 28}},
+                '采购单号：' + params.id,{content: '操作人员：' + params.op_user,styles: {halign: 'right'}}],
+            ['供应商名称：' + params.supplier_name, {content: '联系人：' + supplierInfo.contact_name, styles: {halign: 'right'}}],
+            ['手机：' + supplierInfo.mobile, {content: '邮箱：' + supplierInfo.contact_name, styles: {halign: 'right'}}],
+            ['电话：' + supplierInfo.tel, {content: '传真：' + supplierInfo.email, styles: {halign: 'right'}}],
+            ['地址：' + supplierInfo.address, {content: '', styles: {halign: 'right'}}],
+            ['公司抬头：' + supplierInfo.invoice_title, {content: '开户行：' + supplierInfo.invoice_bank, styles: {halign: 'right'}}],
+            ['开户行账号：' + supplierInfo.invoice_bank_ser, {content: '开户地址：' +supplierInfo.invoice_address, styles: {halign: 'right'}}],
+        ];
+        const doc = await commonUtil.initJSPDF('采购单', bodyHeader, {fontSize: '10', cellPadding: '5'});
 
-        // 标题部分，白色背景，居中，粗体，20号字
-        doc.autoTable({
-            startY: 10,
-            body: [[{content: '采购单',styles: {halign: 'center', fillColor: 255, fontStyle: 'bold', fontSize: 20}}]],
-            didParseCell: function (data) {
-                data.cell.styles.font = 'simhei'
-            },
-        });
-
-        // 取得logo图片值
-        let base64Img = await commonUtil.getImgBase64('/logo120.png');
-        // 头部内容
-        doc.autoTable({
-            body: [
-                [{content: '',rowSpan:7,styles: {halign: 'center', cellWidth: 28}},
-                 '采购单号：' + params.id,{content: '操作人员：' + params.op_user,styles: {halign: 'right'}}],
-                ['供应商名称：' + params.supplier_name, {content: '联系人：' + supplierInfo.contact_name, styles: {halign: 'right'}}],
-                ['手机：' + supplierInfo.mobile, {content: '邮箱：' + supplierInfo.contact_name, styles: {halign: 'right'}}],
-                ['电话：' + supplierInfo.tel, {content: '传真：' + supplierInfo.email, styles: {halign: 'right'}}],
-                ['地址：' + supplierInfo.address, {content: '', styles: {halign: 'right'}}],
-                ['公司抬头：' + supplierInfo.invoice_title, {content: '开户行：' + supplierInfo.invoice_bank, styles: {halign: 'right'}}],
-                ['开户行账号：' + supplierInfo.invoice_bank_ser, {content: '开户地址：' +supplierInfo.invoice_address, styles: {halign: 'right'}}],
-            ],
-            didParseCell: function (data) {
-                data.cell.styles.fontSize = '10'
-                data.cell.styles.cellPadding='5'
-                // 黑体
-                data.cell.styles.font = 'simhei';
-                // 白底
-                data.cell.styles.fillColor = 255
-            },
-            didDrawCell: (data) => {
-                // body第一个单元格，添加图片
-                if (data.section === 'body' && data.column.index === 0) {
-                    doc.addImage(base64Img, 'JPEG', data.cell.x + 2, data.cell.y + 2, 20, 20)
-                }
-            },
-        });
+        // // 取得logo图片值
+        // let base64Img = await commonUtil.getImgBase64('/logo120.png');
+        // // 头部内容
+        // doc.autoTable({
+        //     body: [
+        //         [{content: '',rowSpan:7,styles: {halign: 'center', cellWidth: 28}},
+        //          '采购单号：' + params.id,{content: '操作人员：' + params.op_user,styles: {halign: 'right'}}],
+        //         ['供应商名称：' + params.supplier_name, {content: '联系人：' + supplierInfo.contact_name, styles: {halign: 'right'}}],
+        //         ['手机：' + supplierInfo.mobile, {content: '邮箱：' + supplierInfo.contact_name, styles: {halign: 'right'}}],
+        //         ['电话：' + supplierInfo.tel, {content: '传真：' + supplierInfo.email, styles: {halign: 'right'}}],
+        //         ['地址：' + supplierInfo.address, {content: '', styles: {halign: 'right'}}],
+        //         ['公司抬头：' + supplierInfo.invoice_title, {content: '开户行：' + supplierInfo.invoice_bank, styles: {halign: 'right'}}],
+        //         ['开户行账号：' + supplierInfo.invoice_bank_ser, {content: '开户地址：' +supplierInfo.invoice_address, styles: {halign: 'right'}}],
+        //     ],
+        //     didParseCell: function (data) {
+        //         data.cell.styles.fontSize = '10'
+        //         data.cell.styles.cellPadding='5'
+        //         // 黑体
+        //         data.cell.styles.font = 'simhei';
+        //         // 白底
+        //         data.cell.styles.fillColor = 255
+        //     },
+        //     didDrawCell: (data) => {
+        //         // body第一个单元格，添加图片
+        //         if (data.section === 'body' && data.column.index === 0) {
+        //             doc.addImage(base64Img, 'JPEG', data.cell.x + 2, data.cell.y + 2, 20, 20)
+        //         }
+        //     },
+        // });
         // 定义表头， header：表头文字，dataKey：列数据定义
         let columnsDef = [
             {header: '商品名称', dataKey: 'product_name'},
@@ -195,7 +196,8 @@ export const downLoadPDF = (params,dataList,name) => async (dispatch) => {
                         data.cell.styles.fillColor = 255}
 
                 });
-                doc.save('采购单详情-' + params.id + '.pdf');
+                commonUtil.previewPDF(doc);
+                // doc.save('采购单详情-' + params.id + '.pdf');
             } else if (!res.success) {
                 Swal.fire("获取采购单详细列表失败", res.msg, "warning");
             }
@@ -213,7 +215,8 @@ export const downLoadPDF = (params,dataList,name) => async (dispatch) => {
                     data.cell.styles.fillColor = 255}
 
             });
-            doc.save('采购单详情-' + params.id + '.pdf');
+            commonUtil.previewPDF(doc);
+            // doc.save('采购单详情-' + params.id + '.pdf');
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
