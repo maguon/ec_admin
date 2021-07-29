@@ -6,6 +6,8 @@ const initialState = {
     purchaseItemStat: {},
     // 未完成的退货
     purchaseRefundStat: {},
+    //未出库的订单商品
+    orderStat: {},
 };
 
 export default handleActions({
@@ -19,6 +21,12 @@ export default handleActions({
         return {
             ...state,
             purchaseRefundStat: action.payload
+        }
+    },
+    [PurchasePanelActionType.getOrderStat]: (state, action) => {
+        return {
+            ...state,
+            orderStat: action.payload
         }
     }
 }, initialState);

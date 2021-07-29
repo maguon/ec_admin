@@ -45,6 +45,7 @@ import ClientInformation from './main/ClientInformation';
 import ClientInformationDetail from './main/ClientInformationDetail';
 import OrderStat from './main/OrderStat';
 import ClientStat from './main/ClientStat';
+import OrderPanel from './main/OrderPanel';
 export {
     Header,
     Footer,
@@ -92,5 +93,6 @@ export {
     PurchaseStat,
     ClientInformationDetail,
     OrderStat,
-    ClientStat
+    ClientStat,
+    OrderPanel
 }

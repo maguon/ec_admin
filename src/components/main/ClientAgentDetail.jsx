@@ -328,7 +328,7 @@ function ClientAgentDetail (props){
                                     </TableHead>
                                     <TableBody>
                                         {clientAgentDetailReducer.clientArray.map((row) => (
-                                            <TableRow className={classes.tableRow} key={'table-row-' + row.id} style={{paddingTop:15}}>
+                                            <TableRow key={'table-row-' + row.id} style={{paddingTop:15}}>
                                                 <TableCell align="center" >{row.id}</TableCell>
                                                 <TableCell align="center" >{row.client_serial}</TableCell>
                                                 <TableCell align="center" >{row.client_serial_detail}</TableCell>
@@ -372,7 +372,7 @@ function ClientAgentDetail (props){
                                     </TableHead>
                                     <TableBody>
                                         {clientAgentDetailReducer.invoiceArray.map((row) => (
-                                            <TableRow className={classes.tableRow} key={'table-row-' + row.id} style={{paddingTop:15}}>
+                                            <TableRow key={'table-row-' + row.id} style={{paddingTop:15}}>
                                                 <TableCell align="center">{row.id}</TableCell>
                                                 <TableCell align="center">{commonUtil.getJsonValue(sysConst.INVOICE_TYPE,row.invoice_type)}</TableCell>
                                                 <TableCell align="center">{row.invoice_title}</TableCell>

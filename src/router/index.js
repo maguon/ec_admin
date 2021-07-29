@@ -37,6 +37,7 @@ import {
     PurchaseStat,
     OrderStat,
     ClientStat,
+    OrderPanel
 } from "../components";
 
 export const routes = [
@@ -52,6 +53,7 @@ export const routesWithHeader = [
     {path: "/storage_panel", exact: true, component: StoragePanel},
     {path: "/purchase_panel", exact: true, component:PurchasePanel},
     {path: "/finance_panel", exact: true, component: FinancePanel},
+    {path: "/order_panel", exact: true, component: OrderPanel},
 
     /** 订单管理 */
     // 订单信息

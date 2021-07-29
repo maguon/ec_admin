@@ -293,6 +293,13 @@ export const ALL_PAGE_LIST = [
         "usable": false
     },
     {
+        "link": "/order_panel",
+        "label": "主控面板",
+        "icon": "mdi-calendar-text",
+        "children": [],
+        "usable": false
+    },
+    {
         "label": "订单管理",
         "icon": "mdi-newspaper",
         "children": [

@@ -476,7 +476,7 @@ function PurchaseDetail (props){
                                     </TableHead>
                                     <TableBody>
                                         {purchaseDetailReducer.storageProductArray.map((row) => (
-                                            <TableRow className={classes.tableRow} key={'table-row-' + row.id} style={{paddingTop:15}}>
+                                            <TableRow key={'table-row-' + row.id} style={{paddingTop:15}}>
                                                 <TableCell align="center">{row.storage_name}</TableCell>
                                                 <TableCell align="center">{row.storage_area_name}</TableCell>
                                                 <TableCell align="center">{row.supplier_name}</TableCell>

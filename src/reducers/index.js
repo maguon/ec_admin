@@ -39,6 +39,7 @@ import ClientInformationReducer from './main/ClientInformationReducer';
 import ClientInformationDetailReducer from './main/ClientInformationDetailReducer';
 import OrderStatReducer from './main/OrderStatReducer';
 import ClientStatReducer from './main/ClientStatReducer';
+import OrderPanelReducer from "./main/OrderPanelReducer";
 export default combineReducers({
     form: reduxFormReducer,
     AppReducer,
@@ -79,5 +80,6 @@ export default combineReducers({
     ClientInformationReducer,
     ClientInformationDetailReducer,
     OrderStatReducer,
-    ClientStatReducer
+    ClientStatReducer,
+    OrderPanelReducer,
 });
