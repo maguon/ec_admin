@@ -33,7 +33,7 @@ import TabContext from "@material-ui/lab/TabContext";
 import Alert from '@material-ui/lab/Alert';
 // 引入Dialog
 import {SimpleModal} from "../index";
-import {CommonActionType, StorageInOutActionType} from "../../types";
+import {CommonActionType, OrderActionType, StorageInOutActionType} from "../../types";
 
 const storageInOutAction = require('../../actions/main/StorageInOutAction');
 const commonAction = require('../../actions/layout/CommonAction');
@@ -59,7 +59,7 @@ function StorageInOut(props) {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        // 清空reducer
+        // 采购入库
         let purchaseParams = {
             storageStatus: '',
             storage: null,
@@ -69,6 +69,7 @@ function StorageInOut(props) {
             productId: ''
         };
         dispatch(StorageInOutActionType.setPurchaseParams(purchaseParams));
+        // 退货出库
         let refundParams = {
             refundStorageFlag: '',
             paymentStatus: '',
@@ -78,6 +79,21 @@ function StorageInOut(props) {
             productId: ''
         };
         dispatch(StorageInOutActionType.setRefundParams(refundParams));
+        // 订单出库
+        let orderOutParams = {
+            orderItemStatus: '',
+            orderId: '',
+            reUser: '',
+            orderDateStart: '',
+            orderDateEnd: '',
+            productId: '',
+            supplier: null,
+            storage: null,
+            storageArea: null,
+        };
+        dispatch(StorageInOutActionType.setOrderOutParams(orderOutParams));
+
+        // 出入库
         let storageParams = {
             storageType: '',
             storageSubType: '',
@@ -96,8 +112,8 @@ function StorageInOut(props) {
         dispatch(storageInOutAction.getPurchaseItemStorage(0))
     }, []);
 
-    // TAB 页面
-    const [tabValue, setTabValue] = React.useState('purchase');
+    // TAB 页面 TODO 加1个TAB，退单入库，订单出库，  出入库 TAB 加按钮 弹出 modal，领料出库，退料入库
+    const [tabValue, setTabValue] = React.useState('orderOut');
     const changeTab = (event, newValue) => {
         setTabValue(newValue);
         switch (newValue) {
@@ -111,6 +127,9 @@ function StorageInOut(props) {
                 break;
             case "refund":
                 dispatch(storageInOutAction.getPurchaseRefund(0));
+                break;
+            case "orderOut":
+                dispatch(storageInOutAction.getOrderItemProdStorage(0));
                 break;
             case "storage":
                 if (storageInOutReducer.storageProductDetailParams.storage != null) {
@@ -128,24 +147,24 @@ function StorageInOut(props) {
     /** 采购入库 TAB */
 
     // 模态属性
-    const [modalOpen, setModalOpen] = React.useState(false);
+    const [purchaseModalOpen, setPurchaseModalOpen] = React.useState(false);
     // 模态数据
-    const [modalData, setModalData] = React.useState({purchaseItem:{}});
+    const [purchaseModalData, setPurchaseModalData] = React.useState({purchaseItem:{}});
     // 模态校验
     const [validation,setValidation] = useState({});
 
     // 关闭模态
-    const closeModal = () => {
+    const closePurchaseModal = () => {
         if (storageInOutReducer.purchaseParams.storage != null) {
             props.getStorageAreaList(storageInOutReducer.purchaseParams.storage.id);
         } else {
             props.setStorageAreaList([]);
         }
-        setModalOpen(false);
+        setPurchaseModalOpen(false);
     };
 
     // 采购入库 TAB: 采购商品入库
-    const initModal =(item) =>{
+    const initPurchaseModal =(item) =>{
         // 清空仓库分区
         props.setStorageAreaList([]);
         // 根据purchase_item_id 取得退货信息
@@ -153,33 +172,28 @@ function StorageInOut(props) {
         // 清check内容
         setValidation({});
         // 页面属性
-        setModalData({purchaseItem:item,storage:null,storageArea:null,productCnt:'',remark:''});
+        setPurchaseModalData({purchaseItem:item,storage:null,storageArea:null,productCnt:'',remark:''});
         // 设定模态打开
-        setModalOpen(true);
+        setPurchaseModalOpen(true);
     };
 
-    const validate = ()=>{
+    const submitPurchaseModal= ()=>{
         const validateObj ={};
-        if (!modalData.storage) {
+        if (!purchaseModalData.storage) {
             validateObj.storage ='请选择仓库';
         }
-        if (!modalData.storageArea) {
+        if (!purchaseModalData.storageArea) {
             validateObj.storageArea ='请选择仓库分区';
         }
-        if (!modalData.productCnt) {
+        if (!purchaseModalData.productCnt) {
             validateObj.productCnt ='请输入入库数';
-        } else if (modalData.productCnt > modalData.purchaseItem.purchase_count) {
+        } else if (purchaseModalData.productCnt > purchaseModalData.purchaseItem.purchase_count) {
             validateObj.productCnt ='入库数不能比采购数量大';
         }
         setValidation(validateObj);
-        return Object.keys(validateObj).length
-    };
-
-    const submitModal= ()=>{
-        const errorCount = validate();
-        if(errorCount===0){
-            setModalOpen(false);
-            dispatch(storageInOutAction.putInStorage(modalData));
+        if(Object.keys(validateObj).length===0){
+            setPurchaseModalOpen(false);
+            dispatch(storageInOutAction.putInStorage(purchaseModalData));
             if (storageInOutReducer.purchaseParams.storage != null) {
                 props.getStorageAreaList(storageInOutReducer.purchaseParams.storage.id);
             } else {
@@ -188,18 +202,44 @@ function StorageInOut(props) {
         }
     };
 
-    /** 退货出库 TAB */
-
-    // 模态属性
-    const [refundModalOpen, setRefundModalOpen] = React.useState(false);
-    const [refundModalData, setRefundModalData] = React.useState({purchaseRefund:{}});
-
-    const closeRefundModal = () => {
-        setRefundModalOpen(false);
+    /** 订单出库 TAB */
+    const [orderOutModalOpen, setOrderOutModalOpen] = React.useState(false);
+    const [orderOutModalData, setOrderOutModalData] = React.useState({orderItem:{}});
+    const initOrderOutModal = (item, pageType) => {
+        // 清check内容
+        setValidation({});
+        setOrderOutModalData({pageType:pageType,orderItem:item,storageProduct:null,reUser:null,remark:''});
+        // 取得库存商品信息
+        if (pageType === 'info') {
+            dispatch(storageInOutAction.getOrderOutModalDataList(item.id))
+        } else {
+            dispatch(storageInOutAction.getStorageProduct(item.prod_id))
+        }
+        // 设定模态打开
+        setOrderOutModalOpen(true);
     };
 
-    //初始添加模态框值
-    const initRefundModal =(item,pageType) =>{
+    const submitOrderOutModal= ()=>{
+        const validateObj ={};
+        if (!orderOutModalData.reUser) {
+            validateObj.reUser ='请选择领用人';
+        }
+        if (!orderOutModalData.storageProduct) {
+            validateObj.storageProduct ='请选择库存商品';
+        }else if (orderOutModalData.storageProduct.storage_count < orderOutModalData.orderItem.prod_count) {
+            validateObj.storageProduct ='库存商品数量小于订单商品数量，不能出库';
+        }
+        setValidation(validateObj);
+        if(Object.keys(validateObj).length===0){
+            dispatch(storageInOutAction.outOrderProduct(orderOutModalData));
+            setOrderOutModalOpen(false);
+        }
+    };
+
+    /** 退货出库 TAB */
+    const [refundModalOpen, setRefundModalOpen] = React.useState(false);
+    const [refundModalData, setRefundModalData] = React.useState({purchaseRefund:{}});
+    const initRefundModal = (item, pageType) => {
         // 清check内容
         setValidation({});
         setRefundModalData({...refundModalData,pageType:pageType,purchaseRefund:item,storageProduct:null,remark:''});
@@ -213,7 +253,7 @@ function StorageInOut(props) {
         setRefundModalOpen(true);
     };
 
-    const validateRefundModal = ()=>{
+    const submitRefundModal= ()=>{
         const validateObj ={};
         if (!refundModalData.storageProduct) {
             validateObj.storageProduct ='请选择库存商品';
@@ -221,12 +261,38 @@ function StorageInOut(props) {
             validateObj.storageProduct ='库存商品数量小于退货数量，不能退货';
         }
         setValidation(validateObj);
-        return Object.keys(validateObj).length
+        if(Object.keys(validateObj).length===0){
+            dispatch(storageInOutAction.refundStorage(refundModalData));
+            setRefundModalOpen(false);
+        }
     };
 
-    const submitRefundModal= ()=>{
-        const errorCount = validateRefundModal();
-        if(errorCount===0){
+    /** 出入库 TAB */
+    const [modalOpen, setModalOpen] = React.useState(false);
+    const [modalData, setModalData] = React.useState({purchaseRefund:{}});
+    const initModal = (item, pageType) => {
+        // 清check内容
+        setValidation({});
+        setRefundModalData({...refundModalData,pageType:pageType,purchaseRefund:item,storageProduct:null,remark:''});
+        // 取得库存商品信息
+        if (pageType === 'info') {
+            dispatch(storageInOutAction.getStorageProductRelDetail(item.storage_rel_id))
+        } else {
+            dispatch(storageInOutAction.getStorageProductRel(item.purchase_item_id))
+        }
+        // 设定模态打开
+        setRefundModalOpen(true);
+    };
+
+    const submitModal= ()=>{
+        const validateObj ={};
+        if (!refundModalData.storageProduct) {
+            validateObj.storageProduct ='请选择库存商品';
+        }else if (refundModalData.storageProduct.storage_count < refundModalData.purchaseRefund.refund_count) {
+            validateObj.storageProduct ='库存商品数量小于退货数量，不能退货';
+        }
+        setValidation(validateObj);
+        if(Object.keys(validateObj).length===0){
             dispatch(storageInOutAction.refundStorage(refundModalData));
             setRefundModalOpen(false);
         }
@@ -243,6 +309,7 @@ function StorageInOut(props) {
                     <TabList onChange={changeTab} indicatorColor="primary" variant="fullWidth" textColor="primary">
                         <Tab label="采购入库" value="purchase" />
                         <Tab label="退货出库" value="refund" />
+                        <Tab label="订单出库" value="orderOut" />
                         <Tab label="出入库" value="storage" />
                     </TabList>
                 </AppBar>
@@ -253,9 +320,8 @@ function StorageInOut(props) {
                         <Grid container item xs={11} spacing={1}>
                             <Grid item xs={2}>
                                 <FormControl variant="outlined" fullWidth margin="dense">
-                                    <InputLabel id="check-status-select-outlined-label">仓储状态</InputLabel>
-                                    <Select labelId="check-status-select-outlined-label"
-                                            label="仓储状态"
+                                    <InputLabel>仓储状态</InputLabel>
+                                    <Select label="仓储状态"
                                             value={storageInOutReducer.purchaseParams.storageStatus}
                                             onChange={(e, value) => {
                                                 dispatch(StorageInOutActionType.setPurchaseParam({name: "storageStatus", value: e.target.value}));
@@ -270,9 +336,7 @@ function StorageInOut(props) {
                             </Grid>
 
                             <Grid item xs={2}>
-                                <Autocomplete id="condition-storage" fullWidth
-                                              options={commonReducer.storageList}
-                                              getOptionLabel={(option) => option.storage_name}
+                                <Autocomplete fullWidth options={commonReducer.storageList} getOptionLabel={(option) => option.storage_name}
                                               onChange={(event, value) => {
                                                   // 选择时 将当前选中值 赋值 reducer
                                                   dispatch(StorageInOutActionType.setPurchaseParam({name: "storage", value: value}));
@@ -290,10 +354,8 @@ function StorageInOut(props) {
                                 />
                             </Grid>
                             <Grid item xs={2}>
-                                <Autocomplete id="condition-storage-area" fullWidth
-                                              options={commonReducer.storageAreaList}
+                                <Autocomplete fullWidth options={commonReducer.storageAreaList} getOptionLabel={(option) => option.storage_area_name}
                                               noOptionsText="无选项"
-                                              getOptionLabel={(option) => option.storage_area_name}
                                               onChange={(event, value) => {
                                                   dispatch(StorageInOutActionType.setPurchaseParam({name: "storageArea", value: value}));
                                               }}
@@ -303,9 +365,7 @@ function StorageInOut(props) {
                             </Grid>
 
                             <Grid item xs={2}>
-                                <Autocomplete id="condition-supplier" fullWidth
-                                              options={commonReducer.supplierList}
-                                              getOptionLabel={(option) => option.supplier_name}
+                                <Autocomplete fullWidth options={commonReducer.supplierList} getOptionLabel={(option) => option.supplier_name}
                                               onChange={(event, value) => {
                                                   dispatch(StorageInOutActionType.setPurchaseParam({name: "supplier", value: value}));
                                               }}
@@ -351,7 +411,7 @@ function StorageInOut(props) {
                             </TableHead>
                             <TableBody>
                                 {storageInOutReducer.purchaseItemStorage.dataList.map((row, index) => (
-                                    <TableRow key={'table-row-' + index}>
+                                    <TableRow key={'purchase-item-storage-' + index}>
                                         <TableCell align="center">{row.purchase_id}</TableCell>
                                         <TableCell align="center">{row.supplier_name}</TableCell>
                                         <TableCell align="center">{row.product_name}</TableCell>
@@ -361,7 +421,7 @@ function StorageInOut(props) {
                                         <TableCell align="center">{row.storage_area_name}</TableCell>
                                         <TableCell align="center">{row.storage_count}</TableCell>
                                         <TableCell align="center">
-                                            <IconButton color="primary" size="small" edge="start" onClick={() => {initModal(row)}}
+                                            <IconButton color="primary" size="small" edge="start" onClick={() => {initPurchaseModal(row)}}
                                                         disabled={row.storage_status === sysConst.STORAGE_STATUS[1].value}>
                                                 <i className="mdi mdi-login"/>
                                             </IconButton>
@@ -388,23 +448,23 @@ function StorageInOut(props) {
 
                     <SimpleModal maxWidth={'md'}
                         title="采购商品入库"
-                        open={modalOpen}
-                        onClose={closeModal}
+                        open={purchaseModalOpen}
+                        onClose={closePurchaseModal}
                         showFooter={true}
                         footer={
                             <>
-                                <Button variant="contained" color="primary" onClick={submitModal}>确定</Button>
-                                <Button variant="contained" onClick={closeModal}>关闭</Button>
+                                <Button variant="contained" color="primary" onClick={submitPurchaseModal}>确定</Button>
+                                <Button variant="contained" onClick={closePurchaseModal}>关闭</Button>
                             </>
                         }
                     >
                         <Grid container spacing={1}>
-                            <Grid item sm={6}>采购单号：{modalData.purchaseItem.purchase_id}</Grid>
-                            <Grid item sm={6}>供应商：{modalData.purchaseItem.supplier_name}</Grid>
-                            <Grid item sm={6}>商品：{modalData.purchaseItem.product_name}</Grid>
-                            <Grid item sm={6}>操作人：{modalData.purchaseItem.real_name}</Grid>
-                            <Grid item sm={6}>单价：{modalData.purchaseItem.unit_cost}</Grid>
-                            <Grid item sm={6}>数量：{modalData.purchaseItem.purchase_count}</Grid>
+                            <Grid item sm={6}>采购单号：{purchaseModalData.purchaseItem.purchase_id}</Grid>
+                            <Grid item sm={6}>供应商：{purchaseModalData.purchaseItem.supplier_name}</Grid>
+                            <Grid item sm={6}>商品：{purchaseModalData.purchaseItem.product_name}</Grid>
+                            <Grid item sm={6}>操作人：{purchaseModalData.purchaseItem.real_name}</Grid>
+                            <Grid item sm={6}>单价：{purchaseModalData.purchaseItem.unit_cost}</Grid>
+                            <Grid item sm={6}>数量：{purchaseModalData.purchaseItem.purchase_count}</Grid>
                             {storageInOutReducer.purchaseItemRefund.map((row, index) => (
                             <Grid item sm={12}>
                                 <Alert severity="warning">
@@ -419,12 +479,10 @@ function StorageInOut(props) {
                             ))}
 
                             <Grid item sm={5}>
-                                <Autocomplete fullWidth
-                                              options={commonReducer.storageList}
-                                              getOptionLabel={(option) => option.storage_name}
-                                              value={modalData.storage}
+                                <Autocomplete fullWidth options={commonReducer.storageList} getOptionLabel={(option) => option.storage_name}
+                                              value={purchaseModalData.storage}
                                               onChange={(event, value) => {
-                                                  setModalData({...modalData, storage: value, storageArea: null});
+                                                  setPurchaseModalData({...purchaseModalData, storage: value, storageArea: null});
                                                   // 仓库有选择时，取得仓库分区， 否则清空
                                                   if (value != null) {
                                                       props.getStorageAreaList(value.id);
@@ -439,13 +497,11 @@ function StorageInOut(props) {
                                 />
                             </Grid>
                             <Grid item sm={5}>
-                                <Autocomplete fullWidth
-                                              options={commonReducer.storageAreaList}
+                                <Autocomplete fullWidth options={commonReducer.storageAreaList} getOptionLabel={(option) => option.storage_area_name}
                                               noOptionsText="无选项"
-                                              getOptionLabel={(option) => option.storage_area_name}
-                                              value={modalData.storageArea}
+                                              value={purchaseModalData.storageArea}
                                               onChange={(event, value) => {
-                                                  setModalData({...modalData, storageArea: value});
+                                                  setPurchaseModalData({...purchaseModalData, storageArea: value});
                                               }}
                                               renderInput={(params) => <TextField {...params} label="仓库分区" margin="dense" variant="outlined"
                                                                                   error={validation.storageArea&&validation.storageArea!=''}
@@ -454,15 +510,15 @@ function StorageInOut(props) {
                                 />
                             </Grid>
                             <Grid item sm={2}>
-                                <TextField label="入库数" fullWidth margin="dense" variant="outlined" type="number" value={modalData.productCnt}
-                                           onChange={(e)=>{setModalData({...modalData, productCnt: e.target.value})}}
+                                <TextField label="入库数" fullWidth margin="dense" variant="outlined" type="number" value={purchaseModalData.productCnt}
+                                           onChange={(e)=>{setPurchaseModalData({...purchaseModalData, productCnt: e.target.value})}}
                                            error={validation.productCnt&&validation.productCnt!=''}
                                            helperText={validation.productCnt}
                                 />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={modalData.remark}
-                                           onChange={(e) => {setModalData({...modalData, remark: e.target.value})}}/>
+                                <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={purchaseModalData.remark}
+                                           onChange={(e) => {setPurchaseModalData({...purchaseModalData, remark: e.target.value})}}/>
                             </Grid>
                         </Grid>
                     </SimpleModal>
@@ -474,9 +530,8 @@ function StorageInOut(props) {
                         <Grid container item xs={11} spacing={1}>
                             <Grid item xs={2}>
                                 <FormControl variant="outlined" fullWidth margin="dense">
-                                    <InputLabel id="status-select-outlined-label">退仓状态</InputLabel>
-                                    <Select labelId="status-select-outlined-label"
-                                            label="退仓状态"
+                                    <InputLabel>退仓状态</InputLabel>
+                                    <Select label="退仓状态"
                                             value={storageInOutReducer.refundParams.refundStorageFlag}
                                             onChange={(e, value) => {
                                                 dispatch(StorageInOutActionType.setRefundParam({name: "refundStorageFlag", value: e.target.value}));
@@ -492,9 +547,8 @@ function StorageInOut(props) {
 
                             <Grid item xs={2}>
                                 <FormControl variant="outlined" fullWidth margin="dense">
-                                    <InputLabel id="pay-status-select-outlined-label">退款状态</InputLabel>
-                                    <Select labelId="pay-status-select-outlined-label"
-                                            label="退款状态"
+                                    <InputLabel>退款状态</InputLabel>
+                                    <Select label="退款状态"
                                             value={storageInOutReducer.refundParams.paymentStatus}
                                             onChange={(e, value) => {
                                                 dispatch(StorageInOutActionType.setRefundParam({name: "paymentStatus", value: e.target.value}));
@@ -510,9 +564,8 @@ function StorageInOut(props) {
 
                             <Grid item xs={2}>
                                 <FormControl variant="outlined" fullWidth margin="dense">
-                                    <InputLabel id="refund-status-select-outlined-label">运费类型</InputLabel>
-                                    <Select labelId="refund-status-select-outlined-label"
-                                            label="运费类型"
+                                    <InputLabel>运费类型</InputLabel>
+                                    <Select label="运费类型"
                                             value={storageInOutReducer.refundParams.transferCostType}
                                             onChange={(e, value) => {
                                                 dispatch(StorageInOutActionType.setRefundParam({name: "transferCostType", value: e.target.value}));
@@ -527,9 +580,7 @@ function StorageInOut(props) {
                             </Grid>
 
                             <Grid item xs={2}>
-                                <Autocomplete id="condition-supplier" fullWidth
-                                              options={commonReducer.supplierList}
-                                              getOptionLabel={(option) => option.supplier_name}
+                                <Autocomplete fullWidth options={commonReducer.supplierList} getOptionLabel={(option) => option.supplier_name}
                                               value={storageInOutReducer.refundParams.supplier}
                                               onChange={(event, value) => {
                                                   dispatch(StorageInOutActionType.setRefundParam({name: "supplier", value: value}));
@@ -577,7 +628,7 @@ function StorageInOut(props) {
                             </TableHead>
                             <TableBody>
                                 {storageInOutReducer.purchaseRefundData.dataList.map((row) => (
-                                    <TableRow key={'table-row-' + row.id}>
+                                    <TableRow key={'purchase-refund-data' + row.id}>
                                         <TableCell align="center">{row.purchase_id}</TableCell>
                                         <TableCell align="center">{row.supplier_name}</TableCell>
                                         <TableCell align="center">{row.product_name}</TableCell>
@@ -620,12 +671,12 @@ function StorageInOut(props) {
                     <SimpleModal maxWidth={refundModalData.pageType === 'info' ? 'md' : 'sm'}
                                  title="退货出库"
                                  open={refundModalOpen}
-                                 onClose={closeRefundModal}
+                                 onClose={()=>{setRefundModalOpen(false)}}
                                  showFooter={true}
                                  footer={
                                      <>
                                          {refundModalData.pageType !== 'info' && <Button variant="contained" color="primary" onClick={submitRefundModal}>确定</Button>}
-                                         <Button variant="contained" onClick={closeRefundModal}>关闭</Button>
+                                         <Button variant="contained" onClick={()=>{setRefundModalOpen(false)}}>关闭</Button>
                                      </>
                                  }
                     >
@@ -648,7 +699,7 @@ function StorageInOut(props) {
                                 </TableHead>
                                 <TableBody>
                                     {storageInOutReducer.storageProductRelDetail.map((row) => (
-                                        <TableRow key={'table-row-' + row.id}>
+                                        <TableRow key={'storage-product-rel-detail' + row.id}>
                                             <TableCell align="center">{row.storage_name}</TableCell>
                                             <TableCell align="center">{row.storage_area_name}</TableCell>
                                             <TableCell align="center">{row.real_name}</TableCell>
@@ -666,8 +717,7 @@ function StorageInOut(props) {
                             {refundModalData.pageType !== 'info' &&
                             <>
                                 <Grid item sm={12}>
-                                    <Autocomplete fullWidth
-                                                  options={storageInOutReducer.storageProductRelList}
+                                    <Autocomplete fullWidth options={storageInOutReducer.storageProductRelList}
                                                   noOptionsText="无选项"
                                                   getOptionLabel={(option) => option.storage_name + '-' + option.storage_area_name + '-' + option.product_name + '-' + option.storage_count}
                                                   value={refundModalData.storageProduct}
@@ -690,15 +740,264 @@ function StorageInOut(props) {
                     </SimpleModal>
                 </TabPanel>
 
+                {/* 订单出库 */}
+                <TabPanel value="orderOut">
+                    <Grid container spacing={3}>
+                        <Grid container item xs={11} spacing={1}>
+                            <Grid item xs={2}>
+                                <FormControl variant="outlined" fullWidth margin="dense">
+                                    <InputLabel>出库状态</InputLabel>
+                                    <Select label="出库状态"
+                                            value={storageInOutReducer.orderOutParams.orderItemStatus}
+                                            onChange={(e, value) => {
+                                                dispatch(StorageInOutActionType.setOrderOutParam({name: "orderItemStatus", value: e.target.value}));
+                                            }}
+                                    >
+                                        <MenuItem value="">请选择</MenuItem>
+                                        {sysConst.PROD_ITEM_STATUS.map((item, index) => (
+                                            <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <TextField label="订单编号" fullWidth margin="dense" variant="outlined" type="number" value={storageInOutReducer.orderOutParams.orderId}
+                                           onChange={(e)=>{dispatch(StorageInOutActionType.setOrderOutParam({name: "orderId", value: e.target.value}))}}/>
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <Autocomplete fullWidth options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
+                                              value={storageInOutReducer.orderOutParams.reUser}
+                                              onChange={(event, value) => {
+                                                  dispatch(StorageInOutActionType.setOrderOutParam({name: "reUser", value: value}));
+                                              }}
+                                              renderInput={(params) => <TextField {...params} label="领用人" margin="dense" variant="outlined"/>}
+                                />
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                            okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                            label="订单日期（始）"
+                                            value={storageInOutReducer.orderOutParams.orderDateStart=="" ? null : storageInOutReducer.orderOutParams.orderDateStart}
+                                            onChange={(date)=>{
+                                                dispatch(StorageInOutActionType.setOrderOutParam({name: "orderDateStart", value: date}))
+                                            }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                            okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                            label="订单日期（终）"
+                                            value={storageInOutReducer.orderOutParams.orderDateEnd=="" ? null : storageInOutReducer.orderOutParams.orderDateEnd}
+                                            onChange={(date)=>{
+                                                dispatch(StorageInOutActionType.setOrderOutParam({name: "orderDateEnd", value: date}))
+                                            }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <TextField label="商品编号" fullWidth margin="dense" variant="outlined" type="number" value={storageInOutReducer.orderOutParams.productId}
+                                           onChange={(e)=>{dispatch(StorageInOutActionType.setOrderOutParam({name: "productId", value: e.target.value}))}}/>
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <Autocomplete fullWidth options={commonReducer.supplierList} getOptionLabel={(option) => option.supplier_name}
+                                              value={storageInOutReducer.orderOutParams.supplier}
+                                              onChange={(event, value) => {
+                                                  dispatch(StorageInOutActionType.setOrderOutParam({name: "supplier", value: value}));
+                                              }}
+                                              renderInput={(params) => <TextField {...params} label="供应商" margin="dense" variant="outlined"/>}
+                                />
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <Autocomplete fullWidth options={commonReducer.storageList} getOptionLabel={(option) => option.storage_name}
+                                              onChange={(event, value) => {
+                                                  // 选择时 将当前选中值 赋值 reducer
+                                                  dispatch(StorageInOutActionType.setOrderOutParam({name: "storage", value: value}));
+                                                  // 清空 子分类
+                                                  dispatch(StorageInOutActionType.setOrderOutParam({name: "storageArea", value: null}));
+                                                  // 根据选择内容，刷新 子分类 列表
+                                                  if (value != null) {
+                                                      dispatch(commonAction.getStorageAreaList(value.id));
+                                                  } else {
+                                                      dispatch(CommonActionType.setStorageAreaList([]));
+                                                  }
+                                              }}
+                                              value={storageInOutReducer.orderOutParams.storage}
+                                              renderInput={(params) => <TextField {...params} label="仓库" margin="dense" variant="outlined"/>}
+                                />
+                            </Grid>
+                            <Grid item xs={2}>
+                                <Autocomplete fullWidth options={commonReducer.storageAreaList} getOptionLabel={(option) => option.storage_area_name}
+                                              noOptionsText="无选项"
+                                              onChange={(event, value) => {
+                                                  dispatch(StorageInOutActionType.setOrderOutParam({name: "storageArea", value: value}));
+                                              }}
+                                              value={storageInOutReducer.orderOutParams.storageArea}
+                                              renderInput={(params) => <TextField {...params} label="仓库分区" margin="dense" variant="outlined"/>}
+                                />
+                            </Grid>
+
+                        </Grid>
+
+                        {/*查询按钮*/}
+                        <Grid item xs={1} style={{textAlign:'right'}}>
+                            <Fab color="primary" size="small" onClick={()=>{dispatch(storageInOutAction.getOrderItemProdStorage(0))}}>
+                                <i className="mdi mdi-magnify mdi-24px"/>
+                            </Fab>
+                        </Grid>
+                    </Grid>
+
+                    {/* 下部分：检索结果显示区域 */}
+                    <TableContainer component={Paper} style={{marginTop: 20}}>
+                        <Table stickyHeader size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell className={classes.tableHead} align="center">订单号</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">商品</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">数量</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">供应商</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">仓库</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">仓库分区</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">订单日期</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">领用人</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">状态</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">操作</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {storageInOutReducer.orderOutData.dataList.map((row,index) => (
+                                    <TableRow key={'order-out-data-' + index}>
+                                        <TableCell align="center">{row.order_id}</TableCell>
+                                        <TableCell align="center">{row.prod_name}</TableCell>
+                                        <TableCell align="center">{row.prod_count}</TableCell>
+                                        <TableCell align="center">{row.st_supplier_name}</TableCell>
+                                        <TableCell align="center">{row.st_storage_name}</TableCell>
+                                        <TableCell align="center">{row.st_storage_area_name}</TableCell>
+                                        <TableCell align="center">{row.or_date_id}</TableCell>
+                                        <TableCell align="center">{row.or_re_user_name}</TableCell>
+                                        <TableCell align="center">{commonUtil.getJsonValue(sysConst.PROD_ITEM_STATUS, row.status)}</TableCell>
+                                        <TableCell align="center">
+                                            {row.status === sysConst.PROD_ITEM_STATUS[0].value &&
+                                            <IconButton color="primary" edge="start" size="small" onClick={() => {initOrderOutModal(row,'')}}>
+                                                <i className="mdi mdi-logout"/>
+                                            </IconButton>}
+                                            {row.status === sysConst.PROD_ITEM_STATUS[1].value &&
+                                            <IconButton color="primary" edge="start" size="small" onClick={() => {initOrderOutModal(row,'info')}}>
+                                                <i className="mdi mdi-table-of-contents"/>
+                                            </IconButton>}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                {storageInOutReducer.orderOutData.dataList.length === 0 &&
+                                <TableRow>
+                                    <TableCell colSpan={9} align="center">暂无数据</TableCell>
+                                </TableRow>}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+
+                    {/* 上下页按钮 */}
+                    <Box style={{textAlign: 'right', marginTop: 20}}>
+                        {storageInOutReducer.orderOutData.start > 0 && storageInOutReducer.orderOutData.dataSize > 0 &&
+                        <Button variant="contained" color="primary" style={{marginRight: 20}}
+                                onClick={()=>{dispatch(storageInOutAction.getOrderItemProdStorage(storageInOutReducer.orderOutData.start-(storageInOutReducer.orderOutData.size-1)))}}>上一页</Button>}
+                        {storageInOutReducer.orderOutData.dataSize >= storageInOutReducer.orderOutData.size &&
+                        <Button variant="contained" color="primary" onClick={()=>{dispatch(storageInOutAction.getOrderItemProdStorage(storageInOutReducer.orderOutData.start+(storageInOutReducer.orderOutData.size-1)))}}>下一页</Button>}
+                    </Box>
+
+                    <SimpleModal maxWidth={orderOutModalData.pageType === 'info' ? 'md' : 'sm'}
+                                 title="订单出库"
+                                 open={orderOutModalOpen}
+                                 onClose={()=>{setOrderOutModalOpen(false)}}
+                                 showFooter={true}
+                                 footer={
+                                     <>
+                                         {orderOutModalData.pageType !== 'info' && <Button variant="contained" color="primary" onClick={submitOrderOutModal}>确定</Button>}
+                                         <Button variant="contained" onClick={()=>{setOrderOutModalOpen(false)}}>关闭</Button>
+                                     </>
+                                 }
+                    >
+                        <Grid container spacing={2}>
+                            <Grid item sm={6}>订单号：{orderOutModalData.orderItem.order_id}</Grid>
+                            <Grid item sm={6}>商品：{orderOutModalData.orderItem.prod_name}</Grid>
+                            <Grid item sm={6}>数量：{orderOutModalData.orderItem.prod_count}</Grid>
+
+                            {orderOutModalData.pageType === 'info' &&
+                            <Table stickyHeader size="small" style={{marginTop: 10}}>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell className={classes.tableHead} align="center">仓库</TableCell>
+                                        <TableCell className={classes.tableHead} align="center">仓库分区</TableCell>
+                                        <TableCell className={classes.tableHead} align="center">操作人员</TableCell>
+                                        <TableCell className={classes.tableHead} align="center">操作日期</TableCell>
+                                        <TableCell className={classes.tableHead} align="center">备注</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {storageInOutReducer.storageProductList.map((row) => (
+                                        <TableRow key={'order-out-modal-data-list' + row.id}>
+                                            <TableCell align="center">{row.storage_name}</TableCell>
+                                            <TableCell align="center">{row.storage_area_name}</TableCell>
+                                            <TableCell align="center">{row.real_name}</TableCell>
+                                            <TableCell align="center">{commonUtil.getDate(row.created_on)}</TableCell>
+                                            <TableCell align="center">{row.remark}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                    {storageInOutReducer.storageProductList.length === 0 &&
+                                    <TableRow>
+                                        <TableCell colSpan={5} align="center">暂无数据</TableCell>
+                                    </TableRow>}
+                                </TableBody>
+                            </Table>}
+
+                            {orderOutModalData.pageType !== 'info' &&
+                            <>
+                                <Grid item sm={12}>
+                                    <Autocomplete fullWidth options={storageInOutReducer.storageProductList}
+                                                  noOptionsText="无选项"
+                                                  getOptionLabel={(option) => option.storage_name + '-' + option.storage_area_name + '-' + option.product_name + '-' + option.storage_count}
+                                                  value={orderOutModalData.storageProduct}
+                                                  onChange={(event, value) => {
+                                                      setOrderOutModalData({...orderOutModalData,storageProduct:value});
+                                                  }}
+                                                  renderInput={(params) => <TextField {...params} label="仓库" margin="dense" variant="outlined"
+                                                              error={validation.storageProduct&&validation.storageProduct!=''} helperText={validation.storageProduct}
+                                                  />}
+                                    />
+                                </Grid>
+                                <Grid item sm={12}>
+                                    <Autocomplete fullWidth options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
+                                                  value={orderOutModalData.reUser}
+                                                  onChange={(event, value) => {
+                                                      setOrderOutModalData({...orderOutModalData,reUser:value});
+                                                  }}
+                                                  renderInput={(params) => <TextField {...params} label="领用人" margin="dense" variant="outlined"
+                                                              error={validation.reUser&&validation.reUser!=''} helperText={validation.reUser}/>}
+                                    />
+                                </Grid>
+
+                                <Grid item xs={12}>
+                                    <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={orderOutModalData.remark}
+                                               onChange={(e) => {setOrderOutModalData({...orderOutModalData,remark:e.target.value})}}/>
+                                </Grid>
+                            </>}
+                        </Grid>
+                    </SimpleModal>
+                </TabPanel>
+
                 {/* 出入库 */}
                 <TabPanel value="storage">
                     <Grid container spacing={3}>
                         <Grid container item xs={10} spacing={1}>
                             <Grid item xs={2}>
                                 <FormControl variant="outlined" fullWidth margin="dense">
-                                    <InputLabel id="in-out-select-outlined-label">出/入库</InputLabel>
-                                    <Select labelId="in-out-select-outlined-label"
-                                            label="出/入库"
+                                    <InputLabel>出/入库</InputLabel>
+                                    <Select label="出/入库"
                                             value={storageInOutReducer.storageProductDetailParams.storageType}
                                             onChange={(e, value) => {
                                                 dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "storageType", value: e.target.value}));
@@ -714,9 +1013,8 @@ function StorageInOut(props) {
                             </Grid>
                             <Grid item xs={2}>
                                 <FormControl variant="outlined" fullWidth margin="dense">
-                                    <InputLabel id="check-status-select-outlined-label">出/入库子分类</InputLabel>
-                                    <Select labelId="check-status-select-outlined-label"
-                                            label="出/入库子分类"
+                                    <InputLabel>出/入库子分类</InputLabel>
+                                    <Select label="出/入库子分类"
                                             value={storageInOutReducer.storageProductDetailParams.storageSubType}
                                             onChange={(e, value) => {
                                                 dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "storageSubType", value: e.target.value}));
@@ -736,9 +1034,7 @@ function StorageInOut(props) {
                             </Grid>
 
                             <Grid item xs={2}>
-                                <Autocomplete id="condition-storage" fullWidth
-                                              options={commonReducer.storageList}
-                                              getOptionLabel={(option) => option.storage_name}
+                                <Autocomplete fullWidth options={commonReducer.storageList} getOptionLabel={(option) => option.storage_name}
                                               value={storageInOutReducer.storageProductDetailParams.storage}
                                               onChange={(event, value) => {
                                                   // 选择时 将当前选中值 赋值 reducer
@@ -756,10 +1052,8 @@ function StorageInOut(props) {
                                 />
                             </Grid>
                             <Grid item xs={2}>
-                                <Autocomplete id="condition-storage-area" fullWidth
-                                              options={commonReducer.storageAreaList}
+                                <Autocomplete fullWidth options={commonReducer.storageAreaList} getOptionLabel={(option) => option.storage_area_name}
                                               noOptionsText="无选项"
-                                              getOptionLabel={(option) => option.storage_area_name}
                                               value={storageInOutReducer.storageProductDetailParams.storageArea}
                                               onChange={(event, value) => {
                                                   dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "storageArea", value: value}));
@@ -769,9 +1063,7 @@ function StorageInOut(props) {
                             </Grid>
 
                             <Grid item xs={2}>
-                                <Autocomplete id="condition-supplier" fullWidth
-                                              options={commonReducer.supplierList}
-                                              getOptionLabel={(option) => option.supplier_name}
+                                <Autocomplete fullWidth options={commonReducer.supplierList} getOptionLabel={(option) => option.supplier_name}
                                               value={storageInOutReducer.storageProductDetailParams.supplier}
                                               onChange={(event, value) => {
                                                   dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "supplier", value: value}));
@@ -812,18 +1104,25 @@ function StorageInOut(props) {
                                 />
                             </Grid>
                         </Grid>
+                        <Grid container item xs={2} spacing={1} style={{textAlign:'right',marginTop: 30}}>
+                            {/*查询按钮*/}
+                            <Grid item xs={4}>
+                                <Fab color="primary" size="small" onClick={()=>{dispatch(storageInOutAction.getStorageProductRelDetailList(0))}}>
+                                    <i className="mdi mdi-magnify mdi-24px"/>
+                                </Fab>
+                            </Grid>
 
-                        {/*查询按钮*/}
-                        <Grid item xs={1} style={{textAlign:'right'}}>
-                            <Fab color="primary" size="small" onClick={()=>{dispatch(storageInOutAction.getStorageProductRelDetailList(0))}} style={{marginTop: 30}}>
-                                <i className="mdi mdi-magnify mdi-24px"/>
-                            </Fab>
-                        </Grid>
+                            <Grid item xs={4}>
+                                <Fab color="primary" size="small" onClick={downLoadCsv}>
+                                    <i className="mdi mdi-cloud-download mdi-24px"/>
+                                </Fab>
+                            </Grid>
 
-                        <Grid item xs={1} style={{textAlign:'right'}}>
-                            <Fab color="primary" size="small" onClick={downLoadCsv} style={{marginTop : 30}}>
-                                <i className="mdi mdi-cloud-download mdi-24px"/>
-                            </Fab>
+                            <Grid item xs={4}>
+                                <Fab color="primary" size="small" onClick={downLoadCsv}>
+                                    <i className="mdi mdi-camera-switch mdi-24px"/>
+                                </Fab>
+                            </Grid>
                         </Grid>
                     </Grid>
 
@@ -847,7 +1146,7 @@ function StorageInOut(props) {
                             </TableHead>
                             <TableBody>
                                 {storageInOutReducer.storageProductDetail.dataList.map((row) => (
-                                    <TableRow key={'table-row-' + row.id}>
+                                    <TableRow key={'storage-product-detail-' + row.id}>
                                         <TableCell align="center">{row.purchase_id == 0 ? '' : row.purchase_id}</TableCell>
                                         <TableCell align="center">{row.supplier_name}</TableCell>
                                         <TableCell align="center">{row.product_name}</TableCell>
@@ -879,6 +1178,85 @@ function StorageInOut(props) {
                                 onClick={()=>{dispatch(storageInOutAction.getStorageProductRelDetailList(storageInOutReducer.storageProductDetail.start+(storageInOutReducer.storageProductDetail.size-1)))}}>下一页</Button>}
                     </Box>
                 </TabPanel>
+
+                <SimpleModal maxWidth='md'
+                             title="新增出入库"
+                             open={modalOpen}
+                             onClose={()=>{setModalOpen(false)}}
+                             showFooter={true}
+                             footer={
+                                 <>
+                                     {orderOutModalData.pageType !== 'info' && <Button variant="contained" color="primary" onClick={submitModal}>确定</Button>}
+                                     <Button variant="contained" onClick={()=>{setModalOpen(false)}}>关闭</Button>
+                                 </>
+                             }
+                >
+                    <Grid container spacing={2}>
+                        <Grid item sm={6}>订单号：{orderOutModalData.orderItem.order_id}</Grid>
+                        <Grid item sm={6}>商品：{orderOutModalData.orderItem.prod_name}</Grid>
+                        <Grid item sm={6}>数量：{orderOutModalData.orderItem.prod_count}</Grid>
+
+                        {orderOutModalData.pageType === 'info' &&
+                        <Table stickyHeader size="small" style={{marginTop: 10}}>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell className={classes.tableHead} align="center">仓库</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">仓库分区</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">操作人员</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">操作日期</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">备注</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {storageInOutReducer.storageProductList.map((row) => (
+                                    <TableRow key={'order-out-modal-data-list' + row.id}>
+                                        <TableCell align="center">{row.storage_name}</TableCell>
+                                        <TableCell align="center">{row.storage_area_name}</TableCell>
+                                        <TableCell align="center">{row.real_name}</TableCell>
+                                        <TableCell align="center">{commonUtil.getDate(row.created_on)}</TableCell>
+                                        <TableCell align="center">{row.remark}</TableCell>
+                                    </TableRow>
+                                ))}
+                                {storageInOutReducer.storageProductList.length === 0 &&
+                                <TableRow>
+                                    <TableCell colSpan={5} align="center">暂无数据</TableCell>
+                                </TableRow>}
+                            </TableBody>
+                        </Table>}
+
+                        {orderOutModalData.pageType !== 'info' &&
+                        <>
+                            <Grid item sm={12}>
+                                <Autocomplete fullWidth options={storageInOutReducer.storageProductList}
+                                              noOptionsText="无选项"
+                                              getOptionLabel={(option) => option.storage_name + '-' + option.storage_area_name + '-' + option.product_name + '-' + option.storage_count}
+                                              value={orderOutModalData.storageProduct}
+                                              onChange={(event, value) => {
+                                                  setOrderOutModalData({...orderOutModalData,storageProduct:value});
+                                              }}
+                                              renderInput={(params) => <TextField {...params} label="仓库" margin="dense" variant="outlined"
+                                                                                  error={validation.storageProduct&&validation.storageProduct!=''} helperText={validation.storageProduct}
+                                              />}
+                                />
+                            </Grid>
+                            <Grid item sm={12}>
+                                <Autocomplete fullWidth options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
+                                              value={orderOutModalData.reUser}
+                                              onChange={(event, value) => {
+                                                  setOrderOutModalData({...orderOutModalData,reUser:value});
+                                              }}
+                                              renderInput={(params) => <TextField {...params} label="领用人" margin="dense" variant="outlined"
+                                                                                  error={validation.reUser&&validation.reUser!=''} helperText={validation.reUser}/>}
+                                />
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={orderOutModalData.remark}
+                                           onChange={(e) => {setOrderOutModalData({...orderOutModalData,remark:e.target.value})}}/>
+                            </Grid>
+                        </>}
+                    </Grid>
+                </SimpleModal>
             </TabContext>
         </div>
     )
@@ -896,7 +1274,7 @@ const mapDispatchToProps = (dispatch) => ({
     getBaseSelectList: () => {
         dispatch(commonAction.getStorageList());
         dispatch(commonAction.getSupplierList());
-        // dispatch(commonAction.getProductList(null));
+        dispatch(commonAction.getUserList());
     },
     // select控件，联动检索
     getStorageAreaList: (storageId) => {

@@ -253,8 +253,8 @@ export const SERVICE_ITEM_STATUS = [
 ];
 
 export const PROD_ITEM_STATUS = [
-    {value: 1, label: "未领取"},
-    {value: 3, label: "已领取"}
+    {value: 1, label: "未出库"},
+    {value: 3, label: "已出库"}
 ];
 
 export const ORDER_STATUS = [

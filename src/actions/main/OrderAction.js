@@ -77,7 +77,6 @@ export const saveModalData = (modalData) => async (dispatch) => {
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpPost(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-
         if (res.success && res.rows.length > 0) {
             const history = createHashHistory();
             history.push('/order/' + res.rows[0].id);

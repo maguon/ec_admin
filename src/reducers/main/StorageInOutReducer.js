@@ -2,19 +2,9 @@ import {handleActions} from 'redux-actions';
 import {StorageInOutActionType} from '../../types';
 
 const initialState = {
-    // 检索结果
-    purchaseItemStorage: {
-        // 开始位置
-        start: 0,
-        // 每页数量
-        size: 11,
-        // 检索结果数量
-        dataSize: 0,
-        // 数据列表
-        dataList: []
-    },
+    // 采购入库
+    purchaseItemStorage: {start: 0,size: 11,dataSize: 0,dataList: []},
     purchaseItemRefund:[],
-    // 检索条件
     purchaseParams: {
         // 仓储状态
         storageStatus: '',
@@ -29,16 +19,8 @@ const initialState = {
         // 商品ID
         productId: ''
     },
-    purchaseRefundData: {
-        // 开始位置
-        start: 0,
-        // 每页数量
-        size: 11,
-        // 检索结果数量
-        dataSize: 0,
-        // 数据列表
-        dataList: []
-    },
+    // 退货出库
+    purchaseRefundData: {start: 0, size: 11,dataSize: 0,dataList: []},
     refundParams: {
         // 退仓状态
         refundStorageFlag: '',
@@ -55,16 +37,31 @@ const initialState = {
     },
     storageProductRelList: [],
     storageProductRelDetail: [],
-    storageProductDetail: {
-        // 开始位置
-        start: 0,
-        // 每页数量
-        size: 11,
-        // 检索结果数量
-        dataSize: 0,
-        // 数据列表
-        dataList: []
+    // 订单出库
+    orderOutData: {start: 0,size: 11,dataSize: 0, dataList: []},
+    orderOutParams: {
+        // 状态
+        orderItemStatus: '',
+        // 订单ID
+        orderId: '',
+        // 领用人
+        reUser: '',
+        // 订单日期
+        orderDateStart: '',
+        orderDateEnd: '',
+        // 商品ID
+        productId: '',
+        // 供应商
+        supplier: null,
+        // 仓库
+        storage: null,
+        // 仓库分区
+        storageArea: null,
     },
+    storageProductList: [],
+    orderOutModalList: [],
+    // 出入库
+    storageProductDetail: {start: 0,size: 11,dataSize: 0,dataList: []},
     storageProductDetailParams: {
         // 仓储区分
         storageType: '',
@@ -143,6 +140,38 @@ export default handleActions({
         return {
             ...state,
             storageProductRelDetail: action.payload
+        }
+    },
+    [StorageInOutActionType.setOrderOutData]: (state, action) => {
+        return {
+            ...state,
+            orderOutData: action.payload
+        }
+    },
+    [StorageInOutActionType.setOrderOutParams]: (state, action) => {
+        return {
+            ...state,
+            orderOutParams: action.payload
+        }
+    },
+    [StorageInOutActionType.setOrderOutParam]: (state, action) => {
+        const {name, value} = action.payload;
+        const paramsObj = {...state.orderOutParams, [name]: value};
+        return {
+            ...state,
+            orderOutParams: paramsObj
+        }
+    },
+    [StorageInOutActionType.setStorageProductList]: (state, action) => {
+        return {
+            ...state,
+            storageProductList: action.payload
+        }
+    },
+    [StorageInOutActionType.setOrderOutModalList]: (state, action) => {
+        return {
+            ...state,
+            orderOutModalList: action.payload
         }
     },
     [StorageInOutActionType.setStorageProductDetail]: (state, action) => {

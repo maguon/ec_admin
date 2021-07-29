@@ -147,7 +147,7 @@ function Order(props) {
             prodId: '',
             prodName: '',
             // 数量
-            prodCnt: 1,
+            prodCount: 1,
             // 折扣
             discountProdPrice: 0,
             // 暂时固定值
@@ -168,7 +168,7 @@ function Order(props) {
             for (let i =0; i < ret.length; i++) {
                 validation.productList.push({productInfo: '', discountProdPrice: ''});
                 setValidation({...validation});
-                modalData.productList.push({...defaultProduct,price:ret[i].price,prodId:ret[i].product_id,prodName:ret[i].product_name,prodCnt:ret[i].product_count,productInfo:{id:ret[i].product_id,product_name: ret[i].product_name}});
+                modalData.productList.push({...defaultProduct,price:ret[i].price,prodId:ret[i].product_id,prodName:ret[i].product_name,prodCount:ret[i].product_count,productInfo:{id:ret[i].product_id,product_name: ret[i].product_name}});
                 setModalData({...modalData});
                 // 计算实际价格
                 calcProdPrice(i);
@@ -266,10 +266,10 @@ function Order(props) {
         if (item.service_price_type) {
             let realPrice = 0;
             if (item.service_price_type  === sysConst.SERVICE_PRICE_TYPE[0].value) {
-                realPrice = parseFloat(modalData.serviceList[index].fixed_price) + parseFloat(modalData.serviceList[index].discountServicePrice || 0);
+                realPrice = parseFloat(modalData.serviceList[index].fixed_price) - parseFloat(modalData.serviceList[index].discountServicePrice || 0);
             } else {
                 realPrice = (modalData.serviceList[index].unit_price * modalData.serviceList[index].service_price_count)
-                    + parseFloat(modalData.serviceList[index].discountServicePrice || 0);
+                    - parseFloat(modalData.serviceList[index].discountServicePrice || 0);
             }
             modalData.serviceList[index].realPrice = realPrice.toFixed(2);
         }
@@ -279,8 +279,8 @@ function Order(props) {
     // 计算
     const calcProdPrice =(index) =>{
         if (modalData.productList[index].productInfo) {
-            let realPrice = (modalData.productList[index].price * modalData.productList[index].prodCnt)
-                + parseFloat(modalData.productList[index].discountProdPrice || 0);
+            let realPrice = (modalData.productList[index].price * modalData.productList[index].prodCount)
+                - parseFloat(modalData.productList[index].discountProdPrice || 0);
             modalData.productList[index].realPrice = realPrice.toFixed(2);
         }
         setModalData({...modalData});
@@ -712,9 +712,9 @@ function Order(props) {
                                 </Grid>
 
                                 <Grid item xs={1}>
-                                    <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prodCnt}
+                                    <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prodCount}
                                                onChange={(e)=>{
-                                                   modalData.productList[index].prodCnt = e.target.value || 1;
+                                                   modalData.productList[index].prodCount = e.target.value || 1;
                                                    calcProdPrice(index);
                                                }}
                                     />

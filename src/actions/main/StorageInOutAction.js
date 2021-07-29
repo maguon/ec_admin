@@ -7,6 +7,7 @@ const localUtil = require('../../utils/LocalUtils');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 
+// TAB：采购入库 列表检索
 export const getPurchaseItemStorage = (dataStart) => async (dispatch, getState) => {
     try {
         // 检索条件：开始位置
@@ -49,6 +50,7 @@ export const getPurchaseItemStorage = (dataStart) => async (dispatch, getState) 
     }
 };
 
+// TAB：采购入库 采购商品入库MODAL 中 采购商品退货列表
 export const getPurchaseItemRefund = (purchaseItemId) => async (dispatch) => {
     try {
         // 基本检索URL
@@ -68,6 +70,7 @@ export const getPurchaseItemRefund = (purchaseItemId) => async (dispatch) => {
     }
 };
 
+// TAB：采购入库 采购商品入库MODAL 确认入库
 export const putInStorage = (data) => async (dispatch, getState) => {
     try {
         // 状态
@@ -93,6 +96,7 @@ export const putInStorage = (data) => async (dispatch, getState) => {
     }
 };
 
+// TAB：退货出库 列表查询
 export const getPurchaseRefund = (dataStart) => async (dispatch, getState) => {
     try {
         // 检索条件：开始位置
@@ -135,6 +139,7 @@ export const getPurchaseRefund = (dataStart) => async (dispatch, getState) => {
     }
 };
 
+// TAB：退货出库 退货出库MODAL 获取仓库商品
 export const getStorageProductRel = (purchaseItemId) => async (dispatch) => {
     try {
         // 基本检索URL
@@ -154,6 +159,7 @@ export const getStorageProductRel = (purchaseItemId) => async (dispatch) => {
     }
 };
 
+// TAB：退货出库 退货出库MODAL 取得退货信息
 export const getStorageProductRelDetail = (storageProductRelDetailId) => async (dispatch) => {
     try {
         // 基本检索URL
@@ -173,6 +179,7 @@ export const getStorageProductRelDetail = (storageProductRelDetailId) => async (
     }
 };
 
+// TAB：退货出库 退货出库MODAL 确定退货
 export const refundStorage = (data) => async (dispatch, getState) => {
     try {
         // 状态
@@ -195,6 +202,139 @@ export const refundStorage = (data) => async (dispatch, getState) => {
     }
 };
 
+// TAB：订单出库 列表查询
+export const getOrderItemProdStorage = (dataStart) => async (dispatch, getState) => {
+    try {
+        // 检索条件：开始位置
+        const start = dataStart;
+        // 检索条件：每页数量
+        const size = getState().StorageInOutReducer.orderOutData.size;
+        // 检索条件
+        const queryParams = getState().StorageInOutReducer.orderOutParams;
+        let conditionsObj = {
+            // 状态
+            status: queryParams.orderItemStatus,
+            // 订单ID
+            orderId: queryParams.orderId,
+            // 领用人
+            reUserId: queryParams.reUser === null ? '' : queryParams.reUser.id,
+            // 订单日期
+            orderDateStart: commonUtil.getDateFormat(queryParams.orderDateStart),
+            orderDateEnd: commonUtil.getDateFormat(queryParams.orderDateEnd),
+            // 商品ID
+            productId: queryParams.productId,
+            // 供应商
+            supplierId: queryParams.supplier === null ? '' : queryParams.supplier.id,
+            // 仓库
+            storageId: queryParams.storage === null ? '' : queryParams.storage.id,
+            // 仓库分区
+            storageAreaId: queryParams.storageArea === null ? '' : queryParams.storageArea.id,
+        };
+
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/orderItemProdStorage?start=' + start + '&size=' + size;
+        console.log('',url);
+        // 检索条件
+        let conditions =  httpUtil.objToUrl(conditionsObj);
+        // 检索URL
+        url = conditions.length > 0 ? url + "&" + conditions : url;
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        let newData = getState().StorageInOutReducer.orderOutData;
+        if (res.success) {
+            newData.start = start;
+            newData.dataSize = res.rows.length;
+            newData.dataList = res.rows.slice(0, size - 1);
+            dispatch({type: StorageInOutActionType.setOrderOutData, payload: newData});
+        } else if (!res.success) {
+            Swal.fire("获取订单出库列表失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+// TAB：订单出库 MODAL 商品库存select列表查询
+export const getStorageProduct = (productId) => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/storageProductRel?productId=' + productId;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        console.log('',url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: StorageInOutActionType.setStorageProductList, payload: res.rows});
+        } else if (!res.success) {
+            Swal.fire("获取仓库商品列表失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+// TAB：订单出库 MODAL 确定出库
+export const outOrderProduct = (data) => async (dispatch, getState) => {
+    try {
+        // 状态
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/storageProductRel/' + data.storageProduct.id + '/storageProductRelDetail';
+        const params = {
+            // 出库
+            storageType: sysConst.STORAGE_OP_TYPE[1].value,
+            // 订单出库
+            storageSubType: sysConst.STORAGE_OP_EXPORT_TYPE[3].value,
+            // 商品数量
+            storageCount: parseFloat(data.orderItem.prod_count),
+            // 领用人
+            reUserId: data.reUser === null ? '' : data.reUser.id,
+            // 订单
+            orderId: data.orderItem.order_id,
+            orderProdId: data.orderItem.prod_id,
+            remark: data.remark
+        };
+        console.log('',url);
+        console.log('',params);
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpPost(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        console.log('',res);
+        if (res.success) {
+            Swal.fire("修改成功", "", "success");
+            dispatch(getOrderItemProdStorage(getState().StorageInOutReducer.orderOutData.start));
+        } else if (!res.success) {
+            Swal.fire("修改失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+// TAB：订单出库 MODAL 取得出库信息
+export const getOrderOutModalDataList = (orderItemId) => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/storageProductRelDetail?orderProdId=' + orderItemId;
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: StorageInOutActionType.setStorageProductList, payload: res.rows});
+        } else if (!res.success) {
+            Swal.fire("获取商品出库详情失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+// TAB：出入库 列表查询
 export const getStorageProductRelDetailList = (dataStart) => async (dispatch, getState) => {
     try {
         // 检索条件：开始位置
@@ -227,6 +367,7 @@ export const getStorageProductRelDetailList = (dataStart) => async (dispatch, ge
     }
 };
 
+// TAB：出入库 列表检索条件
 const getParams = () => (dispatch, getState) => {
     // 检索条件
     const queryParams = getState().StorageInOutReducer.storageProductDetailParams;
@@ -244,6 +385,7 @@ const getParams = () => (dispatch, getState) => {
     return httpUtil.objToUrl(conditionsObj);
 };
 
+// TAB：出入库 下载CSV
 export const downLoadCsv = () => async (dispatch) => {
     try {
         // 基本检索URL
