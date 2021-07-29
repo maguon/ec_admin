@@ -515,8 +515,6 @@ function Order(props) {
                         onClick={()=>{dispatch(orderAction.getOrderList(orderReducer.orderData.start+(orderReducer.orderData.size-1)))}}>下一页</Button>}
             </Box>
 
-            {/*   TODO 创建订单 进入详情页（输出PDF，修改施工人）*/}
-
             <SimpleModal
                 maxWidth={'lg'}
                 title= "新增订单"

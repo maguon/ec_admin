@@ -260,11 +260,11 @@ function OrderDetail(props) {
 
                 <Grid item sm={3}>
                     <Autocomplete fullWidth disableClearable
+                                  disabled={orderDetailReducer.orderInfo.status == sysConst.ORDER_STATUS[3].value}
                                   options={commonReducer.userList}
                                   getOptionLabel={(option) => option.real_name}
                                   value={orderDetailReducer.orderInfo.reUser}
                                   onChange={(event, value) => {
-                                      console.log('11111111111111',value);
                                       dispatch(OrderDetailActionType.setOrderInfo({name: "reUser", value: value}))
                                   }}
                                   renderInput={(params) => <TextField {...params} label="接单人" margin="dense" variant="outlined"/>}
@@ -299,9 +299,10 @@ function OrderDetail(props) {
                 </Grid>
 
                 <Grid item xs={12}>
+                    {orderDetailReducer.orderInfo.status !== sysConst.ORDER_STATUS[3].value &&
                     <Button variant="contained" color="secondary" style={{float:'right', marginLeft: 20}} onClick={()=>{changeOrderStatus(orderDetailReducer.orderInfo)}}>
                         {orderDetailReducer.orderInfo.status === sysConst.ORDER_STATUS[0].value ? '开始处理' : (orderDetailReducer.orderInfo.status === sysConst.ORDER_STATUS[1].value ? '结算' : '完成')}
-                    </Button>
+                    </Button>}
                     {orderDetailReducer.orderInfo.status !== sysConst.ORDER_STATUS[3].value &&
                     <Button variant="contained" color="primary" style={{float:'right',marginLeft: 20}} onClick={()=>{dispatch(orderDetailAction.saveOrder())}}>保存</Button>}
                     <IconButton color="primary" edge="start" style={{float:'right', marginLeft: 20}} onClick={()=>{dispatch(orderDetailAction.downLoadPDF(id))}}>
@@ -314,6 +315,7 @@ function OrderDetail(props) {
             <Grid container spacing={1}>
                 <Grid item container sm={1}><Typography gutterBottom className={classes.title}>服务</Typography></Grid>
             </Grid>
+            {orderDetailReducer.orderInfo.status !== sysConst.ORDER_STATUS[3].value &&
             <Grid  container spacing={1}>
                 <Grid item xs={2}>
                     <Autocomplete fullWidth disableClearable
@@ -368,7 +370,7 @@ function OrderDetail(props) {
                         </IconButton>
                     </Grid>
                 </Grid>
-            </Grid>
+            </Grid>}
 
             {/* 下部分：订单服务列表 */}
             {orderDetailReducer.orderSerVList.map((item, index) => (
@@ -417,6 +419,7 @@ function OrderDetail(props) {
                                 dispatch(OrderDetailActionType.getOrderSerVList(orderDetailReducer.orderSerVList));
                             }}/>
                         </Grid>
+                        {orderDetailReducer.orderInfo.status !== sysConst.ORDER_STATUS[3].value &&
                         <Grid item container xs={2}>
                             <Grid item xs={4} align='center'>
                                 {orderDetailReducer.orderInfo.status == sysConst.ORDER_STATUS[1].value &&
@@ -438,7 +441,7 @@ function OrderDetail(props) {
                                     <i className="mdi mdi-check-circle-outline"> </i>
                                 </IconButton>
                             </Grid>
-                        </Grid>
+                        </Grid>}
                     </Grid>
                 </Grid>
             ))}
@@ -447,6 +450,7 @@ function OrderDetail(props) {
             <Grid container spacing={1}>
                 <Grid item container sm={1}><Typography gutterBottom className={classes.title}>商品</Typography></Grid>
             </Grid>
+            {orderDetailReducer.orderInfo.status !== sysConst.ORDER_STATUS[3].value &&
             <Grid container spacing={1}>
                 <Grid item xs={2}>
                     <Autocomplete fullWidth disableClearable
@@ -499,7 +503,7 @@ function OrderDetail(props) {
                         </IconButton>
                     </Grid>
                 </Grid>
-            </Grid>
+            </Grid>}
 
             {orderDetailReducer.orderProdList.map((item,index)=>(
                 <Grid container spacing={1} key={index}>
@@ -547,6 +551,7 @@ function OrderDetail(props) {
                                 dispatch(OrderDetailActionType.getOrderProdList(orderDetailReducer.orderProdList));
                             }}/>
                         </Grid>
+                        {orderDetailReducer.orderInfo.status !== sysConst.ORDER_STATUS[3].value &&
                         <Grid item container xs={2} align='center'>
                             <Grid item xs={4} align='center'></Grid>
                             <Grid item xs={4} align='center'>
@@ -559,7 +564,7 @@ function OrderDetail(props) {
                                     <i className="mdi mdi-check-circle-outline"> </i>
                                 </IconButton>
                             </Grid>
-                        </Grid>
+                        </Grid>}
                     </Grid>
                 </Grid>
             ))}

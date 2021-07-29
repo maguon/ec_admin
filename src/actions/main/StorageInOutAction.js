@@ -217,12 +217,12 @@ export const getOrderItemProdStorage = (dataStart) => async (dispatch, getState)
             // 订单ID
             orderId: queryParams.orderId,
             // 领用人
-            reUserId: queryParams.reUser === null ? '' : queryParams.reUser.id,
+            applyUserId: queryParams.reUser === null ? '' : queryParams.reUser.id,
             // 订单日期
             orderDateStart: commonUtil.getDateFormat(queryParams.orderDateStart),
             orderDateEnd: commonUtil.getDateFormat(queryParams.orderDateEnd),
             // 商品ID
-            productId: queryParams.productId,
+            prodId: queryParams.productId,
             // 供应商
             supplierId: queryParams.supplier === null ? '' : queryParams.supplier.id,
             // 仓库
@@ -231,10 +231,10 @@ export const getOrderItemProdStorage = (dataStart) => async (dispatch, getState)
             storageAreaId: queryParams.storageArea === null ? '' : queryParams.storageArea.id,
         };
 
+
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/orderItemProdStorage?start=' + start + '&size=' + size;
-        console.log('',url);
         // 检索条件
         let conditions =  httpUtil.objToUrl(conditionsObj);
         // 检索URL
@@ -265,7 +265,6 @@ export const getStorageProduct = (productId) => async (dispatch) => {
             + '/storageProductRel?productId=' + productId;
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpGet(url);
-        console.log('',url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
             dispatch({type: StorageInOutActionType.setStorageProductList, payload: res.rows});
@@ -291,18 +290,15 @@ export const outOrderProduct = (data) => async (dispatch, getState) => {
             // 商品数量
             storageCount: parseFloat(data.orderItem.prod_count),
             // 领用人
-            reUserId: data.reUser === null ? '' : data.reUser.id,
+            applyUserId: data.reUser === null ? '' : data.reUser.id,
             // 订单
             orderId: data.orderItem.order_id,
-            orderProdId: data.orderItem.prod_id,
+            orderProdId: data.orderItem.id,
             remark: data.remark
         };
-        console.log('',url);
-        console.log('',params);
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpPost(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-        console.log('',res);
         if (res.success) {
             Swal.fire("修改成功", "", "success");
             dispatch(getOrderItemProdStorage(getState().StorageInOutReducer.orderOutData.start));
@@ -396,6 +392,59 @@ export const downLoadCsv = () => async (dispatch) => {
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
         window.open(url);
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+// TAB：出入库 MODAL 确定
+export const inOutStorageProduct = (data) => async (dispatch, getState) => {
+    try {
+        let storageProductRelId = data.type === 'out' ? data.storageProduct.id : data.storageProdRelDetail.storage_product_rel_id;
+        let storageType = data.type === 'out' ? sysConst.STORAGE_OP_TYPE[1].value : sysConst.STORAGE_OP_TYPE[0].value;
+        let storageSubType = data.type === 'out' ? sysConst.STORAGE_OP_EXPORT_TYPE[4].value : sysConst.STORAGE_OP_IMPORT_TYPE[4].value;
+
+        // 状态
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/storageProductRel/' + storageProductRelId + '/storageProductRelDetail';
+        const params = {
+            // 出库
+            storageType: storageType,
+            // 内部领料出库
+            storageSubType: storageSubType,
+            // 商品数量
+            storageCount: data.prodCnt,
+            // 领用人
+            applyUserId: data.reUser === null ? '' : data.reUser.id,
+            remark: data.remark
+        };
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpPost(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            Swal.fire("修改成功", "", "success");
+            dispatch(getStorageProductRelDetailList(getState().StorageInOutReducer.storageProductDetail.start));
+        } else if (!res.success) {
+            Swal.fire("修改失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const getStorageProductRelDetailInfo = (storageProductRelDetailId) => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/storageProductRelDetail?storageProductRelDetailId=' + storageProductRelDetailId;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            return res.rows;
+        } else if (!res.success) {
+            return [];
+        }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }

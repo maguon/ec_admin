@@ -14,7 +14,7 @@ import {
     makeStyles,
     MenuItem,
     Paper,
-    Select,
+    Select, Step, StepLabel, Stepper,
     Tab,
     Table,
     TableBody,
@@ -33,7 +33,8 @@ import TabContext from "@material-ui/lab/TabContext";
 import Alert from '@material-ui/lab/Alert';
 // 引入Dialog
 import {SimpleModal} from "../index";
-import {CommonActionType, OrderActionType, StorageInOutActionType} from "../../types";
+import {CommonActionType, StorageInOutActionType} from "../../types";
+import Swal from "sweetalert2";
 
 const storageInOutAction = require('../../actions/main/StorageInOutAction');
 const commonAction = require('../../actions/layout/CommonAction');
@@ -112,16 +113,16 @@ function StorageInOut(props) {
         dispatch(storageInOutAction.getPurchaseItemStorage(0))
     }, []);
 
-    // TAB 页面 TODO 加1个TAB，退单入库，订单出库，  出入库 TAB 加按钮 弹出 modal，领料出库，退料入库
-    const [tabValue, setTabValue] = React.useState('orderOut');
+    // TAB 页面
+    const [tabValue, setTabValue] = React.useState('purchase');
     const changeTab = (event, newValue) => {
         setTabValue(newValue);
         switch (newValue) {
             case "purchase":
                 if (storageInOutReducer.purchaseParams.storage != null) {
-                    props.getStorageAreaList(storageInOutReducer.purchaseParams.storage.id);
+                    dispatch(commonAction.getStorageAreaList(storageInOutReducer.purchaseParams.storage.id));
                 } else {
-                    props.setStorageAreaList([]);
+                    dispatch(CommonActionType.setStorageAreaList([]));
                 }
                 dispatch(storageInOutAction.getPurchaseItemStorage(0));
                 break;
@@ -133,9 +134,9 @@ function StorageInOut(props) {
                 break;
             case "storage":
                 if (storageInOutReducer.storageProductDetailParams.storage != null) {
-                    props.getStorageAreaList(storageInOutReducer.storageProductDetailParams.storage.id);
+                    dispatch(commonAction.getStorageAreaList(storageInOutReducer.storageProductDetailParams.storage.id));
                 } else {
-                    props.setStorageAreaList([]);
+                    dispatch(CommonActionType.setStorageAreaList([]));
                 }
                 dispatch(storageInOutAction.getStorageProductRelDetailList(0));
                 break;
@@ -156,9 +157,9 @@ function StorageInOut(props) {
     // 关闭模态
     const closePurchaseModal = () => {
         if (storageInOutReducer.purchaseParams.storage != null) {
-            props.getStorageAreaList(storageInOutReducer.purchaseParams.storage.id);
+            dispatch(commonAction.getStorageAreaList(storageInOutReducer.purchaseParams.storage.id));
         } else {
-            props.setStorageAreaList([]);
+            dispatch(CommonActionType.setStorageAreaList([]));
         }
         setPurchaseModalOpen(false);
     };
@@ -166,7 +167,7 @@ function StorageInOut(props) {
     // 采购入库 TAB: 采购商品入库
     const initPurchaseModal =(item) =>{
         // 清空仓库分区
-        props.setStorageAreaList([]);
+        dispatch(CommonActionType.setStorageAreaList([]));
         // 根据purchase_item_id 取得退货信息
         dispatch(storageInOutAction.getPurchaseItemRefund(item.purchase_item_id));
         // 清check内容
@@ -195,9 +196,9 @@ function StorageInOut(props) {
             setPurchaseModalOpen(false);
             dispatch(storageInOutAction.putInStorage(purchaseModalData));
             if (storageInOutReducer.purchaseParams.storage != null) {
-                props.getStorageAreaList(storageInOutReducer.purchaseParams.storage.id);
+                dispatch(commonAction.getStorageAreaList(storageInOutReducer.purchaseParams.storage.id));
             } else {
-                props.setStorageAreaList([]);
+                dispatch(CommonActionType.setStorageAreaList([]));
             }
         }
     };
@@ -269,32 +270,70 @@ function StorageInOut(props) {
 
     /** 出入库 TAB */
     const [modalOpen, setModalOpen] = React.useState(false);
-    const [modalData, setModalData] = React.useState({purchaseRefund:{}});
-    const initModal = (item, pageType) => {
-        // 清check内容
+    const [modalData, setModalData] = React.useState({prodCnt:0, steps:['选择出入库编号', '填写数量·领用人']});
+    const initModal = (type) => {
         setValidation({});
-        setRefundModalData({...refundModalData,pageType:pageType,purchaseRefund:item,storageProduct:null,remark:''});
-        // 取得库存商品信息
-        if (pageType === 'info') {
-            dispatch(storageInOutAction.getStorageProductRelDetail(item.storage_rel_id))
+        if (type === 'out') {
+            setModalData({...modalData,type:type,product:null,storageProduct:null,prodCnt:0,reUser:null,remark:''});
         } else {
-            dispatch(storageInOutAction.getStorageProductRel(item.purchase_item_id))
+            setModalData({...modalData,type:type,inOutNo:'',storageProdRelDetail:null, activeStep:0,prodCnt:0,reUser:null,remark:''});
         }
-        // 设定模态打开
-        setRefundModalOpen(true);
+        setModalOpen(true);
     };
 
-    const submitModal= ()=>{
+    const submitModal = async (step) => {
         const validateObj ={};
-        if (!refundModalData.storageProduct) {
-            validateObj.storageProduct ='请选择库存商品';
-        }else if (refundModalData.storageProduct.storage_count < refundModalData.purchaseRefund.refund_count) {
-            validateObj.storageProduct ='库存商品数量小于退货数量，不能退货';
-        }
-        setValidation(validateObj);
-        if(Object.keys(validateObj).length===0){
-            dispatch(storageInOutAction.refundStorage(refundModalData));
-            setRefundModalOpen(false);
+        if (modalData.type === 'out') {
+            if (!modalData.product) {
+                validateObj.product ='请选择商品';
+            }
+            if (!modalData.storageProduct) {
+                validateObj.storageProduct ='请选择库存仓库';
+            }else if (modalData.storageProduct.storage_count < modalData.prodCnt) {
+                validateObj.prodCnt ='出库数量不能大于库存商品数量';
+            }
+            if (!modalData.reUser) {
+                validateObj.reUser ='请选择领用人';
+            }
+            if (!modalData.prodCnt && modalData.prodCnt!==0) {
+                validateObj.prodCnt ='请输入数量';
+            }
+            setValidation(validateObj);
+            if(Object.keys(validateObj).length===0){
+                dispatch(storageInOutAction.inOutStorageProduct(modalData));
+                setModalOpen(false);
+            }
+        } else {
+            if (step === 0) {
+                if (!modalData.inOutNo) {
+                    validateObj.inOutNo ='请输入出入库编号';
+                }
+                setValidation(validateObj);
+                if(Object.keys(validateObj).length===0){
+                    let ret = await dispatch(storageInOutAction.getStorageProductRelDetailInfo(modalData.inOutNo));
+                    if (ret.length > 0) {
+                        setModalData({...modalData,storageProdRelDetail: ret[0], activeStep:modalData.activeStep + 1});
+                    } else {
+                        Swal.fire("没有该出入库记录", '请重新输入', "warning");
+                    }
+                }
+            }
+
+            if (step === 1) {
+                if (!modalData.reUser) {
+                    validateObj.reUser ='请选择领用人';
+                }
+                if (!modalData.prodCnt && modalData.prodCnt!==0) {
+                    validateObj.prodCnt ='请输入数量';
+                }else if (modalData.storageProdRelDetail.storage_count < modalData.prodCnt) {
+                    validateObj.prodCnt ='入库数量不能大于库存商品数量';
+                }
+                setValidation(validateObj);
+                if(Object.keys(validateObj).length===0){
+                    dispatch(storageInOutAction.inOutStorageProduct(modalData));
+                    setModalOpen(false);
+                }
+            }
         }
     };
 
@@ -485,9 +524,9 @@ function StorageInOut(props) {
                                                   setPurchaseModalData({...purchaseModalData, storage: value, storageArea: null});
                                                   // 仓库有选择时，取得仓库分区， 否则清空
                                                   if (value != null) {
-                                                      props.getStorageAreaList(value.id);
+                                                      dispatch(commonAction.getStorageAreaList(value.id));
                                                   } else {
-                                                      props.setStorageAreaList([]);
+                                                      dispatch(CommonActionType.setStorageAreaList([]));
                                                   }
                                               }}
                                               renderInput={(params) => <TextField {...params} label="仓库" margin="dense" variant="outlined"
@@ -879,7 +918,7 @@ function StorageInOut(props) {
                                         <TableCell align="center">{row.st_storage_name}</TableCell>
                                         <TableCell align="center">{row.st_storage_area_name}</TableCell>
                                         <TableCell align="center">{row.or_date_id}</TableCell>
-                                        <TableCell align="center">{row.or_re_user_name}</TableCell>
+                                        <TableCell align="center">{row.st_apply_user_name}</TableCell>
                                         <TableCell align="center">{commonUtil.getJsonValue(sysConst.PROD_ITEM_STATUS, row.status)}</TableCell>
                                         <TableCell align="center">
                                             {row.status === sysConst.PROD_ITEM_STATUS[0].value &&
@@ -895,7 +934,7 @@ function StorageInOut(props) {
                                 ))}
                                 {storageInOutReducer.orderOutData.dataList.length === 0 &&
                                 <TableRow>
-                                    <TableCell colSpan={9} align="center">暂无数据</TableCell>
+                                    <TableCell colSpan={10} align="center">暂无数据</TableCell>
                                 </TableRow>}
                             </TableBody>
                         </Table>
@@ -993,7 +1032,7 @@ function StorageInOut(props) {
                 {/* 出入库 */}
                 <TabPanel value="storage">
                     <Grid container spacing={3}>
-                        <Grid container item xs={10} spacing={1}>
+                        <Grid container item xs={9} spacing={1}>
                             <Grid item xs={2}>
                                 <FormControl variant="outlined" fullWidth margin="dense">
                                     <InputLabel>出/入库</InputLabel>
@@ -1104,23 +1143,29 @@ function StorageInOut(props) {
                                 />
                             </Grid>
                         </Grid>
-                        <Grid container item xs={2} spacing={1} style={{textAlign:'right',marginTop: 30}}>
+                        <Grid container item xs={3} spacing={1} style={{textAlign:'right',marginTop: 30}}>
                             {/*查询按钮*/}
-                            <Grid item xs={4}>
+                            <Grid item xs={3}>
                                 <Fab color="primary" size="small" onClick={()=>{dispatch(storageInOutAction.getStorageProductRelDetailList(0))}}>
                                     <i className="mdi mdi-magnify mdi-24px"/>
                                 </Fab>
                             </Grid>
 
-                            <Grid item xs={4}>
+                            <Grid item xs={3}>
                                 <Fab color="primary" size="small" onClick={downLoadCsv}>
                                     <i className="mdi mdi-cloud-download mdi-24px"/>
                                 </Fab>
                             </Grid>
 
-                            <Grid item xs={4}>
-                                <Fab color="primary" size="small" onClick={downLoadCsv}>
-                                    <i className="mdi mdi-camera-switch mdi-24px"/>
+                            <Grid item xs={3}>
+                                <Fab color="primary" size="small" onClick={()=>{initModal('in')}}>
+                                    <i className="mdi mdi-login mdi-24px"/>
+                                </Fab>
+                            </Grid>
+
+                            <Grid item xs={3}>
+                                <Fab color="primary" size="small" onClick={()=>{initModal('out')}}>
+                                    <i className="mdi mdi-logout mdi-24px"/>
                                 </Fab>
                             </Grid>
                         </Grid>
@@ -1131,6 +1176,7 @@ function StorageInOut(props) {
                         <Table stickyHeader size="small">
                             <TableHead>
                                 <TableRow>
+                                    <TableCell className={classes.tableHead} align="center">编号</TableCell>
                                     <TableCell className={classes.tableHead} align="center">采购单号</TableCell>
                                     <TableCell className={classes.tableHead} align="center">供应商</TableCell>
                                     <TableCell className={classes.tableHead} align="center">商品</TableCell>
@@ -1147,6 +1193,7 @@ function StorageInOut(props) {
                             <TableBody>
                                 {storageInOutReducer.storageProductDetail.dataList.map((row) => (
                                     <TableRow key={'storage-product-detail-' + row.id}>
+                                        <TableCell align="center">{row.id}</TableCell>
                                         <TableCell align="center">{row.purchase_id == 0 ? '' : row.purchase_id}</TableCell>
                                         <TableCell align="center">{row.supplier_name}</TableCell>
                                         <TableCell align="center">{row.product_name}</TableCell>
@@ -1155,14 +1202,14 @@ function StorageInOut(props) {
                                         <TableCell align="center">{commonUtil.getJsonValue(sysConst.STORAGE_OP_TYPE, row.storage_type)}</TableCell>
                                         <TableCell align="center">{commonUtil.getJsonValue(sysConst.STORAGE_OP_SUB_TYPE, row.storage_sub_type)}</TableCell>
                                         <TableCell align="center">{row.storage_count}</TableCell>
-                                        <TableCell align="center">{row.re_real_name}</TableCell>
+                                        <TableCell align="center">{row.apply_real_name}</TableCell>
                                         <TableCell align="center">{row.real_name}</TableCell>
                                         <TableCell align="center">{commonUtil.getDateTime(row.created_on)}</TableCell>
                                     </TableRow>
                                 ))}
                                 {storageInOutReducer.storageProductDetail.dataList.length === 0 &&
                                 <TableRow>
-                                    <TableCell colSpan={8} align="center">暂无数据</TableCell>
+                                    <TableCell colSpan={12} align="center">暂无数据</TableCell>
                                 </TableRow>}
                             </TableBody>
                         </Table>
@@ -1177,86 +1224,138 @@ function StorageInOut(props) {
                         <Button variant="contained" color="primary"
                                 onClick={()=>{dispatch(storageInOutAction.getStorageProductRelDetailList(storageInOutReducer.storageProductDetail.start+(storageInOutReducer.storageProductDetail.size-1)))}}>下一页</Button>}
                     </Box>
-                </TabPanel>
 
-                <SimpleModal maxWidth='md'
-                             title="新增出入库"
-                             open={modalOpen}
-                             onClose={()=>{setModalOpen(false)}}
-                             showFooter={true}
-                             footer={
-                                 <>
-                                     {orderOutModalData.pageType !== 'info' && <Button variant="contained" color="primary" onClick={submitModal}>确定</Button>}
-                                     <Button variant="contained" onClick={()=>{setModalOpen(false)}}>关闭</Button>
-                                 </>
-                             }
-                >
-                    <Grid container spacing={2}>
-                        <Grid item sm={6}>订单号：{orderOutModalData.orderItem.order_id}</Grid>
-                        <Grid item sm={6}>商品：{orderOutModalData.orderItem.prod_name}</Grid>
-                        <Grid item sm={6}>数量：{orderOutModalData.orderItem.prod_count}</Grid>
-
-                        {orderOutModalData.pageType === 'info' &&
-                        <Table stickyHeader size="small" style={{marginTop: 10}}>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell className={classes.tableHead} align="center">仓库</TableCell>
-                                    <TableCell className={classes.tableHead} align="center">仓库分区</TableCell>
-                                    <TableCell className={classes.tableHead} align="center">操作人员</TableCell>
-                                    <TableCell className={classes.tableHead} align="center">操作日期</TableCell>
-                                    <TableCell className={classes.tableHead} align="center">备注</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {storageInOutReducer.storageProductList.map((row) => (
-                                    <TableRow key={'order-out-modal-data-list' + row.id}>
-                                        <TableCell align="center">{row.storage_name}</TableCell>
-                                        <TableCell align="center">{row.storage_area_name}</TableCell>
-                                        <TableCell align="center">{row.real_name}</TableCell>
-                                        <TableCell align="center">{commonUtil.getDate(row.created_on)}</TableCell>
-                                        <TableCell align="center">{row.remark}</TableCell>
-                                    </TableRow>
-                                ))}
-                                {storageInOutReducer.storageProductList.length === 0 &&
-                                <TableRow>
-                                    <TableCell colSpan={5} align="center">暂无数据</TableCell>
-                                </TableRow>}
-                            </TableBody>
-                        </Table>}
-
-                        {orderOutModalData.pageType !== 'info' &&
-                        <>
+                    <SimpleModal maxWidth='sm'
+                                 title={modalData.type === 'out' ? '内部领料出库' : '内部退料入库'}
+                                 open={modalOpen}
+                                 onClose={()=>{setModalOpen(false)}}
+                                 showFooter={true}
+                                 footer={
+                                     modalData.type === 'out' ?
+                                     <>
+                                         <Button variant="contained" color="primary" onClick={()=>{submitModal(null)}}>确定</Button>
+                                         <Button variant="contained" onClick={()=>{setModalOpen(false)}}>关闭</Button>
+                                     </>
+                                         :
+                                     <>
+                                         <Button variant="contained" onClick={modalData.activeStep===0 ? (()=>{setModalOpen(false)}) : (()=>{setModalData({...modalData, activeStep: modalData.activeStep-1})})}>
+                                             {modalData.activeStep===0 ? '关闭' : '返回'}
+                                         </Button>
+                                         <Button variant="contained" color="primary" onClick={() => {submitModal(modalData.activeStep)}}> {modalData.activeStep === modalData.steps.length - 1 ? '完成' : '下一步'}</Button>
+                                     </>
+                                 }
+                    >
+                        {modalData.type === 'out' &&
+                        <Grid container spacing={2}>
                             <Grid item sm={12}>
-                                <Autocomplete fullWidth options={storageInOutReducer.storageProductList}
-                                              noOptionsText="无选项"
-                                              getOptionLabel={(option) => option.storage_name + '-' + option.storage_area_name + '-' + option.product_name + '-' + option.storage_count}
-                                              value={orderOutModalData.storageProduct}
+                                <Autocomplete fullWidth options={commonReducer.productList} getOptionLabel={(option) => option.product_name}
+                                              value={modalData.product}
                                               onChange={(event, value) => {
-                                                  setOrderOutModalData({...orderOutModalData,storageProduct:value});
+                                                  setModalData({...modalData,product:value});
+                                                  if (value != null) {
+                                                      dispatch(storageInOutAction.getStorageProduct(value.id));
+                                                  } else {
+                                                      dispatch(StorageInOutActionType.setStorageProductList([]));
+                                                  }
+
+                                              }}
+                                              renderInput={(params) => <TextField {...params} label="商品" margin="dense" variant="outlined"
+                                                                                  error={validation.product&&validation.product!=''} helperText={validation.product}
+                                              />}
+                                />
+                            </Grid>
+
+                            <Grid item sm={12}>
+                                <Autocomplete fullWidth noOptionsText="无选项" options={storageInOutReducer.storageProductList}
+                                              getOptionLabel={(option) => option.storage_name + '-' + option.storage_area_name + '-' + option.product_name + '-' + option.storage_count}
+                                              value={modalData.storageProduct}
+                                              onChange={(event, value) => {
+                                                  setModalData({...modalData,storageProduct:value});
                                               }}
                                               renderInput={(params) => <TextField {...params} label="仓库" margin="dense" variant="outlined"
                                                                                   error={validation.storageProduct&&validation.storageProduct!=''} helperText={validation.storageProduct}
                                               />}
                                 />
                             </Grid>
-                            <Grid item sm={12}>
+
+                            <Grid item xs={6}>
+                                <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" value={modalData.prodCnt}
+                                           onChange={(e) => {setModalData({...modalData,prodCnt:e.target.value})}}
+                                           error={validation.prodCnt&&validation.prodCnt!=''} helperText={validation.prodCnt}/>
+                            </Grid>
+
+                            <Grid item sm={6}>
                                 <Autocomplete fullWidth options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
-                                              value={orderOutModalData.reUser}
+                                              value={modalData.reUser}
                                               onChange={(event, value) => {
-                                                  setOrderOutModalData({...orderOutModalData,reUser:value});
+                                                  setModalData({...modalData,reUser:value});
                                               }}
                                               renderInput={(params) => <TextField {...params} label="领用人" margin="dense" variant="outlined"
-                                                                                  error={validation.reUser&&validation.reUser!=''} helperText={validation.reUser}/>}
+                                                        error={validation.reUser&&validation.reUser!=''} helperText={validation.reUser}/>}
                                 />
                             </Grid>
 
                             <Grid item xs={12}>
-                                <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={orderOutModalData.remark}
-                                           onChange={(e) => {setOrderOutModalData({...orderOutModalData,remark:e.target.value})}}/>
+                                <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={modalData.remark}
+                                           onChange={(e) => {setModalData({...modalData,remark:e.target.value})}}/>
                             </Grid>
+                        </Grid>}
+
+                        {modalData.type === 'in' &&
+                        <>
+                            {/* 步骤标题 */}
+                            <Stepper activeStep={modalData.activeStep} alternativeLabel>
+                                {modalData.steps.map((label) => (<Step key={label}><StepLabel>{label}</StepLabel></Step>))}
+                            </Stepper>
+
+                            {/* 步骤内容 */}
+                            <div align="center">
+                                {/*第一步添加ID*/}
+                                <div style={{display:modalData.activeStep==0?'block':'none', overflow: 'hidden'}}>
+                                    <TextField label="出入库编号" margin="dense" variant="outlined" value={modalData.inOutNo}
+                                               onChange={(e)=>{setModalData({...modalData,inOutNo:e.target.value})}}
+                                               error={validation.inOutNo&&validation.inOutNo!=''} helperText={validation.inOutNo}/>
+                                </div>
+                                {/* 第二步添加商品详情 */}
+                                <div style={{display:modalData.activeStep==!0?'block':'none',margin:'20px 0',textAlign:'left'}}>
+                                    <Typography gutterBottom className={classes.title}>出入库信息</Typography>
+                                    {modalData.storageProdRelDetail != null &&
+                                    <Grid container spacing={2} style={{marginBottom:10}}>
+                                        <Grid item sm={6}>出入库编号：{modalData.storageProdRelDetail.id}</Grid>
+                                        <Grid item sm={6}>商品：{modalData.storageProdRelDetail.product_name}</Grid>
+                                        <Grid item sm={6}>仓库：{modalData.storageProdRelDetail.storage_name}</Grid>
+                                        <Grid item sm={6}>仓库分区：{modalData.storageProdRelDetail.storage_area_name}</Grid>
+                                        <Grid item sm={6}>仓库数量：{modalData.storageProdRelDetail.storage_count}</Grid>
+                                    </Grid>}
+
+                                    <Grid container spacing={1}>
+                                    <Grid item xs={6}>
+                                        <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" value={modalData.prodCnt}
+                                                   onChange={(e) => {setModalData({...modalData,prodCnt:e.target.value})}}
+                                                   error={validation.prodCnt&&validation.prodCnt!=''} helperText={validation.prodCnt}/>
+                                    </Grid>
+
+                                    <Grid item xs={6}>
+                                        <Autocomplete fullWidth options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
+                                                      value={modalData.reUser}
+                                                      onChange={(event, value) => {
+                                                          setModalData({...modalData,reUser:value});
+                                                      }}
+                                                      renderInput={(params) => <TextField {...params} label="领用人" margin="dense" variant="outlined"
+                                                                                          error={validation.reUser&&validation.reUser!=''} helperText={validation.reUser}/>}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={modalData.remark}
+                                                   onChange={(e) => {setModalData({...modalData,remark:e.target.value})}}/>
+                                    </Grid>
+                                    </Grid>
+                                </div>
+                            </div>
                         </>}
-                    </Grid>
-                </SimpleModal>
+                    </SimpleModal>
+                </TabPanel>
             </TabContext>
         </div>
     )
@@ -1275,13 +1374,7 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(commonAction.getStorageList());
         dispatch(commonAction.getSupplierList());
         dispatch(commonAction.getUserList());
-    },
-    // select控件，联动检索
-    getStorageAreaList: (storageId) => {
-        dispatch(commonAction.getStorageAreaList(storageId));
-    },
-    setStorageAreaList: (value) => {
-        dispatch(CommonActionType.setStorageAreaList(value));
+        dispatch(commonAction.getProductList(null));
     },
     // 出入库 TAB
     downLoadCsv: () => {
