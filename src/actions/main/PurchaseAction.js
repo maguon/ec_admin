@@ -187,7 +187,7 @@ export const downLoadPDF = (params,dataList,name) => async (dispatch) => {
                 doc.autoTable({columns:columnsDef, body:res.rows, didParseCell:function (data) {data.cell.styles.font = 'simhei'}});
                 doc.autoTable({
 
-                    body: [ [{content: '',rowSpan:2,styles: {halign: 'center', cellWidth: 50}},
+                    body: [ [{content: '',rowSpan:1,styles: {halign: 'center', cellWidth: 50}},
                         commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE,params.transfer_cost_type)+ '运费：' + params.transfer_cost,{content: '总价：' + params.total_cost,styles: {halign: 'right'}}],
                         ['备注：' + params.remark, {content: '', styles: {halign: 'right'}}]],
                     didParseCell:function (data) {
@@ -206,7 +206,7 @@ export const downLoadPDF = (params,dataList,name) => async (dispatch) => {
             doc.autoTable({columns:columnsDef, body:dataList, didParseCell:function (data) {data.cell.styles.font = 'simhei'}});
             doc.autoTable({
 
-                body: [ [{content: '',rowSpan:2,styles: {halign: 'center', cellWidth: 50}},
+                body: [ [{content: '',rowSpan:1,styles: {halign: 'center', cellWidth: 50}},
                     commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE,params.transfer_cost_type)+ '运费：' + params.transfer_cost,{content: '总价：' + params.total_cost,styles: {halign: 'right'}}],
                     ['备注：' + params.remark, {content: '', styles: {halign: 'right'}}]],
                 didParseCell:function (data) {
