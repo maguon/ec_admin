@@ -308,6 +308,7 @@ function ServiceSetting (props){
         setModifyRemarks(item.remark)
         setProductArray(null);
         setProductCount('');
+        setValidationProduct({});
         setValue('1');
     }
     // 关闭模态
@@ -370,6 +371,7 @@ function ServiceSetting (props){
             addProduct({productArray,productCount,modifyId,modifyServiceName});
             setProductArray(null);
             setProductCount('');
+            setValidationProduct({});
 
         }
     }

@@ -1,7 +1,19 @@
 import React, {useEffect, useState} from 'react';
 import {connect,useDispatch} from 'react-redux';
 import {Link, useParams} from "react-router-dom";
-import {Button, Grid, Typography, TextField, IconButton, AppBar, Tab, Tabs,Accordion,AccordionSummary} from "@material-ui/core";
+import {
+    Button,
+    Grid,
+    Typography,
+    TextField,
+    IconButton,
+    AppBar,
+    Tab,
+    Tabs,
+    Accordion,
+    AccordionSummary,
+    Divider
+} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import TabContext from '@material-ui/lab/TabContext';
 import TabPanel from '@material-ui/lab/TabPanel';
@@ -305,10 +317,10 @@ function ClientInformationDetail (props){
                                         <Grid item xs align='right'>时间:{row.date_id}</Grid>
                                     </Grid>
                                     <Grid container  spacing={3}>
-                                        <Grid item xs align='left'>客户备注:{row.client_remark}</Grid>
+                                        <Grid item xs align='left'>订单备注:{row.client_remark}</Grid>
                                     </Grid>
                                     <Grid container  spacing={3}>
-                                        <Grid item xs align='left'>备注:{row.op_remark}</Grid>
+                                        <Grid item xs align='left'>操作备注:{row.op_remark}</Grid>
                                     </Grid>
                                     <h4>服务:</h4>
                                     {clientInformationDetailReducer.orderItemServiceInfo.map((service,index) => (
@@ -338,12 +350,15 @@ function ClientInformationDetail (props){
                                                     <Grid item xs={2} align='left'>施工:{service.deploy_user_name}</Grid>
                                                     <Grid item xs={2} align='left'>验收:{service.check_user_name}</Grid>
                                                 </Grid>
+                                                <Divider className={classes.divider} variant="middle" />
                                             </Grid>
                                             :''
+
                                     ))}
                                     <h4>商品:</h4>
                                     {clientInformationDetailReducer.orderItemProdInfo.map((item,index) => (
                                         item.order_id==row.id?
+                                        <Grid>
                                             <Grid container  spacing={3}>
                                                 <Grid item xs={2} align='left'>名称:{item.prod_name}</Grid>
                                                 <Grid item xs={2} align='left'>单价:{item.unit_price}</Grid>
@@ -352,6 +367,8 @@ function ClientInformationDetail (props){
                                                 <Grid item xs={2} align='left'>实际价格:{item.actual_prod_price}</Grid>
                                                 <Grid item xs={2} align='left'>销售:{item.sale_user_name}</Grid>
                                             </Grid>
+                                            <Divider className={classes.divider} variant="middle" />
+                                        </Grid>
                                             :''
                                     ))}
 

@@ -81,6 +81,7 @@ function ClientAgentDetail (props){
             getClientAgentInfo(id);
         }
         if(newValue==2){
+            clientAgentDetailReducer.clientArray=[];
             getClientInfo(id)
         }
         if(newValue==3){
