@@ -59,16 +59,14 @@ function PurchaseDetail (props){
         getProductList(id);
     },[]);
     useEffect(()=>{
-        for(var value of purchaseDetailReducer.storageProductArray){
-            if(value.product_name==addProduct.product_name){
-                setAddStorageType(1)
+        setAddStorageTypeItem(1)
+
+        for(let item of purchaseDetailReducer.storageProductArray){
+            setAddStorageTypeItem(1)
+            if(item.product_name==addProduct.product_name){
+              return   setAddStorageType(1)
             }else {
-                setAddStorageType(0);
-            }
-            if(value.product_name==addProduct){
-                setAddStorageTypeItem(1)
-            }else {
-                setAddStorageTypeItem(0);
+                       setAddStorageType(0);
             }
         }
     },[addProduct]);

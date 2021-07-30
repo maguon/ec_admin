@@ -105,9 +105,9 @@ function ServiceSetting (props){
     const [modifyCheckPerfRatio,setModifyCheckPerfRatio] = useState('');
     const [modifyRemarks,setModifyRemarks] = useState('');
     const [modifyId,setModifyId] = useState('');
-    const [value, setValue] = React.useState('1');
-    const [productArray, setProductArray] = React.useState(null);
-    const [productCount, setProductCount] = React.useState('');
+    const [value, setValue] = useState('1');
+    const [productArray, setProductArray] = useState(null);
+    const [productCount, setProductCount] = useState('');
     const [validationProduct,setValidationProduct] = useState({});
     useEffect(()=>{
         getSericeSettingList(serviceSettingReducer.start);

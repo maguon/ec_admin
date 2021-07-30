@@ -130,7 +130,7 @@ export const addInvoice=(id,params)=>async (dispatch) =>{
         Swal.fire('操作失败', err.message, 'error');
     }
 }
-export const updateInvoice=(id,params)=>async (dispatch)=>{
+export const updateInvoice=(clientAgentId,id,params)=>async (dispatch)=>{
     try {
         const paramsObj={
             remark: params.updateInvoiceRemark,
@@ -145,7 +145,7 @@ export const updateInvoice=(id,params)=>async (dispatch)=>{
         const res = await httpUtil.httpPut(apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/clientAgentInvoice/'+id, paramsObj);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true) {
-            dispatch(getInvoiceList(id));
+            dispatch(getInvoiceList(clientAgentId));
             Swal.fire("修改成功", "", "success");
         } else if (res.success === false) {
             Swal.fire('修改失败', res.msg, 'warning');

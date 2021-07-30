@@ -161,7 +161,7 @@ function ClientAgentDetail (props){
     const updateInvoiceInfo=()=>{
         const errorCount = validateUpdate();
         if(errorCount==0){
-            props.updateInvoice(updateId,{updateInvoiceTitle,updateInvoiceType,updateInvoiceBank,updateInvoiceBankSer,updateSettleType,updateInvoiceAddress,updateInvoiceRemark});
+            props.updateInvoice(id,updateId,{updateInvoiceTitle,updateInvoiceType,updateInvoiceBank,updateInvoiceBankSer,updateSettleType,updateInvoiceAddress,updateInvoiceRemark});
             setModalOpenUpdateFlag(false)
         }
     }
@@ -688,8 +688,8 @@ const mapDispatchToProps = (dispatch) => ({
     addInvoice:(id,{invoiceTitle,invoiceType,invoiceBank,invoiceBankSer,settleType,invoiceAddress,addInvoiceRemark})=>{
         dispatch(ClientAgentDetailAction.addInvoice(id,{invoiceTitle,invoiceType,invoiceBank,invoiceBankSer,settleType,invoiceAddress,addInvoiceRemark}));
     },
-    updateInvoice:(updateId,{updateInvoiceTitle,updateInvoiceType,updateInvoiceBank,updateInvoiceBankSer,updateSettleType,updateInvoiceAddress,updateInvoiceRemark})=>{
-        dispatch(ClientAgentDetailAction.updateInvoice(updateId,{updateInvoiceTitle,updateInvoiceType,updateInvoiceBank,updateInvoiceBankSer,updateSettleType,updateInvoiceAddress,updateInvoiceRemark}));
+    updateInvoice:(id,updateId,{updateInvoiceTitle,updateInvoiceType,updateInvoiceBank,updateInvoiceBankSer,updateSettleType,updateInvoiceAddress,updateInvoiceRemark})=>{
+        dispatch(ClientAgentDetailAction.updateInvoice(id,updateId,{updateInvoiceTitle,updateInvoiceType,updateInvoiceBank,updateInvoiceBankSer,updateSettleType,updateInvoiceAddress,updateInvoiceRemark}));
     }
 });
 export default connect(mapStateToProps, mapDispatchToProps)(ClientAgentDetail)
