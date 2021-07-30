@@ -17,30 +17,11 @@ export const getOrderInfo = (orderId) => async (dispatch) => {
         if (res.success) {
             if (res.rows.length > 0) {
                 dispatch({type: OrderDetailActionType.getOrderInfo, payload: res.rows[0]});
-                dispatch(getOrderItemProd(orderId));
-                dispatch(getOrderItemService(orderId));
             } else {
                 dispatch({type: OrderDetailActionType.getOrderInfo, payload: {}});
             }
         } else if (!res.success) {
             Swal.fire("获取订单信息失败", res.msg, "warning");
-        }
-    } catch (err) {
-        Swal.fire("操作失败", err.message, "error");
-    }
-};
-
-export const getOrderItemProd = (orderId) => async (dispatch) => {
-    try {
-        // 基本检索URL
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderItemProd?orderId=' + orderId;
-        dispatch({type: AppActionType.showLoadProgress, payload: true});
-        const res = await httpUtil.httpGet(url);
-        dispatch({type: AppActionType.showLoadProgress, payload: false});
-        if (res.success) {
-            dispatch({type: OrderDetailActionType.getOrderProdList, payload: res.rows});
-        } else if (!res.success) {
-            Swal.fire("获取订单商品列表失败", res.msg, "warning");
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
@@ -58,6 +39,23 @@ export const getOrderItemService = (orderId) => async (dispatch) => {
             dispatch({type: OrderDetailActionType.getOrderSerVList, payload: res.rows});
         } else if (!res.success) {
             Swal.fire("获取订单服务列表失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const getOrderItemProd = (orderId) => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderItemProd?orderId=' + orderId;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: OrderDetailActionType.getOrderProdList, payload: res.rows});
+        } else if (!res.success) {
+            Swal.fire("获取订单商品列表失败", res.msg, "warning");
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
@@ -108,8 +106,9 @@ export const changeOrderStatus = (orderId, status) => async (dispatch) => {
     }
 };
 
-export const saveOrderItemService = (data) => async (dispatch) => {
+export const saveOrderItemService = (data) => async (dispatch, getState) => {
     try {
+        let orderSerVList = getState().OrderDetailReducer.orderSerVList;
         const params = {
             discountServicePrice: data.discount_service_price,
             orderItemType: 1,
@@ -123,6 +122,13 @@ export const saveOrderItemService = (data) => async (dispatch) => {
         if (res.success) {
             Swal.fire("保存成功", "", "success");
             dispatch(getOrderInfo(data.order_id));
+            await dispatch(getOrderItemService(data.order_id));
+            let newOrderSerVList = getState().OrderDetailReducer.orderSerVList;
+            for (let i = 0; i < orderSerVList.length; i++) {
+                newOrderSerVList[i].discount_service_price = orderSerVList[i].discount_service_price;
+                newOrderSerVList[i].remark = orderSerVList[i].remark;
+                dispatch(OrderDetailActionType.getOrderSerVList(newOrderSerVList));
+            }
         } else if (!res.success) {
             Swal.fire("保存失败", res.msg, "warning");
         }
@@ -131,8 +137,9 @@ export const saveOrderItemService = (data) => async (dispatch) => {
     }
 };
 
-export const saveOrderItemProd = (data) => async (dispatch) => {
+export const saveOrderItemProd = (data) => async (dispatch, getState) => {
     try {
+        let orderProdList = getState().OrderDetailReducer.orderProdList;
         const params = {
             discountProdPrice: data.discount_prod_price,
             prodCount: data.prod_count,
@@ -146,6 +153,14 @@ export const saveOrderItemProd = (data) => async (dispatch) => {
         if (res.success) {
             Swal.fire("保存成功", "", "success");
             dispatch(getOrderInfo(data.order_id));
+            await dispatch(getOrderItemProd(data.order_id));
+            let newOrderProdList = getState().OrderDetailReducer.orderProdList;
+            for (let i = 0; i < orderProdList.length; i++) {
+                newOrderProdList[i].prod_count = orderProdList[i].prod_count;
+                newOrderProdList[i].discount_prod_price = orderProdList[i].discount_prod_price;
+                newOrderProdList[i].remark = orderProdList[i].remark;
+                dispatch(OrderDetailActionType.getOrderProdList(newOrderProdList));
+            }
         } else if (!res.success) {
             Swal.fire("保存失败", res.msg, "warning");
         }

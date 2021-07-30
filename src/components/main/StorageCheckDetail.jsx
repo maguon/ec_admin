@@ -352,7 +352,6 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(commonAction.getSupplierList());
         dispatch(commonAction.getProductList(null));
     },
-
     getStorageCheckInfo: (id) => {
         dispatch(storageCheckDetailAction.getStorageCheckInfo(id));
         dispatch(storageCheckDetailAction.getStorageCheckRelList(id));
@@ -369,7 +368,18 @@ const mapDispatchToProps = (dispatch) => ({
         if (storageCheckInfo.plan_check_count != storageCheckInfo.checked_count) {
             Swal.fire("盘点完成数和计划盘点数不相等，不能执行完成", '', "warning");
         } else {
-            dispatch(storageCheckDetailAction.changeStorageCheckStatus(storageCheckInfo.id, sysConst.STORAGE_RET_STATUS[1].value));
+            Swal.fire({
+                title: "确定完成该盘点",
+                text: "完成后，库存商品将以当前盘点为准！",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "确定",
+                cancelButtonText:"取消"
+            }).then(async (value) => {
+                if (value.isConfirmed) {
+                    dispatch(storageCheckDetailAction.changeStorageCheckStatus(storageCheckInfo.id, sysConst.STORAGE_RET_STATUS[1].value));
+                }
+            });
         }
     },
     downLoadCsv: (storageCheckId) => {

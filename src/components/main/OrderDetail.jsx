@@ -30,6 +30,8 @@ function OrderDetail(props) {
     useEffect(() => {
         props.getBaseSelectList();
         dispatch(orderDetailAction.getOrderInfo(id));
+        dispatch(orderDetailAction.getOrderItemService(id));
+        dispatch(orderDetailAction.getOrderItemProd(id));
     }, []);
 
     // 新增服务数据
@@ -553,17 +555,22 @@ function OrderDetail(props) {
                         </Grid>
                         {orderDetailReducer.orderInfo.status !== sysConst.ORDER_STATUS[3].value &&
                         <Grid item container xs={2} align='center'>
-                            <Grid item xs={4} align='center'></Grid>
                             <Grid item xs={4} align='center'>
-                                <IconButton color="secondary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{deleteProd(item)}}>
-                                    <i className="mdi mdi-delete"> </i>
-                                </IconButton>
+                                {item.status === sysConst.PROD_ITEM_STATUS[0].value ? <div style={{fontSize: 14, paddingTop: 18}}>未</div> : <div style={{fontSize: 14, paddingTop: 18}}>领</div>}
                             </Grid>
-                            <Grid item xs={4} align='center'>
-                                <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{dispatch(orderDetailAction.saveOrderItemProd(item))}}>
-                                    <i className="mdi mdi-check-circle-outline"> </i>
-                                </IconButton>
-                            </Grid>
+                            {item.status === sysConst.PROD_ITEM_STATUS[0].value &&
+                            <>
+                                <Grid item xs={4} align='center'>
+                                    <IconButton color="secondary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{deleteProd(item)}}>
+                                        <i className="mdi mdi-delete"> </i>
+                                    </IconButton>
+                                </Grid>
+                                <Grid item xs={4} align='center'>
+                                    <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{dispatch(orderDetailAction.saveOrderItemProd(item))}}>
+                                        <i className="mdi mdi-check-circle-outline"> </i>
+                                    </IconButton>
+                                </Grid>
+                            </>}
                         </Grid>}
                     </Grid>
                 </Grid>

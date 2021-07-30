@@ -73,6 +73,7 @@ export const saveStorageCheck = () => async (dispatch, getState) => {
 export const saveStorageCheckRel = (data) => async (dispatch, getState) => {
     try {
         const storageCheckInfo = getState().StorageCheckDetailReducer.storageCheckInfo;
+        let detailList = getState().StorageCheckDetailReducer.detailList;
         const params = {
             checkCount: data.checkCount,
             remark: data.remark
@@ -85,7 +86,11 @@ export const saveStorageCheckRel = (data) => async (dispatch, getState) => {
         if (res.success) {
             Swal.fire("保存成功", "", "success");
             dispatch(getStorageCheckInfo(storageCheckInfo.id));
-            dispatch(getStorageCheckRelList(storageCheckInfo.id));
+            await dispatch(getStorageCheckRelList(storageCheckInfo.id));
+            for (let i = 0; i < detailList.length; i++) {
+                dispatch(StorageCheckDetailActionType.setDetailList({name: "check_count", value: detailList[i].check_count, index: i}))
+                dispatch(StorageCheckDetailActionType.setDetailList({name: "remark", value: detailList[i].remark, index: i}))
+            }
         } else if (!res.success) {
             Swal.fire("保存失败", res.msg, "warning");
         }
