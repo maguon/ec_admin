@@ -66,7 +66,7 @@ function OrderDetail(props) {
     const [validation,setValidation] = React.useState({});
 
     //初始添加模态框值
-    const initModal =(orderItemService, orderStatus) =>{
+    const initModal = (orderItemService, orderStatus) => {
         // 清check内容
         setValidation({});
         // 初始化模态数据
@@ -80,7 +80,7 @@ function OrderDetail(props) {
         setModalOpen(true);
     };
 
-    const submitModal= ()=>{
+    const submitModal = () => {
         const validateObj ={};
         if (modalData.orderStatus === sysConst.ORDER_STATUS[1].value) {
             if (!modalData.deployUser) {
@@ -282,18 +282,18 @@ function OrderDetail(props) {
                 <Grid item sm={12}>
                     <TextField label="订单备注" fullWidth margin="dense" variant="outlined" multiline rows="2" InputLabelProps={{ shrink: true }}
                                disabled={orderDetailReducer.orderInfo.status == sysConst.ORDER_STATUS[3].value}
-                               value={orderDetailReducer.orderInfo.clientRemark}
+                               value={orderDetailReducer.orderInfo.client_remark}
                                onChange={(e) => {
-                                   dispatch(OrderDetailActionType.setOrderInfo({name: "clientRemark", value: e.target.value}))
+                                   dispatch(OrderDetailActionType.setOrderInfo({name: "client_remark", value: e.target.value}))
                                }}
                     />
                 </Grid>
                 <Grid item sm={12}>
                     <TextField label="操作备注" fullWidth margin="dense" variant="outlined" multiline rows="2" InputLabelProps={{ shrink: true }}
                                disabled={orderDetailReducer.orderInfo.status == sysConst.ORDER_STATUS[3].value}
-                               value={orderDetailReducer.orderInfo.opRemark}
+                               value={orderDetailReducer.orderInfo.op_remark}
                                onChange={(e) => {
-                                   dispatch(OrderDetailActionType.setOrderInfo({name: "opRemark", value: e.target.value}))
+                                   dispatch(OrderDetailActionType.setOrderInfo({name: "op_remark", value: e.target.value}))
                                }}
                     />
                 </Grid>
@@ -690,28 +690,6 @@ const mapDispatchToProps = (dispatch) => ({
             }
         });
     },
-
-    // saveStorageCheckRel: (id, checkCount, remark) => {
-    //     if (checkCount === '') {
-    //         Swal.fire("盘点数不能为空，请输入", '', "warning");
-    //     } else {
-    //         dispatch(orderDetailAction.saveStorageCheckRel({id, checkCount, remark}));
-    //     }
-    // },
-    // confirmCheck: (orderInfo) => {
-    //     // 计划盘点数 <> 盘点完成数 则不能执行完成操作
-    //     if (orderInfo.plan_check_count != orderInfo.checked_count) {
-    //         Swal.fire("盘点完成数和计划盘点数不相等，不能执行完成", '', "warning");
-    //     } else {
-    //         dispatch(orderDetailAction.changeStorageCheckStatus(orderInfo.id, sysConst.STORAGE_RET_STATUS[1].value));
-    //     }
-    // },
-    // downLoadCsv: (storageCheckId) => {
-    //     dispatch(storageCheckAction.downLoadCsv(storageCheckId))
-    // },
-    // downLoadPDF: (orderInfo) => {
-    //     dispatch(storageCheckAction.downLoadPDF(orderInfo))
-    // }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(OrderDetail)

@@ -231,6 +231,7 @@ function StorageProduct(props) {
                             <TableCell className={classes.tableHead} align="center">仓库分区</TableCell>
                             <TableCell className={classes.tableHead} align="center">供应商</TableCell>
                             <TableCell className={classes.tableHead} align="center">商品名称</TableCell>
+                            <TableCell className={classes.tableHead} align="center">采购单号</TableCell>
                             <TableCell className={classes.tableHead} align="center">单价</TableCell>
                             <TableCell className={classes.tableHead} align="center">库存</TableCell>
                             <TableCell className={classes.tableHead} align="center">仓储日期</TableCell>
@@ -244,6 +245,7 @@ function StorageProduct(props) {
                                 <TableCell align="center">{row.storage_area_name}</TableCell>
                                 <TableCell align="center">{row.supplier_name}</TableCell>
                                 <TableCell align="center">{row.product_name}</TableCell>
+                                <TableCell align="center">{row.purchase_id}</TableCell>
                                 <TableCell align="center">{row.unit_cost}</TableCell>
                                 <TableCell align="center">{row.storage_count}</TableCell>
                                 <TableCell align="center">{row.date_id}</TableCell>

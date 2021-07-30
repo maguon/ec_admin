@@ -80,7 +80,7 @@ export const changeStatus = (id, status, condition) => async (dispatch, getState
 export const deleteApp = (id, condition) => async (dispatch, getState) => {
     try {
         const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/app/' + id + '/del';
+            + '/app/' + id;
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpDelete(url, {});
         dispatch({type: AppActionType.showLoadProgress, payload: false});

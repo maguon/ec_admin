@@ -71,7 +71,6 @@ export const saveModalData = (modalData) => async (dispatch) => {
             OrderItemProdArray: modalData.productList,
             OrderItemServiceArray: modalData.serviceList
         };
-
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/order';
         dispatch({type: AppActionType.showLoadProgress, payload: true});

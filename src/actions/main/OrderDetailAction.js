@@ -70,8 +70,8 @@ export const saveOrder = () => async (dispatch, getState) => {
         const params = {
             reUserId: orderInfo.reUser == null ? '' : orderInfo.reUser.id,
             reUserName: orderInfo.reUser == null ? '' : orderInfo.reUser.real_name,
-            clientRemark: orderInfo.clientRemark,
-            opRemark: orderInfo.opRemark,
+            clientRemark: orderInfo.client_remark,
+            opRemark: orderInfo.op_remark,
         };
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/order/' + orderInfo.id;

@@ -203,11 +203,11 @@ function PurchasePay(props) {
                         <TableRow>
                             <TableCell className={classes.tableHead} align="center">采购单号</TableCell>
                             <TableCell className={classes.tableHead} align="center">供应商</TableCell>
-                            <TableCell className={classes.tableHead} align="center">采购日期</TableCell>
                             <TableCell className={classes.tableHead} align="center">运费类型</TableCell>
                             <TableCell className={classes.tableHead} align="center">运费</TableCell>
                             <TableCell className={classes.tableHead} align="center">商品成本</TableCell>
                             <TableCell className={classes.tableHead} align="center">总成本</TableCell>
+                            <TableCell className={classes.tableHead} align="center">采购日期</TableCell>
                             <TableCell className={classes.tableHead} align="center">支付日期</TableCell>
                             <TableCell className={classes.tableHead} align="center">支付状态</TableCell>
                             <TableCell className={classes.tableHead} align="center">操作</TableCell>
@@ -218,11 +218,11 @@ function PurchasePay(props) {
                             <TableRow key={'table-row-' + row.id}>
                                 <TableCell align="center">{row.id}</TableCell>
                                 <TableCell align="center">{row.supplier_name}</TableCell>
-                                <TableCell align="center">{row.plan_date_id}</TableCell>
                                 <TableCell align="center">{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE, row.transfer_cost_type)}</TableCell>
                                 <TableCell align="center">{row.transfer_cost}</TableCell>
                                 <TableCell align="center">{row.product_cost}</TableCell>
                                 <TableCell align="center">{row.total_cost}</TableCell>
+                                <TableCell align="center">{row.plan_date_id}</TableCell>
                                 <TableCell align="center">{row.payment_date_id}</TableCell>
                                 <TableCell align="center">{commonUtil.getJsonValue(sysConst.PAYMENT_STATUS, row.payment_status)}</TableCell>
                                 <TableCell align="center">
@@ -262,7 +262,7 @@ function PurchasePay(props) {
 
             {/* 模态：新增/修改 */}
             <SimpleModal
-                maxWidth={'md'}
+                maxWidth={'lg'}
                 title="采购支付详情"
                 open={modalOpen}
                 onClose={closeModal}

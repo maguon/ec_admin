@@ -128,7 +128,6 @@ export const saveModalData = (modalData) => async (dispatch) => {
             unitCost: modalData.unitCost,
             remark: modalData.remark
         };
-
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageCheckRel';
         dispatch({type: AppActionType.showLoadProgress, payload: true});
