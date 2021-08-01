@@ -44,16 +44,24 @@ export const getCurrentUser = () => async (dispatch) => {
 export const addClientAgentItem=()=>async (dispatch,getState) =>{
     try{
         const param = getState().CreateClientAgentModelReducer;
-        let params = {
+        let params = param.salesUserId==null?{
             remark: param.remark,
             name: param.name,
             clientType:param.clientType,
             tel: param.tel,
             address: param.address,
             idSerial:  param.idSerial,
-            salesUserId: param.salesUserId==null?'': param.salesUserId.id,
             sourceType: param.sourceType,
-        };
+        }:{
+           salesUserId: param.salesUserId.id,
+            remark: param.remark,
+            name: param.name,
+            clientType:param.clientType,
+            tel: param.tel,
+            address: param.address,
+            idSerial:  param.idSerial,
+            sourceType: param.sourceType,
+        }
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/clientAgent/';
         dispatch({type: AppActionType.showLoadProgress, payload: true});

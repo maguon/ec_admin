@@ -7,14 +7,22 @@ const sysConst = require('../../utils/SysConst');
 export const updateClientAgent = (id) => async (dispatch, getState) => {
     try {
         const params = getState().ClientAgentDetailReducer.clientAgentInfo;
-        const param={
+        const param=params.sales_user_id==null?{
             remark: params.remark,
             name: params.name,
             clientType: params.client_type,
             tel: params.tel,
             address: params.address,
             idSerial: params.id_serial,
-            salesUserId: params.sales_user_id==null?'':params.sales_user_id.id,
+            sourceType: params.source_type
+        }:{
+            salesUserId: params.sales_user_id.id,
+            remark: params.remark,
+            name: params.name,
+            clientType: params.client_type,
+            tel: params.tel,
+            address: params.address,
+            idSerial: params.id_serial,
             sourceType: params.source_type
         }
         dispatch({type: AppActionType.showLoadProgress, payload: true});

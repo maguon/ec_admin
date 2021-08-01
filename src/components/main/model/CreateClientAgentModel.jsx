@@ -19,8 +19,8 @@ function CreateClientModel (props) {
         if (!createClientModelReducer.name) {
             validateObj.name ='请输入客户名称';
         }
-        if (createClientModelReducer.salesUserId==null) {
-            validateObj.salesUserId ='请输入联系人';
+        if (!createClientModelReducer.tel) {
+            validateObj.tel ='请输入电话';
         }
         setValidation(validateObj);
         return Object.keys(validateObj).length
@@ -124,6 +124,8 @@ function CreateClientModel (props) {
                                onChange={(e) => {
                                    dispatch(CreateClientAgentModelActionType.setTel(e.target.value));
                                }}
+                               error={validation.tel && validation.tel!=''}
+                               helperText={validation.tel}
 
                     />
                 </Grid>
@@ -153,9 +155,7 @@ function CreateClientModel (props) {
                                   onChange={(e,value) => {
                                       dispatch(CreateClientAgentModelActionType.setSalesUserId(value));
                                   }}
-                                  renderInput={(params) => <TextField {...params} label="联系人" margin="dense" variant="outlined"
-                                                                      error={validation.salesUserId&&validation.salesUserId!=''}
-                                                                      helperText={validation.salesUserId}/>}
+                                  renderInput={(params) => <TextField {...params} label="联系人" margin="dense" variant="outlined"/>}
                     />
                 </Grid>
                 <Grid item xs>

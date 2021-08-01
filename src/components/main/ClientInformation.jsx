@@ -76,11 +76,11 @@ function ClientInformation (props) {
     //验证()
     const validate = ()=>{
         const validateObj ={}
-            if (!clientAgentId||clientAgentId==null) {
-                validateObj.clientAgentId ='请选择客户集群';
-            }
-        if (!referUser||referUser==null) {
-            validateObj.referUser ='请选择推荐人';
+        if (!clientAgentId||clientAgentId==null) {
+            validateObj.clientAgentId ='请选择客户集群';
+        }
+        if (!clientSerial) {
+            validateObj.clientSerial ='请选择车牌号';
         }
 
         setValidation(validateObj);
@@ -351,6 +351,8 @@ function ClientInformation (props) {
                             label="车牌号"
                             value={clientSerial}
                             onChange={(e)=>setClientSerial(e.target.value)}
+                            error={validation.clientSerial&&validation.clientSerial!=''}
+                            helperText={validation.clientSerial}
                         />
                     </Grid>
                     {/*VIN clientSerialDetail*/}
@@ -438,9 +440,7 @@ function ClientInformation (props) {
                                       getOptionLabel={(option) => option.real_name}
                                       value={referUser}
                                       onChange={(e,value)=>setReferUser(value)}
-                                      renderInput={(params) => <TextField {...params} label="推荐人" margin="dense" variant="outlined"
-                                                                          error={validation.referUser&&validation.referUser!=''}
-                                                                          helperText={validation.referUser}/>}
+                                      renderInput={(params) => <TextField {...params} label="推荐人" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
 

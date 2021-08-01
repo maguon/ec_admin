@@ -156,7 +156,7 @@ function PurchaseRefund (props){
                 setAddProduct("-1");
                 setActiveStep((prevActiveStep) => prevActiveStep + 1);
             }else {
-                validateObj.purchaseRefundId='请输入正确的采购ID';
+                validateObj.purchaseRefundId='未查询到此采购ID';
             }
         }
         setValidation(validateObj);
@@ -395,6 +395,7 @@ function PurchaseRefund (props){
                                     <StyledTableCell align="center">采购单号</StyledTableCell>
                                     <StyledTableCell align="center">供应商</StyledTableCell>
                                     <StyledTableCell align="center">商品名称</StyledTableCell>
+                                    <StyledTableCell align="center">采购单价</StyledTableCell>
                                     <StyledTableCell align="center">退货单价</StyledTableCell>
                                     <StyledTableCell align="center">退货数量</StyledTableCell>
                                     <StyledTableCell align="center">运费方式</StyledTableCell>
@@ -414,6 +415,7 @@ function PurchaseRefund (props){
                                         <TableCell align="center" >{row.purchase_id}</TableCell>
                                         <TableCell align="center" >{row.supplier_name}</TableCell>
                                         <TableCell align="center" >{row.product_name}</TableCell>
+                                        <TableCell align="center" >{row.unit_cost}</TableCell>
                                         <TableCell align="center" >{row.refund_unit_cost}</TableCell>
                                         <TableCell align="center" >{row.refund_count}</TableCell>
                                         <TableCell align="center" >{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE,row.transfer_cost_type)}</TableCell>
@@ -444,7 +446,7 @@ function PurchaseRefund (props){
                                         </TableCell>
                                     </TableRow>))}
                                 {purchaseRefundReducer.purchaseRefundArray.length === 0 &&
-                                <TableRow style={{height:60}}><TableCell align="center" colSpan="14">暂无数据</TableCell></TableRow>
+                                <TableRow style={{height:60}}><TableCell align="center" colSpan="15">暂无数据</TableCell></TableRow>
                                 }
                             </TableBody>
                         </Table>
@@ -788,7 +790,20 @@ function PurchaseRefund (props){
                         />
                     </Grid>
                 </Grid>
-                <Table stickyHeader size="small" style={{marginTop: 10}}>
+
+                <h4>出库记录</h4>
+                <Grid>
+                    {purchaseRefundReducer.storageProductRelArray.map((item) => (
+                    <Grid container  spacing={3}  key={'table-row-' + item.id}>
+                        <Grid item xs={3} align='left'>日期:{commonUtil.getDate(item.created_on)}</Grid>
+                        <Grid item xs={3} align='left'>人员:{item.real_name}</Grid>
+                        <Grid item xs={3} align='left'>仓库:{item.storage_name}</Grid>
+                        <Grid item xs={3} align='left'>分区:{item.storage_area_name}</Grid>
+                    </Grid>
+                            ))}
+                    <Divider className={classes.divider} variant="middle" />
+                </Grid>
+                {/*<Table stickyHeader size="small" style={{marginTop: 10}}>
                     <TableHead>
                         <TableRow>
                             <TableCell className={classes.tableHead} align="center">仓库</TableCell>
@@ -813,7 +828,7 @@ function PurchaseRefund (props){
                             <TableCell colSpan={5} align="center">暂无数据</TableCell>
                         </TableRow>}
                     </TableBody>
-                </Table>
+                </Table>*/}
             </SimpleModal>
         </div>
     )

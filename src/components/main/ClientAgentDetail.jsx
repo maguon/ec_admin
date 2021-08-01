@@ -94,8 +94,8 @@ function ClientAgentDetail (props){
         if (!clientAgentDetailReducer.clientAgentInfo.name) {
             validateObj.name ='请输入客户名称';
         }
-        if (!clientAgentDetailReducer.clientAgentInfo.sales_user_id) {
-            validateObj.salesUserId ='请输入联系人';
+        if (!clientAgentDetailReducer.clientAgentInfo.tel) {
+            validateObj.tel ='请输入电话';
         }
         setValidation(validateObj);
         return Object.keys(validateObj).length
@@ -265,6 +265,8 @@ function ClientAgentDetail (props){
                                            onChange={(e) => {
                                                dispatch(ClientAgentDetailActionType.setClientAgentInfo({name:'tel',value:e.target.value}));
                                            }}
+                                           error={validation.tel && validation.tel!=''}
+                                           helperText={validation.tel}
 
                                 />
                             </Grid>
@@ -294,9 +296,7 @@ function ClientAgentDetail (props){
                                               onChange={(e,value) => {
                                                   dispatch(ClientAgentDetailActionType.setClientAgentInfo({name:'sales_user_id',value:value}));
                                               }}
-                                              renderInput={(params) => <TextField {...params} label="联系人" margin="dense" variant="outlined"
-                                                                                  error={validation.salesUserId&&validation.salesUserId!=''}
-                                                                                  helperText={validation.salesUserId}/>}
+                                              renderInput={(params) => <TextField {...params} label="联系人" margin="dense" variant="outlined"/>}
                                 />
                             </Grid>
                             <Grid item xs>

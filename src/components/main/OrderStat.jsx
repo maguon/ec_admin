@@ -41,35 +41,39 @@ function OrderStat(props) {
 
     const setMonthOpt = () => {
         let xAxis = {data: []};
-        let series = [{name: '订单', type: 'bar', data: []}];
+        let series = [{name: '金额', type: 'bar', data: [],itemStyle: {color: '#14e3cc'}},{name: '订单数', type: 'bar', data: [], itemStyle: {color: '#f84f55'}}];
         for (let item of orderStatReducer.statOrderByMonth.values()) {
             xAxis.data.push(item.y_month);
             series[0].data.push(item.service_price);
+            series[1].data.push(item.count);
         }
         // 反转
         xAxis.data.reverse();
         series[0].data.reverse();
-        setMonthOption(createOption('', '订单', xAxis, series));
+        series[1].data.reverse();
+        setMonthOption(createOption('', ['金额','订单数'], xAxis, series));
     };
 
     const setDayOpt = () => {
         let xAxis = {data: []};
-        let series = [{name: '订单', type: 'bar', data: []}];
+        let series = [{name: '金额', type: 'bar',data: [],itemStyle: {color: '#3C3CC4'}},{name: '订单数', type: 'bar', data: [],itemStyle: {color: '#f84f55'}}];
         for (let item of orderStatReducer.statOrderByDay.values()) {
             xAxis.data.push(item.id);
             series[0].data.push(item.service_price);
+            series[1].data.push(item.count);
         }
         // 反转
         xAxis.data.reverse();
         series[0].data.reverse();
-        setDayOption(createOption('', '订单', xAxis, series));
+        series[1].data.reverse();
+        setDayOption(createOption('',  ['金额','订单数'], xAxis, series));
     };
 
     const createOption = (title, legend, xAxis, series) => {
         return {
             title: {text: title},
             tooltip: {},
-            legend: {data: [legend]},
+            legend: {data: legend},
             xAxis: xAxis,
             yAxis: {},
             series: series

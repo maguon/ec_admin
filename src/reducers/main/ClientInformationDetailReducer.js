@@ -10,7 +10,7 @@ const initialState = {
         client_serial:'',
         client_serial_detail:'',
         client_agent_id:null,
-        refer_user:null,
+        refer_user:'',
         source_type:0,
     },
     referUserInfo:[],
@@ -23,8 +23,13 @@ const initialState = {
 export default handleActions({
     [ClientInformationDetailActionType.getClientInfo]: (state, action) => {
         let ret = action.payload;
-        ret.refer_user={id:action.payload.refer_user,real_name:action.payload.refer_real_name};
+       /* if( action.payload.refer_real_name==null){
+            ret.refer_user=null
+        }else {
+            ret.refer_user={id:action.payload.refer_user,real_name:action.payload.refer_real_name};
+        }*/
         ret.client_agent_id={id:action.payload.client_agent_id,name:action.payload.client_agent_name}
+
         return {
             ...state,
             clientInfo: ret

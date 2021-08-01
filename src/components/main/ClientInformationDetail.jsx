@@ -12,7 +12,7 @@ import {
     Tabs,
     Accordion,
     AccordionSummary,
-    Divider
+    Divider, FormControl, InputLabel, MenuItem, Select
 } from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import TabContext from '@material-ui/lab/TabContext';
@@ -107,8 +107,8 @@ function ClientInformationDetail (props){
         if (!clientInformationDetailReducer.clientInfo.client_agent_id||clientInformationDetailReducer.clientInfo.client_agent_id==null) {
             validateObj.clientAgentId ='请选择客户集群';
         }
-        if (!clientInformationDetailReducer.clientInfo.refer_user||clientInformationDetailReducer.clientInfo.refer_user==null) {
-            validateObj.referUser ='请选择推荐人';
+        if (!clientInformationDetailReducer.clientInfo.client_serial||clientInformationDetailReducer.clientInfo.client_serial==null) {
+            validateObj.client_serial ='请选择车牌号';
         }
 
         setValidation(validateObj);
@@ -178,6 +178,8 @@ function ClientInformationDetail (props){
                                         dispatch(ClientInformationDetailActionType.setClientInfo({name:"client_serial",value:e.target.value}))
                                     }}
                                     value={clientInformationDetailReducer.clientInfo.client_serial}
+                                    error={validation.client_serial&&validation.client_serial!=''}
+                                    helperText={validation.client_serial}
                                 />
                             </Grid>
                             {/*VIN clientSerialDetail*/}
@@ -197,7 +199,7 @@ function ClientInformationDetail (props){
                             {/* <Grid item xs></Grid>*/}
                             {/*客户来源 sourceType*/}
                             <Grid item xs>
-                                <TextField style={{marginTop:'7px'}} fullWidth disabled='true'
+                                <TextField style={{marginTop:'7px'}} fullWidth disabled={true}
                                            size="small"
                                            select
                                            label="客户来源"
@@ -269,17 +271,30 @@ function ClientInformationDetail (props){
                             </Grid>
                             {/*推荐人 referUser*/}
                             <Grid item xs>
-                                <Autocomplete fullWidth disabled='true'
+                               {/* <Autocomplete fullWidth disabled={true}
                                               options={clientInformationDetailReducer.referUserInfo}
                                               getOptionLabel={(option) => option.real_name}
                                               value={clientInformationDetailReducer.clientInfo.refer_user}
                                               onChange={(e,value)=>{
                                                   dispatch(ClientInformationDetailActionType.setClientInfo({name:"refer_user",value:value}))
                                               }}
-                                              renderInput={(params) => <TextField {...params} label="推荐人" margin="dense" variant="outlined"
-                                                                                  error={validation.referUser&&validation.referUser!=''}
-                                                                                  helperText={validation.referUser}/>}
-                                />
+                                              renderInput={(params) => <TextField {...params} label="推荐人" margin="dense" variant="outlined"/>}
+                                />*/}
+                                <FormControl variant="outlined" fullWidth margin="dense">
+                                    <InputLabel>推荐人</InputLabel>
+                                    <Select label="推荐人"
+                                            disabled={true}
+                                            value={clientInformationDetailReducer.clientInfo.refer_user}
+                                            onChange={(e,value)=>{
+                                                dispatch(ClientInformationDetailActionType.setClientInfo({name:"refer_user",value:value}))
+                                            }}
+                                    >
+                                        <MenuItem value="">请选择</MenuItem>
+                                        {clientInformationDetailReducer.referUserInfo.map((item, index) => (
+                                            <MenuItem key={item.id} value={item.id}>{item.real_name}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
                             </Grid>
                         </Grid>
                         <Grid  container spacing={3}>
