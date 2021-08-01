@@ -41,7 +41,7 @@ function OrderStat(props) {
 
     const setMonthOpt = () => {
         let xAxis = {data: []};
-        let series = [{name: '金额', type: 'bar', data: [],itemStyle: {color: '#14e3cc'}},{name: '订单数', type: 'bar', data: [], itemStyle: {color: '#f84f55'}}];
+        let series = [{name: '金额', type: 'bar', data: [],itemStyle: {color: '#3C3CC4'}},{name: '订单数', type: 'bar', data: [], itemStyle: {color: '#f84f55'}}];
         for (let item of orderStatReducer.statOrderByMonth.values()) {
             xAxis.data.push(item.y_month);
             series[0].data.push(item.service_price);
