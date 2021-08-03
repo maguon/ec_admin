@@ -242,7 +242,7 @@ function PurchaseDetail (props){
                     <TabPanel value='1'>
                         {/*供应商选择*/}
                         <Grid  container spacing={3}>
-                            <Grid item xs>
+                            <Grid item xs={2}>
                                 <FormControl variant="outlined"   disabled={true} fullWidth={true} margin="dense">
                                     <InputLabel id="standard-select-outlined-label" shrink>供应商名称</InputLabel>
                                     <TextField fullWidth
@@ -257,7 +257,7 @@ function PurchaseDetail (props){
                                     />
                                 </FormControl>
                             </Grid>
-                            <Grid item xs>
+                            <Grid item xs={2}>
                                 <FormControl variant="outlined" fullWidth={true} margin="dense" disabled={true}>
                                     <InputLabel id="standard-select-outlined-label" shrink>仓储状态</InputLabel>
                                     <Select
@@ -272,7 +272,7 @@ function PurchaseDetail (props){
                                     </Select>
                                 </FormControl>
                             </Grid>
-                            <Grid item xs>
+                            <Grid item xs={2}>
                                 <FormControl variant="outlined" fullWidth={true} margin="dense" disabled={true}>
                                     <InputLabel id="standard-select-outlined-label" shrink>支付状态</InputLabel>
                                     <Select
@@ -288,7 +288,7 @@ function PurchaseDetail (props){
                                 </FormControl>
 
                             </Grid>
-                            <Grid item xs>
+                            <Grid item xs={2}>
                                 <FormControl variant="outlined" fullWidth={true} margin="dense">
                                     <InputLabel id="standard-select-outlined-label" shrink>运费类型</InputLabel>
                                     <Select
@@ -319,12 +319,11 @@ function PurchaseDetail (props){
                                            value={Number(purchaseCountTotal)}
                                 />
                             </Grid>
-                            <Grid item xs={1}></Grid>
                         </Grid>
                         {/*商品选择*/}
                         {purchaseDetailReducer.purchaseDetailItemInfo.map((item,index)=>(
                             <Grid  container spacing={3} key={index}>
-                                <Grid item xs>
+                                <Grid item xs={2}>
                                     <FormControl variant="outlined"   disabled={true} fullWidth={true} margin="dense">
                                         <InputLabel id="standard-select-outlined-label" shrink>商品</InputLabel>
                                         <TextField fullWidth
@@ -339,7 +338,7 @@ function PurchaseDetail (props){
                                         />
                                     </FormControl>
                                 </Grid>
-                                <Grid item xs>
+                                <Grid item xs={2}>
                                     <TextField type="number" label="商品单价" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                                value={item.unit_cost>9999999.99?0:item.unit_cost<0?0:item.unit_cost}
                                                onChange={(e) => {
@@ -347,7 +346,7 @@ function PurchaseDetail (props){
                                                }}
                                     />
                                 </Grid>
-                                <Grid item xs>
+                                <Grid item xs={2}>
                                     <TextField type="number" label="商品数量" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                                value={item.purchase_count}
                                                onChange={(e) => {
@@ -355,7 +354,7 @@ function PurchaseDetail (props){
                                                }}
                                     />
                                 </Grid>
-                                <Grid item xs>
+                                <Grid item xs={2}>
                                     <TextField type="number" disabled={true} label="商品总价" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                                value={Number(item.unit_cost>9999999.99?0:item.unit_cost<0?0:item.unit_cost)*Number(item.purchase_count)}
                                     />
