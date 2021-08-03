@@ -288,10 +288,10 @@ function PurchasePay(props) {
 
                 {purchasePayReducer.modalData.map((row) => (
                     <Grid container spacing={1}>
-                        <Grid item sm={3}><TextField label="商品" fullWidth margin="dense" variant="outlined" disabled value={row.product_name}/></Grid>
+                        <Grid item sm={2}><TextField label="商品" fullWidth margin="dense" variant="outlined" disabled value={row.product_name}/></Grid>
                         <Grid item sm={1}><TextField label="单价" fullWidth margin="dense" variant="outlined" disabled value={row.unit_cost}/></Grid>
                         <Grid item sm={1}><TextField label="数量" fullWidth margin="dense" variant="outlined" disabled value={row.purchase_count}/></Grid>
-                        <Grid item sm={1}><TextField label="总成本" fullWidth margin="dense" variant="outlined" disabled value={row.total_cost}/></Grid>
+                        <Grid item sm={2}><TextField label="总成本" fullWidth margin="dense" variant="outlined" disabled value={row.total_cost}/></Grid>
                         <Grid item sm={6}><TextField label="备注" fullWidth margin="dense" variant="outlined" disabled value={row.remark}/></Grid>
                     </Grid>
                 ))}
