@@ -427,7 +427,7 @@ function Purchase (props){
             >
                 {/*供应商选择*/}
                 <Grid  container spacing={3}>
-                    <Grid item xs>
+                    <Grid item xs={2}>
                         <TextField className={classes.selectCondition}
                                    select
                                    margin="dense"
@@ -449,7 +449,7 @@ function Purchase (props){
                             ))}
                         </TextField>
                     </Grid>
-                    <Grid item xs>
+                    <Grid item xs={2}>
                         <TextField className={classes.selectCondition}
                                    select
                                    margin="dense"
@@ -468,7 +468,7 @@ function Purchase (props){
                             ))}
                         </TextField>
                     </Grid>
-                    <Grid item xs>
+                    <Grid item xs={2}>
                         <TextField
                             step="0.01"
                             fullWidth={true}
@@ -481,7 +481,7 @@ function Purchase (props){
                             onChange={(e)=>setTransferCost(e.target.value)}
                         />
                     </Grid>
-                    <Grid item xs>
+                    <Grid item xs={2}>
                         <TextField
                             disabled={true}
                             fullWidth={true}
@@ -492,7 +492,8 @@ function Purchase (props){
                             value={Number(transferCost>9999999.99?0:transferCost<0?0:transferCost)+Number(purchaseCountTotal)}
                         />
                     </Grid>
-                    <Grid item xs  align="center" className={classes.addCategory}>
+                    <Grid item xs={2}></Grid>
+                    <Grid item xs={2}  align="center" className={classes.addCategory}>
                         <Fab size="small" color="primary" aria-label="add" onClick={addCategoryItem}>
                             <i className="mdi mdi-plus mdi-24px" />
                         </Fab>
@@ -501,7 +502,7 @@ function Purchase (props){
                 {/*商品选择*/}
                 {purchaseItem.map((item,index)=>(
                     <Grid  container spacing={3} key={'purchaseItem-'+index}>
-                        <Grid item xs>
+                        <Grid item xs={2}>
                             <TextField className={classes.selectCondition}
                                        select
                                        margin="dense"
@@ -523,7 +524,7 @@ function Purchase (props){
                                 ))}
                             </TextField>
                         </Grid>
-                        <Grid item xs>
+                        <Grid item xs={2}>
                             <TextField
                                 fullWidth={true}
                                 type='number'
@@ -536,7 +537,7 @@ function Purchase (props){
                                 helperText={validation.validateItem[index].unitCost}
                             />
                         </Grid>
-                        <Grid item xs>
+                        <Grid item xs={2}>
                             <TextField
                                 fullWidth={true}
                                 type='number'
@@ -549,7 +550,7 @@ function Purchase (props){
                                 helperText={validation.validateItem[index].unitNumber}
                             />
                         </Grid>
-                        <Grid item xs>
+                        <Grid item xs={2}>
                             <TextField
                                 disabled={true}
                                 type='number'
@@ -561,7 +562,7 @@ function Purchase (props){
                                 onChange={(e)=>setPurchaseItemParams(index,'purchaseCount',e.target.value)}
                             />
                         </Grid>
-                        <Grid item xs>
+                        <Grid item xs={2}>
                             <TextField
                                 fullWidth={true}
                                 margin="dense"
@@ -571,7 +572,7 @@ function Purchase (props){
                                 onChange={(e)=>setPurchaseItemParams(index,'remark',e.target.value)}
                             />
                         </Grid>
-                        <Grid item xs={1} align='center'>
+                        <Grid item xs={2} align='center'>
                             <IconButton color="secondary" edge="start" size="small"  style={{paddingTop:'18px'}} onClick={()=>{deleteItem(index,item)}}>
                                 <i className="mdi mdi-delete purple-font"> </i>
                             </IconButton>
