@@ -5,11 +5,11 @@ import {
     Box,
     Button,
     Divider,
-    Fab,
+    Fab, FormControl,
     Grid,
-    IconButton,
-    makeStyles,
-    Paper,
+    IconButton, InputLabel,
+    makeStyles, MenuItem,
+    Paper, Select,
     Table,
     TableBody,
     TableCell,
@@ -26,6 +26,8 @@ import {SimpleModal} from "../index";
 
 const storageProductAction = require('../../actions/main/StorageProductAction');
 const commonAction = require('../../actions/layout/CommonAction');
+const sysConst = require('../../utils/SysConst');
+const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
     root: customTheme.root,
@@ -46,6 +48,7 @@ function StorageProduct(props) {
             storageArea: null,
             supplier: null,
             product: null,
+            oldFlag: '',
             purchaseId: '',
             startDate: '',
             endDate: ''
@@ -182,6 +185,22 @@ function StorageProduct(props) {
                     </Grid>
 
                     <Grid item xs={3}>
+                        <FormControl variant="outlined" fullWidth margin="dense">
+                            <InputLabel>是否全新</InputLabel>
+                            <Select label="是否全新"
+                                    value={storageProductReducer.queryParams.oldFlag}
+                                    onChange={(e, value) => {
+                                        dispatch(StorageProductActionType.setQueryParams({name: "oldFlag", value: e.target.value}));
+                                    }}
+                            >
+                                <MenuItem value="">请选择</MenuItem>
+                                {sysConst.OLD_FLAG.map((item, index) => (
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={3}>
                         <TextField label="采购单ID" fullWidth margin="dense" variant="outlined" type="number" value={storageProductReducer.queryParams.purchaseId}
                              onChange={(e)=>{dispatch(StorageProductActionType.setQueryParams({name: "purchaseId", value: e.target.value}))}}/>
                     </Grid>
@@ -231,6 +250,7 @@ function StorageProduct(props) {
                             <TableCell className={classes.tableHead} align="center">仓库分区</TableCell>
                             <TableCell className={classes.tableHead} align="center">供应商</TableCell>
                             <TableCell className={classes.tableHead} align="center">商品名称</TableCell>
+                            <TableCell className={classes.tableHead} align="center">全新</TableCell>
                             <TableCell className={classes.tableHead} align="center">采购单号</TableCell>
                             <TableCell className={classes.tableHead} align="center">单价</TableCell>
                             <TableCell className={classes.tableHead} align="center">库存</TableCell>
@@ -245,6 +265,7 @@ function StorageProduct(props) {
                                 <TableCell align="center">{row.storage_area_name}</TableCell>
                                 <TableCell align="center">{row.supplier_name}</TableCell>
                                 <TableCell align="center">{row.product_name}</TableCell>
+                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.OLD_FLAG, row.old_flag)}</TableCell>
                                 <TableCell align="center">{row.purchase_id}</TableCell>
                                 <TableCell align="center">{row.unit_cost}</TableCell>
                                 <TableCell align="center">{row.storage_count}</TableCell>
@@ -266,7 +287,7 @@ function StorageProduct(props) {
                         </TableRow>}
                         {storageProductReducer.storageProductData.dataList.length === 0 &&
                         <TableRow>
-                            <TableCell colSpan={7} align="center">暂无数据</TableCell>
+                            <TableCell colSpan={10} align="center">暂无数据</TableCell>
                         </TableRow>}
                     </TableBody>
                 </Table>

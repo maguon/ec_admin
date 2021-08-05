@@ -25,6 +25,8 @@ const initialState = {
         supplier: null,
         // 商品
         product: null,
+        // 是否全新
+        oldFlag: '',
         // 采购单ID
         purchaseId: '',
         // 仓储日期（始）

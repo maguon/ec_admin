@@ -405,9 +405,16 @@ export const inOutStorageProduct = (data) => async (dispatch, getState) => {
         let storageSubType = data.type === 'out' ? sysConst.STORAGE_OP_EXPORT_TYPE[4].value : sysConst.STORAGE_OP_IMPORT_TYPE[4].value;
 
         // 状态
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/storageProductRel/' + storageProductRelId + '/storageProductRelDetail';
-        const params = {
+        let url;
+        if (data.type === 'out') {
+            url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+                + '/storageProductRel/' + storageProductRelId + '/storProdRelDetailExport';
+        } else {
+            url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+                + '/storageProductRel/' + storageProductRelId + '/storProdRelDetailImport';
+        }
+
+        let params = {
             // 出库
             storageType: storageType,
             // 内部领料出库
@@ -418,6 +425,9 @@ export const inOutStorageProduct = (data) => async (dispatch, getState) => {
             applyUserId: data.reUser === null ? '' : data.reUser.id,
             remark: data.remark
         };
+        if (data.type === 'in') {
+            params = {...params, oldFlag: data.oldFlag};
+        }
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpPost(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});

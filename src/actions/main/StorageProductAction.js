@@ -15,6 +15,7 @@ const getParams = () => (dispatch, getState) => {
         storageAreaId: queryParams.storageArea == null ? '' : queryParams.storageArea.id,
         supplierId: queryParams.supplier === null ? '' : queryParams.supplier.id,
         productId: queryParams.product == null ? '' : queryParams.product.id,
+        oldFlag: queryParams.oldFlag,
         purchaseId: queryParams.purchaseId,
         dateIdStart: commonUtil.formatDate(queryParams.startDate, 'yyyyMMdd'),
         dateIdEnd: commonUtil.formatDate(queryParams.endDate, 'yyyyMMdd')

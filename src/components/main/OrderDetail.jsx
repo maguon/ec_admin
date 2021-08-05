@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function OrderDetail(props) {
-    const {orderDetailReducer, commonReducer, changeOrderStatus, deleteService, deleteProd} = props;
+    const {orderDetailReducer, commonReducer, changeOrderStatus, cancelOrder, deleteService, deleteProd} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     const {id} = useParams();
@@ -262,7 +262,7 @@ function OrderDetail(props) {
 
                 <Grid item sm={3}>
                     <Autocomplete fullWidth disableClearable
-                                  disabled={orderDetailReducer.orderInfo.status == sysConst.ORDER_STATUS[3].value}
+                                  disabled={orderDetailReducer.orderInfo.status === 7 || orderDetailReducer.orderInfo.status === 0}
                                   options={commonReducer.userList}
                                   getOptionLabel={(option) => option.real_name}
                                   value={orderDetailReducer.orderInfo.reUser}
@@ -283,7 +283,7 @@ function OrderDetail(props) {
 
                 <Grid item sm={12}>
                     <TextField label="订单备注" fullWidth margin="dense" variant="outlined" multiline rows="2" InputLabelProps={{ shrink: true }}
-                               disabled={orderDetailReducer.orderInfo.status == sysConst.ORDER_STATUS[3].value}
+                               disabled={orderDetailReducer.orderInfo.status === 7 || orderDetailReducer.orderInfo.status === 0}
                                value={orderDetailReducer.orderInfo.client_remark}
                                onChange={(e) => {
                                    dispatch(OrderDetailActionType.setOrderInfo({name: "client_remark", value: e.target.value}))
@@ -292,7 +292,7 @@ function OrderDetail(props) {
                 </Grid>
                 <Grid item sm={12}>
                     <TextField label="操作备注" fullWidth margin="dense" variant="outlined" multiline rows="2" InputLabelProps={{ shrink: true }}
-                               disabled={orderDetailReducer.orderInfo.status == sysConst.ORDER_STATUS[3].value}
+                               disabled={orderDetailReducer.orderInfo.status === 7 || orderDetailReducer.orderInfo.status === 0}
                                value={orderDetailReducer.orderInfo.op_remark}
                                onChange={(e) => {
                                    dispatch(OrderDetailActionType.setOrderInfo({name: "op_remark", value: e.target.value}))
@@ -301,11 +301,14 @@ function OrderDetail(props) {
                 </Grid>
 
                 <Grid item xs={12}>
-                    {orderDetailReducer.orderInfo.status !== sysConst.ORDER_STATUS[3].value &&
+                    {(orderDetailReducer.orderInfo.status === 1 || orderDetailReducer.orderInfo.status === 3) &&
+                    <Button variant="contained" color="secondary" style={{float:'right', marginLeft: 20}} onClick={()=>{cancelOrder(orderDetailReducer.orderInfo)}}>取消</Button>}
+
+                    {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 &&
                     <Button variant="contained" color="secondary" style={{float:'right', marginLeft: 20}} onClick={()=>{changeOrderStatus(orderDetailReducer.orderInfo)}}>
                         {orderDetailReducer.orderInfo.status === sysConst.ORDER_STATUS[0].value ? '开始处理' : (orderDetailReducer.orderInfo.status === sysConst.ORDER_STATUS[1].value ? '结算' : '完成')}
                     </Button>}
-                    {orderDetailReducer.orderInfo.status !== sysConst.ORDER_STATUS[3].value &&
+                    {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 &&
                     <Button variant="contained" color="primary" style={{float:'right',marginLeft: 20}} onClick={()=>{dispatch(orderDetailAction.saveOrder())}}>保存</Button>}
                     <IconButton color="primary" edge="start" style={{float:'right', marginLeft: 20}} onClick={()=>{dispatch(orderDetailAction.downLoadPDF(id))}}>
                         <i className="mdi mdi-file-pdf mdi-24px"/>
@@ -317,7 +320,7 @@ function OrderDetail(props) {
             <Grid container spacing={1}>
                 <Grid item container sm={1}><Typography gutterBottom className={classes.title}>服务</Typography></Grid>
             </Grid>
-            {orderDetailReducer.orderInfo.status !== sysConst.ORDER_STATUS[3].value &&
+            {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 &&
             <Grid  container spacing={1}>
                 <Grid item xs={2}>
                     <Autocomplete fullWidth disableClearable
@@ -421,7 +424,7 @@ function OrderDetail(props) {
                                 dispatch(OrderDetailActionType.getOrderSerVList(orderDetailReducer.orderSerVList));
                             }}/>
                         </Grid>
-                        {orderDetailReducer.orderInfo.status !== sysConst.ORDER_STATUS[3].value &&
+                        {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 &&
                         <Grid item container xs={2}>
                             <Grid item xs={4} align='center'>
                                 {orderDetailReducer.orderInfo.status == sysConst.ORDER_STATUS[1].value &&
@@ -452,7 +455,7 @@ function OrderDetail(props) {
             <Grid container spacing={1}>
                 <Grid item container sm={1}><Typography gutterBottom className={classes.title}>商品</Typography></Grid>
             </Grid>
-            {orderDetailReducer.orderInfo.status !== sysConst.ORDER_STATUS[3].value &&
+            {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 &&
             <Grid container spacing={1}>
                 <Grid item xs={2}>
                     <Autocomplete fullWidth disableClearable
@@ -553,7 +556,7 @@ function OrderDetail(props) {
                                 dispatch(OrderDetailActionType.getOrderProdList(orderDetailReducer.orderProdList));
                             }}/>
                         </Grid>
-                        {orderDetailReducer.orderInfo.status !== sysConst.ORDER_STATUS[3].value &&
+                        {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 &&
                         <Grid item container xs={2} align='center'>
                             <Grid item xs={4} align='center'>
                                 {item.status === sysConst.PROD_ITEM_STATUS[0].value ? <div style={{fontSize: 14, paddingTop: 18}}>未</div> : <div style={{fontSize: 14, paddingTop: 18}}>领</div>}
@@ -640,6 +643,20 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(commonAction.getSaleServiceList());
         // 取得商品列表
         dispatch(commonAction.getProductList(null));
+    },
+    cancelOrder: (orderInfo) => {
+        Swal.fire({
+            title: "确定取消订单？",
+            text: '订单取消后，将不能修改订单信息',
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "确定",
+            cancelButtonText:"取消"
+        }).then(async (value) => {
+            if (value.isConfirmed) {
+                dispatch(orderDetailAction.changeOrderStatus(orderInfo.id, sysConst.ORDER_STATUS[4].value));
+            }
+        });
     },
     changeOrderStatus: (orderInfo) => {
         Swal.fire({

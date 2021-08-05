@@ -266,8 +266,9 @@ export const PROD_ITEM_STATUS = [
 export const ORDER_STATUS = [
     {value: 1, label: "未处理"},
     {value: 3, label: "处理中"},
-    {value: 5, label: "处理完，未结算"},
+    {value: 5, label: "已结算"},
     {value: 7, label: "处理完成"},
+    {value: 0, label: "取消"},
 ];
 
 export const ORDER_PAYMENT_STATUS = [

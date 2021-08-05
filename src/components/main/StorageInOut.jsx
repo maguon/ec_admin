@@ -14,7 +14,10 @@ import {
     makeStyles,
     MenuItem,
     Paper,
-    Select, Step, StepLabel, Stepper,
+    Select,
+    Step,
+    StepLabel,
+    Stepper,
     Tab,
     Table,
     TableBody,
@@ -34,7 +37,6 @@ import Alert from '@material-ui/lab/Alert';
 // 引入Dialog
 import {SimpleModal} from "../index";
 import {CommonActionType, StorageInOutActionType} from "../../types";
-import Swal from "sweetalert2";
 
 const storageInOutAction = require('../../actions/main/StorageInOutAction');
 const commonAction = require('../../actions/layout/CommonAction');
@@ -312,7 +314,7 @@ function StorageInOut(props) {
                 if(Object.keys(validateObj).length===0){
                     let ret = await dispatch(storageInOutAction.getStorageProductRelDetailInfo(modalData.inOutNo));
                     if (ret.length > 0) {
-                        setModalData({...modalData,storageProdRelDetail: ret[0], activeStep:modalData.activeStep + 1});
+                        setModalData({...modalData,storageProdRelDetail: ret[0],oldFlag: ret[0].old_flag, activeStep:modalData.activeStep + 1});
                     } else {
                         setValidation({inOutNo:'没有该出库记录,请重新输入'});
                     }
@@ -1171,6 +1173,7 @@ function StorageInOut(props) {
                                     <TableCell className={classes.tableHead} align="center">采购单号</TableCell>
                                     <TableCell className={classes.tableHead} align="center">供应商</TableCell>
                                     <TableCell className={classes.tableHead} align="center">商品</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">全新</TableCell>
                                     <TableCell className={classes.tableHead} align="center">仓库</TableCell>
                                     <TableCell className={classes.tableHead} align="center">仓库分区</TableCell>
                                     <TableCell className={classes.tableHead} align="center">出/入库</TableCell>
@@ -1188,6 +1191,7 @@ function StorageInOut(props) {
                                         <TableCell align="center">{row.purchase_id == 0 ? '' : row.purchase_id}</TableCell>
                                         <TableCell align="center">{row.supplier_name}</TableCell>
                                         <TableCell align="center">{row.product_name}</TableCell>
+                                        <TableCell align="center">{commonUtil.getJsonValue(sysConst.OLD_FLAG, row.old_flag)}</TableCell>
                                         <TableCell align="center">{row.storage_name}</TableCell>
                                         <TableCell align="center">{row.storage_area_name}</TableCell>
                                         <TableCell align="center">{commonUtil.getJsonValue(sysConst.STORAGE_OP_TYPE, row.storage_type)}</TableCell>
@@ -1200,7 +1204,7 @@ function StorageInOut(props) {
                                 ))}
                                 {storageInOutReducer.storageProductDetail.dataList.length === 0 &&
                                 <TableRow>
-                                    <TableCell colSpan={12} align="center">暂无数据</TableCell>
+                                    <TableCell colSpan={13} align="center">暂无数据</TableCell>
                                 </TableRow>}
                             </TableBody>
                         </Table>
@@ -1329,9 +1333,10 @@ function StorageInOut(props) {
                                         <FormControl variant="outlined" fullWidth margin="dense">
                                             <InputLabel>是否全新</InputLabel>
                                             <Select label="是否全新"
+                                                    disabled={modalData.storageProdRelDetail && modalData.storageProdRelDetail.old_flag === sysConst.OLD_FLAG[1].value}
                                                     value={modalData.oldFlag}
                                                     onChange={(e, value) => {
-                                                        setModalData({...modalData,oldFlag:value});
+                                                        setModalData({...modalData,oldFlag:e.target.value});
                                                     }}
                                             >
                                                 {sysConst.OLD_FLAG.map((item, index) => (
