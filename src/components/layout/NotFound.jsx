@@ -51,7 +51,7 @@ function NotFound(props) {
                 }
             }
         }
-    }, [location]);
+    }, [location,appReducer.currentUserMenu.menuList.length]);
 
     return (
         <div className={classes.root}>
