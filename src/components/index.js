@@ -48,6 +48,7 @@ import ClientStat from './main/ClientStat';
 import OrderPanel from './main/OrderPanel';
 import NotFound from './layout/NotFound';
 import Achievement from './main/Achievement';
+import OrderPay from './main/OrderPay';
 export {
     Header,
     Footer,
@@ -98,5 +99,6 @@ export {
     ClientStat,
     OrderPanel,
     NotFound,
-    Achievement
+    Achievement,
+    OrderPay
 }

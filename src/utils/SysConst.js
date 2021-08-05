@@ -413,6 +413,12 @@ export const ALL_PAGE_LIST = [
                 "icon": "mdi-chevron-right",
                 "usable": false
             },
+            {
+                "link": "/order_pay",
+                "name": "订单付款",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
         ]
     },
     {
