@@ -47,6 +47,7 @@ import OrderStat from './main/OrderStat';
 import ClientStat from './main/ClientStat';
 import OrderPanel from './main/OrderPanel';
 import NotFound from './layout/NotFound';
+import Achievement from './main/Achievement';
 export {
     Header,
     Footer,
@@ -96,5 +97,6 @@ export {
     OrderStat,
     ClientStat,
     OrderPanel,
-    NotFound
+    NotFound,
+    Achievement
 }

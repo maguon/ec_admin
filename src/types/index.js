@@ -38,6 +38,7 @@ import * as ClientInformationDetailActionType from './main/ClientInformationDeta
 import * as ClientStatActionType from './main/ClientStatActionType';
 import * as OrderStatActionType from "./main/OrderStatActionType";
 import * as OrderPanelActionType from './main/OrderPanelActionType';
+import * as AchievementActionType from './main/AchievementActionType'
 export {
     AppActionType,
     CommonActionType,
@@ -78,5 +79,6 @@ export {
     ClientInformationDetailActionType,
     ClientStatActionType,
     OrderStatActionType,
-    OrderPanelActionType
+    OrderPanelActionType,
+    AchievementActionType
 }

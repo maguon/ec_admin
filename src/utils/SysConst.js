@@ -315,6 +315,13 @@ export const ALL_PAGE_LIST = [
                 "icon": "mdi-chevron-right",
                 "usable": false
             },
+            {
+                "link": "/achievement",
+                "name": "绩效信息",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
+
         ]
     },
     {

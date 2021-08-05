@@ -37,7 +37,8 @@ import {
     PurchaseStat,
     OrderStat,
     ClientStat,
-    OrderPanel
+    OrderPanel,
+    Achievement
 } from "../components";
 
 export const routes = [
@@ -59,6 +60,7 @@ export const routesWithHeader = [
     // 订单信息
     {path: "/order", exact: true, component: Order},
     {path: "/order/:id", exact: true, component: OrderDetail},
+    {path: "/achievement", exact: true, component: Achievement},
 
     /** 采购管理 */
     //采购
