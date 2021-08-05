@@ -32,7 +32,7 @@ function OrderDetail(props) {
         dispatch(orderDetailAction.getOrderInfo(id));
         dispatch(orderDetailAction.getOrderItemService(id));
         dispatch(orderDetailAction.getOrderItemProd(id));
-    }, []);
+    }, [id]);
 
     // 新增服务数据
     const [newServiceData, setNewServiceData] = React.useState({

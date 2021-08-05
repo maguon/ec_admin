@@ -61,7 +61,7 @@ function Order(props) {
     // 模态步骤说明
     const steps = ['选择车牌号', '填写服务·商品'];
     // 模态校验
-    const [validation,setValidation] = useState({serviceList:[], productList:[]});
+    const [validation,setValidation] = useState({serviceList:[], productList:[], nodata: ''});
 
     useEffect(() => {
         // 详情页面 返回 保留reducer，否则，清空
@@ -88,7 +88,7 @@ function Order(props) {
     // 初始化模态框值
     const initModal = () => {
         // 清check内容
-        setValidation({serviceList: [], productList: []});
+        setValidation({serviceList: [], productList: [], nodata: ''});
         // 取得select列表
         props.getModalSelectList();
         // 默认第一步
@@ -205,6 +205,7 @@ function Order(props) {
         }
         // 第二步：填写服务·商品
         if (step === 1) {
+            validation.nodata = '';
             // 存在服务或者商品时
             if (modalData.serviceList.length > 0 || modalData.productList.length) {
                 let errors = 0;
@@ -242,7 +243,7 @@ function Order(props) {
                     setModalOpen(false);
                 }
             } else {
-                Swal.fire("新增失败", '必须添加服务或商品', "warning");
+                setValidation({...validation, nodata: '必须添加服务或商品'});
             }
         }
     };
@@ -591,6 +592,9 @@ function Order(props) {
                                     </IconButton>
                                 </Grid>
                             </Grid>
+                            <Grid item container sm={11}>
+                                <Typography gutterBottom style={{color: 'red',fontSize: 13, paddingTop: 5}}>{validation.nodata}</Typography>
+                            </Grid>
                         </Grid>
 
                         {modalData.serviceList.map((item,index)=>(
@@ -699,8 +703,7 @@ function Order(props) {
                                                       calcProdPrice(index);
                                                   }}
                                                   renderInput={(params) => <TextField {...params} label="商品名称" margin="dense" variant="outlined"
-                                                                                      error={validation.productList[index].productInfo!=''}
-                                                                                      helperText={validation.productList[index].productInfo}
+                                                    error={validation.productList[index].productInfo!=''} helperText={validation.productList[index].productInfo}
                                                   />}
                                     />
                                 </Grid>

@@ -1,21 +1,14 @@
 import React, {Fragment} from 'react';
-import {Provider} from 'react-redux';
-import ReduxThunk from 'redux-thunk';
+import {connect} from 'react-redux';
 import {HashRouter as Router, Route, Switch} from "react-router-dom";
 import clsx from 'clsx';
 import './App.css';
 import {makeStyles} from '@material-ui/core';
-import {applyMiddleware, createStore, compose} from 'redux';
-import reducers from './reducers'
 // 引入布局组件
-import {Header,Navigation,Footer,LoadProgree} from './components';
+import {Footer, Header, LoadProgree, MainPanel, Navigation, NotFound} from './components';
 import DateFnsUtils from "@date-io/date-fns";
 import cnLocale from "date-fns/locale/zh-CN";
 import {MuiPickersUtilsProvider} from "@material-ui/pickers";
-
-const store = compose(
-    applyMiddleware(ReduxThunk)
-)(createStore)(reducers, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 // 路由
 const routes = require('../src/router/index');
 // 抽屉宽度
@@ -45,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function App(props) {
+    const {appReducer} = props;
     const classes = useStyles();
     const [drawerOpen, setOpen] = React.useState(false);
     const handleDrawerOpen = () => {
@@ -55,49 +49,60 @@ function App(props) {
     };
 
     return (
-        <Provider store={store}>
-            <Router hashType={"hashbang"}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils} locale={cnLocale}>
-                <Switch>
-                    {/* login相关 */}
-                    {routes.routes.map((route, index) => (
-                        <Route
-                            key={index}
-                            path={route.path}
-                            exact={route.exact}
-                            component={route.component}
-                        />
-                    ))}
-                    {/* 主画面 */}
-                    <Fragment>
-                        {/* 主页：头部 内容 */}
-                        <Header drawerOpen={drawerOpen} handleDrawerOpen={handleDrawerOpen} />
-                        {/* 主页：导航 内容 */}
-                        <Navigation drawerOpen={drawerOpen} handleDrawerClose={handleDrawerClose}/>
-                        {/* 主页：主体 内容 */}
-                        <main className={clsx(classes.content, {[classes.contentShift]: drawerOpen})}>
-                            {/* css：避开 toolsBar 部分 */}
-                            <div className={classes.contentHeader}/>
-                            {/* 路由主体：迁移到各 组件 */}
-                            {routes.routesWithHeader.map((route, index) => (
+        <Router hashType={"hashbang"}>
+            <MuiPickersUtilsProvider utils={DateFnsUtils} locale={cnLocale}>
+            <Switch>
+                {/* login相关 */}
+                {routes.routes.map((route, index) => (
+                    <Route
+                        key={index}
+                        path={route.path}
+                        exact={route.exact}
+                        component={route.component}
+                    />
+                ))}
+                {/* 主画面 */}
+                <Fragment>
+                    {/* 主页：头部 内容 */}
+                    <Header drawerOpen={drawerOpen} handleDrawerOpen={handleDrawerOpen} />
+                    {/* 主页：导航 内容 */}
+                    <Navigation drawerOpen={drawerOpen} handleDrawerClose={handleDrawerClose}/>
+                    {/* 主页：主体 内容 */}
+                    <main className={clsx(classes.content, {[classes.contentShift]: drawerOpen})}>
+                        {/* css：避开 toolsBar 部分 */}
+                        <div className={classes.contentHeader}/>
+                        {/* 路由主体：迁移到各 组件 */}
+                        {routes.routesWithHeader.map((route, index) => (
+                            <>
+                                {appReducer.currentUserMenu.menuList.length > 0 && appReducer.currentUserMenu.linkMenu.get(route.path.substr(0,route.path.lastIndexOf('/') > 0 ? route.path.lastIndexOf('/') : route.path.length)) &&
                                 <Route
                                     key={index + 10}
                                     path={route.path}
-                                    exact={route.exact}
+                                    exact
                                     component={route.component}
-                                />
-                            ))}
-                        </main>
-                        {/* 主页：底部 内容 */}
-                        <Footer/>
-                    </Fragment>
-                </Switch>
-                </MuiPickersUtilsProvider>
-                {/* 加载中... */}
-                <LoadProgree/>
-            </Router>
-        </Provider>
+                                />}
+                            </>
+                        ))}
+                        <Route path="/" exact component={MainPanel}/>
+                        <Route component={NotFound}/>
+                    </main>
+                    {/* 主页：底部 内容 */}
+                    <Footer/>
+                </Fragment>
+            </Switch>
+            </MuiPickersUtilsProvider>
+            {/* 加载中... */}
+            <LoadProgree/>
+        </Router>
     )
 }
 
-export default App;
+const mapStateToProps = (state) => {
+    return {
+        appReducer: state.AppReducer
+    }
+};
+
+const mapDispatchToProps = (dispatch) => ({});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

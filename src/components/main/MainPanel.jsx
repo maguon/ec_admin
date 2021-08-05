@@ -35,12 +35,12 @@ function MainPanel(props) {
 
     // 存在菜单时，隔2秒，自动跳转到  菜单第一个link
     useEffect(() => {
-        if (appReducer.currentUserMenu.length > 0) {
+        if (appReducer.currentUserMenu.menuList.length > 0) {
             setTimeout(() => {
-                setLink(appReducer.currentUserMenu[0].link);
+                setLink(appReducer.currentUserMenu.menuList[0].link);
             }, 2000);
         }
-    }, [appReducer.currentUserMenu.length]);
+    }, [appReducer.currentUserMenu.menuList.length]);
 
     return (
         <div className={classes.root}>

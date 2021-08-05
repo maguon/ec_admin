@@ -5,7 +5,7 @@ const sysConst = require('../../utils/SysConst');
 const initialState = {
     showLoadProgressFlag: false,
     currentUser: {},
-    currentUserMenu: []
+    currentUserMenu: {menuList:[],linkMenu:{}}
 };
 
 export default handleActions({
@@ -42,7 +42,7 @@ export default handleActions({
         }
         return {
             ...state,
-            currentUserMenu: menuList
+            currentUserMenu: {menuList: menuList, linkMenu: action.payload}
         }
     }
 }, initialState);

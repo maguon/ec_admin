@@ -436,7 +436,7 @@ export const getStorageProductRelDetailInfo = (storageProductRelDetailId) => asy
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/storageProductRelDetail?storageProductRelDetailId=' + storageProductRelDetailId;
+            + '/storageProductRelDetail?storageProductRelDetailId=' + storageProductRelDetailId + '&storageType=' + sysConst.STORAGE_OP_TYPE[1].value;
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});

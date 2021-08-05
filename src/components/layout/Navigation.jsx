@@ -65,7 +65,7 @@ function Navigation(props) {
 
             {/* 抽屉下部分：导航列表 */}
             <List className={classes.menuList}>
-                {appReducer.currentUserMenu.map(function (item, index) {
+                {appReducer.currentUserMenu.menuList.map(function (item, index) {
                     return (
                         <div key={index}>
                             {/* 不含子菜单：直接使用ListItem */}

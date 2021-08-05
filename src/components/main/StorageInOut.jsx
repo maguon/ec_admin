@@ -270,13 +270,13 @@ function StorageInOut(props) {
 
     /** 出入库 TAB */
     const [modalOpen, setModalOpen] = React.useState(false);
-    const [modalData, setModalData] = React.useState({prodCnt:0, steps:['选择出入库编号', '填写数量·领用人']});
+    const [modalData, setModalData] = React.useState({prodCnt:0, steps:['选择出库编号', '填写数量·领用人']});
     const initModal = (type) => {
         setValidation({});
         if (type === 'out') {
             setModalData({...modalData,type:type,product:null,storageProduct:null,prodCnt:0,reUser:null,remark:''});
         } else {
-            setModalData({...modalData,type:type,inOutNo:'',storageProdRelDetail:null, activeStep:0,prodCnt:0,reUser:null,remark:''});
+            setModalData({...modalData,type:type,inOutNo:'',storageProdRelDetail:null, activeStep:0,prodCnt:0,oldFlag:0,reUser:null,remark:''});
         }
         setModalOpen(true);
     };
@@ -306,7 +306,7 @@ function StorageInOut(props) {
         } else {
             if (step === 0) {
                 if (!modalData.inOutNo) {
-                    validateObj.inOutNo ='请输入出入库编号';
+                    validateObj.inOutNo ='请输入出库编号';
                 }
                 setValidation(validateObj);
                 if(Object.keys(validateObj).length===0){
@@ -314,7 +314,7 @@ function StorageInOut(props) {
                     if (ret.length > 0) {
                         setModalData({...modalData,storageProdRelDetail: ret[0], activeStep:modalData.activeStep + 1});
                     } else {
-                        Swal.fire("没有该出入库记录", '请重新输入', "warning");
+                        setValidation({inOutNo:'没有该出库记录,请重新输入'});
                     }
                 }
             }
@@ -1157,17 +1157,8 @@ function StorageInOut(props) {
                                 </Fab>
                             </Grid>
 
-                            <Grid item xs={3}>
-                                <Fab color="primary" size="small" onClick={()=>{initModal('in')}}>
-                                    <i className="mdi mdi-login mdi-24px"/>
-                                </Fab>
-                            </Grid>
-
-                            <Grid item xs={3}>
-                                <Fab color="primary" size="small" onClick={()=>{initModal('out')}}>
-                                    <i className="mdi mdi-logout mdi-24px"/>
-                                </Fab>
-                            </Grid>
+                            <Grid item xs={3}><Fab color="primary" size="small" onClick={()=>{initModal('in')}}>入</Fab></Grid>
+                            <Grid item xs={3}><Fab color="primary" size="small" onClick={()=>{initModal('out')}}>出</Fab></Grid>
                         </Grid>
                     </Grid>
 
@@ -1312,7 +1303,7 @@ function StorageInOut(props) {
                             <div align="center">
                                 {/*第一步添加ID*/}
                                 <div style={{display:modalData.activeStep==0?'block':'none', overflow: 'hidden'}}>
-                                    <TextField label="出入库编号" margin="dense" variant="outlined" value={modalData.inOutNo}
+                                    <TextField label="出库编号" margin="dense" variant="outlined" value={modalData.inOutNo}
                                                onChange={(e)=>{setModalData({...modalData,inOutNo:e.target.value})}}
                                                error={validation.inOutNo&&validation.inOutNo!=''} helperText={validation.inOutNo}/>
                                 </div>
@@ -1321,7 +1312,7 @@ function StorageInOut(props) {
                                     <Typography gutterBottom className={classes.title}>出入库信息</Typography>
                                     {modalData.storageProdRelDetail != null &&
                                     <Grid container spacing={2} style={{marginBottom:10}}>
-                                        <Grid item sm={6}>出入库编号：{modalData.storageProdRelDetail.id}</Grid>
+                                        <Grid item sm={6}>出库编号：{modalData.storageProdRelDetail.id}</Grid>
                                         <Grid item sm={6}>商品：{modalData.storageProdRelDetail.product_name}</Grid>
                                         <Grid item sm={6}>仓库：{modalData.storageProdRelDetail.storage_name}</Grid>
                                         <Grid item sm={6}>仓库分区：{modalData.storageProdRelDetail.storage_area_name}</Grid>
@@ -1329,13 +1320,27 @@ function StorageInOut(props) {
                                     </Grid>}
 
                                     <Grid container spacing={1}>
-                                    <Grid item xs={6}>
+                                    <Grid item xs={4}>
                                         <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" value={modalData.prodCnt}
                                                    onChange={(e) => {setModalData({...modalData,prodCnt:e.target.value})}}
                                                    error={validation.prodCnt&&validation.prodCnt!=''} helperText={validation.prodCnt}/>
                                     </Grid>
-
-                                    <Grid item xs={6}>
+                                    <Grid item xs={4}>
+                                        <FormControl variant="outlined" fullWidth margin="dense">
+                                            <InputLabel>是否全新</InputLabel>
+                                            <Select label="是否全新"
+                                                    value={modalData.oldFlag}
+                                                    onChange={(e, value) => {
+                                                        setModalData({...modalData,oldFlag:value});
+                                                    }}
+                                            >
+                                                {sysConst.OLD_FLAG.map((item, index) => (
+                                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={4}>
                                         <Autocomplete fullWidth options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
                                                       value={modalData.reUser}
                                                       onChange={(event, value) => {

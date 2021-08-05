@@ -2,14 +2,12 @@ import React, {useEffect} from 'react';
 import {connect} from 'react-redux';
 import {useLocation} from 'react-router-dom'
 import {makeStyles, Typography} from '@material-ui/core';
-
-const appAction = require('../../actions/layout/AppAction');
+// 路由
+const routes = require('../../../src/router/index');
 const useStyles = makeStyles((theme) => ({
-    welcome: {
+    pic: {
         textAlign: 'center',
-        marginTop: 50,
-        fontSize: 22,
-        color: '#80c2ff',
+        marginTop: 150
     }
 }));
 
@@ -18,25 +16,47 @@ function NotFound(props) {
     const {appReducer} = props;
     const classes = useStyles();
     let location = useLocation();
-
-    const [path, setPath] = React.useState('');
+    const [invalid, setInvalid] = React.useState(false);
 
     useEffect(() => {
-        console.log('location.pathname',location.pathname);
-        let index = location.pathname.indexOf('/',1);
-        if (index > 0) {
-            setPath(location.pathname.substr(0,index));
+        // 默认路径 所有情况，均为 有效路径
+        if (location.pathname == '/') {
+            setInvalid(false);
         } else {
-            setPath(location.pathname);
+            // 如果此用户没有权限，则所有路径均为无效路径
+            if (appReducer.currentUserMenu.menuList.length === 0) {
+                setInvalid(true);
+            } else {
+                // 判断有没有二层路径
+                let index = location.pathname.indexOf('/', 1);
+                if (index > 0) {
+                    let firstPath = location.pathname.substr(0, index);
+                    // 有二层，先判断一层权限有没有
+                    if (appReducer.currentUserMenu.linkMenu.get(firstPath)) {
+                        // 有一层权限
+                        let secondFlag = false;
+                        for (let i = 0; i < routes.routesWithHeader.length; i++) {
+                            if (routes.routesWithHeader[i].path.indexOf(firstPath + '/:') >= 0) {
+                                secondFlag = true;
+                                break;
+                            }
+                        }
+                        setInvalid(!secondFlag);
+                    } else {
+                        setInvalid(true);
+                    }
+                } else {
+                    // 无二层
+                    setInvalid(!appReducer.currentUserMenu.linkMenu.get(location.pathname));
+                }
+            }
         }
-
-console.log('',path);
     }, [location]);
 
     return (
         <div className={classes.root}>
-            {(appReducer.currentUserMenu.menuList.length > 0 && !appReducer.currentUserMenu.linkMenu.get(path) && path != '/') &&
-            <Typography gutterBottom className={classes.welcome}>
+            {invalid &&
+            <Typography gutterBottom className={classes.pic}>
                 <img style={{paddingTop: 6}} src="/404.png" alt=""/>
             </Typography>}
         </div>
@@ -49,11 +69,6 @@ const mapStateToProps = (state) => {
     }
 };
 
-const mapDispatchToProps = (dispatch) => ({
-    // 取得登录用户 菜单
-    getCurrentUserMenu: () => {
-        dispatch(appAction.getCurrentUserMenu());
-    },
-});
+const mapDispatchToProps = (dispatch) => ({});
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotFound)

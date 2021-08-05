@@ -21,6 +21,7 @@ export const getOrderInfo = (orderId) => async (dispatch) => {
                 dispatch({type: OrderDetailActionType.getOrderInfo, payload: {}});
             }
         } else if (!res.success) {
+            dispatch({type: OrderDetailActionType.getOrderInfo, payload: {}});
             Swal.fire("获取订单信息失败", res.msg, "warning");
         }
     } catch (err) {
