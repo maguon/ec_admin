@@ -177,6 +177,12 @@ export const STORAGE_OP_TYPE= [
     {value: 2, label: "出库"}
 ];
 
+// 是否全新
+export const OLD_FLAG= [
+    {value: 0, label: "是"},
+    {value: 1, label: "否"}
+];
+
 // 入库 类型
 export const STORAGE_OP_IMPORT_TYPE= [
     {value: 11, label: "采购入库"},
