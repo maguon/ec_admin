@@ -74,7 +74,8 @@ function App(props) {
                         {/* 路由主体：迁移到各 组件 */}
                         {routes.routesWithHeader.map((route, index) => (
                             <>
-                                {appReducer.currentUserMenu.menuList.length > 0 && appReducer.currentUserMenu.linkMenu.get(route.path) &&
+                                {appReducer.currentUserMenu.menuList.length > 0 &&
+                                appReducer.currentUserMenu.linkMenu.get(route.path.substr(0,route.path.lastIndexOf('/') > 0 ? route.path.lastIndexOf('/') : route.path.length)) &&
                                 <Route
                                     key={index + 10}
                                     path={route.path}
