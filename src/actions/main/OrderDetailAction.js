@@ -188,6 +188,7 @@ export const addOrderItemService = (orderId, data) => async (dispatch) => {
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
             dispatch(getOrderInfo(orderId));
+            dispatch(getOrderItemService(orderId));
             Swal.fire("保存成功", "", "success");
         } else {
             Swal.fire("保存失败", res.msg, "warning");
@@ -217,6 +218,7 @@ export const addOrderItemProd = (orderId, data) => async (dispatch) => {
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
             dispatch(getOrderInfo(orderId));
+            dispatch(getOrderItemProd(orderId));
             Swal.fire("保存成功", "", "success");
         } else {
             Swal.fire("保存失败", res.msg, "warning");
@@ -237,6 +239,7 @@ export const deleteOrderItemService = (data) => async (dispatch) => {
             Swal.fire("删除成功", "", "success");
             // 刷新
             dispatch(getOrderInfo(data.order_id));
+            dispatch(getOrderItemService(data.order_id));
         } else if (!res.success) {
             Swal.fire('删除失败', res.msg, 'warning');
         }
@@ -256,6 +259,7 @@ export const deleteOrderItemProd = (data) => async (dispatch) => {
             Swal.fire("删除成功", "", "success");
             // 刷新
             dispatch(getOrderInfo(data.order_id));
+            dispatch(getOrderItemProd(data.order_id));
         } else if (!res.success) {
             Swal.fire('删除失败', res.msg, 'warning');
         }
@@ -264,8 +268,9 @@ export const deleteOrderItemProd = (data) => async (dispatch) => {
     }
 };
 
-export const saveModalData = (modalData) => async (dispatch) => {
+export const saveModalData = (modalData) => async (dispatch, getState) => {
     try {
+        let orderSerVList = getState().OrderDetailReducer.orderSerVList;
         let params;
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
@@ -288,7 +293,13 @@ export const saveModalData = (modalData) => async (dispatch) => {
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
             Swal.fire("保存成功", "", "success");
-            dispatch(getOrderInfo(modalData.orderItemService.order_id));
+            await dispatch(getOrderItemService(modalData.orderItemService.order_id));
+            let newOrderSerVList = getState().OrderDetailReducer.orderSerVList;
+            for (let i = 0; i < orderSerVList.length; i++) {
+                newOrderSerVList[i].discount_service_price = orderSerVList[i].discount_service_price;
+                newOrderSerVList[i].remark = orderSerVList[i].remark;
+                dispatch(OrderDetailActionType.getOrderSerVList(newOrderSerVList));
+            }
         } else {
             Swal.fire("保存失败", res.msg, "warning");
         }

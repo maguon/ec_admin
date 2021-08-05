@@ -193,7 +193,7 @@ function StorageCheck(props) {
                         />
                     </Grid>
                     <Grid item sm={3}>
-                        <TextField label="备注" fullWidth margin="dense" variant="outlined"
+                        <TextField label="备注" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                    disabled={storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[1].value}
                                    value={row.remark}
                                    onChange={(e) => {
