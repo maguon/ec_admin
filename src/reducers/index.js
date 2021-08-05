@@ -41,6 +41,7 @@ import OrderStatReducer from './main/OrderStatReducer';
 import ClientStatReducer from './main/ClientStatReducer';
 import OrderPanelReducer from "./main/OrderPanelReducer";
 import AchievementReducer from './main/AchievementReducer';
+import OrderPayReducer from './main/OrderPayReducer';
 export default combineReducers({
     form: reduxFormReducer,
     AppReducer,
@@ -83,5 +84,6 @@ export default combineReducers({
     OrderStatReducer,
     ClientStatReducer,
     OrderPanelReducer,
-    AchievementReducer
+    AchievementReducer,
+    OrderPayReducer
 });
