@@ -17,8 +17,8 @@ const initialState = {
     queryParams: {
         dateIdStart: '',
         dateIdEnd: '',
-        checkStatus: null,
-        status: null
+        checkStatus: '',
+        status: ''
     }
 };
 

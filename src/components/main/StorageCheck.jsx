@@ -59,8 +59,8 @@ function StorageCheck(props) {
             let queryParams = {
                 dateIdStart: '',
                 dateIdEnd: '',
-                checkStatus: null,
-                status: null
+                checkStatus: '',
+                status: ''
             };
             dispatch(StorageCheckActionType.setQueryParams(queryParams));
         }

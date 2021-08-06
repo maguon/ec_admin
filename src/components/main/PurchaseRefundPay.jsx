@@ -54,7 +54,7 @@ function PurchaseRefundPay(props) {
     // 供应商
     const [supplier, setSupplier] = React.useState(null);
     // 支付状态
-    const [paymentStatus, setPaymentStatus] = React.useState(null);
+    const [paymentStatus, setPaymentStatus] = React.useState('');
 
     useEffect(() => {
         props.getBaseSelectList();
