@@ -40,6 +40,9 @@ import * as OrderStatActionType from "./main/OrderStatActionType";
 import * as OrderPanelActionType from './main/OrderPanelActionType';
 import * as AchievementActionType from './main/AchievementActionType';
 import * as OrderPayActionType from  './main/OrderPayActionType';
+import * as CollectionRefundActionType from './main/CollectionRefundActionType';
+import * as CollectionRefundDetailActionType from './main/CollectionRefundDetailActionType';
+
 export {
     AppActionType,
     CommonActionType,
@@ -82,5 +85,7 @@ export {
     OrderStatActionType,
     OrderPanelActionType,
     AchievementActionType,
-    OrderPayActionType
+    OrderPayActionType,
+    CollectionRefundActionType,
+    CollectionRefundDetailActionType
 }
