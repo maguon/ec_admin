@@ -83,21 +83,41 @@ function App(props) {
                     <main className={clsx(classes.content, {[classes.contentShift]: drawerOpen})}>
                         {/* css：避开 toolsBar 部分 */}
                         <div className={classes.contentHeader}/>
+
                         {/* 路由主体：迁移到各 组件 */}
                         {routes.routesWithHeader.map((route, index) => (
                             <>
-                                {appReducer.currentUserMenu.menuList.length > 0 &&
-                                appReducer.currentUserMenu.linkMenu.get(route.path.substr(0,route.path.lastIndexOf('/') > 0 ? route.path.lastIndexOf('/') : route.path.length)) &&
                                 <Route
                                     key={index + 10}
                                     path={route.path}
-                                    exact
-                                    component={route.component}
-                                />}
+                                    exact={route.exact}
+                                    //component={route.component}
+                                    render={(routeProps) => {
+                                        let validPath;
+                                        if (appReducer.currentUserMenu.menuList.length > 0) {
+                                            // 参数位置索引
+                                            let index = routeProps.match.path.indexOf('/:', 1);
+                                            if (index > 0) {
+                                                // 有参数
+                                                validPath = appReducer.currentUserMenu.linkMenu.has(routeProps.match.path.substr(0, index));
+                                            } else {
+                                                // 无参数
+                                                validPath = appReducer.currentUserMenu.linkMenu.has(routeProps.match.path);
+                                            }
+                                        }
+
+                                        // 有权限的路径
+                                        if (validPath) {
+                                            return <route.component {...routeProps}/>;
+                                        } else {
+                                            return <NotFound {...routeProps}/>;
+                                        }
+                                    }}
+                                />
                             </>
                         ))}
                         <Route path="/" exact component={MainPanel}/>
-                        <Route component={NotFound}/>
+                        {/*<Route component={NotFound}/>*/}
                     </main>
                     {/* 主页：底部 内容 */}
                     <Footer/>
