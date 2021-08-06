@@ -423,7 +423,7 @@ function OrderDetail(props) {
 
                     <Grid item container xs={5}>
                         <Grid item xs={10}>
-                            <TextField label="备注" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} value={item.remark} onChange={(e)=>{
+                            <TextField label="备注" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} value={item.remark || ''} onChange={(e)=>{
                                 orderDetailReducer.orderSerVList[index].remark = e.target.value;
                                 dispatch(OrderDetailActionType.getOrderSerVList(orderDetailReducer.orderSerVList));
                             }}/>
