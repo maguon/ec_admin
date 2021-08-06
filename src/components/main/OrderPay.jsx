@@ -6,7 +6,7 @@ import {Box, Button, Divider, Fab, FormControl, Grid, InputLabel, makeStyles, Me
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from '@material-ui/pickers';
-import {OrderPayActionType, PurchaseActionType} from "../../types";
+import {OrderPayActionType} from "../../types";
 const orderPayAction = require('../../actions/main/OrderPayAction');
 const commonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');
@@ -26,14 +26,26 @@ function OrderPay(props) {
     const [selected, setSelected] = React.useState([]);
     useEffect(() => {
             let queryParams = {
+                // 订单编号
                 orderId: '',
-                status: null,
-                client: null,
+                // 订单状态
+                status: '',
+                // 订单类型
+                orderType: '',
+                // 接单人（用户信息）
+                reUser: null,
+                // 客户集群
                 clientAgent: null,
-                orderType: null,
-                checkUserId: null,
+                // 客户
+                client: null,
+                // 客户电话
+                clientTel: '',
+                // 车牌
+                clientSerial: '',
+                // 创建日期
                 dateStart: '',
                 dateEnd: '',
+                // 完成日期
                 finDateStart: '',
                 finDateEnd: ''
             };
@@ -42,24 +54,22 @@ function OrderPay(props) {
         props.getBaseSelectList();
         props.getOrderList(orderPayReducer.orderData.start);
     }, []);
-
     const getAllOrderData=()=>{
-
     }
     const handleSelectAllClick = (event) => {
         if (event) {
-            const newSelecteds = orderPayReducer.orderData.dataList.map((n) => n.id);
+            const newSelecteds = orderPayReducer.orderData.dataList.map((n) => n);
             setSelected(newSelecteds);
+            //console.log(newSelecteds)
             return;
         }
         setSelected([]);
     };
-    const handleClick = (event, id) => {
-        const selectedIndex = selected.indexOf(id);
+    const handleClick = (event, item) => {
+        const selectedIndex = selected.indexOf(item);
         let newSelected = [];
-
         if (selectedIndex === -1) {
-            newSelected = newSelected.concat(selected, id);
+            newSelected = newSelected.concat(selected, item);
         } else if (selectedIndex === 0) {
             newSelected = newSelected.concat(selected.slice(1));
         } else if (selectedIndex === selected.length - 1) {
@@ -70,10 +80,9 @@ function OrderPay(props) {
                 selected.slice(selectedIndex + 1),
             );
         }
-
         setSelected(newSelected);
+        //console.log(newSelected)
     };
-
     const isSelected = (id) => selected.indexOf(id) !== -1;
     return (
         <div className={classes.root}>
@@ -211,7 +220,6 @@ function OrderPay(props) {
                         />
                     </Grid>
                 </Grid>
-
                 <Grid item xs={1} container style={{textAlign:'center',marginTop:30}}>
                     {/*查询按钮*/}
                     <Grid item xs={12}>
@@ -226,7 +234,7 @@ function OrderPay(props) {
                 <Table stickyHeader size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell className={classes.tableHead} align="center">
+                            <TableCell className={classes.tableHead} align="center" style={{display:orderPayReducer.orderData.dataList.length==0?'none':'block'}}>
                                 <Checkbox
                                     checked={orderPayReducer.orderData.dataList.length>0&&selected.length == orderPayReducer.orderData.dataList.length}
                                     onChange={(e,value) => {
@@ -248,7 +256,7 @@ function OrderPay(props) {
                             <TableCell className={classes.tableHead} align="center">订单状态</TableCell>
                             <TableCell className={classes.tableHead} align="center">创建日期</TableCell>
                             <TableCell className={classes.tableHead} align="center">完成日期</TableCell>
-                            <TableCell className={classes.tableHead} align="center">
+                            <TableCell className={classes.tableHead} align="center" >
                                 <Button variant="contained" color="primary" size='small' onClick={()=>{getAllOrderData()}}>批量</Button>
                             </TableCell>
                         </TableRow>
@@ -256,12 +264,12 @@ function OrderPay(props) {
                     <TableBody>
                         {orderPayReducer.orderData.dataList.
                         map((row,index) => {
-                            const isItemSelected = isSelected(row.id);
+                            const isItemSelected = isSelected(row);
                             const labelId = `enhanced-table-checkbox-${index}`;
                             return(
                                 <TableRow key={row.id}
                                           hover
-                                          onClick={(event) => handleClick(event, row.id)}
+                                          onClick={(event) => handleClick(event, row)}
                                           role="checkbox"
                                           aria-checked={isItemSelected}
                                           tabIndex={-1}

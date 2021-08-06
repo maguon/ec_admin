@@ -44,9 +44,9 @@ const getParams = () => (dispatch, getState) => {
         // 订单编号
         orderId: queryParams.orderId,
         // 订单状态
-        status: queryParams.status == null ? '' : queryParams.status,
+        status: queryParams.status,
         // 订单类型
-        orderType: queryParams.orderType == null ? '' : queryParams.orderType,
+        orderType: queryParams.orderType,
 
         // 接单人（用户信息）
         reUserId: queryParams.reUser == null ? '' : queryParams.reUser.id,

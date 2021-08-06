@@ -43,6 +43,8 @@ import ClientStatReducer from './main/ClientStatReducer';
 import OrderPanelReducer from "./main/OrderPanelReducer";
 import AchievementReducer from './main/AchievementReducer';
 import OrderPayReducer from './main/OrderPayReducer';
+import CollectionRefundDetailReducer from './main/CollectionRefundDetailReducer';
+import CollectionRefundReducer from './main/ClientInformationReducer';
 export default combineReducers({
     form: reduxFormReducer,
     AppReducer,
@@ -87,5 +89,7 @@ export default combineReducers({
     ClientStatReducer,
     OrderPanelReducer,
     AchievementReducer,
-    OrderPayReducer
+    OrderPayReducer,
+    CollectionRefundDetailReducer,
+    CollectionRefundReducer
 });

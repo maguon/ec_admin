@@ -425,6 +425,12 @@ export const ALL_PAGE_LIST = [
                 "icon": "mdi-chevron-right",
                 "usable": false
             },
+            {
+                "link": "/collection_refund",
+                "name": "收款退款",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
         ]
     },
     {

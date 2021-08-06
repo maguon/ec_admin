@@ -50,6 +50,8 @@ import OrderPanel from './main/OrderPanel';
 import NotFound from './layout/NotFound';
 import Achievement from './main/Achievement';
 import OrderPay from './main/OrderPay';
+import CollectionRefundDetail from './main/ClientInformationDetail';
+import CollectionRefund from './main/CollectionRefund';
 export {
     Header,
     Footer,
@@ -102,5 +104,7 @@ export {
     OrderPanel,
     NotFound,
     Achievement,
-    OrderPay
+    OrderPay,
+    CollectionRefund,
+    CollectionRefundDetail
 }

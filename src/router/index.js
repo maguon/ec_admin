@@ -39,7 +39,9 @@ import {
     ClientStat,
     OrderPanel,
     Achievement,
-    OrderPay
+    OrderPay,
+    CollectionRefund,
+    CollectionRefundDetail
 } from "../components";
 
 export const routes = [
@@ -98,6 +100,10 @@ export const routesWithHeader = [
     {path: "/purchase_refund_pay", exact: true, component: PurchaseRefundPay},
     //订单付款
     {path: "/order_pay", exact: true, component: OrderPay},
+    //收款付款
+    {path: "/collection_refund", exact: true, component: CollectionRefund},
+    //收款付款详情
+    {path: "/collection_refund/:id", exact: true, component: CollectionRefundDetail},
 
     /** 客户服务 */
     {path: "/client_information", exact: true, component: ClientInformation},
