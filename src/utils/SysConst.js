@@ -317,6 +317,12 @@ export const ALL_PAGE_LIST = [
                 "usable": false
             },
             {
+                "link": "/order_return",
+                "name": "退单信息",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
+            {
                 "link": "/achievement",
                 "name": "绩效信息",
                 "icon": "mdi-chevron-right",
