@@ -5,7 +5,8 @@ const sysConst = require('../../utils/SysConst');
 const initialState = {
     showLoadProgressFlag: false,
     currentUser: {},
-    currentUserMenu: {menuList:[],linkMenu:{}}
+    currentUserMenu: {menuList:[],linkMenu:{}},
+    allPath: new Map()
 };
 
 export default handleActions({
@@ -44,5 +45,11 @@ export default handleActions({
             ...state,
             currentUserMenu: {menuList: menuList, linkMenu: action.payload}
         }
-    }
+    },
+    [AppActionType.setAllPath]: (state, action) => {
+        return {
+            ...state,
+            allPath: action.payload
+        }
+    },
 }, initialState);

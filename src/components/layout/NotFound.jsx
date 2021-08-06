@@ -2,8 +2,6 @@ import React, {useEffect} from 'react';
 import {connect} from 'react-redux';
 import {useLocation} from 'react-router-dom'
 import {makeStyles, Typography} from '@material-ui/core';
-// 路由
-const routes = require('../../../src/router/index');
 const useStyles = makeStyles((theme) => ({
     pic: {
         textAlign: 'center',
@@ -20,7 +18,7 @@ function NotFound(props) {
 
     useEffect(() => {
         // 默认路径 所有情况，均为 有效路径
-        if (location.pathname == '/') {
+        if (location.pathname === '/') {
             setInvalid(false);
         } else {
             // 如果此用户没有权限，则所有路径均为无效路径
@@ -33,16 +31,10 @@ function NotFound(props) {
                     let firstPath = location.pathname.substr(0, index);
                     // 有二层，先判断一层权限有没有
                     if (appReducer.currentUserMenu.linkMenu.get(firstPath)) {
-                        // 有一层权限
-                        let secondFlag = false;
-                        for (let i = 0; i < routes.routesWithHeader.length; i++) {
-                            if (routes.routesWithHeader[i].path.indexOf(firstPath + '/:') >= 0) {
-                                secondFlag = true;
-                                break;
-                            }
-                        }
-                        setInvalid(!secondFlag);
+                        // 有 第一层权限，继续判断第二层 有没有
+                        setInvalid(!appReducer.allPath.get(firstPath + '/:id'));
                     } else {
+                        // 没有 第一层权限
                         setInvalid(true);
                     }
                 } else {

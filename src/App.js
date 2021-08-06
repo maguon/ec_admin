@@ -1,14 +1,16 @@
-import React, {Fragment} from 'react';
+import React, {Fragment, useEffect} from 'react';
 import {connect} from 'react-redux';
 import {HashRouter as Router, Route, Switch} from "react-router-dom";
 import clsx from 'clsx';
-import './App.css';
 import {makeStyles} from '@material-ui/core';
-// 引入布局组件
-import {Footer, Header, LoadProgree, MainPanel, Navigation, NotFound} from './components';
+import {MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import cnLocale from "date-fns/locale/zh-CN";
-import {MuiPickersUtilsProvider} from "@material-ui/pickers";
+// 引入布局组件
+import {Footer, Header, LoadProgree, MainPanel, Navigation, NotFound} from './components';
+import './App.css';
+import {AppActionType} from "../src/types";
+
 // 路由
 const routes = require('../src/router/index');
 // 抽屉宽度
@@ -38,9 +40,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function App(props) {
-    const {appReducer} = props;
+    const {appReducer, setAllPath} = props;
     const classes = useStyles();
     const [drawerOpen, setOpen] = React.useState(false);
+
+    useEffect(() => {
+        // 将所有路由的link（即：有效路径）保存到map中
+        let allPath = new Map();
+        routes.routesWithHeader.forEach((item) => {
+            allPath.set(item.path,'');
+        });
+        setAllPath(allPath);
+    }, []);
+
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -104,6 +116,10 @@ const mapStateToProps = (state) => {
     }
 };
 
-const mapDispatchToProps = (dispatch) => ({});
+const mapDispatchToProps = (dispatch) => ({
+    setAllPath: (allPath) => {
+        dispatch(AppActionType.setAllPath(allPath));
+    }
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
