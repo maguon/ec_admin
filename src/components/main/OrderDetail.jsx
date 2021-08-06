@@ -280,6 +280,10 @@ function OrderDetail(props) {
                     <TextField label="订单状态" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }} disabled
                                value={commonUtil.getJsonValue(sysConst.ORDER_STATUS, orderDetailReducer.orderInfo.status)}/>
                 </Grid>
+                <Grid item sm={3}>
+                    <TextField label="支付状态" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }} disabled
+                               value={commonUtil.getJsonValue(sysConst.ORDER_PAYMENT_STATUS, orderDetailReducer.orderInfo.payment_status)}/>
+                </Grid>
 
                 <Grid item sm={12}>
                     <TextField label="订单备注" fullWidth margin="dense" variant="outlined" multiline rows="2" InputLabelProps={{ shrink: true }}

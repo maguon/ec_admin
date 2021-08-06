@@ -67,14 +67,28 @@ function Order(props) {
         // 详情页面 返回 保留reducer，否则，清空
         if (!fromDetail) {
             let queryParams = {
+                // 订单编号
                 orderId: '',
-                status: null,
-                client: null,
+                // 订单类型
+                orderType: '',
+                // 订单状态
+                status: '',
+                // 订单支付状态
+                paymentStatus: '',
+                // 接单人（用户信息）
+                reUser: null,
+                // 客户集群
                 clientAgent: null,
-                orderType: null,
-                checkUserId: null,
+                // 客户
+                client: null,
+                // // 客户电话
+                // clientTel: '',
+                // 车牌
+                clientSerial: '',
+                // 创建日期
                 dateStart: '',
                 dateEnd: '',
+                // 完成日期
                 finDateStart: '',
                 finDateEnd: ''
             };
@@ -336,6 +350,23 @@ function Order(props) {
                     </Grid>
 
                     <Grid item xs={2}>
+                        <FormControl variant="outlined" fullWidth margin="dense">
+                            <InputLabel>支付状态</InputLabel>
+                            <Select label="支付状态"
+                                    value={orderReducer.queryParams.paymentStatus}
+                                    onChange={(e, value) => {
+                                        dispatch(OrderActionType.setQueryParam({name: "paymentStatus", value: e.target.value}));
+                                    }}
+                            >
+                                <MenuItem value="">请选择</MenuItem>
+                                {sysConst.ORDER_PAYMENT_STATUS.map((item, index) => (
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+
+                    <Grid item xs={2}>
                         <Autocomplete fullWidth
                                       options={commonReducer.userList}
                                       getOptionLabel={(option) => option.real_name}
@@ -371,10 +402,10 @@ function Order(props) {
                         />
                     </Grid>
 
-                    <Grid item xs={2}>
-                        <TextField label="客户电话" fullWidth margin="dense" variant="outlined" value={orderReducer.queryParams.clientTel}
-                                   onChange={(e)=>{dispatch(OrderActionType.setQueryParam({name: "clientTel", value: e.target.value}))}}/>
-                    </Grid>
+                    {/*<Grid item xs={2}>*/}
+                    {/*    <TextField label="客户电话" fullWidth margin="dense" variant="outlined" value={orderReducer.queryParams.clientTel}*/}
+                    {/*               onChange={(e)=>{dispatch(OrderActionType.setQueryParam({name: "clientTel", value: e.target.value}))}}/>*/}
+                    {/*</Grid>*/}
 
                     <Grid item xs={2}>
                         <TextField label="车牌" fullWidth margin="dense" variant="outlined" value={orderReducer.queryParams.clientSerial}
@@ -464,6 +495,7 @@ function Order(props) {
                             <TableCell className={classes.tableHead} align="center">实际金额</TableCell>
                             <TableCell className={classes.tableHead} align="center">订单类型</TableCell>
                             <TableCell className={classes.tableHead} align="center">订单状态</TableCell>
+                            <TableCell className={classes.tableHead} align="center">支付状态</TableCell>
                             <TableCell className={classes.tableHead} align="center">创建日期</TableCell>
                             <TableCell className={classes.tableHead} align="center">完成日期</TableCell>
                             <TableCell className={classes.tableHead} align="center">操作</TableCell>
@@ -484,6 +516,7 @@ function Order(props) {
                                 <TableCell align="center">{row.total_actual_price}</TableCell>
                                 <TableCell align="center">{commonUtil.getJsonValue(sysConst.ORDER_TYPE, row.order_type)}</TableCell>
                                 <TableCell align="center">{commonUtil.getJsonValue(sysConst.ORDER_STATUS, row.status)}</TableCell>
+                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.ORDER_PAYMENT_STATUS, row.payment_status)}</TableCell>
                                 <TableCell align="center">{row.date_id}</TableCell>
                                 <TableCell align="center">{row.fin_date_id}</TableCell>
                                 <TableCell align="center">

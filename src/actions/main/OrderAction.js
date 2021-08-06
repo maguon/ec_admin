@@ -94,10 +94,12 @@ const getParams = () => (dispatch, getState) => {
     let conditionsObj = {
         // 订单编号
         orderId: queryParams.orderId,
-        // 订单状态
-        status: queryParams.status == null ? '' : queryParams.status,
         // 订单类型
         orderType: queryParams.orderType == null ? '' : queryParams.orderType,
+        // 订单状态
+        status: queryParams.status == null ? '' : queryParams.status,
+        // 订单支付状态
+        paymentStatus: queryParams.paymentStatus == null ? '' : queryParams.paymentStatus,
 
         // 接单人（用户信息）
         reUserId: queryParams.reUser == null ? '' : queryParams.reUser.id,
@@ -106,8 +108,8 @@ const getParams = () => (dispatch, getState) => {
         // 客户集群
         clientAgentId: queryParams.clientAgent == null ? '' : queryParams.clientAgent.id,
 
-        // 客户电话
-        clientTel: queryParams.clientTel,
+        // // 客户电话
+        // clientTel: queryParams.clientTel,
         // 车牌号
         clientSerial: queryParams.clientSerial,
         // 创建日期

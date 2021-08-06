@@ -17,10 +17,12 @@ const initialState = {
     queryParams: {
         // 订单编号
         orderId: '',
-        // 订单状态
-        status: null,
         // 订单类型
-        orderType: null,
+        orderType: '',
+        // 订单状态
+        status: '',
+        // 订单支付状态
+        paymentStatus: '',
         // 接单人（用户信息）
         reUser: null,
         // 客户集群
