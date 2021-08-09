@@ -426,7 +426,7 @@ function OrderReturn(props) {
                                     </IconButton>
                                     {/* 编辑按钮 */}
                                     <IconButton color="primary" edge="start" size="small">
-                                        <Link to={{pathname: '/order/' + row.id}}><i className="mdi mdi-table-search"/></Link>
+                                        <Link to={{pathname: '/order_return/' + row.id}}><i className="mdi mdi-table-search"/></Link>
                                     </IconButton>
                                 </TableCell>
                             </TableRow>

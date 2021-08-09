@@ -19,6 +19,7 @@ import Storage from "./main/Storage";
 import Order from "./main/Order";
 import OrderDetail from "./main/OrderDetail";
 import OrderReturn from "./main/OrderReturn";
+import OrderReturnDetail from "./main/OrderReturnDetail";
 import ProductManager from "./main/ProductManager";
 import ProductManagerDetail from "./main/ProductManagerDetail";
 import PurchasePay from "./main/PurchasePay";
@@ -74,6 +75,7 @@ export {
     Order,
     OrderDetail,
     OrderReturn,
+    OrderReturnDetail,
     ProductManager,
     ProductManagerDetail,
     PurchasePay,
