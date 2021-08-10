@@ -34,7 +34,7 @@ import {DatePicker} from '@material-ui/pickers';
 import {SimpleModal} from "../index";
 import {OrderReturnActionType} from "../../types";
 
-const orderReturnAction = require('../../actions/main/OrderReturnAction');
+const orderRefundAction = require('../../actions/main/OrderRefundAction');
 const orderDetailAction = require('../../actions/main/OrderDetailAction');
 const commonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');
@@ -47,10 +47,46 @@ const useStyles = makeStyles((theme) => ({
     tableHead: customTheme.tableHead,
 }));
 
-function OrderReturn(props) {
-    const {OrderReturnReducer, appReducer, commonReducer, fromDetail} = props;
+function OrderRefund(props) {
+    const {orderRefundReducer, appReducer, commonReducer, fromDetail, detailParams} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
+
+    const [queryParams, setQueryParams] = useState({orderId:'', orderType:''});
+
+    useEffect(() => {
+        console.log('detailParams---------------------------111111111111',detailParams);
+        setQueryParams(detailParams);
+
+        console.log('queryParams',queryParams);
+        // // 详情页面 返回 保留reducer，否则，清空
+        // if (!fromDetail) {
+        //     let queryParams = {
+        //         orderId: '',
+        //         status: null,
+        //         client: null,
+        //         clientAgent: null,
+        //         orderType: null,
+        //         checkUserId: null,
+        //         dateStart: '',
+        //         dateEnd: '',
+        //         finDateStart: '',
+        //         finDateEnd: ''
+        //     };
+        //     dispatch(OrderReturnActionType.setQueryParams(queryParams));
+        // }
+        // 取得画面 select控件，基础数据
+        props.getBaseSelectList();
+        // props.getOrderList(props.orderRefundReducer.orderData.start);
+        dispatch(orderRefundAction.getOrderList(props.orderRefundReducer.orderData.start, detailParams));
+    }, []);
+
+    // useEffect(() => {
+    //     console.log('detailParams--------------------------222222222222222222222-',detailParams);
+    //     setQueryParams(detailParams);
+    //     // 取得画面 select控件，基础数据
+    //     dispatch(orderRefundAction.getOrderList(props.orderRefundReducer.orderData.start, queryParams));
+    // }, [fromDetail]);
 
     // 模态属性
     const [modalOpen, setModalOpen] = React.useState(false);
@@ -81,10 +117,10 @@ function OrderReturn(props) {
             }
             setValidation(validateObj);
             if (Object.keys(validateObj).length === 0) {
-                let ret = await dispatch(orderReturnAction.getOrderInfo(modalData.inputId));
+                let ret = await dispatch(orderRefundAction.getOrderInfo(modalData.inputId));
                 if (ret.length > 0) {
-                    let serviceList = await dispatch(orderReturnAction.getOrderItemService(modalData.inputId));
-                    let productList = await dispatch(orderReturnAction.getOrderItemProd(modalData.inputId));
+                    let serviceList = await dispatch(orderRefundAction.getOrderItemService(modalData.inputId));
+                    let productList = await dispatch(orderRefundAction.getOrderItemProd(modalData.inputId));
                     setModalData({
                         ...modalData,
                         orderInfo: ret[0],
@@ -134,52 +170,11 @@ function OrderReturn(props) {
         }
     };
 
-    useEffect(() => {
-        // 详情页面 返回 保留reducer，否则，清空
-        if (!fromDetail) {
-            let queryParams = {
-                orderId: '',
-                status: null,
-                client: null,
-                clientAgent: null,
-                orderType: null,
-                checkUserId: null,
-                dateStart: '',
-                dateEnd: '',
-                finDateStart: '',
-                finDateEnd: ''
-            };
-            dispatch(OrderReturnActionType.setQueryParams(queryParams));
-        }
-        // 取得画面 select控件，基础数据
-        props.getBaseSelectList();
-        props.getOrderList(props.OrderReturnReducer.orderData.start);
-    }, []);
-
-    const changeServiceSelect = (e, index) => {
-        console.log('', e.target.checked);
-        console.log('', index);
-
-        modalData.serviceList[index].checked = e.target.checked;
-        // let newServiceList = [];
-        // setModalData({...modalData,serviceList: newServiceList});
-        // setChecked(event.target.checked);
-    };
-
-    const changeProductSelect = (e, index) => {
-        console.log('', e.target.checked);
-        console.log('', index);
-
-        modalData.productList[index].checked = e.target.checked;
-        // let newServiceList = [];
-        // setModalData({...modalData,serviceList: newServiceList});
-        // setChecked(event.target.checked);
-    };
 
     return (
         <div className={classes.root}>
             {/* 标题部分 */}
-            <Typography gutterBottom className={classes.title}>订单信息</Typography>
+            <Typography gutterBottom className={classes.title}>退单信息</Typography>
             <Divider light className={classes.divider}/>
 
             {/* 上部分：检索条件输入区域 */}
@@ -187,153 +182,171 @@ function OrderReturn(props) {
                 <Grid container item xs={10} spacing={1}>
                     <Grid item xs={2}>
                         <TextField label="订单编号" fullWidth margin="dense" variant="outlined" type="number"
-                                   value={OrderReturnReducer.queryParams.orderId}
+                                   value={queryParams.orderId}
                                    onChange={(e) => {
-                                       dispatch(OrderReturnActionType.setQueryParam({
-                                           name: "orderId",
-                                           value: e.target.value
-                                       }))
-                                   }}/>
+                            setQueryParams({...queryParams, orderId: e.target.value});
+                            // dispatch(OrderReturnActionType.setQueryParam({
+                            //     name: "orderId",
+                            //     value: e.target.value
+                            // }))
+                        }}/>
                     </Grid>
 
                     <Grid item xs={2}>
-                        <FormControl variant="outlined" fullWidth margin="dense">
-                            <InputLabel>订单类型</InputLabel>
-                            <Select label="订单类型"
-                                    value={OrderReturnReducer.queryParams.orderType}
-                                    onChange={(e, value) => {
-                                        dispatch(OrderReturnActionType.setQueryParam({
-                                            name: "orderType",
-                                            value: e.target.value
-                                        }));
-                                    }}
-                            >
-                                <MenuItem value="">请选择</MenuItem>
-                                {sysConst.ORDER_TYPE.map((item, index) => (
-                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-
-                    <Grid item xs={2}>
-                        <FormControl variant="outlined" fullWidth margin="dense">
-                            <InputLabel>订单状态</InputLabel>
-                            <Select label="订单状态"
-                                    value={OrderReturnReducer.queryParams.status}
-                                    onChange={(e, value) => {
-                                        dispatch(OrderReturnActionType.setQueryParam({
-                                            name: "status",
-                                            value: e.target.value
-                                        }));
-                                    }}
-                            >
-                                <MenuItem value="">请选择</MenuItem>
-                                {sysConst.ORDER_STATUS.map((item, index) => (
-                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-
-                    <Grid item xs={2}>
-                        <Autocomplete fullWidth
-                                      options={commonReducer.userList}
-                                      getOptionLabel={(option) => option.real_name}
-                                      value={modalData.reUser}
-                                      onChange={(event, value) => {
-                                          dispatch(OrderReturnActionType.setQueryParam({name: "reUser", value: value}));
-                                      }}
-                                      renderInput={(params) => <TextField {...params} label="接单人" margin="dense"
-                                                                          variant="outlined"/>}
-                        />
-                    </Grid>
-
-                    <Grid item xs={2}>
-                        <Autocomplete fullWidth
-                                      options={commonReducer.clientAgentList}
-                                      getOptionLabel={(option) => option.name}
-                                      value={modalData.clientAgent}
-                                      onChange={(event, value) => {
-                                          dispatch(OrderReturnActionType.setQueryParam({
-                                              name: "clientAgent",
-                                              value: value
-                                          }));
-                                      }}
-                                      renderInput={(params) => <TextField {...params} label="客户集群" margin="dense"
-                                                                          variant="outlined"/>}
-                        />
-                    </Grid>
-
-                    <Grid item xs={2}>
-                        <Autocomplete fullWidth
-                                      options={commonReducer.clientList}
-                                      getOptionLabel={(option) => option.name}
-                                      value={modalData.client}
-                                      onChange={(event, value) => {
-                                          dispatch(OrderReturnActionType.setQueryParam({name: "client", value: value}));
-                                      }}
-                                      renderInput={(params) => <TextField {...params} label="客户" margin="dense"
-                                                                          variant="outlined"/>}
-                        />
-                    </Grid>
-
-                    <Grid item xs={2}>
-                        <TextField label="客户电话" fullWidth margin="dense" variant="outlined"
-                                   value={OrderReturnReducer.queryParams.clientTel}
+                        <TextField label="订单类型" fullWidth margin="dense" variant="outlined" select
+                                   value={queryParams.orderType}
                                    onChange={(e) => {
-                                       dispatch(OrderReturnActionType.setQueryParam({
-                                           name: "clientTel",
-                                           value: e.target.value
-                                       }))
-                                   }}/>
+                                       setQueryParams({...queryParams, orderType: e.target.value});
+                                       // dispatch(OrderReturnActionType.setQueryParam({
+                                       //     name: "orderId",
+                                       //     value: e.target.value
+                                       // }))
+                                   }}>
+                            <MenuItem value="">请选择</MenuItem>
+                            {sysConst.ORDER_TYPE.map((item, index) => (
+                                <MenuItem key={item.value} value={item.value.toString()}>{item.label}</MenuItem>
+                            ))}
+                        </TextField>
+
+
+                        {/*<FormControl variant="outlined" fullWidth margin="dense">*/}
+                        {/*    <InputLabel>订单类型</InputLabel>*/}
+                        {/*    <Select label="订单类型"*/}
+                        {/*            value={queryParams.orderType}*/}
+                        {/*            onChange={(e, value) => {*/}
+                        {/*                setQueryParams({...queryParams, orderType: e.target.value});*/}
+                        {/*                // dispatch(OrderReturnActionType.setQueryParam({*/}
+                        {/*                //     name: "orderType",*/}
+                        {/*                //     value: e.target.value*/}
+                        {/*                // }));*/}
+                        {/*            }}*/}
+                        {/*    >*/}
+                        {/*        <MenuItem value="">请选择</MenuItem>*/}
+                        {/*        {sysConst.ORDER_TYPE.map((item, index) => (*/}
+                        {/*            <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>*/}
+                        {/*        ))}*/}
+                        {/*    </Select>*/}
+                        {/*</FormControl>*/}
                     </Grid>
 
-                    <Grid item xs={2}>
-                        <TextField label="车牌" fullWidth margin="dense" variant="outlined"
-                                   value={OrderReturnReducer.queryParams.clientSerial}
-                                   onChange={(e) => {
-                                       dispatch(OrderReturnActionType.setQueryParam({
-                                           name: "clientSerial",
-                                           value: e.target.value
-                                       }))
-                                   }}/>
-                    </Grid>
+                    {/*<Grid item xs={2}>*/}
+                    {/*    <FormControl variant="outlined" fullWidth margin="dense">*/}
+                    {/*        <InputLabel>订单状态</InputLabel>*/}
+                    {/*        <Select label="订单状态"*/}
+                    {/*                value={orderRefundReducer.queryParams.status}*/}
+                    {/*                onChange={(e, value) => {*/}
+                    {/*                    dispatch(OrderReturnActionType.setQueryParam({*/}
+                    {/*                        name: "status",*/}
+                    {/*                        value: e.target.value*/}
+                    {/*                    }));*/}
+                    {/*                }}*/}
+                    {/*        >*/}
+                    {/*            <MenuItem value="">请选择</MenuItem>*/}
+                    {/*            {sysConst.ORDER_STATUS.map((item, index) => (*/}
+                    {/*                <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>*/}
+                    {/*            ))}*/}
+                    {/*        </Select>*/}
+                    {/*    </FormControl>*/}
+                    {/*</Grid>*/}
 
-                    <Grid item xs={2}>
-                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"
-                                    format="yyyy/MM/dd"
-                                    okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
-                                    label="创建日期（始）"
-                                    value={OrderReturnReducer.queryParams.dateStart == "" ? null : OrderReturnReducer.queryParams.dateStart}
-                                    onChange={(date) => {
-                                        dispatch(OrderReturnActionType.setQueryParam({name: "dateStart", value: date}))
-                                    }}
-                        />
-                    </Grid>
-                    <Grid item xs={2}>
-                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"
-                                    format="yyyy/MM/dd"
-                                    okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
-                                    label="创建日期（终）"
-                                    value={OrderReturnReducer.queryParams.dateEnd == "" ? null : OrderReturnReducer.queryParams.dateEnd}
-                                    onChange={(date) => {
-                                        dispatch(OrderReturnActionType.setQueryParam({name: "dateEnd", value: date}))
-                                    }}
-                        />
-                    </Grid>
+                    {/*<Grid item xs={2}>*/}
+                    {/*    <Autocomplete fullWidth*/}
+                    {/*                  options={commonReducer.userList}*/}
+                    {/*                  getOptionLabel={(option) => option.real_name}*/}
+                    {/*                  value={modalData.reUser}*/}
+                    {/*                  onChange={(event, value) => {*/}
+                    {/*                      dispatch(OrderReturnActionType.setQueryParam({name: "reUser", value: value}));*/}
+                    {/*                  }}*/}
+                    {/*                  renderInput={(params) => <TextField {...params} label="接单人" margin="dense"*/}
+                    {/*                                                      variant="outlined"/>}*/}
+                    {/*    />*/}
+                    {/*</Grid>*/}
+
+                    {/*<Grid item xs={2}>*/}
+                    {/*    <Autocomplete fullWidth*/}
+                    {/*                  options={commonReducer.clientAgentList}*/}
+                    {/*                  getOptionLabel={(option) => option.name}*/}
+                    {/*                  value={modalData.clientAgent}*/}
+                    {/*                  onChange={(event, value) => {*/}
+                    {/*                      dispatch(OrderReturnActionType.setQueryParam({*/}
+                    {/*                          name: "clientAgent",*/}
+                    {/*                          value: value*/}
+                    {/*                      }));*/}
+                    {/*                  }}*/}
+                    {/*                  renderInput={(params) => <TextField {...params} label="客户集群" margin="dense"*/}
+                    {/*                                                      variant="outlined"/>}*/}
+                    {/*    />*/}
+                    {/*</Grid>*/}
+
+                    {/*<Grid item xs={2}>*/}
+                    {/*    <Autocomplete fullWidth*/}
+                    {/*                  options={commonReducer.clientList}*/}
+                    {/*                  getOptionLabel={(option) => option.name}*/}
+                    {/*                  value={modalData.client}*/}
+                    {/*                  onChange={(event, value) => {*/}
+                    {/*                      dispatch(OrderReturnActionType.setQueryParam({name: "client", value: value}));*/}
+                    {/*                  }}*/}
+                    {/*                  renderInput={(params) => <TextField {...params} label="客户" margin="dense"*/}
+                    {/*                                                      variant="outlined"/>}*/}
+                    {/*    />*/}
+                    {/*</Grid>*/}
+
+                    {/*<Grid item xs={2}>*/}
+                    {/*    <TextField label="客户电话" fullWidth margin="dense" variant="outlined"*/}
+                    {/*               value={orderRefundReducer.queryParams.clientTel}*/}
+                    {/*               onChange={(e) => {*/}
+                    {/*                   dispatch(OrderReturnActionType.setQueryParam({*/}
+                    {/*                       name: "clientTel",*/}
+                    {/*                       value: e.target.value*/}
+                    {/*                   }))*/}
+                    {/*               }}/>*/}
+                    {/*</Grid>*/}
+
+                    {/*<Grid item xs={2}>*/}
+                    {/*    <TextField label="车牌" fullWidth margin="dense" variant="outlined"*/}
+                    {/*               value={orderRefundReducer.queryParams.clientSerial}*/}
+                    {/*               onChange={(e) => {*/}
+                    {/*                   dispatch(OrderReturnActionType.setQueryParam({*/}
+                    {/*                       name: "clientSerial",*/}
+                    {/*                       value: e.target.value*/}
+                    {/*                   }))*/}
+                    {/*               }}/>*/}
+                    {/*</Grid>*/}
+
+                    {/*<Grid item xs={2}>*/}
+                    {/*    <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"*/}
+                    {/*                format="yyyy/MM/dd"*/}
+                    {/*                okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"*/}
+                    {/*                label="创建日期（始）"*/}
+                    {/*                value={orderRefundReducer.queryParams.dateStart == "" ? null : orderRefundReducer.queryParams.dateStart}*/}
+                    {/*                onChange={(date) => {*/}
+                    {/*                    dispatch(OrderReturnActionType.setQueryParam({name: "dateStart", value: date}))*/}
+                    {/*                }}*/}
+                    {/*    />*/}
+                    {/*</Grid>*/}
+                    {/*<Grid item xs={2}>*/}
+                    {/*    <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"*/}
+                    {/*                format="yyyy/MM/dd"*/}
+                    {/*                okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"*/}
+                    {/*                label="创建日期（终）"*/}
+                    {/*                value={orderRefundReducer.queryParams.dateEnd == "" ? null : orderRefundReducer.queryParams.dateEnd}*/}
+                    {/*                onChange={(date) => {*/}
+                    {/*                    dispatch(OrderReturnActionType.setQueryParam({name: "dateEnd", value: date}))*/}
+                    {/*                }}*/}
+                    {/*    />*/}
+                    {/*</Grid>*/}
 
                     <Grid item xs={2}>
                         <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"
                                     format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
                                     label="完成日期（始）"
-                                    value={OrderReturnReducer.queryParams.finDateStart == "" ? null : OrderReturnReducer.queryParams.finDateStart}
-                                    onChange={(date) => {
-                                        dispatch(OrderReturnActionType.setQueryParam({
-                                            name: "finDateStart",
-                                            value: date
-                                        }))
+                                    value={queryParams.finDateStart == "" ? null : queryParams.finDateStart}
+                                    onChange={(date) => {setQueryParams({...queryParams, finDateStart: date});
+                                        // dispatch(OrderReturnActionType.setQueryParam({
+                                        //     name: "finDateStart",
+                                        //     value: date
+                                        // }))
                                     }}
                         />
                     </Grid>
@@ -342,9 +355,9 @@ function OrderReturn(props) {
                                     format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
                                     label="完成日期（终）"
-                                    value={OrderReturnReducer.queryParams.finDateEnd == "" ? null : OrderReturnReducer.queryParams.finDateEnd}
-                                    onChange={(date) => {
-                                        dispatch(OrderReturnActionType.setQueryParam({name: "finDateEnd", value: date}))
+                                    value={queryParams.finDateEnd == "" ? null : queryParams.finDateEnd}
+                                    onChange={(date) => {setQueryParams({...queryParams, finDateEnd: date});
+                                        // dispatch(OrderReturnActionType.setQueryParam({name: "finDateEnd", value: date}))
                                     }}
                         />
                     </Grid>
@@ -354,7 +367,7 @@ function OrderReturn(props) {
                     {/*查询按钮*/}
                     <Grid item xs={4}>
                         <Fab color="primary" size="small" onClick={() => {
-                            dispatch(orderReturnAction.getOrderList(0))
+                            dispatch(orderRefundAction.getOrderList(0, queryParams))
                         }}>
                             <i className="mdi mdi-magnify mdi-24px"/>
                         </Fab>
@@ -369,7 +382,7 @@ function OrderReturn(props) {
 
                     <Grid item xs={4}>
                         <Fab color="primary" size="small" onClick={() => {
-                            dispatch(orderReturnAction.downLoadCsv())
+                            dispatch(orderRefundAction.downLoadCsv())
                         }}>
                             <i className="mdi mdi-cloud-download mdi-24px"/>
                         </Fab>
@@ -400,7 +413,7 @@ function OrderReturn(props) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {OrderReturnReducer.orderData.dataList.map((row) => (
+                        {orderRefundReducer.orderData.dataList.map((row) => (
                             <TableRow key={row.id}>
                                 <TableCell align="center">{row.id}</TableCell>
                                 <TableCell align="center">{row.re_user_name}</TableCell>
@@ -426,13 +439,13 @@ function OrderReturn(props) {
                                     </IconButton>
                                     {/* 编辑按钮 */}
                                     <IconButton color="primary" edge="start" size="small">
-                                        <Link to={{pathname: '/order_return/' + row.id}}><i className="mdi mdi-table-search"/></Link>
+                                        <Link to={{pathname: '/order_refund/' + row.id, state: {queryParams: queryParams}}}><i className="mdi mdi-table-search"/></Link>
                                     </IconButton>
                                 </TableCell>
                             </TableRow>
                         ))}
 
-                        {OrderReturnReducer.orderData.dataList.length === 0 &&
+                        {orderRefundReducer.orderData.dataList.length === 0 &&
                         <TableRow>
                             <TableCell colSpan={15} align="center">暂无数据</TableCell>
                         </TableRow>}
@@ -442,15 +455,15 @@ function OrderReturn(props) {
 
             {/* 上下页按钮 */}
             <Box style={{textAlign: 'right', marginTop: 20}}>
-                {OrderReturnReducer.orderData.start > 0 && OrderReturnReducer.orderData.dataSize > 0 &&
+                {orderRefundReducer.orderData.start > 0 && orderRefundReducer.orderData.dataSize > 0 &&
                 <Button variant="contained" color="primary" style={{marginRight: 20}}
                         onClick={() => {
-                            dispatch(orderReturnAction.getOrderList(OrderReturnReducer.orderData.start - (OrderReturnReducer.orderData.size - 1)))
+                            dispatch(orderRefundAction.getOrderList(orderRefundReducer.orderData.start - (orderRefundReducer.orderData.size - 1)))
                         }}>上一页</Button>}
-                {OrderReturnReducer.orderData.dataSize >= OrderReturnReducer.orderData.size &&
+                {orderRefundReducer.orderData.dataSize >= orderRefundReducer.orderData.size &&
                 <Button variant="contained" color="primary"
                         onClick={() => {
-                            dispatch(orderReturnAction.getOrderList(OrderReturnReducer.orderData.start + (OrderReturnReducer.orderData.size - 1)))
+                            dispatch(orderRefundAction.getOrderList(orderRefundReducer.orderData.start + (orderRefundReducer.orderData.size - 1)))
                         }}>下一页</Button>}
             </Box>
 
@@ -624,14 +637,30 @@ function OrderReturn(props) {
 
 const mapStateToProps = (state, ownProps) => {
     let fromDetail = false;
+    let params = {
+        age: 20,
+        orderId: '',
+        status: null,
+        client: null,
+        clientAgent: null,
+        orderType: '',
+        checkUserId: null,
+        dateStart: '',
+        dateEnd: '',
+        finDateStart: '',
+        finDateEnd: ''
+    };
     if (typeof ownProps.location.state != 'undefined' && ownProps.location.state != null && ownProps.location.state.fromDetail) {
+        console.log('fromDetail true.........................')
         fromDetail = true;
+        params = ownProps.location.state.params
     }
     return {
-        OrderReturnReducer: state.OrderReturnReducer,
+        orderRefundReducer: state.OrderRefundReducer,
         appReducer: state.AppReducer,
         commonReducer: state.CommonReducer,
-        fromDetail: fromDetail
+        fromDetail: fromDetail,
+        detailParams : params
     }
 };
 
@@ -652,9 +681,6 @@ const mapDispatchToProps = (dispatch) => ({
         // 取得商品列表
         dispatch(commonAction.getProductList(null));
     },
-    getOrderList: (dataStart) => {
-        dispatch(orderReturnAction.getOrderList(dataStart))
-    },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(OrderReturn)
+export default connect(mapStateToProps, mapDispatchToProps)(OrderRefund)

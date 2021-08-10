@@ -1,14 +1,15 @@
 import {createHashHistory} from 'history';
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
-import {AppActionType, OrderReturnActionType} from '../../types';
+import {AppActionType, OrderRefundActionType} from '../../types';
 
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 
-export const getOrderList = (dataStart) => async (dispatch, getState) => {
+export const getOrderList = (dataStart,queryParams) => async (dispatch, getState) => {
+    console.log('getOrderList queryParams is : ',queryParams)
     try {
         // 检索条件：开始位置
         const start = dataStart;
@@ -18,7 +19,7 @@ export const getOrderList = (dataStart) => async (dispatch, getState) => {
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/order?start=' + start + '&size=' + size;
-        let conditions = dispatch(getParams());
+        let conditions = dispatch(getParams(queryParams));
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
 
@@ -30,7 +31,7 @@ export const getOrderList = (dataStart) => async (dispatch, getState) => {
             newData.start = start;
             newData.dataSize = res.rows.length;
             newData.dataList = res.rows.slice(0, size - 1);
-            dispatch({type: OrderReturnActionType.setOrderData, payload: newData});
+            dispatch({type: OrderRefundActionType.setOrderData, payload: newData});
         } else if (!res.success) {
             Swal.fire("获取订单列表信息失败", res.msg, "warning");
         }
@@ -144,9 +145,7 @@ export const saveModalData = (modalData) => async (dispatch) => {
     }
 };
 
-const getParams = () => (dispatch, getState) => {
-    // 检索条件
-    const queryParams = getState().OrderReducer.queryParams;
+const getParams = (queryParams) => (dispatch, getState) => {
     let conditionsObj = {
         // 订单编号
         orderId: queryParams.orderId,

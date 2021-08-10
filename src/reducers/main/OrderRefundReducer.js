@@ -1,5 +1,5 @@
 import {handleActions} from 'redux-actions';
-import {OrderReturnActionType} from '../../types';
+import {OrderRefundActionType} from '../../types';
 
 const initialState = {
     // 检索结果
@@ -41,13 +41,13 @@ const initialState = {
 };
 
 export default handleActions({
-    [OrderReturnActionType.setOrderData]: (state, action) => {
+    [OrderRefundActionType.setOrderData]: (state, action) => {
         return {
             ...state,
             orderData: action.payload
         }
     },
-    [OrderReturnActionType.setQueryParam]: (state, action) => {
+    [OrderRefundActionType.setQueryParam]: (state, action) => {
         const {name, value} = action.payload;
         const paramsObj = {...state.queryParams, [name]: value};
         return {
@@ -55,7 +55,7 @@ export default handleActions({
             queryParams: paramsObj
         }
     },
-    [OrderReturnActionType.setQueryParams]: (state, action) => {
+    [OrderRefundActionType.setQueryParams]: (state, action) => {
         return {
             ...state,
             queryParams: action.payload

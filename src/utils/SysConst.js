@@ -317,7 +317,7 @@ export const ALL_PAGE_LIST = [
                 "usable": false
             },
             {
-                "link": "/order_return",
+                "link": "/order_refund",
                 "name": "退单信息",
                 "icon": "mdi-chevron-right",
                 "usable": false

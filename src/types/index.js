@@ -8,7 +8,7 @@ import * as BrandManagerActionType from './main/BrandManagerActionType'
 import * as StorageActionType from './main/StorageActionType'
 import * as OrderActionType from './main/OrderActionType'
 import * as OrderDetailActionType from './main/OrderDetailActionType'
-import * as OrderReturnActionType from './main/OrderReturnActionType'
+import * as OrderRefundActionType from './main/OrderRefundActionType'
 import * as ProductManagerActionType from './main/ProductManagerActionType'
 import * as StorageProductActionType from './main/StorageProductActionType'
 import * as StorageInOutActionType from './main/StorageInOutActionType'
@@ -55,7 +55,7 @@ export {
     StorageActionType,
     OrderActionType,
     OrderDetailActionType,
-    OrderReturnActionType,
+    OrderRefundActionType,
     ProductManagerActionType,
     StorageProductActionType,
     StorageInOutActionType,

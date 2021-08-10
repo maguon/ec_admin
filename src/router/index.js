@@ -9,8 +9,8 @@ import {
     Storage,
     Order,
     OrderDetail,
-    OrderReturn,
-    OrderReturnDetail,
+    OrderRefund,
+    OrderRefundDetail,
     StorageProduct,
     StorageInOut,
     StorageCheck,
@@ -64,8 +64,8 @@ export const routesWithHeader = [
     {path: "/order", exact: true, component: Order},
     {path: "/order/:id", exact: true, component: OrderDetail},
     // 退单信息
-    {path: "/order_return", exact: true, component: OrderReturn},
-    {path: "/order_return/:id", exact: true, component: OrderReturnDetail},
+    {path: "/order_refund", exact: true, component: OrderRefund},
+    {path: "/order_refund/:id", exact: true, component: OrderRefundDetail},
     {path: "/achievement", exact: true, component: Achievement},
 
     /** 采购管理 */
