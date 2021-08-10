@@ -117,6 +117,10 @@ function OrderRefund(props) {
             }
             setValidation(validateObj);
             if (Object.keys(validateObj).length === 0) {
+                // setModalData({
+                //     ...modalData,
+                //     activeStep: modalData.activeStep + 1
+                // });
                 let ret = await dispatch(orderRefundAction.getOrderInfo(modalData.inputId));
                 if (ret.length > 0) {
                     let serviceList = await dispatch(orderRefundAction.getOrderItemService(modalData.inputId));
@@ -366,9 +370,7 @@ function OrderRefund(props) {
                 <Grid item xs={2} container style={{textAlign: 'right', marginTop: 30}}>
                     {/*查询按钮*/}
                     <Grid item xs={4}>
-                        <Fab color="primary" size="small" onClick={() => {
-                            dispatch(orderRefundAction.getOrderList(0, queryParams))
-                        }}>
+                        <Fab color="primary" size="small" onClick={() => {dispatch(orderRefundAction.getOrderList(0, queryParams))}}>
                             <i className="mdi mdi-magnify mdi-24px"/>
                         </Fab>
                     </Grid>
