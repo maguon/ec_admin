@@ -1,7 +1,7 @@
-import React ,{Fragment,useEffect,useState}from 'react';
+import React from 'react';
 import {connect} from 'react-redux';
-import {Backdrop,CircularProgress} from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import {Backdrop, CircularProgress} from '@material-ui/core';
+import {makeStyles} from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
     backdrop: {
@@ -12,9 +12,8 @@ const useStyles = makeStyles((theme) => ({
 function LoadProgress(props){
     const classes = useStyles();
     const {appReducer} = props;
-    const [open, setOpen] = React.useState(false);
     return(
-        <Backdrop className={classes.backdrop} open={appReducer.showLoadProgressFlag} >
+        <Backdrop className={classes.backdrop} open={appReducer.showLoadProgressFlag} style={{zIndex: 1365}}>
             <CircularProgress  size={80} thickness={1.6}/>
         </Backdrop>
     )
@@ -26,8 +25,6 @@ const mapStateToProps = (state) => {
     }
 };
 
-const mapDispatchToProps = (dispatch) => ({
-    
-});
+const mapDispatchToProps = (dispatch) => ({});
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoadProgress)
