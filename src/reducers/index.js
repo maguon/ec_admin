@@ -44,7 +44,7 @@ import OrderPanelReducer from "./main/OrderPanelReducer";
 import AchievementReducer from './main/AchievementReducer';
 import OrderPayReducer from './main/OrderPayReducer';
 import CollectionRefundDetailReducer from './main/CollectionRefundDetailReducer';
-import CollectionRefundReducer from './main/ClientInformationReducer';
+import CollectionRefundReducer from './main/CollectionRefundReducer';
 export default combineReducers({
     form: reduxFormReducer,
     AppReducer,

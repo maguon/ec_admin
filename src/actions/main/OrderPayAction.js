@@ -1,12 +1,10 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
 import {AppActionType, OrderPayActionType} from '../../types';
-
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
-
 export const getOrderList = (dataStart) => async (dispatch, getState) => {
     try {
         // 检索条件：开始位置
@@ -54,9 +52,10 @@ const getParams = () => (dispatch, getState) => {
         clientId: queryParams.client == null ? '' : queryParams.client.id,
         // 客户集群
         clientAgentId: queryParams.clientAgent == null ? '' : queryParams.clientAgent.id,
-
-        // 客户电话
-        clientTel: queryParams.clientTel,
+        // 订单支付状态
+        paymentStatus: queryParams.paymentStatus,
+       /* // 客户电话
+        clientTel: queryParams.clientTel,*/
         // 车牌号
         clientSerial: queryParams.clientSerial,
         // 创建日期
@@ -68,3 +67,27 @@ const getParams = () => (dispatch, getState) => {
     };
     return httpUtil.objToUrl(conditionsObj);
 };
+export const getAllOrder=(remarks,paymentType,selectedId,batchData)=>async (dispatch, getState) => {
+    try {
+        let params = {
+            remark: remarks,
+            type: 1,
+            paymentType: paymentType,
+            orderIds:selectedId,
+            orderRefundIds: [0],
+            actualPrice: batchData.totalActualPrice
+        };
+        // 基本url
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/payment/';
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpPost(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            window.location.href = '#!/collection_refund/'+res.rows[0].id;
+        } else if (!res.success) {
+            Swal.fire('保存失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+}

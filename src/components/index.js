@@ -18,8 +18,7 @@ import BrandManager from "./main/BrandManager";
 import Storage from "./main/Storage";
 import Order from "./main/Order";
 import OrderDetail from "./main/OrderDetail";
-import OrderRefund from "./main/OrderRefund";
-import OrderRefundDetail from "./main/OrderRefundDetail";
+import OrderReturn from "./main/OrderReturn";
 import ProductManager from "./main/ProductManager";
 import ProductManagerDetail from "./main/ProductManagerDetail";
 import PurchasePay from "./main/PurchasePay";
@@ -51,7 +50,7 @@ import OrderPanel from './main/OrderPanel';
 import NotFound from './layout/NotFound';
 import Achievement from './main/Achievement';
 import OrderPay from './main/OrderPay';
-import CollectionRefundDetail from './main/ClientInformationDetail';
+import CollectionRefundDetail from './main/CollectionRefundDetail';
 import CollectionRefund from './main/CollectionRefund';
 export {
     Header,
@@ -74,8 +73,7 @@ export {
     Storage,
     Order,
     OrderDetail,
-    OrderRefund,
-    OrderRefundDetail,
+    OrderReturn,
     ProductManager,
     ProductManagerDetail,
     PurchasePay,

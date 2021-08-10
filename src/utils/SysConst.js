@@ -275,7 +275,21 @@ export const ORDER_PAYMENT_STATUS = [
     {value: 1, label: "未付款"},
     {value: 7, label: "付款完成"}
 ];
-
+//订单支付状态
+export const  ORDER_PAY_TYPE = [
+    {value: 0, label: "未支付"},
+    {value: 1, label: "已支付"}
+];
+//付款类型(1.支付 2.退款)
+export const PAY_TYPE = [
+    {value: 1, label: "收款"},
+    {value: 2, label: "退款"}
+];
+//支付方式(1.挂账 2.现金)
+export const PAYMENT_TYPE = [
+    {value: 1, label: "挂账"},
+    {value: 2, label: "现金"}
+];
 // 用于权限设定（包含所有机能设定）
 export const ALL_PAGE_LIST = [
     {

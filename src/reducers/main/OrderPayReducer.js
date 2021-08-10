@@ -27,8 +27,8 @@ const initialState = {
         clientAgent: null,
         // 客户
         client: null,
-        // 客户电话
-        clientTel: '',
+        // 支付状态
+        paymentStatus: '',
         // 车牌
         clientSerial: '',
         // 创建日期

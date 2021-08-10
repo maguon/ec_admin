@@ -359,7 +359,7 @@ function PurchaseDetail (props){
                                                value={Number(item.unit_cost>9999999.99?0:item.unit_cost<0?0:item.unit_cost)*Number(item.purchase_count)}
                                     />
                                 </Grid>
-                                <Grid item xs={4}>
+                                <Grid item xs={3}>
                                     <TextField label="备注" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                                value={item.remark}
                                                onChange={(e) => {
