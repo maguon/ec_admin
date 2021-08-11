@@ -258,6 +258,11 @@ export const SERVICE_ITEM_STATUS = [
     {value: 7, label: "验收完成"},
 ];
 
+export const ORDER_REFUND_STATUS = [
+    {value: 1, label: "未完成"},
+    {value: 7, label: "已完成"}
+];
+
 export const PROD_ITEM_STATUS = [
     {value: 1, label: "未出库"},
     {value: 3, label: "已出库"}
@@ -273,6 +278,7 @@ export const ORDER_STATUS = [
 
 export const ORDER_PAYMENT_STATUS = [
     {value: 1, label: "未付款"},
+    {value: 5, label: "付款中"},
     {value: 7, label: "付款完成"}
 ];
 //订单支付状态

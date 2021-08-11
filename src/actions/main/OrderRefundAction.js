@@ -8,17 +8,17 @@ const localUtil = require('../../utils/LocalUtils');
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 
-export const getOrderList = (dataStart,queryParams) => async (dispatch, getState) => {
-    console.log('getOrderList queryParams is : ',queryParams)
+export const getOrderRefundList = (dataStart, queryParams) => async (dispatch, getState) => {
+    console.log('getOrderList queryParams is : ',queryParams);
     try {
         // 检索条件：开始位置
         const start = dataStart;
         // 检索条件：每页数量
-        const size = getState().OrderReducer.orderData.size;
+        const size = getState().OrderRefundReducer.orderRefundData.size;
 
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/order?start=' + start + '&size=' + size;
+            + '/orderRefund?start=' + start + '&size=' + size;
         let conditions = dispatch(getParams(queryParams));
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
@@ -26,14 +26,14 @@ export const getOrderList = (dataStart,queryParams) => async (dispatch, getState
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-        let newData = getState().OrderReducer.orderData;
+        let newData = getState().OrderRefundReducer.orderRefundData;
         if (res.success) {
             newData.start = start;
             newData.dataSize = res.rows.length;
             newData.dataList = res.rows.slice(0, size - 1);
-            dispatch({type: OrderRefundActionType.setOrderData, payload: newData});
+            dispatch({type: OrderRefundActionType.getOrderRefundData, payload: newData});
         } else if (!res.success) {
-            Swal.fire("获取订单列表信息失败", res.msg, "warning");
+            Swal.fire("获取退单列表信息失败", res.msg, "warning");
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");

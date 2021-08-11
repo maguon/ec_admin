@@ -77,15 +77,15 @@ function OrderRefund(props) {
         // }
         // 取得画面 select控件，基础数据
         props.getBaseSelectList();
-        // props.getOrderList(props.orderRefundReducer.orderData.start);
-        dispatch(orderRefundAction.getOrderList(props.orderRefundReducer.orderData.start, detailParams));
+        // props.getOrderRefundList(props.orderRefundReducer.orderRefundData.start);
+        dispatch(orderRefundAction.getOrderRefundList(props.orderRefundReducer.orderRefundData.start, detailParams));
     }, []);
 
     // useEffect(() => {
     //     console.log('detailParams--------------------------222222222222222222222-',detailParams);
     //     setQueryParams(detailParams);
     //     // 取得画面 select控件，基础数据
-    //     dispatch(orderRefundAction.getOrderList(props.orderRefundReducer.orderData.start, queryParams));
+    //     dispatch(orderRefundAction.getOrderRefundList(props.orderRefundReducer.orderRefundData.start, queryParams));
     // }, [fromDetail]);
 
     // 模态属性
@@ -93,10 +93,10 @@ function OrderRefund(props) {
     // 模态数据
     const [modalData, setModalData] = React.useState({serviceList: [], productList: [], steps: ['选择订单编号', '填写退单详情']});
     // 模态校验
-    const [validation, setValidation] = useState({priceList: [], nodata: ''});
+    const [validation, setValidation] = useState({});
 
     const initModal = () => {
-        setValidation({});
+        setValidation({inputId:'', productList: [], nodata: ''});
         setModalData({
             ...modalData,
             inputId: '',
@@ -113,9 +113,8 @@ function OrderRefund(props) {
         const validateObj = {};
         if (step === 0) {
             if (!modalData.inputId) {
-                validateObj.inputId = '请输入订单编号';
+                setValidation({...validation, inputId: '请输入订单编号'});
             }
-            setValidation(validateObj);
             if (Object.keys(validateObj).length === 0) {
                 // setModalData({
                 //     ...modalData,
@@ -140,18 +139,40 @@ function OrderRefund(props) {
 
         if (step === 1) {
             let checkedService = [];
-            modalData.serviceList.forEach((item) => {
-                if (item.checked) {
-                    checkedService.push(item);
+            for (let i =0;i<modalData.serviceList.length;i++) {
+                if (modalData.serviceList[i].checked) {
+                    checkedService.push(modalData.serviceList[i]);
                 }
-            });
+            }
+            // modalData.serviceList.forEach((item) => {
+            //     if (item.checked) {
+            //         checkedService.push(item);
+            //     }
+            // });
 
+            console.log('modalData.productList',modalData.productList);
             let checkedProduct = [];
-            modalData.productList.forEach((item) => {
-                if (item.checked) {
-                    checkedProduct.push(item);
+            let validateProduct = [];
+            for (let i =0;i<modalData.productList.length;i++) {
+                // validation.productList[i].refundCount = "";
+                validateProduct.push({refundCount:''});
+                if (modalData.productList[i].checked) {
+                    if (modalData.productList[i].refundCount > modalData.productList[i].prod_count) {
+                        validateProduct[i].refundCount = "退货数不能大于商品数";
+                        // validateProduct.push({refundCount: '退货数量不能大于商品数量'});
+                    }
+                    checkedProduct.push(modalData.productList[i]);
                 }
-            });
+            }
+            setValidation({...validation, productList: validateProduct});
+
+
+
+            // modalData.productList.forEach((item) => {
+            //     if (item.checked) {
+            //         checkedProduct.push(item);
+            //     }
+            // });
 
             console.log('checkedService', checkedService);
 
@@ -370,7 +391,7 @@ function OrderRefund(props) {
                 <Grid item xs={2} container style={{textAlign: 'right', marginTop: 30}}>
                     {/*查询按钮*/}
                     <Grid item xs={4}>
-                        <Fab color="primary" size="small" onClick={() => {dispatch(orderRefundAction.getOrderList(0, queryParams))}}>
+                        <Fab color="primary" size="small" onClick={() => {dispatch(orderRefundAction.getOrderRefundList(0, queryParams))}}>
                             <i className="mdi mdi-magnify mdi-24px"/>
                         </Fab>
                     </Grid>
@@ -397,59 +418,41 @@ function OrderRefund(props) {
                 <Table stickyHeader size="small">
                     <TableHead>
                         <TableRow>
+                            <TableCell className={classes.tableHead} align="center">退单号</TableCell>
                             <TableCell className={classes.tableHead} align="center">订单号</TableCell>
-                            <TableCell className={classes.tableHead} align="center">接单人</TableCell>
-                            <TableCell className={classes.tableHead} align="center">客户集群</TableCell>
-                            <TableCell className={classes.tableHead} align="center">客户姓名</TableCell>
-                            <TableCell className={classes.tableHead} align="center">客户电话</TableCell>
-                            <TableCell className={classes.tableHead} align="center">车牌</TableCell>
-                            <TableCell className={classes.tableHead} align="center">服务费</TableCell>
-                            <TableCell className={classes.tableHead} align="center">商品金额</TableCell>
-                            <TableCell className={classes.tableHead} align="center">折扣</TableCell>
-                            <TableCell className={classes.tableHead} align="center">实际金额</TableCell>
-                            <TableCell className={classes.tableHead} align="center">订单类型</TableCell>
                             <TableCell className={classes.tableHead} align="center">订单状态</TableCell>
-                            <TableCell className={classes.tableHead} align="center">创建日期</TableCell>
-                            <TableCell className={classes.tableHead} align="center">完成日期</TableCell>
+                            <TableCell className={classes.tableHead} align="center">支付状态</TableCell>
+                            <TableCell className={classes.tableHead} align="center">支付方式</TableCell>
+                            <TableCell className={classes.tableHead} align="center">服务退款</TableCell>
+                            <TableCell className={classes.tableHead} align="center">商品退款</TableCell>
+                            <TableCell className={classes.tableHead} align="center">运费退款</TableCell>
+                            <TableCell className={classes.tableHead} align="center">退货数量</TableCell>
                             <TableCell className={classes.tableHead} align="center">操作</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {orderRefundReducer.orderData.dataList.map((row) => (
+                        {orderRefundReducer.orderRefundData.dataList.map((row) => (
                             <TableRow key={row.id}>
                                 <TableCell align="center">{row.id}</TableCell>
-                                <TableCell align="center">{row.re_user_name}</TableCell>
-                                <TableCell align="center">{row.client_agent_name}</TableCell>
-                                <TableCell align="center">{row.client_name}</TableCell>
-                                <TableCell align="center">{row.client_tel}</TableCell>
-                                <TableCell align="center">{row.client_serial}</TableCell>
-                                <TableCell align="center">{row.service_price}</TableCell>
-                                <TableCell align="center">{row.prod_price}</TableCell>
-                                <TableCell align="center">{row.total_discount_price}</TableCell>
-                                <TableCell align="center">{row.total_actual_price}</TableCell>
-                                <TableCell
-                                    align="center">{commonUtil.getJsonValue(sysConst.ORDER_TYPE, row.order_type)}</TableCell>
-                                <TableCell
-                                    align="center">{commonUtil.getJsonValue(sysConst.ORDER_STATUS, row.status)}</TableCell>
-                                <TableCell align="center">{row.date_id}</TableCell>
-                                <TableCell align="center">{row.fin_date_id}</TableCell>
+                                <TableCell align="center">{row.order_id}</TableCell>
+                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.ORDER_REFUND_STATUS, row.status)}</TableCell>
+                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.ORDER_PAYMENT_STATUS, row.payment_status)}</TableCell>
+                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.PAYMENT_TYPE, row.payment_type)}</TableCell>
+                                <TableCell align="center">{row.service_refund_price}</TableCell>
+                                <TableCell align="center">{row.prod_refund_price}</TableCell>
+                                <TableCell align="center">{row.transfer_refund_price}</TableCell>
+                                <TableCell align="center">{row.prod_refund_count}</TableCell>
                                 <TableCell align="center">
-                                    <IconButton color="primary" edge="start" size="small" onClick={() => {
-                                        dispatch(orderDetailAction.downLoadPDF(row.id))
-                                    }}>
-                                        <i className="mdi mdi-file-pdf"/>
-                                    </IconButton>
-                                    {/* 编辑按钮 */}
+                                    {/* 详细按钮 */}
                                     <IconButton color="primary" edge="start" size="small">
                                         <Link to={{pathname: '/order_refund/' + row.id, state: {queryParams: queryParams}}}><i className="mdi mdi-table-search"/></Link>
                                     </IconButton>
                                 </TableCell>
                             </TableRow>
                         ))}
-
-                        {orderRefundReducer.orderData.dataList.length === 0 &&
+                        {orderRefundReducer.orderRefundData.dataList.length === 0 &&
                         <TableRow>
-                            <TableCell colSpan={15} align="center">暂无数据</TableCell>
+                            <TableCell colSpan={10} align="center">暂无数据</TableCell>
                         </TableRow>}
                     </TableBody>
                 </Table>
@@ -457,15 +460,15 @@ function OrderRefund(props) {
 
             {/* 上下页按钮 */}
             <Box style={{textAlign: 'right', marginTop: 20}}>
-                {orderRefundReducer.orderData.start > 0 && orderRefundReducer.orderData.dataSize > 0 &&
+                {orderRefundReducer.orderRefundData.start > 0 && orderRefundReducer.orderRefundData.dataSize > 0 &&
                 <Button variant="contained" color="primary" style={{marginRight: 20}}
                         onClick={() => {
-                            dispatch(orderRefundAction.getOrderList(orderRefundReducer.orderData.start - (orderRefundReducer.orderData.size - 1)))
+                            dispatch(orderRefundAction.getOrderRefundList(orderRefundReducer.orderRefundData.start - (orderRefundReducer.orderRefundData.size - 1)))
                         }}>上一页</Button>}
-                {orderRefundReducer.orderData.dataSize >= orderRefundReducer.orderData.size &&
+                {orderRefundReducer.orderRefundData.dataSize >= orderRefundReducer.orderRefundData.size &&
                 <Button variant="contained" color="primary"
                         onClick={() => {
-                            dispatch(orderRefundAction.getOrderList(orderRefundReducer.orderData.start + (orderRefundReducer.orderData.size - 1)))
+                            dispatch(orderRefundAction.getOrderRefundList(orderRefundReducer.orderRefundData.start + (orderRefundReducer.orderRefundData.size - 1)))
                         }}>下一页</Button>}
             </Box>
 
@@ -615,11 +618,28 @@ function OrderRefund(props) {
 
                                 <Grid item container xs={6} spacing={1}>
                                     <Grid item xs={3}>
-                                        <TextField label="退款金额" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.discount_service_price}/>
+                                        <TextField label="退款金额" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.refundPrice || 0}
+                                                   onChange={(e)=>{
+                                                       // if (e.target.value == '') {
+                                                       //     modalData.productList[index].refundPrice = 0
+                                                       // } else {
+                                                       //
+                                                       // }
+                                                       modalData.productList[index].refundPrice = e.target.value || '0';
+                                                       setModalData({...modalData, productList:modalData.productList});
+                                                   }}
+                                        />
                                     </Grid>
 
                                     <Grid item xs={2}>
-                                        <TextField label="退货数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.discount_service_price}/>
+                                        <TextField label="退货数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.refundCount || item.prod_count}
+                                                   onChange={(e)=>{
+                                                       modalData.productList[index].refundCount = e.target.value || item.prod_count;
+                                                       setModalData({...modalData, productList:modalData.productList});
+                                                   }}
+                                                   error={validation.productList.length>0 && validation.productList[index].refundCount && validation.productList[index].refundCount!=''}
+                                                   helperText={validation.productList.length>0 && validation.productList[index].refundCount}
+                                        />
                                     </Grid>
 
                                     <Grid item xs={7}>
