@@ -9,8 +9,9 @@ import CategoryManagerReducer from './main/CategoryManagerReducer';
 import BrandManagerReducer from './main/BrandManagerReducer';
 import StorageReducer from './main/StorageReducer';
 import OrderReducer from './main/OrderReducer';
-import OrderRefundReducer from './main/OrderRefundReducer';
 import OrderDetailReducer from './main/OrderDetailReducer';
+import OrderRefundReducer from './main/OrderRefundReducer';
+import OrderRefundDetailReducer from './main/OrderRefundDetailReducer';
 import ProductManagerReducer from './main/ProductManagerReducer';
 import ProductManagerDetailReducer from './main/ProductManagerDetailReducer';
 import PurchasePayReducer from './main/PurchasePayReducer';
@@ -57,6 +58,7 @@ export default combineReducers({
     StorageReducer,
     OrderReducer,
     OrderRefundReducer,
+    OrderRefundDetailReducer,
     OrderDetailReducer,
     ProductManagerReducer,
     ProductManagerDetailReducer,

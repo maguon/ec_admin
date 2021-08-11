@@ -9,6 +9,7 @@ import * as StorageActionType from './main/StorageActionType'
 import * as OrderActionType from './main/OrderActionType'
 import * as OrderDetailActionType from './main/OrderDetailActionType'
 import * as OrderRefundActionType from './main/OrderRefundActionType'
+import * as OrderRefundDetailActionType from './main/OrderRefundDetailActionType'
 import * as ProductManagerActionType from './main/ProductManagerActionType'
 import * as StorageProductActionType from './main/StorageProductActionType'
 import * as StorageInOutActionType from './main/StorageInOutActionType'
@@ -56,6 +57,7 @@ export {
     OrderActionType,
     OrderDetailActionType,
     OrderRefundActionType,
+    OrderRefundDetailActionType,
     ProductManagerActionType,
     StorageProductActionType,
     StorageInOutActionType,

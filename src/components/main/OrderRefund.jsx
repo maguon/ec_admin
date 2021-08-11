@@ -32,10 +32,9 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from '@material-ui/pickers';
 // 引入Dialog
 import {SimpleModal} from "../index";
-import {OrderReturnActionType} from "../../types";
+import {OrderActionType, OrderRefundActionType} from "../../types";
 
 const orderRefundAction = require('../../actions/main/OrderRefundAction');
-const orderDetailAction = require('../../actions/main/OrderDetailAction');
 const commonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
@@ -48,37 +47,24 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function OrderRefund(props) {
-    const {orderRefundReducer, appReducer, commonReducer, fromDetail, detailParams} = props;
+    const {orderRefundReducer, appReducer, commonReducer, fromDetail} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    const [queryParams, setQueryParams] = useState({orderId:'', orderType:''});
-
     useEffect(() => {
-        console.log('detailParams---------------------------111111111111',detailParams);
-        setQueryParams(detailParams);
-
-        console.log('queryParams',queryParams);
-        // // 详情页面 返回 保留reducer，否则，清空
-        // if (!fromDetail) {
-        //     let queryParams = {
-        //         orderId: '',
-        //         status: null,
-        //         client: null,
-        //         clientAgent: null,
-        //         orderType: null,
-        //         checkUserId: null,
-        //         dateStart: '',
-        //         dateEnd: '',
-        //         finDateStart: '',
-        //         finDateEnd: ''
-        //     };
-        //     dispatch(OrderReturnActionType.setQueryParams(queryParams));
-        // }
-        // 取得画面 select控件，基础数据
-        props.getBaseSelectList();
-        // props.getOrderRefundList(props.orderRefundReducer.orderRefundData.start);
-        dispatch(orderRefundAction.getOrderRefundList(props.orderRefundReducer.orderRefundData.start, detailParams));
+        // 详情页面 返回 保留reducer，否则，清空
+        if (!fromDetail) {
+            let queryParams = {
+                orderId: '',
+                status: '',
+                paymentStatus: '',
+                paymentType: '',
+                dateStart: '',
+                dateEnd: ''
+            };
+            dispatch(OrderRefundActionType.setQueryParams(queryParams));
+        }
+        dispatch(orderRefundAction.getOrderRefundList(props.orderRefundReducer.orderRefundData.start));
     }, []);
 
     // useEffect(() => {
@@ -111,24 +97,62 @@ function OrderRefund(props) {
 
     const submitModal = async (step) => {
         const validateObj = {};
+        // 选择订单编号
         if (step === 0) {
             if (!modalData.inputId) {
                 setValidation({...validation, inputId: '请输入订单编号'});
             }
             if (Object.keys(validateObj).length === 0) {
-                // setModalData({
-                //     ...modalData,
-                //     activeStep: modalData.activeStep + 1
-                // });
                 let ret = await dispatch(orderRefundAction.getOrderInfo(modalData.inputId));
                 if (ret.length > 0) {
                     let serviceList = await dispatch(orderRefundAction.getOrderItemService(modalData.inputId));
+                    let refundServiceList = await dispatch(orderRefundAction.getOrderRefundService(modalData.inputId));
                     let productList = await dispatch(orderRefundAction.getOrderItemProd(modalData.inputId));
+                    let refundProductList = await dispatch(orderRefundAction.getOrderRefundProd(modalData.inputId));
+                    let newServiceList = [];
+                    let newProductList = [];
+                    let has = false;
+                    for (let i = 0; i < serviceList.length; i++) {
+                        has = false;
+                        for (let j = 0; j < refundServiceList.length; j++) {
+                            if (serviceList[i].id == refundServiceList[j].item_service_id) {
+                                has = true;
+                                break;
+                            }
+                        }
+                        // 没有退的情况下，可以继续申请退
+                        if (!has) {
+                            serviceList[i].remark = '';
+                            serviceList[i].itemServiceId = serviceList[i].id;
+                            serviceList[i].serviceRefundPrice = '0';
+                            newServiceList.push(serviceList[i]);
+                        }
+                    }
+                    for (let i = 0; i < productList.length; i++) {
+                        has = false;
+                        for (let j = 0; j < refundProductList.length; j++) {
+                            console.log('id',productList[i].id);
+                            console.log('item_prod_id',refundProductList[j].item_prod_id);
+                            if (productList[i].id == refundProductList[j].item_prod_id) {
+                                console.log('true;l...............')
+                                has = true;
+                                break;
+                            }
+                        }
+                        // 没有退的情况下，可以继续申请退
+                        if (!has) {
+                            productList[i].remark = '';
+                            productList[i].itemProdId = productList[i].id;
+                            productList[i].prodRefundCount = productList[i].prod_count;
+                            productList[i].prodRefundPrice = '0';
+                            newProductList.push(productList[i]);
+                        }
+                    }
                     setModalData({
                         ...modalData,
                         orderInfo: ret[0],
-                        serviceList: serviceList,
-                        productList: productList,
+                        serviceList: newServiceList,
+                        productList: newProductList,
                         activeStep: modalData.activeStep + 1
                     });
                 } else {
@@ -137,61 +161,48 @@ function OrderRefund(props) {
             }
         }
 
+        // 填写退单详情
         if (step === 1) {
             let checkedService = [];
-            for (let i =0;i<modalData.serviceList.length;i++) {
+            for (let i = 0; i < modalData.serviceList.length; i++) {
                 if (modalData.serviceList[i].checked) {
                     checkedService.push(modalData.serviceList[i]);
                 }
             }
-            // modalData.serviceList.forEach((item) => {
-            //     if (item.checked) {
-            //         checkedService.push(item);
-            //     }
-            // });
 
-            console.log('modalData.productList',modalData.productList);
             let checkedProduct = [];
             let validateProduct = [];
+            let errCnt = 0;
             for (let i =0;i<modalData.productList.length;i++) {
-                // validation.productList[i].refundCount = "";
-                validateProduct.push({refundCount:''});
+                // validation.productList[i].prodRefundCount = "";
+                validateProduct.push({prodRefundCount:''});
                 if (modalData.productList[i].checked) {
-                    if (modalData.productList[i].refundCount > modalData.productList[i].prod_count) {
-                        validateProduct[i].refundCount = "退货数不能大于商品数";
-                        // validateProduct.push({refundCount: '退货数量不能大于商品数量'});
+                    if (modalData.productList[i].prodRefundCount > modalData.productList[i].prod_count) {
+                        validateProduct[i].prodRefundCount = "退货数不能大于商品数";
+                        errCnt++;
+                        // validateProduct.push({prodRefundCount: '退货数量不能大于商品数量'});
                     }
                     checkedProduct.push(modalData.productList[i]);
                 }
             }
-            setValidation({...validation, productList: validateProduct});
+            setValidation({...validation, productList: validateProduct, nodata: ''});
 
 
+            if (checkedService.length === 0 && checkedProduct.length === 0) {
+                setValidation({...validation, nodata: '必须添加服务或商品'});
+            } else {
+                if (errCnt === 0) {
+                    console.log('checkedService', checkedService);
+                    console.log('checkedProduct', checkedProduct);
 
-            // modalData.productList.forEach((item) => {
-            //     if (item.checked) {
-            //         checkedProduct.push(item);
-            //     }
-            // });
-
-            console.log('checkedService', checkedService);
-
-
-            console.log('checkedProduct', checkedProduct);
-
-            // if (!modalData.reUser) {
-            //     validateObj.reUser ='请选择领用人';
-            // }
-            // if (!modalData.prodCnt && modalData.prodCnt!==0) {
-            //     validateObj.prodCnt ='请输入数量';
-            // }else if (modalData.storageProdRelDetail.storage_count < modalData.prodCnt) {
-            //     validateObj.prodCnt ='入库数量不能大于库存商品数量';
-            // }
-            // setValidation(validateObj);
-            // if(Object.keys(validateObj).length===0){
-            //     // dispatch(storageInOutAction.inOutStorageProduct(modalData));
-            //     setModalOpen(false);
-            // }
+                    if (!modalData.transferRefundPrice) {
+                        setValidation({...validation, transferRefundPrice: '请输入退单运费'});
+                    } else {
+                        dispatch(orderRefundAction.saveModalData({...modalData,checkedService: checkedService, checkedProduct: checkedProduct}));
+                        setModalOpen(false);
+                    }
+                }
+            }
         }
     };
 
@@ -206,192 +217,86 @@ function OrderRefund(props) {
             <Grid container spacing={3}>
                 <Grid container item xs={10} spacing={1}>
                     <Grid item xs={2}>
-                        <TextField label="订单编号" fullWidth margin="dense" variant="outlined" type="number"
-                                   value={queryParams.orderId}
-                                   onChange={(e) => {
-                            setQueryParams({...queryParams, orderId: e.target.value});
-                            // dispatch(OrderReturnActionType.setQueryParam({
-                            //     name: "orderId",
-                            //     value: e.target.value
-                            // }))
-                        }}/>
+                        <TextField label="订单编号" fullWidth margin="dense" variant="outlined" type="number" value={orderRefundReducer.queryParams.orderId}
+                                   onChange={(e, value) => {
+                                       dispatch(OrderRefundActionType.setQueryParam({name: "orderId", value: e.target.value}));
+                                   }}
+                                   />
+                    </Grid>
+                    <Grid item xs={2}>
+                        <FormControl variant="outlined" fullWidth margin="dense">
+                            <InputLabel>退单状态</InputLabel>
+                            <Select label="退单状态" value={orderRefundReducer.queryParams.status}
+                                    onChange={(e, value) => {
+                                        dispatch(OrderRefundActionType.setQueryParam({name: "status", value: e.target.value}));
+                                    }}
+                            >
+                                <MenuItem value="">请选择</MenuItem>
+                                {sysConst.ORDER_REFUND_STATUS.map((item, index) => (
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </Grid>
 
                     <Grid item xs={2}>
-                        <TextField label="订单类型" fullWidth margin="dense" variant="outlined" select
-                                   value={queryParams.orderType}
-                                   onChange={(e) => {
-                                       setQueryParams({...queryParams, orderType: e.target.value});
-                                       // dispatch(OrderReturnActionType.setQueryParam({
-                                       //     name: "orderId",
-                                       //     value: e.target.value
-                                       // }))
-                                   }}>
-                            <MenuItem value="">请选择</MenuItem>
-                            {sysConst.ORDER_TYPE.map((item, index) => (
-                                <MenuItem key={item.value} value={item.value.toString()}>{item.label}</MenuItem>
-                            ))}
-                        </TextField>
-
-
-                        {/*<FormControl variant="outlined" fullWidth margin="dense">*/}
-                        {/*    <InputLabel>订单类型</InputLabel>*/}
-                        {/*    <Select label="订单类型"*/}
-                        {/*            value={queryParams.orderType}*/}
-                        {/*            onChange={(e, value) => {*/}
-                        {/*                setQueryParams({...queryParams, orderType: e.target.value});*/}
-                        {/*                // dispatch(OrderReturnActionType.setQueryParam({*/}
-                        {/*                //     name: "orderType",*/}
-                        {/*                //     value: e.target.value*/}
-                        {/*                // }));*/}
-                        {/*            }}*/}
-                        {/*    >*/}
-                        {/*        <MenuItem value="">请选择</MenuItem>*/}
-                        {/*        {sysConst.ORDER_TYPE.map((item, index) => (*/}
-                        {/*            <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>*/}
-                        {/*        ))}*/}
-                        {/*    </Select>*/}
-                        {/*</FormControl>*/}
+                        <FormControl variant="outlined" fullWidth margin="dense">
+                            <InputLabel>支付状态</InputLabel>
+                            <Select label="支付状态" value={orderRefundReducer.queryParams.paymentStatus}
+                                    onChange={(e, value) => {
+                                        dispatch(OrderRefundActionType.setQueryParam({name: "paymentStatus", value: e.target.value}));
+                                    }}
+                            >
+                                <MenuItem value="">请选择</MenuItem>
+                                {sysConst.ORDER_PAYMENT_STATUS.map((item, index) => (
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </Grid>
 
                     {/*<Grid item xs={2}>*/}
                     {/*    <FormControl variant="outlined" fullWidth margin="dense">*/}
-                    {/*        <InputLabel>订单状态</InputLabel>*/}
-                    {/*        <Select label="订单状态"*/}
-                    {/*                value={orderRefundReducer.queryParams.status}*/}
+                    {/*        <InputLabel>支付方式</InputLabel>*/}
+                    {/*        <Select label="支付方式" value={orderRefundReducer.queryParams.paymentType}*/}
                     {/*                onChange={(e, value) => {*/}
-                    {/*                    dispatch(OrderReturnActionType.setQueryParam({*/}
-                    {/*                        name: "status",*/}
-                    {/*                        value: e.target.value*/}
-                    {/*                    }));*/}
+                    {/*                    dispatch(OrderRefundActionType.setQueryParam({name: "paymentType", value: e.target.value}));*/}
                     {/*                }}*/}
                     {/*        >*/}
                     {/*            <MenuItem value="">请选择</MenuItem>*/}
-                    {/*            {sysConst.ORDER_STATUS.map((item, index) => (*/}
+                    {/*            {sysConst.PAYMENT_TYPE.map((item, index) => (*/}
                     {/*                <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>*/}
                     {/*            ))}*/}
                     {/*        </Select>*/}
                     {/*    </FormControl>*/}
                     {/*</Grid>*/}
 
-                    {/*<Grid item xs={2}>*/}
-                    {/*    <Autocomplete fullWidth*/}
-                    {/*                  options={commonReducer.userList}*/}
-                    {/*                  getOptionLabel={(option) => option.real_name}*/}
-                    {/*                  value={modalData.reUser}*/}
-                    {/*                  onChange={(event, value) => {*/}
-                    {/*                      dispatch(OrderReturnActionType.setQueryParam({name: "reUser", value: value}));*/}
-                    {/*                  }}*/}
-                    {/*                  renderInput={(params) => <TextField {...params} label="接单人" margin="dense"*/}
-                    {/*                                                      variant="outlined"/>}*/}
-                    {/*    />*/}
-                    {/*</Grid>*/}
-
-                    {/*<Grid item xs={2}>*/}
-                    {/*    <Autocomplete fullWidth*/}
-                    {/*                  options={commonReducer.clientAgentList}*/}
-                    {/*                  getOptionLabel={(option) => option.name}*/}
-                    {/*                  value={modalData.clientAgent}*/}
-                    {/*                  onChange={(event, value) => {*/}
-                    {/*                      dispatch(OrderReturnActionType.setQueryParam({*/}
-                    {/*                          name: "clientAgent",*/}
-                    {/*                          value: value*/}
-                    {/*                      }));*/}
-                    {/*                  }}*/}
-                    {/*                  renderInput={(params) => <TextField {...params} label="客户集群" margin="dense"*/}
-                    {/*                                                      variant="outlined"/>}*/}
-                    {/*    />*/}
-                    {/*</Grid>*/}
-
-                    {/*<Grid item xs={2}>*/}
-                    {/*    <Autocomplete fullWidth*/}
-                    {/*                  options={commonReducer.clientList}*/}
-                    {/*                  getOptionLabel={(option) => option.name}*/}
-                    {/*                  value={modalData.client}*/}
-                    {/*                  onChange={(event, value) => {*/}
-                    {/*                      dispatch(OrderReturnActionType.setQueryParam({name: "client", value: value}));*/}
-                    {/*                  }}*/}
-                    {/*                  renderInput={(params) => <TextField {...params} label="客户" margin="dense"*/}
-                    {/*                                                      variant="outlined"/>}*/}
-                    {/*    />*/}
-                    {/*</Grid>*/}
-
-                    {/*<Grid item xs={2}>*/}
-                    {/*    <TextField label="客户电话" fullWidth margin="dense" variant="outlined"*/}
-                    {/*               value={orderRefundReducer.queryParams.clientTel}*/}
-                    {/*               onChange={(e) => {*/}
-                    {/*                   dispatch(OrderReturnActionType.setQueryParam({*/}
-                    {/*                       name: "clientTel",*/}
-                    {/*                       value: e.target.value*/}
-                    {/*                   }))*/}
-                    {/*               }}/>*/}
-                    {/*</Grid>*/}
-
-                    {/*<Grid item xs={2}>*/}
-                    {/*    <TextField label="车牌" fullWidth margin="dense" variant="outlined"*/}
-                    {/*               value={orderRefundReducer.queryParams.clientSerial}*/}
-                    {/*               onChange={(e) => {*/}
-                    {/*                   dispatch(OrderReturnActionType.setQueryParam({*/}
-                    {/*                       name: "clientSerial",*/}
-                    {/*                       value: e.target.value*/}
-                    {/*                   }))*/}
-                    {/*               }}/>*/}
-                    {/*</Grid>*/}
-
-                    {/*<Grid item xs={2}>*/}
-                    {/*    <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"*/}
-                    {/*                format="yyyy/MM/dd"*/}
-                    {/*                okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"*/}
-                    {/*                label="创建日期（始）"*/}
-                    {/*                value={orderRefundReducer.queryParams.dateStart == "" ? null : orderRefundReducer.queryParams.dateStart}*/}
-                    {/*                onChange={(date) => {*/}
-                    {/*                    dispatch(OrderReturnActionType.setQueryParam({name: "dateStart", value: date}))*/}
-                    {/*                }}*/}
-                    {/*    />*/}
-                    {/*</Grid>*/}
-                    {/*<Grid item xs={2}>*/}
-                    {/*    <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"*/}
-                    {/*                format="yyyy/MM/dd"*/}
-                    {/*                okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"*/}
-                    {/*                label="创建日期（终）"*/}
-                    {/*                value={orderRefundReducer.queryParams.dateEnd == "" ? null : orderRefundReducer.queryParams.dateEnd}*/}
-                    {/*                onChange={(date) => {*/}
-                    {/*                    dispatch(OrderReturnActionType.setQueryParam({name: "dateEnd", value: date}))*/}
-                    {/*                }}*/}
-                    {/*    />*/}
-                    {/*</Grid>*/}
-
                     <Grid item xs={2}>
-                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"
-                                    format="yyyy/MM/dd"
+                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
                                     label="完成日期（始）"
-                                    value={queryParams.finDateStart == "" ? null : queryParams.finDateStart}
-                                    onChange={(date) => {setQueryParams({...queryParams, finDateStart: date});
-                                        // dispatch(OrderReturnActionType.setQueryParam({
-                                        //     name: "finDateStart",
-                                        //     value: date
-                                        // }))
+                                    value={orderRefundReducer.queryParams.dateStart == "" ? null : orderRefundReducer.queryParams.dateStart}
+                                    onChange={(date)=>{
+                                        dispatch(OrderRefundActionType.setQueryParam({name: "dateStart", value: date}))
                                     }}
                         />
                     </Grid>
                     <Grid item xs={2}>
-                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"
-                                    format="yyyy/MM/dd"
+                        <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
                                     label="完成日期（终）"
-                                    value={queryParams.finDateEnd == "" ? null : queryParams.finDateEnd}
-                                    onChange={(date) => {setQueryParams({...queryParams, finDateEnd: date});
-                                        // dispatch(OrderReturnActionType.setQueryParam({name: "finDateEnd", value: date}))
+                                    value={orderRefundReducer.queryParams.dateEnd == "" ? null : orderRefundReducer.queryParams.dateEnd}
+                                    onChange={(date)=>{
+                                        dispatch(OrderRefundActionType.setQueryParam({name: "dateEnd", value: date}))
                                     }}
                         />
                     </Grid>
                 </Grid>
 
-                <Grid item xs={2} container style={{textAlign: 'right', marginTop: 30}}>
+                <Grid item xs={2} container>
                     {/*查询按钮*/}
                     <Grid item xs={4}>
-                        <Fab color="primary" size="small" onClick={() => {dispatch(orderRefundAction.getOrderRefundList(0, queryParams))}}>
+                        <Fab color="primary" size="small" onClick={() => {dispatch(orderRefundAction.getOrderRefundList(0))}}>
                             <i className="mdi mdi-magnify mdi-24px"/>
                         </Fab>
                     </Grid>
@@ -420,13 +325,14 @@ function OrderRefund(props) {
                         <TableRow>
                             <TableCell className={classes.tableHead} align="center">退单号</TableCell>
                             <TableCell className={classes.tableHead} align="center">订单号</TableCell>
-                            <TableCell className={classes.tableHead} align="center">订单状态</TableCell>
+                            <TableCell className={classes.tableHead} align="center">退单状态</TableCell>
                             <TableCell className={classes.tableHead} align="center">支付状态</TableCell>
-                            <TableCell className={classes.tableHead} align="center">支付方式</TableCell>
+                            {/*<TableCell className={classes.tableHead} align="center">支付方式</TableCell>*/}
                             <TableCell className={classes.tableHead} align="center">服务退款</TableCell>
                             <TableCell className={classes.tableHead} align="center">商品退款</TableCell>
-                            <TableCell className={classes.tableHead} align="center">运费退款</TableCell>
+                            <TableCell className={classes.tableHead} align="center">退货运费</TableCell>
                             <TableCell className={classes.tableHead} align="center">退货数量</TableCell>
+                            <TableCell className={classes.tableHead} align="center">完成日期</TableCell>
                             <TableCell className={classes.tableHead} align="center">操作</TableCell>
                         </TableRow>
                     </TableHead>
@@ -437,15 +343,16 @@ function OrderRefund(props) {
                                 <TableCell align="center">{row.order_id}</TableCell>
                                 <TableCell align="center">{commonUtil.getJsonValue(sysConst.ORDER_REFUND_STATUS, row.status)}</TableCell>
                                 <TableCell align="center">{commonUtil.getJsonValue(sysConst.ORDER_PAYMENT_STATUS, row.payment_status)}</TableCell>
-                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.PAYMENT_TYPE, row.payment_type)}</TableCell>
+                                {/*<TableCell align="center">{commonUtil.getJsonValue(sysConst.PAYMENT_TYPE, row.payment_type)}</TableCell>*/}
                                 <TableCell align="center">{row.service_refund_price}</TableCell>
                                 <TableCell align="center">{row.prod_refund_price}</TableCell>
                                 <TableCell align="center">{row.transfer_refund_price}</TableCell>
                                 <TableCell align="center">{row.prod_refund_count}</TableCell>
+                                <TableCell align="center">{row.date_id}</TableCell>
                                 <TableCell align="center">
                                     {/* 详细按钮 */}
                                     <IconButton color="primary" edge="start" size="small">
-                                        <Link to={{pathname: '/order_refund/' + row.id, state: {queryParams: queryParams}}}><i className="mdi mdi-table-search"/></Link>
+                                        <Link to={{pathname: '/order_refund/' + row.id}}><i className="mdi mdi-table-search"/></Link>
                                     </IconButton>
                                 </TableCell>
                             </TableRow>
@@ -524,13 +431,18 @@ function OrderRefund(props) {
                         {/* 下部分：订单服务列表 */}
                         <Grid container spacing={1}>
                             <Grid item container sm={1}><Typography gutterBottom className={classes.title}>服务</Typography></Grid>
+                            <Grid item container sm={11}>
+                                <Typography gutterBottom style={{color: 'red',fontSize: 13, paddingTop: 5}}>{validation.nodata}</Typography>
+                            </Grid>
                         </Grid>
 
                         {modalData.serviceList.map((item, index) => (
                             <Grid container spacing={1} key={index}>
                                 <Grid item container xs={2}>
                                     <Grid item xs={3} style={{paddingTop: 5}}>
-                                        <Checkbox checked={item.checked} onChange={(e) => {modalData.serviceList[index].checked = e.target.checked}}/>
+                                        <Checkbox checked={item.checked} onChange={(e) => {
+                                            modalData.serviceList[index].checked = e.target.checked;
+                                        }}/>
                                     </Grid>
                                     <Grid item xs={9}>
                                         <Autocomplete fullWidth disableClearable disabled options={commonReducer.saleServiceList}
@@ -567,11 +479,21 @@ function OrderRefund(props) {
 
                                 <Grid item container xs={6} spacing={1}>
                                     <Grid item xs={3}>
-                                        <TextField label="退款金额" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.discount_service_price}/>
+                                        <TextField label="退款金额" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.serviceRefundPrice || 0}
+                                                   onChange={(e)=>{
+                                                       modalData.serviceList[index].serviceRefundPrice = e.target.value || '0';
+                                                       setModalData({...modalData, serviceList:modalData.serviceList});
+                                                   }}
+                                        />
                                     </Grid>
 
                                     <Grid item xs={9}>
-                                        <TextField label="备注" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} value={item.remark}/>
+                                        <TextField label="备注" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} value={item.remark}
+                                                   onChange={(e)=>{
+                                                       modalData.serviceList[index].remark = e.target.value;
+                                                       setModalData({...modalData, serviceList:modalData.serviceList});
+                                                   }}
+                                        />
                                     </Grid>
                                 </Grid>
 
@@ -587,7 +509,9 @@ function OrderRefund(props) {
                             <Grid container spacing={1} key={index}>
                                 <Grid item container xs={2}>
                                     <Grid item xs={3} style={{paddingTop: 5}}>
-                                        <Checkbox checked={item.checked} onChange={(e) => {modalData.productList[index].checked = e.target.checked}}/>
+                                        <Checkbox checked={item.checked} onChange={(e) => {
+                                            modalData.productList[index].checked = e.target.checked;
+                                        }}/>
                                     </Grid>
                                     <Grid item xs={9}>
                                         <Autocomplete fullWidth disableClearable disabled options={commonReducer.productList}
@@ -618,38 +542,54 @@ function OrderRefund(props) {
 
                                 <Grid item container xs={6} spacing={1}>
                                     <Grid item xs={3}>
-                                        <TextField label="退款金额" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.refundPrice || 0}
+                                        <TextField label="退款金额" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prodRefundPrice || 0}
                                                    onChange={(e)=>{
-                                                       // if (e.target.value == '') {
-                                                       //     modalData.productList[index].refundPrice = 0
-                                                       // } else {
-                                                       //
-                                                       // }
-                                                       modalData.productList[index].refundPrice = e.target.value || '0';
+                                                       modalData.productList[index].prodRefundPrice = e.target.value || '0';
                                                        setModalData({...modalData, productList:modalData.productList});
                                                    }}
                                         />
                                     </Grid>
 
                                     <Grid item xs={2}>
-                                        <TextField label="退货数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.refundCount || item.prod_count}
+                                        <TextField label="退货数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prodRefundCount || item.prod_count}
                                                    onChange={(e)=>{
-                                                       modalData.productList[index].refundCount = e.target.value || item.prod_count;
+                                                       modalData.productList[index].prodRefundCount = e.target.value || item.prod_count;
                                                        setModalData({...modalData, productList:modalData.productList});
                                                    }}
-                                                   error={validation.productList.length>0 && validation.productList[index].refundCount && validation.productList[index].refundCount!=''}
-                                                   helperText={validation.productList.length>0 && validation.productList[index].refundCount}
+                                                   error={validation.productList.length>0 && validation.productList[index].prodRefundCount && validation.productList[index].prodRefundCount!=''}
+                                                   helperText={validation.productList.length>0 && validation.productList[index].prodRefundCount}
                                         />
                                     </Grid>
 
                                     <Grid item xs={7}>
-                                        <TextField label="备注" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} value={item.remark}/>
+                                        <TextField label="备注" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} value={item.remark}
+                                                   onChange={(e)=>{
+                                                       modalData.productList[index].remark = e.target.value;
+                                                       setModalData({...modalData, productList:modalData.productList});
+                                                   }}
+                                        />
                                     </Grid>
                                 </Grid>
                             </Grid>
                         ))}
 
+                        <Grid item xs={12} style={{marginTop: 10}}>
+                            <TextField label="退单运费" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} type="number" value={modalData.transferRefundPrice}
+                                       onChange={(e)=>{
+                                           setModalData({...modalData, transferRefundPrice: e.target.value});
+                                       }}
+                                       error={validation.transferRefundPrice && validation.transferRefundPrice != ''}
+                                       helperText={validation.transferRefundPrice}
+                            />
+                        </Grid>
 
+                        <Grid item xs={12} style={{marginTop: 10}}>
+                            <TextField label="退单备注" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} value={modalData.remark}
+                                       onChange={(e)=>{
+                                           setModalData({...modalData, remark: e.target.value});
+                                       }}
+                            />
+                        </Grid>
                     </div>
                 </div>
             </SimpleModal>
@@ -659,40 +599,18 @@ function OrderRefund(props) {
 
 const mapStateToProps = (state, ownProps) => {
     let fromDetail = false;
-    let params = {
-        age: 20,
-        orderId: '',
-        status: null,
-        client: null,
-        clientAgent: null,
-        orderType: '',
-        checkUserId: null,
-        dateStart: '',
-        dateEnd: '',
-        finDateStart: '',
-        finDateEnd: ''
-    };
     if (typeof ownProps.location.state != 'undefined' && ownProps.location.state != null && ownProps.location.state.fromDetail) {
-        console.log('fromDetail true.........................')
         fromDetail = true;
-        params = ownProps.location.state.params
     }
     return {
         orderRefundReducer: state.OrderRefundReducer,
         appReducer: state.AppReducer,
         commonReducer: state.CommonReducer,
-        fromDetail: fromDetail,
-        detailParams : params
+        fromDetail: fromDetail
     }
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    // 取得画面 select控件，基础数据
-    getBaseSelectList: () => {
-        dispatch(commonAction.getUserList());
-        dispatch(commonAction.getClientList());
-        dispatch(commonAction.getClientAgentList());
-    },
     getModalSelectList: () => {
         // 取得客户信息列表
         dispatch(commonAction.getClientList());

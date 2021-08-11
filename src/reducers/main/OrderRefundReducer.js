@@ -12,6 +12,15 @@ const initialState = {
         dataSize: 0,
         // 数据列表
         dataList: []
+    },
+    // 检索条件
+    queryParams: {
+        orderId: '',
+        status: '',
+        paymentStatus: '',
+        paymentType: '',
+        dateStart: '',
+        dateEnd: ''
     }
 };
 
@@ -20,6 +29,20 @@ export default handleActions({
         return {
             ...state,
             orderRefundData: action.payload
+        }
+    },
+    [OrderRefundActionType.setQueryParam]: (state, action) => {
+        const {name, value} = action.payload;
+        const paramsObj = {...state.queryParams, [name]: value};
+        return {
+            ...state,
+            queryParams: paramsObj
+        }
+    },
+    [OrderRefundActionType.setQueryParams]: (state, action) => {
+        return {
+            ...state,
+            queryParams: action.payload
         }
     }
 }, initialState)
