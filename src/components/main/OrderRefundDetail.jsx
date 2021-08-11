@@ -62,6 +62,10 @@ function OrderRefundDetail(props) {
                     <TextField label="退货数量" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }} disabled
                                value={orderRefundDetailReducer.orderRefundInfo.prod_refund_count}/>
                 </Grid>
+                <Grid item sm={3}>
+                    <TextField label="退货运费" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }} disabled
+                               value={orderRefundDetailReducer.orderRefundInfo.transfer_refund_price}/>
+                </Grid>
 
                 <Grid item sm={3}>
                     <TextField label="退单状态" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }} disabled
@@ -133,9 +137,12 @@ function OrderRefundDetail(props) {
                         <Grid item xs={3}>
                             <TextField label="退款金额" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.service_refund_price || 0}
                                        onChange={(e)=>{
-                                           orderRefundDetailReducer.orderRefundSerVList[index].service_refund_price = e.target.value;
+                                           orderRefundDetailReducer.orderRefundSerVList[index].service_refund_price = e.target.value || 0;
                                            dispatch(OrderRefundDetailActionType.getOrderRefundSerVList(orderRefundDetailReducer.orderRefundSerVList));
                                        }}
+                                       // error={orderRefundDetailReducer.orderRefundSerVList[index].validate && orderRefundDetailReducer.orderRefundSerVList[index].validate.service_refund_price
+                                       // && orderRefundDetailReducer.orderRefundSerVList[index].validate.service_refund_price != ''}
+                                       // helperText={orderRefundDetailReducer.orderRefundSerVList[index].validate && orderRefundDetailReducer.orderRefundSerVList[index].validate.service_refund_price}
                             />
                         </Grid>
 
@@ -150,7 +157,20 @@ function OrderRefundDetail(props) {
 
                         {orderRefundDetailReducer.orderRefundInfo.status !== 7 &&
                         <Grid item xs={1}>
-                            <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px',marginLeft: '10px'}} onClick={()=>{dispatch(orderRefundDetailAction.saveOrderRefundService(item))}}>
+                            <IconButton color="primary" edge="start" size="small" style={{paddingTop: '18px', marginLeft: '10px'}} onClick={() => {
+                                // let errCnt = 0;
+                                // if (item.service_refund_price == '') {
+                                //     errCnt++;
+                                //     orderRefundDetailReducer.orderRefundSerVList[index].validate = {service_refund_price : '退款金额不能空'};
+                                //     dispatch(OrderRefundDetailActionType.getOrderRefundSerVList(orderRefundDetailReducer.orderRefundSerVList));
+                                // }
+                                //
+                                // if (errCnt === 0) {
+                                //     dispatch(orderRefundDetailAction.saveOrderRefundService(item))
+                                // }
+
+                                dispatch(orderRefundDetailAction.saveOrderRefundService(item))
+                            }}>
                                 <i className="mdi mdi-check-circle-outline"> </i>
                             </IconButton>
                         </Grid>}
@@ -197,18 +217,21 @@ function OrderRefundDetail(props) {
                         <Grid item xs={3}>
                             <TextField label="退款金额" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prod_refund_price || 0}
                                        onChange={(e)=>{
-                                           orderRefundDetailReducer.orderRefundProdList[index].prod_refund_price = e.target.value;
+                                           orderRefundDetailReducer.orderRefundProdList[index].prod_refund_price = e.target.value || 0;
                                            dispatch(OrderRefundDetailActionType.getOrderRefundProdList(orderRefundDetailReducer.orderRefundProdList));
                                        }}
                             />
                         </Grid>
 
                         <Grid item xs={2}>
-                            <TextField label="退货数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prod_refund_count || item.prod_count}
+                            <TextField label="退货数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prod_refund_count || 0}
                                        onChange={(e)=>{
-                                           orderRefundDetailReducer.orderRefundProdList[index].prod_refund_count = e.target.value || item.prod_count;
+                                           orderRefundDetailReducer.orderRefundProdList[index].prod_refund_count = e.target.value || 0;
                                            dispatch(OrderRefundDetailActionType.getOrderRefundProdList(orderRefundDetailReducer.orderRefundProdList));
                                        }}
+                                       error={orderRefundDetailReducer.orderRefundProdList[index].validate && orderRefundDetailReducer.orderRefundProdList[index].validate.prod_refund_count
+                                       && orderRefundDetailReducer.orderRefundProdList[index].validate.prod_refund_count != ''}
+                                       helperText={orderRefundDetailReducer.orderRefundProdList[index].validate && orderRefundDetailReducer.orderRefundProdList[index].validate.prod_refund_count}
                             />
                         </Grid>
 
@@ -223,13 +246,18 @@ function OrderRefundDetail(props) {
 
                         {orderRefundDetailReducer.orderRefundInfo.status !== 7 &&
                         <Grid item xs={1}>
-                            <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px',marginLeft: '10px'}} onClick={()=>{dispatch(orderRefundDetailAction.saveOrderRefundProd(item))}}>
+                            <IconButton color="primary" edge="start" size="small" style={{paddingTop: '18px', marginLeft: '10px'}}
+                                        onClick={() => {
+                                            if (item.prod_refund_count > item.prod_count) {
+                                                orderRefundDetailReducer.orderRefundProdList[index].validate = {...orderRefundDetailReducer.orderRefundProdList[index].validate, prod_refund_count : '退货数不能大于商品数'};
+                                                dispatch(OrderRefundDetailActionType.getOrderRefundProdList(orderRefundDetailReducer.orderRefundProdList));
+                                            } else {
+                                                dispatch(orderRefundDetailAction.saveOrderRefundProd(item))
+                                            }
+                                        }}>
                                 <i className="mdi mdi-check-circle-outline"> </i>
                             </IconButton>
                         </Grid>}
-
-
-
                     </Grid>
                 </Grid>
             ))}
@@ -247,8 +275,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
     // 取得画面 select控件，基础数据
     getBaseSelectList: () => {
-        // 取得用户信息列表
-        dispatch(commonAction.getUserList());
         // 取得服务列表
         dispatch(commonAction.getSaleServiceList());
         // 取得商品列表

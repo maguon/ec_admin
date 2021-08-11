@@ -151,6 +151,7 @@ export const saveModalData = (modalData) => async (dispatch) => {
         let params = {
             remark: modalData.remark,
             // paymentType: sysConst.PAYMENT_TYPE[0].value,
+            transferRefundPrice: modalData.transferRefundPrice,
             OrderRefundProdArray: modalData.checkedProduct,
             OrderRefundServiceArray: modalData.checkedService
         };

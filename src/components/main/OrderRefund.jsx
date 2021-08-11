@@ -5,9 +5,9 @@ import {Link} from "react-router-dom";
 import {
     Box,
     Button,
+    Checkbox,
     Divider,
     Fab,
-    Checkbox,
     FormControl,
     Grid,
     IconButton,
@@ -32,7 +32,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from '@material-ui/pickers';
 // 引入Dialog
 import {SimpleModal} from "../index";
-import {OrderActionType, OrderRefundActionType} from "../../types";
+import {OrderRefundActionType} from "../../types";
 
 const orderRefundAction = require('../../actions/main/OrderRefundAction');
 const commonAction = require('../../actions/layout/CommonAction');
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function OrderRefund(props) {
-    const {orderRefundReducer, appReducer, commonReducer, fromDetail} = props;
+    const {orderRefundReducer, commonReducer, fromDetail} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
 
@@ -67,22 +67,15 @@ function OrderRefund(props) {
         dispatch(orderRefundAction.getOrderRefundList(props.orderRefundReducer.orderRefundData.start));
     }, []);
 
-    // useEffect(() => {
-    //     console.log('detailParams--------------------------222222222222222222222-',detailParams);
-    //     setQueryParams(detailParams);
-    //     // 取得画面 select控件，基础数据
-    //     dispatch(orderRefundAction.getOrderRefundList(props.orderRefundReducer.orderRefundData.start, queryParams));
-    // }, [fromDetail]);
-
     // 模态属性
     const [modalOpen, setModalOpen] = React.useState(false);
     // 模态数据
     const [modalData, setModalData] = React.useState({serviceList: [], productList: [], steps: ['选择订单编号', '填写退单详情']});
     // 模态校验
-    const [validation, setValidation] = useState({});
+    const [validation, setValidation] = useState({productList: [], serviceList: []});
 
     const initModal = () => {
-        setValidation({inputId:'', productList: [], nodata: ''});
+        setValidation({inputId: '', productList: [], serviceList: [], nodata: ''});
         setModalData({
             ...modalData,
             inputId: '',
@@ -90,6 +83,7 @@ function OrderRefund(props) {
             activeStep: 0,
             serviceList: [],
             productList: [],
+            transferRefundPrice: '',
             remark: ''
         });
         setModalOpen(true);
@@ -121,32 +115,27 @@ function OrderRefund(props) {
                             }
                         }
                         // 没有退的情况下，可以继续申请退
-                        if (!has) {
-                            serviceList[i].remark = '';
-                            serviceList[i].itemServiceId = serviceList[i].id;
-                            serviceList[i].serviceRefundPrice = '0';
-                            newServiceList.push(serviceList[i]);
-                        }
+                        serviceList[i].disabled = has;
+                        serviceList[i].remark = '';
+                        serviceList[i].itemServiceId = serviceList[i].id;
+                        serviceList[i].serviceRefundPrice = '0';
+                        newServiceList.push(serviceList[i]);
                     }
                     for (let i = 0; i < productList.length; i++) {
                         has = false;
                         for (let j = 0; j < refundProductList.length; j++) {
-                            console.log('id',productList[i].id);
-                            console.log('item_prod_id',refundProductList[j].item_prod_id);
                             if (productList[i].id == refundProductList[j].item_prod_id) {
-                                console.log('true;l...............')
                                 has = true;
                                 break;
                             }
                         }
                         // 没有退的情况下，可以继续申请退
-                        if (!has) {
-                            productList[i].remark = '';
-                            productList[i].itemProdId = productList[i].id;
-                            productList[i].prodRefundCount = productList[i].prod_count;
-                            productList[i].prodRefundPrice = '0';
-                            newProductList.push(productList[i]);
-                        }
+                        productList[i].disabled = has;
+                        productList[i].remark = '';
+                        productList[i].itemProdId = productList[i].id;
+                        productList[i].prodRefundCount = productList[i].prod_count;
+                        productList[i].prodRefundPrice = '0';
+                        newProductList.push(productList[i]);
                     }
                     setModalData({
                         ...modalData,
@@ -156,47 +145,55 @@ function OrderRefund(props) {
                         activeStep: modalData.activeStep + 1
                     });
                 } else {
-                    setValidation({inputId: '没有该订单记录,请重新输入'});
+                    setValidation({...validation, inputId: '没有该订单记录,请重新输入'});
                 }
             }
         }
 
         // 填写退单详情
         if (step === 1) {
+            let errCnt = 0;
             let checkedService = [];
+            let validateService = [];
             for (let i = 0; i < modalData.serviceList.length; i++) {
+                validateService.push({serviceRefundPrice:''});
                 if (modalData.serviceList[i].checked) {
+                    // if (modalData.serviceList[i].serviceRefundPrice == '') {
+                    //     validateService[i].serviceRefundPrice = "退款金额不能空";
+                    //     errCnt++;
+                    // }
                     checkedService.push(modalData.serviceList[i]);
                 }
             }
 
             let checkedProduct = [];
             let validateProduct = [];
-            let errCnt = 0;
             for (let i =0;i<modalData.productList.length;i++) {
-                // validation.productList[i].prodRefundCount = "";
-                validateProduct.push({prodRefundCount:''});
+                validateProduct.push({prodRefundCount:'', prodRefundPrice:''});
                 if (modalData.productList[i].checked) {
+                    // if (modalData.productList[i].prodRefundPrice == '') {
+                    //     validateProduct[i].prodRefundPrice = "退款金额不能空";
+                    //     errCnt++;
+                    // }
+                    // if (modalData.productList[i].prodRefundCount == '') {
+                    //     validateProduct[i].prodRefundCount = "退货数不能空";
+                    //     errCnt++;
+                    // } else
                     if (modalData.productList[i].prodRefundCount > modalData.productList[i].prod_count) {
                         validateProduct[i].prodRefundCount = "退货数不能大于商品数";
                         errCnt++;
-                        // validateProduct.push({prodRefundCount: '退货数量不能大于商品数量'});
                     }
                     checkedProduct.push(modalData.productList[i]);
                 }
             }
-            setValidation({...validation, productList: validateProduct, nodata: ''});
-
+            setValidation({...validation, serviceList: validateService, productList: validateProduct, transferRefundPrice: '', nodata: ''});
 
             if (checkedService.length === 0 && checkedProduct.length === 0) {
-                setValidation({...validation, nodata: '必须添加服务或商品'});
+                setValidation({...validation, transferRefundPrice:'', nodata: '必须添加服务或商品'});
             } else {
                 if (errCnt === 0) {
-                    console.log('checkedService', checkedService);
-                    console.log('checkedProduct', checkedProduct);
-
                     if (!modalData.transferRefundPrice) {
-                        setValidation({...validation, transferRefundPrice: '请输入退单运费'});
+                        setValidation({...validation, serviceList: [], productList: [], transferRefundPrice: '请输入退单运费', nodata: ''});
                     } else {
                         dispatch(orderRefundAction.saveModalData({...modalData,checkedService: checkedService, checkedProduct: checkedProduct}));
                         setModalOpen(false);
@@ -205,7 +202,6 @@ function OrderRefund(props) {
             }
         }
     };
-
 
     return (
         <div className={classes.root}>
@@ -221,7 +217,7 @@ function OrderRefund(props) {
                                    onChange={(e, value) => {
                                        dispatch(OrderRefundActionType.setQueryParam({name: "orderId", value: e.target.value}));
                                    }}
-                                   />
+                       />
                     </Grid>
                     <Grid item xs={2}>
                         <FormControl variant="outlined" fullWidth margin="dense">
@@ -295,26 +291,26 @@ function OrderRefund(props) {
 
                 <Grid item xs={2} container>
                     {/*查询按钮*/}
-                    <Grid item xs={4}>
+                    <Grid item xs={6}>
                         <Fab color="primary" size="small" onClick={() => {dispatch(orderRefundAction.getOrderRefundList(0))}}>
                             <i className="mdi mdi-magnify mdi-24px"/>
                         </Fab>
                     </Grid>
 
                     {/*追加按钮*/}
-                    <Grid item xs={4}>
+                    <Grid item xs={6}>
                         <Fab color="primary" size="small" onClick={initModal}>
                             <i className="mdi mdi-plus mdi-24px"/>
                         </Fab>
                     </Grid>
 
-                    <Grid item xs={4}>
-                        <Fab color="primary" size="small" onClick={() => {
-                            dispatch(orderRefundAction.downLoadCsv())
-                        }}>
-                            <i className="mdi mdi-cloud-download mdi-24px"/>
-                        </Fab>
-                    </Grid>
+                    {/*<Grid item xs={4}>*/}
+                    {/*    <Fab color="primary" size="small" onClick={() => {*/}
+                    {/*        dispatch(orderRefundAction.downLoadCsv())*/}
+                    {/*    }}>*/}
+                    {/*        <i className="mdi mdi-cloud-download mdi-24px"/>*/}
+                    {/*    </Fab>*/}
+                    {/*</Grid>*/}
                 </Grid>
             </Grid>
 
@@ -440,9 +436,10 @@ function OrderRefund(props) {
                             <Grid container spacing={1} key={index}>
                                 <Grid item container xs={2}>
                                     <Grid item xs={3} style={{paddingTop: 5}}>
-                                        <Checkbox checked={item.checked} onChange={(e) => {
-                                            modalData.serviceList[index].checked = e.target.checked;
-                                        }}/>
+                                        <Checkbox checked={item.checked} disabled={item.disabled}
+                                                  onChange={(e) => {
+                                                      modalData.serviceList[index].checked = e.target.checked;
+                                                  }}/>
                                     </Grid>
                                     <Grid item xs={9}>
                                         <Autocomplete fullWidth disableClearable disabled options={commonReducer.saleServiceList}
@@ -479,11 +476,13 @@ function OrderRefund(props) {
 
                                 <Grid item container xs={6} spacing={1}>
                                     <Grid item xs={3}>
-                                        <TextField label="退款金额" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.serviceRefundPrice || 0}
+                                        <TextField label="退款金额" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.serviceRefundPrice || '0'}
                                                    onChange={(e)=>{
                                                        modalData.serviceList[index].serviceRefundPrice = e.target.value || '0';
                                                        setModalData({...modalData, serviceList:modalData.serviceList});
                                                    }}
+                                                   // error={validation.serviceList.length>0 && validation.serviceList[index].serviceRefundPrice && validation.productList[index].serviceRefundPrice!=''}
+                                                   // helperText={validation.serviceList.length>0 && validation.serviceList[index].serviceRefundPrice}
                                         />
                                     </Grid>
 
@@ -509,9 +508,10 @@ function OrderRefund(props) {
                             <Grid container spacing={1} key={index}>
                                 <Grid item container xs={2}>
                                     <Grid item xs={3} style={{paddingTop: 5}}>
-                                        <Checkbox checked={item.checked} onChange={(e) => {
-                                            modalData.productList[index].checked = e.target.checked;
-                                        }}/>
+                                        <Checkbox checked={item.checked} disabled={item.disabled}
+                                                  onChange={(e) => {
+                                                      modalData.productList[index].checked = e.target.checked;
+                                                  }}/>
                                     </Grid>
                                     <Grid item xs={9}>
                                         <Autocomplete fullWidth disableClearable disabled options={commonReducer.productList}
@@ -542,18 +542,20 @@ function OrderRefund(props) {
 
                                 <Grid item container xs={6} spacing={1}>
                                     <Grid item xs={3}>
-                                        <TextField label="退款金额" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prodRefundPrice || 0}
+                                        <TextField label="退款金额" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prodRefundPrice || '0'}
                                                    onChange={(e)=>{
                                                        modalData.productList[index].prodRefundPrice = e.target.value || '0';
                                                        setModalData({...modalData, productList:modalData.productList});
                                                    }}
+                                                   // error={validation.productList.length>0 && validation.productList[index].prodRefundPrice && validation.productList[index].prodRefundPrice!=''}
+                                                   // helperText={validation.productList.length>0 && validation.productList[index].prodRefundPrice}
                                         />
                                     </Grid>
 
                                     <Grid item xs={2}>
-                                        <TextField label="退货数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prodRefundCount || item.prod_count}
+                                        <TextField label="退货数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prodRefundCount || '0'}
                                                    onChange={(e)=>{
-                                                       modalData.productList[index].prodRefundCount = e.target.value || item.prod_count;
+                                                       modalData.productList[index].prodRefundCount = e.target.value || '0';
                                                        setModalData({...modalData, productList:modalData.productList});
                                                    }}
                                                    error={validation.productList.length>0 && validation.productList[index].prodRefundCount && validation.productList[index].prodRefundCount!=''}
@@ -604,7 +606,6 @@ const mapStateToProps = (state, ownProps) => {
     }
     return {
         orderRefundReducer: state.OrderRefundReducer,
-        appReducer: state.AppReducer,
         commonReducer: state.CommonReducer,
         fromDetail: fromDetail
     }
@@ -612,10 +613,6 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => ({
     getModalSelectList: () => {
-        // 取得客户信息列表
-        dispatch(commonAction.getClientList());
-        // 取得用户信息列表
-        dispatch(commonAction.getUserList());
         // 取得服务列表
         dispatch(commonAction.getSaleServiceList());
         // 取得商品列表

@@ -16,7 +16,7 @@ export default handleActions({
     },
     [OrderRefundDetailActionType.setOrderRefundInfo]: (state, action) => {
         const {name, value} = action.payload;
-        const newData = {...state.orderInfo, [name]: value};
+        const newData = {...state.orderRefundInfo, [name]: value};
         return {
             ...state,
             orderRefundInfo: newData
