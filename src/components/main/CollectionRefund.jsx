@@ -8,6 +8,7 @@ import {Box, Button, Divider, Fab, FormControl, Grid, InputLabel,MenuItem, Paper
 import {DatePicker} from '@material-ui/pickers';
 import {makeStyles} from "@material-ui/core/styles";
 import {CollectionRefundActionType} from "../../types";
+import Swal from "sweetalert2";
 const CollectionRefundAction = require('../../actions/main/CollectionRefundAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
@@ -20,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function CollectionRefund(props) {
-    const {collectionRefundReducer,fromDetail,getCollectionRefundList} = props;
+    const {collectionRefundReducer,fromDetail,getCollectionRefundList,deletePaymentItem} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     useEffect(() => {
@@ -183,6 +184,9 @@ function CollectionRefund(props) {
                                     <TableCell align="center">{commonUtil.getJsonValue(sysConst.PAYMENT_TYPE, row.payment_type)}</TableCell>
                                     <TableCell align="center">{row.date_id}</TableCell>
                                     <TableCell align="center">
+                                        <IconButton color="secondary" edge="start" size="small" onClick={()=>{deletePaymentItem(row.id,collectionRefundReducer.collectionRefundData.start)}}>
+                                            <i className="mdi mdi-delete purple-font"> </i>
+                                        </IconButton>
                                         <IconButton color="primary" edge="start" size="small">
                                             <Link to={{pathname: '/collection_refund/' + row.id}}>
                                                 <i className="mdi mdi-table-search"/>
@@ -192,7 +196,6 @@ function CollectionRefund(props) {
                                 </TableRow>
                             )
                         })}
-
                         {collectionRefundReducer.collectionRefundData.dataList.length === 0 &&
                         <TableRow>
                             <TableCell colSpan={16} align="center">暂无数据</TableCell>
@@ -231,6 +234,20 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => ({
     getCollectionRefundList: (dataStart) => {
         dispatch(CollectionRefundAction.getCollectionRefundList(dataStart))
+    },
+    deletePaymentItem: (id,start) => {
+        Swal.fire({
+            title: "确定删除该支付订单吗?",
+            text: "",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "确定",
+            cancelButtonText:"取消"
+        }).then(async (value) => {
+            if (value.isConfirmed) {
+                dispatch(CollectionRefundAction.deletePaymentItem(id,start))
+            }
+        });
     },
 });
 

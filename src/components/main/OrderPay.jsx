@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function OrderPay(props) {
-    const {orderPayReducer, orderDetailReducer, commonReducer,getAllOrder,fromDetail} = props;
+    const {orderPayReducer, orderDetailReducer, commonReducer,getAllOrder} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     const [selected, setSelected] = React.useState([]);
@@ -37,7 +37,6 @@ function OrderPay(props) {
     const [remarks, setRemarks] = React.useState('');
 
     useEffect(() => {
-        if (!fromDetail) {
             let queryParams = {
                 // 订单编号
                 orderId: '',
@@ -63,7 +62,6 @@ function OrderPay(props) {
                 finDateEnd: ''
             };
             dispatch(OrderPayActionType.setQueryPayParams(queryParams));
-        }
         // 取得画面 select控件，基础数据
         props.getBaseSelectList();
         props.getOrderList(orderPayReducer.orderData.start);
@@ -89,7 +87,6 @@ function OrderPay(props) {
         if (event) {
             const newSelecteds = orderPayReducer.orderData.dataList.map((n) => n);
             setSelected(newSelecteds);
-            //console.log(newSelecteds)
             return;
         }
         setSelected([]);
@@ -110,7 +107,6 @@ function OrderPay(props) {
             );
         }
         setSelected(newSelected);
-        //console.log(newSelected)
     };
     const isSelected = (id) => selected.indexOf(id) !== -1;
     const getAllOrderData = () => {
@@ -251,12 +247,6 @@ function OrderPay(props) {
                                                                           variant="outlined"/>}
                         />
                     </Grid>
-
-                    {/*  <Grid item xs={2}>
-                        <TextField label="客户电话" fullWidth margin="dense" variant="outlined" value={orderPayReducer.queryParams.clientTel}
-                                   onChange={(e)=>{dispatch(OrderPayActionType.setQueryPayParam({name: "clientTel", value: e.target.value}))}}/>
-                    </Grid>
-*/}
                     <Grid item xs={2}>
                         <TextField label="车牌" fullWidth margin="dense" variant="outlined"
                                    value={orderPayReducer.queryParams.clientSerial}
@@ -584,16 +574,11 @@ function OrderPay(props) {
 }
 
 const mapStateToProps = (state, ownProps) => {
-    let fromDetail = false;
-    if (typeof ownProps.location.state != 'undefined' && ownProps.location.state != null && ownProps.location.state.fromDetail) {
-        fromDetail = true;
-    }
     return {
         orderPayReducer: state.OrderPayReducer,
         appReducer: state.AppReducer,
         commonReducer: state.CommonReducer,
         orderDetailReducer: state.OrderDetailReducer,
-        fromDetail: fromDetail
     }
 };
 const mapDispatchToProps = (dispatch) => ({
@@ -614,21 +599,7 @@ const mapDispatchToProps = (dispatch) => ({
     },
     getAllOrder:(remarks,paymentType,selectedId,batchData)=>{
         dispatch(orderPayAction.getAllOrder(remarks,paymentType,selectedId,batchData))
-    },
-    confirmPay: (id, planDateStart,planDateEnd,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus) => {
-        Swal.fire({
-            title: "确定支付该订单？",
-            text: "",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "确定",
-            cancelButtonText:"取消"
-        }).then(async (value) => {
-            if (value.isConfirmed) {
-                dispatch(orderPayAction.confirmPayment(id, {planDateStart,planDateEnd,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus}));
-            }
-        });
-    },
+    }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(OrderPay)
