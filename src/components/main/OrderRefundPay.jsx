@@ -129,6 +129,10 @@ function OrderRefundPay(props) {
         dispatch(OrderRefundPayAction.getOrderList(orderRefundPayReducer.orderData.start + (orderRefundPayReducer.orderData.size - 1)))
         setSelected([]);
     }
+    const getOrderRefundList=()=>{
+        props.getOrderList(0)
+        dispatch(OrderRefundPayAction.getOrderRefundStat())
+    }
     return (
         <div className={classes.root}>
             {/* 标题部分 */}
@@ -214,7 +218,7 @@ function OrderRefundPay(props) {
                     {/*查询按钮*/}
                     <Grid item xs={12}>
                         <Fab color="primary" size="small" onClick={() => {
-                            dispatch(OrderRefundPayAction.getOrderList(0))
+                            getOrderRefundList()
                         }}>
                             <i className="mdi mdi-magnify mdi-24px"/>
                         </Fab>
@@ -294,7 +298,15 @@ function OrderRefundPay(props) {
                                 </TableRow>
                             )
                         })}
-
+                        {Object.keys(orderRefundPayReducer.orderRefundStat).length !== 0&&
+                            <TableRow>
+                                <TableCell colSpan={2} align="center">服务退款总额：{orderRefundPayReducer.orderRefundStat.service_refund_price}</TableCell>
+                                <TableCell colSpan={2} align="center">商品退款总额：{orderRefundPayReducer.orderRefundStat.prod_refund_price}</TableCell>
+                                <TableCell colSpan={2} align="center">退货运费总额：{orderRefundPayReducer.orderRefundStat.transfer_refund_price}</TableCell>
+                                <TableCell colSpan={2} align="center">退货数量总额：{orderRefundPayReducer.orderRefundStat.prod_refund_count}</TableCell>
+                                <TableCell colSpan={2} align="center">退款金额总额：{orderRefundPayReducer.orderRefundStat.service_refund_count}</TableCell>
+                                <TableCell colSpan={2} align="right" style={{paddingRight:40}}>总额：{orderRefundPayReducer.orderRefundStat.total_refund_price}</TableCell>
+                            </TableRow>}
                         {orderRefundPayReducer.orderData.dataList.length === 0 &&
                         <TableRow>
                             <TableCell colSpan={11} align="center">暂无数据</TableCell>

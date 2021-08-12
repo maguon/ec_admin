@@ -23,7 +23,8 @@ const initialState = {
         paymentStatus: '',
         dateStart: '',
         dateEnd: '',
-    }
+    },
+    orderRefundStat:{}
 };
 
 export default handleActions({
@@ -46,5 +47,12 @@ export default handleActions({
             ...state,
             queryParams: action.payload
         }
-    }
+    },
+    [OrderRefundPayActionType.setOrderRefundStatData]: (state, action) => {
+        return {
+            ...state,
+            orderRefundStat: action.payload
+        }
+    },
+
 }, initialState)

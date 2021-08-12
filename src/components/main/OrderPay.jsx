@@ -66,6 +66,10 @@ function OrderPay(props) {
         props.getBaseSelectList();
         props.getOrderList(orderPayReducer.orderData.start);
     }, []);
+    const getOrderPayList=()=>{
+        props.getOrderList(0)
+        dispatch(orderPayAction.getOrderStat())
+    }
     const modelOpen = () => {
         setPayType(1);
         setPaymentType(1);
@@ -323,7 +327,7 @@ function OrderPay(props) {
                     {/*查询按钮*/}
                     <Grid item xs={12}>
                         <Fab color="primary" size="small" onClick={() => {
-                            dispatch(orderPayAction.getOrderList(0))
+                            getOrderPayList()
                         }}>
                             <i className="mdi mdi-magnify mdi-24px"/>
                         </Fab>
@@ -416,7 +420,23 @@ function OrderPay(props) {
                                 </TableRow>
                             )
                         })}
-
+                        {Object.keys(orderPayReducer.orderStat).length !== 0 &&
+                        <TableRow>
+                            <TableCell rowSpan={4}/>
+                            <TableCell rowSpan={4}/>
+                            <TableCell rowSpan={4}/>
+                            <TableCell rowSpan={4}/>
+                            <TableCell rowSpan={4}/>
+                            <TableCell rowSpan={4}/>
+                            <TableCell colSpan={3}
+                                       align="center">服务费总额：{orderPayReducer.orderStat.service_price}</TableCell>
+                            <TableCell colSpan={3}
+                                       align="center">商品金额总额：{orderPayReducer.orderStat.prod_price}</TableCell>
+                            <TableCell colSpan={3}
+                                       align="center">折扣总额：{orderPayReducer.orderStat.total_discount_price}</TableCell>
+                            <TableCell colSpan={3} align="right"
+                                       style={{paddingRight: 40}}>实际金额总额：{orderPayReducer.orderStat.total_actual_price}</TableCell>
+                        </TableRow>}
                         {orderPayReducer.orderData.dataList.length === 0 &&
                         <TableRow>
                             <TableCell colSpan={16} align="center">暂无数据</TableCell>

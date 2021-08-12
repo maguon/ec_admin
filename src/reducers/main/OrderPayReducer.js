@@ -37,7 +37,8 @@ const initialState = {
         // 完成日期
         finDateStart: '',
         finDateEnd: ''
-    }
+    },
+    orderStat: {}
 };
 
 export default handleActions({
@@ -59,6 +60,12 @@ export default handleActions({
         return {
             ...state,
             queryParams: action.payload
+        }
+    },
+    [OrderPayActionType.setOrderPayStatData]: (state, action) => {
+        return {
+            ...state,
+            orderStat: action.payload
         }
     }
 }, initialState)

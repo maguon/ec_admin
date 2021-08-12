@@ -93,3 +93,27 @@ export const getOrderInfo = (orderId) => async (dispatch) => {
         Swal.fire("操作失败", err.message, "error");
     }
 };
+export const getOrderRefundStat = () => async (dispatch) => {
+    try {
+        let conditions = dispatch(getParams());
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderRefundStat?';
+        // 检索URL
+        url = conditions.length > 0 ? url + "&" + conditions : url;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            if (res.rows.length > 0) {
+                dispatch({type: OrderRefundPayActionType.setOrderRefundStatData, payload: res.rows[0]});
+            } else {
+                return
+            }
+        } else if (!res.success) {
+            Swal.fire("获取订单信息失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
