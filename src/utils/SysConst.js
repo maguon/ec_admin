@@ -446,6 +446,12 @@ export const ALL_PAGE_LIST = [
                 "usable": false
             },
             {
+                "link": "/order_refund_pay",
+                "name": "订单退款",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
+            {
                 "link": "/collection_refund",
                 "name": "收款退款",
                 "icon": "mdi-chevron-right",

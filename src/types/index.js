@@ -44,7 +44,7 @@ import * as AchievementActionType from './main/AchievementActionType';
 import * as OrderPayActionType from  './main/OrderPayActionType';
 import * as CollectionRefundActionType from './main/CollectionRefundActionType';
 import * as CollectionRefundDetailActionType from './main/CollectionRefundDetailActionType';
-
+import * as OrderRefundPayActionType from './main/OrderRefundPayActionType';
 export {
     AppActionType,
     CommonActionType,
@@ -91,5 +91,6 @@ export {
     AchievementActionType,
     OrderPayActionType,
     CollectionRefundActionType,
-    CollectionRefundDetailActionType
+    CollectionRefundDetailActionType,
+    OrderRefundPayActionType
 }

@@ -169,7 +169,7 @@ function CollectionRefund(props) {
                             return (
                                 <TableRow key={row.id}>
                                     <TableCell align="center">{row.id}</TableCell>
-                                    <TableCell align="center">{row.order_count}</TableCell>
+                                    <TableCell align="center">{Number(row.order_count)}</TableCell>
                                     <TableCell align="center">{row.prod_price}</TableCell>
                                     <TableCell align="center">{row.service_price}</TableCell>
                                     <TableCell align="center">{row.total_order_price}</TableCell>
