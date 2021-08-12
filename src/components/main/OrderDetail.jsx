@@ -342,15 +342,15 @@ function OrderDetail(props) {
 
                 {newServiceData.servicePriceType === sysConst.SERVICE_PRICE_TYPE[0].value &&
                 <Grid item xs={2}>
-                    <TextField label="固定售价" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={newServiceData.fixedPrice}/>
+                    <TextField label="固定售价" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={newServiceData.fixedPrice || 0}/>
                 </Grid>}
                 {newServiceData.servicePriceType !== sysConst.SERVICE_PRICE_TYPE[0].value &&
                 <>
                     <Grid item xs={1}>
-                        <TextField label="销售单价" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={newServiceData.unitPrice}/>
+                        <TextField label="销售单价" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={newServiceData.unitPrice || 0}/>
                     </Grid>
                     <Grid item xs={1}>
-                        <TextField label="销售数量" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={newServiceData.serviceCount}/>
+                        <TextField label="销售数量" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={newServiceData.serviceCount || 0}/>
                     </Grid>
                 </>}
 
@@ -476,7 +476,7 @@ function OrderDetail(props) {
                 </Grid>
 
                 <Grid item xs={1}>
-                    <TextField label="价格" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={newProdData.prodPrice}/>
+                    <TextField label="价格" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={newProdData.prodPrice || 0}/>
                 </Grid>
                 <Grid item xs={1}>
                     <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={newProdData.prodCount}

@@ -4,7 +4,9 @@ import {OrderRefundDetailActionType} from '../../types';
 const initialState = {
     orderRefundInfo: {},
     orderRefundSerVList: [],
-    orderRefundProdList: []
+    orderAvailableSerVList: [],
+    orderRefundProdList: [],
+    orderAvailableProdList: [],
 };
 
 export default handleActions({
@@ -28,10 +30,22 @@ export default handleActions({
             orderRefundSerVList: action.payload
         }
     },
+    [OrderRefundDetailActionType.getOrderAvailableSerVList]: (state, action) => {
+        return {
+            ...state,
+            orderAvailableSerVList: action.payload
+        }
+    },
     [OrderRefundDetailActionType.getOrderRefundProdList]: (state, action) => {
         return {
             ...state,
             orderRefundProdList: action.payload
+        }
+    },
+    [OrderRefundDetailActionType.getOrderAvailableProdList]: (state, action) => {
+        return {
+            ...state,
+            orderAvailableProdList: action.payload
         }
     },
 }, initialState)

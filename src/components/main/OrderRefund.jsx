@@ -184,6 +184,9 @@ function OrderRefund(props) {
                     if (modalData.productList[i].prodRefundCount == '') {
                         validateProduct[i].prodRefundCount = "退货数不能空";
                         errCnt++;
+                    } else if (modalData.productList[i].prodRefundCount < 0) {
+                        validateProduct[i].prodRefundCount = "退款金额不能小于0";
+                        errCnt++;
                     } else if (modalData.productList[i].prodRefundCount > modalData.productList[i].prod_count) {
                         validateProduct[i].prodRefundCount = "退货数不能大于商品数";
                         errCnt++;
@@ -428,7 +431,6 @@ function OrderRefund(props) {
                             <Grid item sm={4}>实际金额：{modalData.orderInfo.total_actual_price}</Grid>
                         </Grid>}
 
-
                         {/* 下部分：订单服务列表 */}
                         <Grid container spacing={1}>
                             <Grid item container sm={1}><Typography gutterBottom className={classes.title}>服务</Typography></Grid>
@@ -543,7 +545,6 @@ function OrderRefund(props) {
                                         <TextField label="实际价格" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={item.actual_prod_price}/>
                                     </Grid>
                                 </Grid>
-
 
                                 <Grid item container xs={6} spacing={1}>
                                     <Grid item xs={3}>
