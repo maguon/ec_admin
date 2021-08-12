@@ -158,10 +158,13 @@ function OrderRefund(props) {
             for (let i = 0; i < modalData.serviceList.length; i++) {
                 validateService.push({serviceRefundPrice:''});
                 if (modalData.serviceList[i].checked) {
-                    // if (modalData.serviceList[i].serviceRefundPrice == '') {
-                    //     validateService[i].serviceRefundPrice = "退款金额不能空";
-                    //     errCnt++;
-                    // }
+                    if (modalData.serviceList[i].serviceRefundPrice == '') {
+                        validateService[i].serviceRefundPrice = "退款金额不能空";
+                        errCnt++;
+                    } else if (modalData.serviceList[i].serviceRefundPrice > 0) {
+                        validateService[i].serviceRefundPrice = "退款金额不能大于0";
+                        errCnt++;
+                    }
                     checkedService.push(modalData.serviceList[i]);
                 }
             }
@@ -171,15 +174,17 @@ function OrderRefund(props) {
             for (let i =0;i<modalData.productList.length;i++) {
                 validateProduct.push({prodRefundCount:'', prodRefundPrice:''});
                 if (modalData.productList[i].checked) {
-                    // if (modalData.productList[i].prodRefundPrice == '') {
-                    //     validateProduct[i].prodRefundPrice = "退款金额不能空";
-                    //     errCnt++;
-                    // }
-                    // if (modalData.productList[i].prodRefundCount == '') {
-                    //     validateProduct[i].prodRefundCount = "退货数不能空";
-                    //     errCnt++;
-                    // } else
-                    if (modalData.productList[i].prodRefundCount > modalData.productList[i].prod_count) {
+                    if (modalData.productList[i].prodRefundPrice == '') {
+                        validateProduct[i].prodRefundPrice = "退款金额不能空";
+                        errCnt++;
+                    } else if (modalData.productList[i].prodRefundPrice > 0) {
+                        validateProduct[i].prodRefundPrice = "退款金额不能大于0";
+                        errCnt++;
+                    }
+                    if (modalData.productList[i].prodRefundCount == '') {
+                        validateProduct[i].prodRefundCount = "退货数不能空";
+                        errCnt++;
+                    } else if (modalData.productList[i].prodRefundCount > modalData.productList[i].prod_count) {
                         validateProduct[i].prodRefundCount = "退货数不能大于商品数";
                         errCnt++;
                     }
@@ -476,13 +481,13 @@ function OrderRefund(props) {
 
                                 <Grid item container xs={6} spacing={1}>
                                     <Grid item xs={3}>
-                                        <TextField label="退款金额" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.serviceRefundPrice || '0'}
+                                        <TextField label="退款金额" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.serviceRefundPrice}
                                                    onChange={(e)=>{
-                                                       modalData.serviceList[index].serviceRefundPrice = e.target.value || '0';
+                                                       modalData.serviceList[index].serviceRefundPrice = e.target.value;
                                                        setModalData({...modalData, serviceList:modalData.serviceList});
                                                    }}
-                                                   // error={validation.serviceList.length>0 && validation.serviceList[index].serviceRefundPrice && validation.productList[index].serviceRefundPrice!=''}
-                                                   // helperText={validation.serviceList.length>0 && validation.serviceList[index].serviceRefundPrice}
+                                                   error={validation.serviceList.length>0 && validation.serviceList[index].serviceRefundPrice && validation.productList[index].serviceRefundPrice!=''}
+                                                   helperText={validation.serviceList.length>0 && validation.serviceList[index].serviceRefundPrice}
                                         />
                                     </Grid>
 
@@ -542,20 +547,20 @@ function OrderRefund(props) {
 
                                 <Grid item container xs={6} spacing={1}>
                                     <Grid item xs={3}>
-                                        <TextField label="退款金额" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prodRefundPrice || '0'}
+                                        <TextField label="退款金额" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prodRefundPrice}
                                                    onChange={(e)=>{
-                                                       modalData.productList[index].prodRefundPrice = e.target.value || '0';
+                                                       modalData.productList[index].prodRefundPrice = e.target.value;
                                                        setModalData({...modalData, productList:modalData.productList});
                                                    }}
-                                                   // error={validation.productList.length>0 && validation.productList[index].prodRefundPrice && validation.productList[index].prodRefundPrice!=''}
-                                                   // helperText={validation.productList.length>0 && validation.productList[index].prodRefundPrice}
+                                                   error={validation.productList.length>0 && validation.productList[index].prodRefundPrice && validation.productList[index].prodRefundPrice!=''}
+                                                   helperText={validation.productList.length>0 && validation.productList[index].prodRefundPrice}
                                         />
                                     </Grid>
 
                                     <Grid item xs={2}>
-                                        <TextField label="退货数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prodRefundCount || '0'}
+                                        <TextField label="退货数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prodRefundCount}
                                                    onChange={(e)=>{
-                                                       modalData.productList[index].prodRefundCount = e.target.value || '0';
+                                                       modalData.productList[index].prodRefundCount = e.target.value;
                                                        setModalData({...modalData, productList:modalData.productList});
                                                    }}
                                                    error={validation.productList.length>0 && validation.productList[index].prodRefundCount && validation.productList[index].prodRefundCount!=''}
