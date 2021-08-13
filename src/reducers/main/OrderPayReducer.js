@@ -38,7 +38,7 @@ const initialState = {
         finDateStart: '',
         finDateEnd: ''
     },
-    orderStat: {}
+    orderStat: []
 };
 
 export default handleActions({

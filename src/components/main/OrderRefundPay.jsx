@@ -6,12 +6,11 @@ import {Box, Button, Divider, Fab, FormControl, Grid, InputLabel, makeStyles, Me
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from '@material-ui/pickers';
-import {OrderRefundPayActionType} from "../../types";
+import {OrderPayActionType, OrderRefundPayActionType} from "../../types";
 import {SimpleModal} from "../index";
 import {setOrderInfo} from "../../types/main/OrderDetailActionType";
 const OrderRefundPayAction = require('../../actions/main/OrderRefundPayAction');
 const commonAction = require('../../actions/layout/CommonAction');
-const OrderRefundDetailAction =require('../../actions/main/OrderRefundDetailAction')
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
@@ -24,10 +23,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function OrderRefundPay(props) {
-    const {orderRefundPayReducer,orderRefundDetailReducer,getAllOrder,getOrderRefundBasic} = props;
+    const {orderRefundPayReducer,getAllOrder,getOrderRefundBasic,commonReducer} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     const [selected, setSelected] = React.useState([]);
+    const [noSelectedId, setNoSelectedId] = React.useState([]);
     const [selectedId, setSelectedId] = React.useState([]);
     const [batchData, setBatchData] = React.useState({serviceRefundPrice:0,prodRefundPrice:0,transferRefundPrice:0,prodRefundCount:0,totalRefundPrice:0});
     const [detailModalOpen, setDetailModalOpen] = React.useState(false);
@@ -37,11 +37,14 @@ function OrderRefundPay(props) {
     const [paymentType, setPaymentType] = React.useState(1);
     const [remarks, setRemarks] = React.useState('');
     const [orderList,setOrderList]=React.useState([]);
+    const [flag, setFlag] = React.useState(true);
     useEffect(() => {
         let queryParams = {
             // 订单编号
             orderId: '',
             // 订单状态
+            clientId:null,
+            clientAgentId:null,
             status: '',
             paymentStatus: '',
             dateStart: '',
@@ -60,16 +63,12 @@ function OrderRefundPay(props) {
             Swal.fire("请选择需要支付的订单", '', "warning");
         }else {
             selected.map((item)=>{
-                if(item==null){
-                    return;
-                }else {
                     batchData.serviceRefundPrice +=Number(item.service_refund_price) ;
                     batchData.prodRefundPrice+= Number(item.prod_refund_price);
                     batchData.transferRefundPrice += Number(item.transfer_refund_price);
                     batchData.prodRefundCount += Number(item.prod_refund_count);
                     batchData.totalRefundPrice+= Number(item.total_refund_price);
                     selectedId.push(Number(item.order_id));
-                }
             })
             setModalOpen(true);
         }
@@ -77,10 +76,16 @@ function OrderRefundPay(props) {
     const handleSelectAllClick = (event) => {
         if (event) {
             const newSelecteds = orderRefundPayReducer.orderData.dataList.map((n) =>n.payment_status==1?n:null);
-            setSelected(newSelecteds);
+            let arrSelected=newSelecteds.filter(d=>d)
+            let arrNoSelected=newSelecteds.filter(d=>!d)
+            setSelected(arrSelected);
+            setNoSelectedId(arrNoSelected);
+            let add=arrSelected.every(item=>arrSelected.every(ele=>ele.client_agent_name===item.client_agent_name))
+            setFlag(!add)
             return;
         }
         setSelected([]);
+        setFlag(true);
     };
     const handleClick = (event, item) => {
         const selectedIndex = selected.indexOf(item);
@@ -97,7 +102,15 @@ function OrderRefundPay(props) {
                 selected.slice(selectedIndex + 1),
             );
         }
+        let arrNoSelected=[];
+        orderRefundPayReducer.orderData.dataList.map(item=>item.payment_status!==1?arrNoSelected.push(item):'')
         setSelected(newSelected);
+        setNoSelectedId(arrNoSelected);
+        let add=newSelected.every(item=>newSelected.every(ele=>ele.client_agent_name===item.client_agent_name))
+        setFlag(!add)
+        if(newSelected.length===0){
+            setFlag(true);
+        }
     };
     const isSelected = (id) => selected.indexOf(id) !== -1;
     const getAllOrderData = () => {
@@ -130,8 +143,9 @@ function OrderRefundPay(props) {
         setSelected([]);
     }
     const getOrderRefundList=()=>{
-        props.getOrderList(0)
-        dispatch(OrderRefundPayAction.getOrderRefundStat())
+        props.getOrderList(0);
+        props.getOrderRefundStat();
+
     }
     return (
         <div className={classes.root}>
@@ -141,7 +155,7 @@ function OrderRefundPay(props) {
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
                 <Grid container item xs={11} spacing={1}>
-                    <Grid item xs={2}>
+                    <Grid item xs>
                         <TextField label="订单编号" fullWidth margin="dense" variant="outlined" type="number"
                                    value={orderRefundPayReducer.queryParams.orderId}
                                    onChange={(e) => {
@@ -152,7 +166,7 @@ function OrderRefundPay(props) {
                                    }}/>
                     </Grid>
 
-                    <Grid item xs={2}>
+                    <Grid item xs>
                         <FormControl variant="outlined" fullWidth margin="dense">
                             <InputLabel>退单状态</InputLabel>
                             <Select label="退单状态"
@@ -171,7 +185,7 @@ function OrderRefundPay(props) {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs>
                         <FormControl variant="outlined" fullWidth margin="dense">
                             <InputLabel>支付状态</InputLabel>
                             <Select label="支付状态"
@@ -190,8 +204,35 @@ function OrderRefundPay(props) {
                             </Select>
                         </FormControl>
                     </Grid>
+                    <Grid item xs>
+                        <Autocomplete fullWidth
+                                      options={commonReducer.clientAgentList}
+                                      getOptionLabel={(option) => option.name}
+                                      value={orderRefundPayReducer.queryParams.clientAgent}
+                                      onChange={(event, value) => {
+                                          dispatch(OrderPayActionType.setQueryPayParam({
+                                              name: "clientAgent",
+                                              value: value
+                                          }));
+                                      }}
+                                      renderInput={(params) => <TextField {...params} label="客户集群" margin="dense"
+                                                                          variant="outlined"/>}
+                        />
+                    </Grid>
 
-                    <Grid item xs={2}>
+                    <Grid item xs>
+                        <Autocomplete fullWidth
+                                      options={commonReducer.clientList}
+                                      getOptionLabel={(option) => option.name}
+                                      value={orderRefundPayReducer.queryParams.client}
+                                      onChange={(event, value) => {
+                                          dispatch(OrderPayActionType.setQueryPayParam({name: "client", value: value}));
+                                      }}
+                                      renderInput={(params) => <TextField {...params} label="客户" margin="dense"
+                                                                          variant="outlined"/>}
+                        />
+                    </Grid>
+                    <Grid item xs>
                         <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"
                                     format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
@@ -202,7 +243,7 @@ function OrderRefundPay(props) {
                                     }}
                         />
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs>
                         <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"
                                     format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
@@ -233,7 +274,7 @@ function OrderRefundPay(props) {
                             <TableCell className={classes.tableHead} align="center"
                                        style={{display: orderRefundPayReducer.orderData.dataList.length == 0 ? 'none' : 'block'}}>
                                 <Checkbox
-                                    checked={orderRefundPayReducer.orderData.dataList.length > 0 && selected.length == orderRefundPayReducer.orderData.dataList.length}
+                                    checked={orderRefundPayReducer.orderData.dataList.length > 0 && selected.length + noSelectedId.length  == orderRefundPayReducer.orderData.dataList.length}
                                     onChange={(e, value) => {
                                         handleSelectAllClick(e.target.checked);
                                     }}
@@ -242,6 +283,8 @@ function OrderRefundPay(props) {
                             </TableCell>
                             <TableCell className={classes.tableHead} align="center">退单号</TableCell>
                             <TableCell className={classes.tableHead} align="center">订单号</TableCell>
+                            <TableCell className={classes.tableHead} align="center">客户姓名</TableCell>
+                            <TableCell className={classes.tableHead} align="center">客户集群</TableCell>
                             <TableCell className={classes.tableHead} align="center">退单状态</TableCell>
                             <TableCell className={classes.tableHead} align="center">支付状态</TableCell>
                             <TableCell className={classes.tableHead} align="center">服务退款</TableCell>
@@ -251,7 +294,7 @@ function OrderRefundPay(props) {
                             <TableCell className={classes.tableHead} align="center">退款金额</TableCell>
                             <TableCell className={classes.tableHead} align="center">完成日期</TableCell>
                             <TableCell className={classes.tableHead} align="center">
-                                <Button variant="contained" color="primary" size='small' onClick={() => {
+                                <Button title='批量付款要求同一客户集群'  variant="contained" color="primary" size='small' disabled={flag} onClick={() => {
                                     modelOpen()
                                 }}>批量</Button>
                             </TableCell>
@@ -279,6 +322,8 @@ function OrderRefundPay(props) {
                                     </TableCell>
                                     <TableCell align="center">{row.id}</TableCell>
                                     <TableCell align="center">{row.order_id}</TableCell>
+                                    <TableCell align="center">{row.o_client_name}</TableCell>
+                                    <TableCell align="center">{row.o_client_agent_name}</TableCell>
                                     <TableCell align="center">{commonUtil.getJsonValue(sysConst.ORDER_REFUND_STATUS, row.status)}</TableCell>
                                     <TableCell align="center">{commonUtil.getJsonValue(sysConst.ORDER_PAYMENT_STATUS, row.payment_status)}</TableCell>
                                     <TableCell align="center">{row.service_refund_price}</TableCell>
@@ -298,18 +343,22 @@ function OrderRefundPay(props) {
                                 </TableRow>
                             )
                         })}
-                        {Object.keys(orderRefundPayReducer.orderRefundStat).length !== 0&&
+                        {Object.keys(orderRefundPayReducer.orderRefundStat).length !== 0&&orderRefundPayReducer.orderRefundStat.service_refund_price!=='0'&&
+                        orderRefundPayReducer.orderRefundStat.prod_refund_price!=='0'&&orderRefundPayReducer.orderRefundStat.total_refund_price!=='0'&&
                             <TableRow>
+                                <TableCell rowSpan={4} />
+                                <TableCell rowSpan={4} />
+                                <TableCell rowSpan={4} />
+                                <TableCell rowSpan={4} />
+                                <TableCell rowSpan={4} />
+                                <TableCell rowSpan={4} />
                                 <TableCell colSpan={2} align="center">服务退款总额：{orderRefundPayReducer.orderRefundStat.service_refund_price}</TableCell>
                                 <TableCell colSpan={2} align="center">商品退款总额：{orderRefundPayReducer.orderRefundStat.prod_refund_price}</TableCell>
-                                <TableCell colSpan={2} align="center">退货运费总额：{orderRefundPayReducer.orderRefundStat.transfer_refund_price}</TableCell>
-                                <TableCell colSpan={2} align="center">退货数量总额：{orderRefundPayReducer.orderRefundStat.prod_refund_count}</TableCell>
-                                <TableCell colSpan={2} align="center">退款金额总额：{orderRefundPayReducer.orderRefundStat.service_refund_count}</TableCell>
                                 <TableCell colSpan={2} align="right" style={{paddingRight:40}}>总额：{orderRefundPayReducer.orderRefundStat.total_refund_price}</TableCell>
                             </TableRow>}
                         {orderRefundPayReducer.orderData.dataList.length === 0 &&
                         <TableRow>
-                            <TableCell colSpan={11} align="center">暂无数据</TableCell>
+                            <TableCell colSpan={13} align="center">暂无数据</TableCell>
                         </TableRow>}
                     </TableBody>
                 </Table>
@@ -330,7 +379,7 @@ function OrderRefundPay(props) {
 
             <SimpleModal
                 maxWidth={'lg'}
-                title="订单支付详情"
+                title="退单信息"
                 open={detailModalOpen}
                 onClose={detailModalClose}
                 showFooter={true}
@@ -354,10 +403,10 @@ function OrderRefundPay(props) {
                     <Grid item sm={12}>订单备注：{orderList.client_remark}</Grid>
                     <Grid item sm={12}>操作备注：{orderList.op_remark}</Grid>
                 </Grid>
-                <h4>服务:</h4>
-                {orderRefundDetailReducer.orderRefundSerVList.map((row, index) => (
+                {orderRefundPayReducer.orderRefundSerVList.length !== 0 &&<h4>退单服务:</h4>}
+                {orderRefundPayReducer.orderRefundSerVList.map((row, index) => (
                     <Grid container spacing={1} key={index}>
-                        <Grid item xs={2}><TextField label="服务名称" fullWidth margin="dense" variant="outlined" disabled
+                        <Grid item xs={2}><TextField label="退单服务名称" fullWidth margin="dense" variant="outlined" disabled
                                                      value={row.sale_service_name}/></Grid>
                         {row.fixed_price !== '0.00' &&
                         <Grid item xs={2}>
@@ -383,13 +432,10 @@ function OrderRefundPay(props) {
                                                      value={row.remark}/></Grid>
                     </Grid>
                 ))}
-                {orderRefundDetailReducer.orderRefundSerVList.length === 0 &&
-                <Grid item xs={12} style={{textAlign: 'center'}}>暂无数据</Grid>}
-
-                <h4>商品:</h4>
-                {orderRefundDetailReducer.orderRefundProdList.map((row, index) => (
+                {orderRefundPayReducer.orderRefundProdList.length !== 0 &&<h4>退单商品:</h4>}
+                {orderRefundPayReducer.orderRefundProdList.map((row, index) => (
                     <Grid container spacing={1} key={index}>
-                        <Grid item xs={2}><TextField label="商品名称" fullWidth margin="dense" variant="outlined" disabled
+                        <Grid item xs={2}><TextField label="退单商品名称" fullWidth margin="dense" variant="outlined" disabled
                                                      value={row.prod_name}/></Grid>
                         <Grid item xs={1}>
                             <TextField label="价格" fullWidth margin="dense" variant="outlined"
@@ -407,8 +453,6 @@ function OrderRefundPay(props) {
                                                      value={row.remark}/></Grid>
                     </Grid>
                 ))}
-                {orderRefundDetailReducer.orderRefundProdList.length === 0 &&
-                <Grid item xs={12} style={{textAlign: 'center'}}>暂无数据</Grid>}
             </SimpleModal>
 
             <SimpleModal
@@ -483,8 +527,6 @@ function OrderRefundPay(props) {
 const mapStateToProps = (state, ownProps) => {
     return {
         orderRefundPayReducer: state.OrderRefundPayReducer,
-        orderRefundDetailReducer:state.OrderRefundDetailReducer,
-        appReducer: state.AppReducer,
         commonReducer: state.CommonReducer,
     }
 };
@@ -501,10 +543,14 @@ const mapDispatchToProps = (dispatch) => ({
     getAllOrder:(remarks,paymentType,selectedId,batchData)=>{
         dispatch(OrderRefundPayAction.getAllOrder(remarks,paymentType,selectedId,batchData))
     },
-    getOrderRefundBasic:(id)=>{
-        dispatch(OrderRefundDetailAction.getOrderRefundService(id));
-        dispatch(OrderRefundDetailAction.getOrderRefundProd(id));
+    getOrderRefundBasic:(refundId)=>{
+        dispatch(OrderRefundPayAction.getOrderRefundService(refundId));
+        dispatch(OrderRefundPayAction.getOrderRefundProd(refundId));
+    },
+    getOrderRefundStat:()=>{
+        dispatch(OrderRefundPayAction.getOrderRefundStat())
     }
+
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(OrderRefundPay)

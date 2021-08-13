@@ -43,6 +43,10 @@ const getParams = () => (dispatch, getState) => {
         orderId: queryParams.orderId,
         // 订单状态
         status: queryParams.status,
+        // 客户姓名
+        clientId: queryParams.client == null ? '' : queryParams.client.id,
+        // 客户集群
+        clientAgentId: queryParams.clientAgent == null ? '' : queryParams.clientAgent.id,
         paymentStatus: queryParams.paymentStatus,
         dateStart: commonUtil.formatDate(queryParams.dateStart, 'yyyyMMdd'),
         dateEnd: commonUtil.formatDate(queryParams.dateEnd, 'yyyyMMdd'),
@@ -116,4 +120,35 @@ export const getOrderRefundStat = () => async (dispatch) => {
         Swal.fire("操作失败", err.message, "error");
     }
 };
+export const getOrderRefundService =(orderRefundId) => async (dispatch) => {
+    try { // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderRefundService?orderRefundId=' + orderRefundId;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: OrderRefundPayActionType.getOrderRefundPayService, payload: res.rows});
+        }else if (!res.success) {
+            Swal.fire("获取退单服务列表失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+}
+
+export const getOrderRefundProd =(orderRefundId) => async (dispatch) => {
+    try { // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderRefundProd?orderRefundId=' + orderRefundId;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: OrderRefundPayActionType.getOrderRefundPayProd, payload: res.rows});
+        }else if (!res.success) {
+            Swal.fire("获取退单商品列表失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+}
 

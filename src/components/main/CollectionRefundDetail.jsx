@@ -7,7 +7,6 @@ import {makeStyles} from "@material-ui/core/styles";
 import {CollectionRefundDetailActionType} from "../../types";
 import Swal from "sweetalert2";
 const CollectionRefundDetailAction = require('../../actions/main/CollectionRefundDetailAction');
-const OrderRefundDetailAction =require('../../actions/main/OrderRefundDetailAction')
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
@@ -44,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function CollectionRefundDetail(props) {
-    const {collectionRefundDetailReducer,orderRefundDetailReducer, getPaymentList,getOrderInfo,getOrderBasic,getOrderRefundBasic,putPayment,updatePaymentStatus} = props;
+    const {collectionRefundDetailReducer, getPaymentList,getOrderInfo,getOrderBasic,getOrderRefundBasic,putPayment,updatePaymentStatus} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     const {id} = useParams();
@@ -163,11 +162,11 @@ function CollectionRefundDetail(props) {
                             <AccordionSummary className={classes.accordionSummary} aria-controls="panel1d-content" id="panel1d-header" >
                                 <Grid container  spacing={3}>
                                     <Grid item xs align='left'>订单编号:{row.order_id}</Grid>
-                                    <Grid item xs align='right'>金额:{row.p_prod_price}</Grid>
+                                    <Grid item xs align='right'>金额:{row.o_prod_price}</Grid>
                                 </Grid>
                             </AccordionSummary>
                             <div style={{padding:'30px'}}>
-                                <h4>服务:</h4>
+                                {collectionRefundDetailReducer.orderServiceInfo.length!==0&&<h4>服务:</h4>}
                                 {collectionRefundDetailReducer.orderServiceInfo.length!==0?
                                     collectionRefundDetailReducer.orderServiceInfo.map((service,index) => (
                                         <Grid key={service.id}>
@@ -197,8 +196,8 @@ function CollectionRefundDetail(props) {
                                             <Divider className={classes.divider} variant="middle" />
                                         </Grid>
                                     ))
-                                    :<Grid container  spacing={3}><Grid item xs={12} align='center'>暂无数据</Grid></Grid>}
-                                <h4>商品:</h4>
+                                    :''}
+                                {collectionRefundDetailReducer.orderProdInfo.length!==0&&<h4>商品:</h4>}
                                 {collectionRefundDetailReducer.orderProdInfo.length!==0?
                                     collectionRefundDetailReducer.orderProdInfo.map((item,index) => (
                                         <Grid key={item.id}>
@@ -213,7 +212,7 @@ function CollectionRefundDetail(props) {
                                             <Divider className={classes.divider} variant="middle" />
                                         </Grid>
                                     ))
-                                    :<Grid container  spacing={3}><Grid item xs={12} align='center'>暂无数据</Grid></Grid>}
+                                    :''}
                             </div>
                         </Accordion>
                         :''
@@ -231,22 +230,22 @@ function CollectionRefundDetail(props) {
                                     <Grid container  spacing={3}>
                                         <Grid item xs={3} align='left'>订单编号:{row.order_id}</Grid>
                                         <Grid item xs={3} align='left'>退单编号:{row.order_refund_id}</Grid>
-                                        <Grid item xs align='right'>金额:{row.o_prod_price}</Grid>
+                                        <Grid item xs align='right'>退款金额:{row.orf_total_refund_price}</Grid>
                                     </Grid>
                                 </AccordionSummary>
                                 <div style={{padding:'30px'}}>
-                                    <h4>服务:</h4>
-                                    {orderRefundDetailReducer.orderRefundSerVList.length!==0?
-                                        orderRefundDetailReducer.orderRefundSerVList.map((service,index) => (
+                                    {collectionRefundDetailReducer.orderRefundSerVList.length!==0&&<h4>服务:</h4>}
+                                    {collectionRefundDetailReducer.orderRefundSerVList.length!==0?
+                                        collectionRefundDetailReducer.orderRefundSerVList.map((service,index) => (
                                             <Grid key={service.id}>
                                                 {service.fixed_price=='0.00'?
                                                     <Grid container  spacing={3}>
                                                         <Grid item xs={2} align='left'>名称:{service.sale_service_name}</Grid>
-                                                        <Grid item xs={2} align='left'>单价:{service.unit_price}</Grid>
-                                                        <Grid item xs={2} align='left'>数量:{service.service_count}</Grid>
+                                                        <Grid item xs={2} align='left'>单价*数量:{service.unit_price}*{service.service_count}</Grid>
                                                         <Grid item xs={2} align='left'>总价:{service.service_price}</Grid>
                                                         <Grid item xs={2} align='left'>折扣:{service.discount_service_price}</Grid>
                                                         <Grid item xs={2} align='left'>实际价格:{service.actual_service_price}</Grid>
+                                                        <Grid item xs={2} align='left'>服务退款:{service.service_refund_price}</Grid>
                                                     </Grid>:
 
                                                     <Grid container  spacing={3}>
@@ -255,33 +254,37 @@ function CollectionRefundDetail(props) {
                                                         <Grid item xs={2} align='left'>总价:{service.service_price}</Grid>
                                                         <Grid item xs={2} align='left'>折扣:{service.discount_service_price}</Grid>
                                                         <Grid item xs={2} align='left'>实际价格:{service.actual_service_price}</Grid>
+                                                        <Grid item xs={2} align='left'>服务退款:{service.service_refund_price}</Grid>
                                                     </Grid>}
 
-                                                <Grid container  spacing={3}>
+                                              {/*  <Grid container  spacing={3}>
                                                     <Grid item xs={2} align='left'>销售:{service.sale_user_name}</Grid>
                                                     <Grid item xs={2} align='left'>施工:{service.deploy_user_name}</Grid>
                                                     <Grid item xs={2} align='left'>验收:{service.check_user_name}</Grid>
-                                                </Grid>
+                                                </Grid>*/}
                                                 <Divider className={classes.divider} variant="middle" />
                                             </Grid>
                                         ))
-                                        :<Grid container  spacing={3}><Grid item xs={12} align='center'>暂无数据</Grid></Grid>}
-                                    <h4>商品:</h4>
-                                    {orderRefundDetailReducer.orderRefundProdList.length!==0?
-                                        orderRefundDetailReducer.orderRefundProdList.map((item,index) => (
+                                        :''}
+                                    {collectionRefundDetailReducer.orderRefundProdList.length!==0&&<h4>商品:</h4>}
+                                    {collectionRefundDetailReducer.orderRefundProdList.length!==0?
+                                        collectionRefundDetailReducer.orderRefundProdList.map((item,index) => (
                                             <Grid key={item.id}>
                                                 <Grid container  spacing={3}>
                                                     <Grid item xs={2} align='left'>名称:{item.prod_name}</Grid>
-                                                    <Grid item xs={2} align='left'>单价:{item.unit_price}</Grid>
+                                                  {/*  <Grid item xs={2} align='left'>单价:{item.unit_price}</Grid>
                                                     <Grid item xs={2} align='left'>数量:{item.prod_count}</Grid>
                                                     <Grid item xs={2} align='left'>折扣:{item.discount_prod_price}</Grid>
                                                     <Grid item xs={2} align='left'>实际价格:{item.actual_prod_price}</Grid>
-                                                    <Grid item xs={2} align='left'>销售:{item.sale_user_name}</Grid>
+                                                    <Grid item xs={2} align='left'>销售:{item.sale_user_name}</Grid>*/}
+                                                    <Grid item xs={2} align='left'>商品退款:{item.prod_refund_price}</Grid>
+                                                    <Grid item xs={2} align='left'>退款数量:{item.prod_refund_count}</Grid>
+                                                    <Grid item xs={2} align='left'>退款总价:{item.total_refund_price}</Grid>
                                                 </Grid>
                                                 <Divider className={classes.divider} variant="middle" />
                                             </Grid>
                                         ))
-                                        :<Grid container  spacing={3}><Grid item xs={12} align='center'>暂无数据</Grid></Grid>}
+                                        :''}
                                 </div>
                             </Accordion>
                             :''
@@ -294,8 +297,7 @@ function CollectionRefundDetail(props) {
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        collectionRefundDetailReducer: state.CollectionRefundDetailReducer,
-        orderRefundDetailReducer:state.OrderRefundDetailReducer,
+        collectionRefundDetailReducer: state.CollectionRefundDetailReducer
     }
 };
 const mapDispatchToProps = (dispatch) => ({
@@ -327,8 +329,8 @@ const mapDispatchToProps = (dispatch) => ({
         });
     },
     getOrderRefundBasic:(id)=>{
-        dispatch(OrderRefundDetailAction.getOrderRefundService(id));
-        dispatch(OrderRefundDetailAction.getOrderRefundProd(id));
+        dispatch(CollectionRefundDetailAction.getCollectionRefundService(id));
+        dispatch(CollectionRefundDetailAction.getCollectionRefundProd(id));
     }
 });
 

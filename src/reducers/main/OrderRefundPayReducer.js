@@ -19,12 +19,18 @@ const initialState = {
         orderId: '',
         // 订单状态
         status: '',
+        // 客户姓名
+        clientId: null ,
+        // 客户集群
+        clientAgentId: null,
         // 支付状态
         paymentStatus: '',
         dateStart: '',
         dateEnd: '',
     },
-    orderRefundStat:{}
+    orderRefundStat:[],
+    orderRefundSerVList:[],
+    orderRefundProdList:[]
 };
 
 export default handleActions({
@@ -54,5 +60,16 @@ export default handleActions({
             orderRefundStat: action.payload
         }
     },
-
+    [OrderRefundPayActionType.getOrderRefundPayService]: (state, action) => {
+        return {
+            ...state,
+            orderRefundSerVList: action.payload
+        }
+    },
+    [OrderRefundPayActionType.getOrderRefundPayProd]: (state, action) => {
+        return {
+            ...state,
+            orderRefundProdList: action.payload
+        }
+    },
 }, initialState)
