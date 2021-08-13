@@ -19,6 +19,10 @@ const initialState = {
         orderId: '',
         // 订单状态
         status: '',
+        // 客户姓名
+        clientId: null ,
+        // 客户集群
+        clientAgentId: null,
         // 支付状态
         paymentStatus: '',
         dateStart: '',

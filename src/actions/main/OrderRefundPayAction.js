@@ -43,6 +43,10 @@ const getParams = () => (dispatch, getState) => {
         orderId: queryParams.orderId,
         // 订单状态
         status: queryParams.status,
+        // 客户姓名
+        clientId: queryParams.client == null ? '' : queryParams.client.id,
+        // 客户集群
+        clientAgentId: queryParams.clientAgent == null ? '' : queryParams.clientAgent.id,
         paymentStatus: queryParams.paymentStatus,
         dateStart: commonUtil.formatDate(queryParams.dateStart, 'yyyyMMdd'),
         dateEnd: commonUtil.formatDate(queryParams.dateEnd, 'yyyyMMdd'),

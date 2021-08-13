@@ -6,7 +6,7 @@ import {Box, Button, Divider, Fab, FormControl, Grid, InputLabel, makeStyles, Me
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from '@material-ui/pickers';
-import {OrderRefundPayActionType} from "../../types";
+import {OrderPayActionType, OrderRefundPayActionType} from "../../types";
 import {SimpleModal} from "../index";
 import {setOrderInfo} from "../../types/main/OrderDetailActionType";
 const OrderRefundPayAction = require('../../actions/main/OrderRefundPayAction');
@@ -23,10 +23,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function OrderRefundPay(props) {
-    const {orderRefundPayReducer,getAllOrder,getOrderRefundBasic} = props;
+    const {orderRefundPayReducer,getAllOrder,getOrderRefundBasic,commonReducer} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     const [selected, setSelected] = React.useState([]);
+    const [noSelectedId, setNoSelectedId] = React.useState([]);
     const [selectedId, setSelectedId] = React.useState([]);
     const [batchData, setBatchData] = React.useState({serviceRefundPrice:0,prodRefundPrice:0,transferRefundPrice:0,prodRefundCount:0,totalRefundPrice:0});
     const [detailModalOpen, setDetailModalOpen] = React.useState(false);
@@ -36,11 +37,14 @@ function OrderRefundPay(props) {
     const [paymentType, setPaymentType] = React.useState(1);
     const [remarks, setRemarks] = React.useState('');
     const [orderList,setOrderList]=React.useState([]);
+    const [flag, setFlag] = React.useState(true);
     useEffect(() => {
         let queryParams = {
             // 订单编号
             orderId: '',
             // 订单状态
+            clientId:null,
+            clientAgentId:null,
             status: '',
             paymentStatus: '',
             dateStart: '',
@@ -59,16 +63,12 @@ function OrderRefundPay(props) {
             Swal.fire("请选择需要支付的订单", '', "warning");
         }else {
             selected.map((item)=>{
-                if(item==null){
-                    return;
-                }else {
                     batchData.serviceRefundPrice +=Number(item.service_refund_price) ;
                     batchData.prodRefundPrice+= Number(item.prod_refund_price);
                     batchData.transferRefundPrice += Number(item.transfer_refund_price);
                     batchData.prodRefundCount += Number(item.prod_refund_count);
                     batchData.totalRefundPrice+= Number(item.total_refund_price);
                     selectedId.push(Number(item.order_id));
-                }
             })
             setModalOpen(true);
         }
@@ -76,10 +76,16 @@ function OrderRefundPay(props) {
     const handleSelectAllClick = (event) => {
         if (event) {
             const newSelecteds = orderRefundPayReducer.orderData.dataList.map((n) =>n.payment_status==1?n:null);
-            setSelected(newSelecteds);
+            let arrSelected=newSelecteds.filter(d=>d)
+            let arrNoSelected=newSelecteds.filter(d=>!d)
+            setSelected(arrSelected);
+            setNoSelectedId(arrNoSelected);
+            let add=arrSelected.every(item=>arrSelected.every(ele=>ele.client_agent_name===item.client_agent_name))
+            setFlag(!add)
             return;
         }
         setSelected([]);
+        setFlag(true);
     };
     const handleClick = (event, item) => {
         const selectedIndex = selected.indexOf(item);
@@ -96,7 +102,15 @@ function OrderRefundPay(props) {
                 selected.slice(selectedIndex + 1),
             );
         }
+        let arrNoSelected=[];
+        orderRefundPayReducer.orderData.dataList.map(item=>item.payment_status!==1?arrNoSelected.push(item):'')
         setSelected(newSelected);
+        setNoSelectedId(arrNoSelected);
+        let add=newSelected.every(item=>newSelected.every(ele=>ele.client_agent_name===item.client_agent_name))
+        setFlag(!add)
+        if(newSelected.length===0){
+            setFlag(true);
+        }
     };
     const isSelected = (id) => selected.indexOf(id) !== -1;
     const getAllOrderData = () => {
@@ -141,7 +155,7 @@ function OrderRefundPay(props) {
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
                 <Grid container item xs={11} spacing={1}>
-                    <Grid item xs={2}>
+                    <Grid item xs>
                         <TextField label="订单编号" fullWidth margin="dense" variant="outlined" type="number"
                                    value={orderRefundPayReducer.queryParams.orderId}
                                    onChange={(e) => {
@@ -152,7 +166,7 @@ function OrderRefundPay(props) {
                                    }}/>
                     </Grid>
 
-                    <Grid item xs={2}>
+                    <Grid item xs>
                         <FormControl variant="outlined" fullWidth margin="dense">
                             <InputLabel>退单状态</InputLabel>
                             <Select label="退单状态"
@@ -171,7 +185,7 @@ function OrderRefundPay(props) {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs>
                         <FormControl variant="outlined" fullWidth margin="dense">
                             <InputLabel>支付状态</InputLabel>
                             <Select label="支付状态"
@@ -190,8 +204,35 @@ function OrderRefundPay(props) {
                             </Select>
                         </FormControl>
                     </Grid>
+                    <Grid item xs>
+                        <Autocomplete fullWidth
+                                      options={commonReducer.clientAgentList}
+                                      getOptionLabel={(option) => option.name}
+                                      value={orderRefundPayReducer.queryParams.clientAgent}
+                                      onChange={(event, value) => {
+                                          dispatch(OrderPayActionType.setQueryPayParam({
+                                              name: "clientAgent",
+                                              value: value
+                                          }));
+                                      }}
+                                      renderInput={(params) => <TextField {...params} label="客户集群" margin="dense"
+                                                                          variant="outlined"/>}
+                        />
+                    </Grid>
 
-                    <Grid item xs={2}>
+                    <Grid item xs>
+                        <Autocomplete fullWidth
+                                      options={commonReducer.clientList}
+                                      getOptionLabel={(option) => option.name}
+                                      value={orderRefundPayReducer.queryParams.client}
+                                      onChange={(event, value) => {
+                                          dispatch(OrderPayActionType.setQueryPayParam({name: "client", value: value}));
+                                      }}
+                                      renderInput={(params) => <TextField {...params} label="客户" margin="dense"
+                                                                          variant="outlined"/>}
+                        />
+                    </Grid>
+                    <Grid item xs>
                         <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"
                                     format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
@@ -202,7 +243,7 @@ function OrderRefundPay(props) {
                                     }}
                         />
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs>
                         <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"
                                     format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
@@ -233,7 +274,7 @@ function OrderRefundPay(props) {
                             <TableCell className={classes.tableHead} align="center"
                                        style={{display: orderRefundPayReducer.orderData.dataList.length == 0 ? 'none' : 'block'}}>
                                 <Checkbox
-                                    checked={orderRefundPayReducer.orderData.dataList.length > 0 && selected.length == orderRefundPayReducer.orderData.dataList.length}
+                                    checked={orderRefundPayReducer.orderData.dataList.length > 0 && selected.length + noSelectedId.length  == orderRefundPayReducer.orderData.dataList.length}
                                     onChange={(e, value) => {
                                         handleSelectAllClick(e.target.checked);
                                     }}
@@ -242,6 +283,8 @@ function OrderRefundPay(props) {
                             </TableCell>
                             <TableCell className={classes.tableHead} align="center">退单号</TableCell>
                             <TableCell className={classes.tableHead} align="center">订单号</TableCell>
+                            <TableCell className={classes.tableHead} align="center">客户姓名</TableCell>
+                            <TableCell className={classes.tableHead} align="center">客户集群</TableCell>
                             <TableCell className={classes.tableHead} align="center">退单状态</TableCell>
                             <TableCell className={classes.tableHead} align="center">支付状态</TableCell>
                             <TableCell className={classes.tableHead} align="center">服务退款</TableCell>
@@ -251,7 +294,7 @@ function OrderRefundPay(props) {
                             <TableCell className={classes.tableHead} align="center">退款金额</TableCell>
                             <TableCell className={classes.tableHead} align="center">完成日期</TableCell>
                             <TableCell className={classes.tableHead} align="center">
-                                <Button variant="contained" color="primary" size='small' onClick={() => {
+                                <Button title='批量付款要求同一客户集群'  variant="contained" color="primary" size='small' disabled={flag} onClick={() => {
                                     modelOpen()
                                 }}>批量</Button>
                             </TableCell>
@@ -279,6 +322,8 @@ function OrderRefundPay(props) {
                                     </TableCell>
                                     <TableCell align="center">{row.id}</TableCell>
                                     <TableCell align="center">{row.order_id}</TableCell>
+                                    <TableCell align="center">{row.o_client_name}</TableCell>
+                                    <TableCell align="center">{row.o_client_agent_name}</TableCell>
                                     <TableCell align="center">{commonUtil.getJsonValue(sysConst.ORDER_REFUND_STATUS, row.status)}</TableCell>
                                     <TableCell align="center">{commonUtil.getJsonValue(sysConst.ORDER_PAYMENT_STATUS, row.payment_status)}</TableCell>
                                     <TableCell align="center">{row.service_refund_price}</TableCell>
@@ -313,7 +358,7 @@ function OrderRefundPay(props) {
                             </TableRow>}
                         {orderRefundPayReducer.orderData.dataList.length === 0 &&
                         <TableRow>
-                            <TableCell colSpan={11} align="center">暂无数据</TableCell>
+                            <TableCell colSpan={13} align="center">暂无数据</TableCell>
                         </TableRow>}
                     </TableBody>
                 </Table>
@@ -481,7 +526,8 @@ function OrderRefundPay(props) {
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        orderRefundPayReducer: state.OrderRefundPayReducer
+        orderRefundPayReducer: state.OrderRefundPayReducer,
+        commonReducer: state.CommonReducer,
     }
 };
 const mapDispatchToProps = (dispatch) => ({
