@@ -11,7 +11,6 @@ import {SimpleModal} from "../index";
 import {setOrderInfo} from "../../types/main/OrderDetailActionType";
 const OrderRefundPayAction = require('../../actions/main/OrderRefundPayAction');
 const commonAction = require('../../actions/layout/CommonAction');
-const OrderRefundDetailAction =require('../../actions/main/OrderRefundDetailAction')
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
@@ -24,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function OrderRefundPay(props) {
-    const {orderRefundPayReducer,orderRefundDetailReducer,getAllOrder,getOrderRefundBasic} = props;
+    const {orderRefundPayReducer,getAllOrder,getOrderRefundBasic} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     const [selected, setSelected] = React.useState([]);
@@ -130,8 +129,9 @@ function OrderRefundPay(props) {
         setSelected([]);
     }
     const getOrderRefundList=()=>{
-        props.getOrderList(0)
-        dispatch(OrderRefundPayAction.getOrderRefundStat())
+        props.getOrderList(0);
+        props.getOrderRefundStat();
+
     }
     return (
         <div className={classes.root}>
@@ -298,13 +298,17 @@ function OrderRefundPay(props) {
                                 </TableRow>
                             )
                         })}
-                        {Object.keys(orderRefundPayReducer.orderRefundStat).length !== 0&&
+                        {Object.keys(orderRefundPayReducer.orderRefundStat).length !== 0&&orderRefundPayReducer.orderRefundStat.service_refund_price!=='0'&&
+                        orderRefundPayReducer.orderRefundStat.prod_refund_price!=='0'&&orderRefundPayReducer.orderRefundStat.total_refund_price!=='0'&&
                             <TableRow>
+                                <TableCell rowSpan={4} />
+                                <TableCell rowSpan={4} />
+                                <TableCell rowSpan={4} />
+                                <TableCell rowSpan={4} />
+                                <TableCell rowSpan={4} />
+                                <TableCell rowSpan={4} />
                                 <TableCell colSpan={2} align="center">服务退款总额：{orderRefundPayReducer.orderRefundStat.service_refund_price}</TableCell>
                                 <TableCell colSpan={2} align="center">商品退款总额：{orderRefundPayReducer.orderRefundStat.prod_refund_price}</TableCell>
-                                <TableCell colSpan={2} align="center">退货运费总额：{orderRefundPayReducer.orderRefundStat.transfer_refund_price}</TableCell>
-                                <TableCell colSpan={2} align="center">退货数量总额：{orderRefundPayReducer.orderRefundStat.prod_refund_count}</TableCell>
-                                <TableCell colSpan={2} align="center">退款金额总额：{orderRefundPayReducer.orderRefundStat.service_refund_count}</TableCell>
                                 <TableCell colSpan={2} align="right" style={{paddingRight:40}}>总额：{orderRefundPayReducer.orderRefundStat.total_refund_price}</TableCell>
                             </TableRow>}
                         {orderRefundPayReducer.orderData.dataList.length === 0 &&
@@ -330,7 +334,7 @@ function OrderRefundPay(props) {
 
             <SimpleModal
                 maxWidth={'lg'}
-                title="订单支付详情"
+                title="退单信息"
                 open={detailModalOpen}
                 onClose={detailModalClose}
                 showFooter={true}
@@ -354,10 +358,10 @@ function OrderRefundPay(props) {
                     <Grid item sm={12}>订单备注：{orderList.client_remark}</Grid>
                     <Grid item sm={12}>操作备注：{orderList.op_remark}</Grid>
                 </Grid>
-                <h4>服务:</h4>
-                {orderRefundDetailReducer.orderRefundSerVList.map((row, index) => (
+                {orderRefundPayReducer.orderRefundSerVList.length !== 0 &&<h4>退单服务:</h4>}
+                {orderRefundPayReducer.orderRefundSerVList.map((row, index) => (
                     <Grid container spacing={1} key={index}>
-                        <Grid item xs={2}><TextField label="服务名称" fullWidth margin="dense" variant="outlined" disabled
+                        <Grid item xs={2}><TextField label="退单服务名称" fullWidth margin="dense" variant="outlined" disabled
                                                      value={row.sale_service_name}/></Grid>
                         {row.fixed_price !== '0.00' &&
                         <Grid item xs={2}>
@@ -383,13 +387,10 @@ function OrderRefundPay(props) {
                                                      value={row.remark}/></Grid>
                     </Grid>
                 ))}
-                {orderRefundDetailReducer.orderRefundSerVList.length === 0 &&
-                <Grid item xs={12} style={{textAlign: 'center'}}>暂无数据</Grid>}
-
-                <h4>商品:</h4>
-                {orderRefundDetailReducer.orderRefundProdList.map((row, index) => (
+                {orderRefundPayReducer.orderRefundProdList.length !== 0 &&<h4>退单商品:</h4>}
+                {orderRefundPayReducer.orderRefundProdList.map((row, index) => (
                     <Grid container spacing={1} key={index}>
-                        <Grid item xs={2}><TextField label="商品名称" fullWidth margin="dense" variant="outlined" disabled
+                        <Grid item xs={2}><TextField label="退单商品名称" fullWidth margin="dense" variant="outlined" disabled
                                                      value={row.prod_name}/></Grid>
                         <Grid item xs={1}>
                             <TextField label="价格" fullWidth margin="dense" variant="outlined"
@@ -407,8 +408,6 @@ function OrderRefundPay(props) {
                                                      value={row.remark}/></Grid>
                     </Grid>
                 ))}
-                {orderRefundDetailReducer.orderRefundProdList.length === 0 &&
-                <Grid item xs={12} style={{textAlign: 'center'}}>暂无数据</Grid>}
             </SimpleModal>
 
             <SimpleModal
@@ -482,10 +481,7 @@ function OrderRefundPay(props) {
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        orderRefundPayReducer: state.OrderRefundPayReducer,
-        orderRefundDetailReducer:state.OrderRefundDetailReducer,
-        appReducer: state.AppReducer,
-        commonReducer: state.CommonReducer,
+        orderRefundPayReducer: state.OrderRefundPayReducer
     }
 };
 const mapDispatchToProps = (dispatch) => ({
@@ -501,10 +497,14 @@ const mapDispatchToProps = (dispatch) => ({
     getAllOrder:(remarks,paymentType,selectedId,batchData)=>{
         dispatch(OrderRefundPayAction.getAllOrder(remarks,paymentType,selectedId,batchData))
     },
-    getOrderRefundBasic:(id)=>{
-        dispatch(OrderRefundDetailAction.getOrderRefundService(id));
-        dispatch(OrderRefundDetailAction.getOrderRefundProd(id));
+    getOrderRefundBasic:(refundId)=>{
+        dispatch(OrderRefundPayAction.getOrderRefundService(refundId));
+        dispatch(OrderRefundPayAction.getOrderRefundProd(refundId));
+    },
+    getOrderRefundStat:()=>{
+        dispatch(OrderRefundPayAction.getOrderRefundStat())
     }
+
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(OrderRefundPay)

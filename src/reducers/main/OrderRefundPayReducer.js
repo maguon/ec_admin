@@ -24,7 +24,9 @@ const initialState = {
         dateStart: '',
         dateEnd: '',
     },
-    orderRefundStat:{}
+    orderRefundStat:[],
+    orderRefundSerVList:[],
+    orderRefundProdList:[]
 };
 
 export default handleActions({
@@ -54,5 +56,16 @@ export default handleActions({
             orderRefundStat: action.payload
         }
     },
-
+    [OrderRefundPayActionType.getOrderRefundPayService]: (state, action) => {
+        return {
+            ...state,
+            orderRefundSerVList: action.payload
+        }
+    },
+    [OrderRefundPayActionType.getOrderRefundPayProd]: (state, action) => {
+        return {
+            ...state,
+            orderRefundProdList: action.payload
+        }
+    },
 }, initialState)

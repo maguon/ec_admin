@@ -9,7 +9,9 @@ const initialState = {
     },
     orderInfo:[],
     orderServiceInfo:[],
-    orderProdInfo:[]
+    orderProdInfo:[],
+    orderRefundProdList:[],
+    orderRefundSerVList:[]
 }
 export default handleActions({
     [CollectionRefundDetailActionType.getPaymentInfo]: (state, action) => {
@@ -42,6 +44,18 @@ export default handleActions({
         return {
             ...state,
             orderProdInfo: action.payload
+        }
+    },
+    [CollectionRefundDetailActionType.getCollectionRefundPayService]: (state, action) => {
+        return {
+            ...state,
+            orderRefundSerVList: action.payload
+        }
+    },
+    [CollectionRefundDetailActionType.getCollectionRefundPayProd]: (state, action) => {
+        return {
+            ...state,
+            orderRefundProdList: action.payload
         }
     },
 }, initialState)

@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config/index';
-import {AppActionType, CollectionRefundDetailActionType} from '../../types';
+import {AppActionType, CollectionRefundDetailActionType, OrderRefundPayActionType} from '../../types';
 import {getPurchaseDetailInfo} from "./PurchaseDetailAction";
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
@@ -109,3 +109,36 @@ export const updatePaymentStatus=(id,params)=>async (dispatch, getState) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 }
+export const getCollectionRefundService =(orderRefundId) => async (dispatch) => {
+    try { // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderRefundService?orderRefundId=' + orderRefundId;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: CollectionRefundDetailActionType.getCollectionRefundPayService, payload: res.rows});
+        }else if (!res.success) {
+            Swal.fire("获取退单服务列表失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+}
+
+export const getCollectionRefundProd =(orderRefundId) => async (dispatch) => {
+    try { // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderRefundProd?orderRefundId=' + orderRefundId;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: CollectionRefundDetailActionType.getCollectionRefundPayProd, payload: res.rows});
+        }else if (!res.success) {
+            Swal.fire("获取退单商品列表失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+}
+
+

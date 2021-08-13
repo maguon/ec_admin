@@ -228,7 +228,7 @@ export const SALE_PERF_TYPE= [
     {value: 1, label: "无提成"},
     {value: 2, label: "固定提成"},
     {value: 3, label: "营业额提成"},
-    {value: 4, label: "毛利提成"}
+   /* {value: 4, label: "毛利提成"}*/
 ];
 //客户来源
 export const SOURCE_TYPE= [

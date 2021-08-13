@@ -84,7 +84,7 @@ function ClientInformationDetail (props){
     const classes = useStyles();
     const [value, setValue] = useState('1');
     const [validation,setValidation] = useState({});
-    const [expanded, setExpanded] = useState('panel1');
+    const [expanded, setExpanded] = useState(false);
     useEffect(()=>{
         getClientInfo(id);
         getUserArray();
@@ -337,10 +337,10 @@ function ClientInformationDetail (props){
                                     <Grid container  spacing={3}>
                                         <Grid item xs align='left'>操作备注:{row.op_remark}</Grid>
                                     </Grid>
-                                    <h4>服务:</h4>
+                                    {clientInformationDetailReducer.orderItemServiceInfo.length !== 0 &&<h4>服务:</h4>}
                                     {clientInformationDetailReducer.orderItemServiceInfo.map((service,index) => (
                                         service.order_id==row.id?
-                                            <Grid>
+                                            <Grid key={'service'+index}>
 
                                                 {service.fixed_price=='0.00'?
                                                 <Grid container  spacing={3}>
@@ -370,10 +370,10 @@ function ClientInformationDetail (props){
                                             :''
 
                                     ))}
-                                    <h4>商品:</h4>
+                                    {clientInformationDetailReducer.orderItemProdInfo.length !== 0 &&<h4>商品:</h4>}
                                     {clientInformationDetailReducer.orderItemProdInfo.map((item,index) => (
                                         item.order_id==row.id?
-                                        <Grid>
+                                        <Grid key={'pro'+index}>
                                             <Grid container  spacing={3}>
                                                 <Grid item xs={2} align='left'>名称:{item.prod_name}</Grid>
                                                 <Grid item xs={2} align='left'>单价:{item.unit_price}</Grid>

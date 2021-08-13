@@ -28,6 +28,7 @@ function OrderPay(props) {
     const dispatch = useDispatch();
     const [selected, setSelected] = React.useState([]);
     const [selectedId, setSelectedId] = React.useState([]);
+    const [noSelectedId, setNoSelectedId] = React.useState([]);
     const [batchData, setBatchData] = React.useState({servicePrice:0,prodPrice:0,totalDiscountPrice:0,totalActualPrice:0});
     const [detailModalOpen, setDetailModalOpen] = React.useState(false);
     const [modalOpen, setModalOpen] = React.useState(false);
@@ -35,6 +36,7 @@ function OrderPay(props) {
     const [payType, setPayType] = React.useState(1);
     const [paymentType, setPaymentType] = React.useState(1);
     const [remarks, setRemarks] = React.useState('');
+    const [flag, setFlag] = React.useState(true);
 
     useEffect(() => {
             let queryParams = {
@@ -78,15 +80,11 @@ function OrderPay(props) {
             Swal.fire("请选择需要支付的订单", '', "warning");
         }else {
             selected.map((item)=>{
-                if(item==null){
-                    return;
-                }else {
                     batchData.servicePrice +=Number(item.service_price) ;
                     batchData.prodPrice+= Number(item.prod_price);
                     batchData.totalDiscountPrice += Number(item.total_discount_price);
                     batchData.totalActualPrice += Number(item.total_actual_price);
                     selectedId.push(Number(item.id));
-                }
             })
             setModalOpen(true);
         }
@@ -94,10 +92,16 @@ function OrderPay(props) {
     const handleSelectAllClick = (event) => {
         if (event) {
             const newSelecteds = orderPayReducer.orderData.dataList.map((n) =>n.payment_status==1?n:null);
-            setSelected(newSelecteds);
+            let arrSelected=newSelecteds.filter(d=>d)
+            let arrNoSelected=newSelecteds.filter(d=>!d)
+            setSelected(arrSelected);
+            setNoSelectedId(arrNoSelected);
+            let add=arrSelected.every(item=>arrSelected.every(ele=>ele.client_agent_name===item.client_agent_name))
+            setFlag(!add)
             return;
         }
         setSelected([]);
+        setFlag(true);
     };
     const handleClick = (event, item) => {
         const selectedIndex = selected.indexOf(item);
@@ -114,7 +118,17 @@ function OrderPay(props) {
                 selected.slice(selectedIndex + 1),
             );
         }
+        let arrNoSelected=[];
+        orderPayReducer.orderData.dataList.map(item=>item.payment_status!==1?arrNoSelected.push(item):'')
         setSelected(newSelected);
+        setNoSelectedId(arrNoSelected);
+        let add=newSelected.every(item=>newSelected.every(ele=>ele.client_agent_name===item.client_agent_name))
+        setFlag(!add)
+        if(newSelected.length===0){
+            setFlag(true);
+        }
+
+
     };
     const isSelected = (id) => selected.indexOf(id) !== -1;
     const getAllOrderData = () => {
@@ -342,7 +356,7 @@ function OrderPay(props) {
                             <TableCell className={classes.tableHead} align="center"
                                        style={{display: orderPayReducer.orderData.dataList.length == 0 ? 'none' : 'block'}}>
                                 <Checkbox
-                                    checked={orderPayReducer.orderData.dataList.length > 0 && selected.length == orderPayReducer.orderData.dataList.length}
+                                    checked={orderPayReducer.orderData.dataList.length > 0 && selected.length + noSelectedId.length == orderPayReducer.orderData.dataList.length}
                                     onChange={(e, value) => {
                                         handleSelectAllClick(e.target.checked);
                                     }}
@@ -364,8 +378,8 @@ function OrderPay(props) {
                             <TableCell className={classes.tableHead} align="center">支付状态</TableCell>
                             <TableCell className={classes.tableHead} align="center">创建日期</TableCell>
                             <TableCell className={classes.tableHead} align="center">完成日期</TableCell>
-                            <TableCell className={classes.tableHead} align="center">
-                                <Button variant="contained" color="primary" size='small' onClick={() => {
+                            <TableCell className={classes.tableHead} align="center" >
+                                <Button  title='批量付款要求同一客户集群' variant="contained" color="primary" size='small' disabled={flag} onClick={() => {
                                     modelOpen()
                                 }}>批量</Button>
                             </TableCell>
@@ -420,7 +434,8 @@ function OrderPay(props) {
                                 </TableRow>
                             )
                         })}
-                        {Object.keys(orderPayReducer.orderStat).length !== 0 &&
+                        {Object.keys(orderPayReducer.orderStat).length !== 0 &&orderPayReducer.orderStat.service_price!=='0'&&orderPayReducer.orderStat.prod_price!=='0'&&
+                        orderPayReducer.orderStat.total_discount_price!=='0'&&orderPayReducer.orderStat.total_actual_price!=='0'&&
                         <TableRow>
                             <TableCell rowSpan={4}/>
                             <TableCell rowSpan={4}/>
@@ -483,7 +498,7 @@ function OrderPay(props) {
                     <Grid item sm={12}>订单备注：{orderPayData.client_remark}</Grid>
                     <Grid item sm={12}>操作备注：{orderPayData.op_remark}</Grid>
                 </Grid>
-                <h4>服务:</h4>
+                {orderDetailReducer.orderSerVList.length !== 0 &&<h4>服务:</h4>}
                 {orderDetailReducer.orderSerVList.map((row, index) => (
                     <Grid container spacing={1} key={index}>
                         <Grid item xs={2}><TextField label="服务名称" fullWidth margin="dense" variant="outlined" disabled
@@ -512,10 +527,9 @@ function OrderPay(props) {
                                                      value={row.remark}/></Grid>
                     </Grid>
                 ))}
-                {orderDetailReducer.orderSerVList.length === 0 &&
-                <Grid item xs={12} style={{textAlign: 'center'}}>暂无数据</Grid>}
 
-                <h4>商品:</h4>
+
+                {orderDetailReducer.orderProdList.length !== 0 &&<h4>商品:</h4>}
                 {orderDetailReducer.orderProdList.map((row, index) => (
                     <Grid container spacing={1} key={index}>
                         <Grid item xs={2}><TextField label="商品名称" fullWidth margin="dense" variant="outlined" disabled
@@ -536,8 +550,6 @@ function OrderPay(props) {
                                                      value={row.remark}/></Grid>
                     </Grid>
                 ))}
-                {orderDetailReducer.orderSerVList.length === 0 &&
-                <Grid item xs={12} style={{textAlign: 'center'}}>暂无数据</Grid>}
             </SimpleModal>
 
             <SimpleModal
