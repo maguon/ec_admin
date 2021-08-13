@@ -171,6 +171,11 @@ export const REFUND_STORAGE_FLAG = [
     {value: 2, label: "已退仓"}
 ];
 
+export const ORDER_REFUND_STORAGE_STATUS = [
+    {value: 1, label: "未退仓"},
+    {value: 2, label: "已退仓"}
+];
+
 // 出库/入库
 export const STORAGE_OP_TYPE= [
     {value: 1, label: "入库"},
