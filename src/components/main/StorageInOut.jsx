@@ -82,6 +82,16 @@ function StorageInOut(props) {
             productId: ''
         };
         dispatch(StorageInOutActionType.setRefundParams(refundParams));
+        // 退单入库
+        let orderInParams = {
+            status: '',
+            orderId: '',
+            orderRefundId: '',
+            productId: '',
+            dateStart: '',
+            dateEnd: '',
+        };
+        dispatch(StorageInOutActionType.setOrderInParams(orderInParams));
         // 订单出库
         let orderOutParams = {
             orderItemStatus: '',
@@ -121,6 +131,7 @@ function StorageInOut(props) {
         setTabValue(newValue);
         switch (newValue) {
             case "purchase":
+                // 采购入库
                 if (storageInOutReducer.purchaseParams.storage != null) {
                     dispatch(commonAction.getStorageAreaList(storageInOutReducer.purchaseParams.storage.id));
                 } else {
@@ -129,12 +140,19 @@ function StorageInOut(props) {
                 dispatch(storageInOutAction.getPurchaseItemStorage(0));
                 break;
             case "refund":
+                // 退货出库
                 dispatch(storageInOutAction.getPurchaseRefund(0));
                 break;
+            case "orderIn":
+                // 退单入库
+                dispatch(storageInOutAction.getOrderInTabList(0));
+                break;
             case "orderOut":
+                // 订单出库
                 dispatch(storageInOutAction.getOrderItemProdStorage(0));
                 break;
             case "storage":
+                // 出入库
                 if (storageInOutReducer.storageProductDetailParams.storage != null) {
                     dispatch(commonAction.getStorageAreaList(storageInOutReducer.storageProductDetailParams.storage.id));
                 } else {
@@ -205,6 +223,44 @@ function StorageInOut(props) {
         }
     };
 
+    /** 退单入库 TAB */
+    const [orderInModalOpen, setOrderInModalOpen] = React.useState(false);
+    const [orderInModalData, setOrderInModalData] = React.useState({});
+    const initOrderInModal = (item, pageType) => {
+        // 清check内容
+        setValidation({});
+        setOrderInModalData({pageType:pageType,refundOrderItem:item,prodCnt:null,oldFlag:sysConst.OLD_FLAG[0].value, reUser:null,remark:''});
+        // 取得库存商品信息
+        if (pageType === 'info') {
+            dispatch(storageInOutAction.getOrderInStorageInfo(item.id, null,null))
+        } else {
+            dispatch(storageInOutAction.getOrderInStorageInfo(null, item.order_id, item.item_prod_id))
+        }
+        // 设定模态打开
+        setOrderInModalOpen(true);
+    };
+
+    const submitOrderInModal= ()=>{
+        const validateObj ={};
+        if (!orderInModalData.reUser) {
+            validateObj.reUser ='请选择领用人';
+        }
+        // if (!orderOutModalData.storageProduct) {
+        //     validateObj.storageProduct ='请选择库存商品';
+        // }else if (orderOutModalData.storageProduct.storage_count < orderOutModalData.orderItem.prod_count) {
+        //     validateObj.storageProduct ='库存商品数量小于订单商品数量，不能出库';
+        // }
+        setValidation(validateObj);
+        if(Object.keys(validateObj).length===0){
+            dispatch(storageInOutAction.importOrderProduct({
+                ...orderInModalData,
+                prodCnt: storageInOutReducer.orderInStorageInfo.storage_count,
+                storageProductRelId: storageInOutReducer.orderInStorageInfo.storage_product_rel_id
+            }));
+            setOrderInModalOpen(false);
+        }
+    };
+
     /** 订单出库 TAB */
     const [orderOutModalOpen, setOrderOutModalOpen] = React.useState(false);
     const [orderOutModalData, setOrderOutModalData] = React.useState({orderItem:{}});
@@ -234,7 +290,7 @@ function StorageInOut(props) {
         }
         setValidation(validateObj);
         if(Object.keys(validateObj).length===0){
-            dispatch(storageInOutAction.outOrderProduct(orderOutModalData));
+            dispatch(storageInOutAction.exportOrderProduct(orderOutModalData));
             setOrderOutModalOpen(false);
         }
     };
@@ -350,6 +406,7 @@ function StorageInOut(props) {
                     <TabList onChange={changeTab} indicatorColor="primary" variant="fullWidth" textColor="primary">
                         <Tab label="采购入库" value="purchase" />
                         <Tab label="退货出库" value="refund" />
+                        <Tab label="退单入库" value="orderIn" />
                         <Tab label="订单出库" value="orderOut" />
                         <Tab label="出入库" value="storage" />
                     </TabList>
@@ -775,6 +832,224 @@ function StorageInOut(props) {
                                 <Grid item xs={12}>
                                     <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={refundModalData.remark}
                                                onChange={(e) => {setRefundModalData({...refundModalData,remark:e.target.value})}}/>
+                                </Grid>
+                            </>}
+                        </Grid>
+                    </SimpleModal>
+                </TabPanel>
+
+                {/* 退单入库 */}
+                <TabPanel value="orderIn">
+                    <Grid container spacing={3}>
+                        <Grid container item xs={11} spacing={1}>
+                            <Grid item xs={2}>
+                                <FormControl variant="outlined" fullWidth margin="dense">
+                                    <InputLabel>状态</InputLabel>
+                                    <Select label="状态"
+                                            value={storageInOutReducer.orderInParams.status}
+                                            onChange={(e, value) => {
+                                                dispatch(StorageInOutActionType.setOrderInParam({name: "status", value: e.target.value}));
+                                            }}
+                                    >
+                                        <MenuItem value="">请选择</MenuItem>
+                                        {sysConst.ORDER_REFUND_STORAGE_STATUS.map((item, index) => (
+                                            <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <TextField label="订单编号" fullWidth margin="dense" variant="outlined" type="number" value={storageInOutReducer.orderInParams.orderId}
+                                           onChange={(e)=>{dispatch(StorageInOutActionType.setOrderInParam({name: "orderId", value: e.target.value}))}}/>
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <TextField label="退单编号" fullWidth margin="dense" variant="outlined" type="number" value={storageInOutReducer.orderInParams.orderRefundId}
+                                           onChange={(e)=>{dispatch(StorageInOutActionType.setOrderInParam({name: "orderRefundId", value: e.target.value}))}}/>
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <TextField label="商品编号" fullWidth margin="dense" variant="outlined" type="number" value={storageInOutReducer.orderInParams.productId}
+                                           onChange={(e)=>{dispatch(StorageInOutActionType.setOrderInParam({name: "productId", value: e.target.value}))}}/>
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                            okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                            label="订单日期（始）"
+                                            value={storageInOutReducer.orderInParams.dateStart=="" ? null : storageInOutReducer.orderInParams.dateStart}
+                                            onChange={(date)=>{
+                                                dispatch(StorageInOutActionType.setOrderInParam({name: "dateStart", value: date}))
+                                            }}
+                                />
+                            </Grid>
+
+                            <Grid item xs={2}>
+                                <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense" format="yyyy/MM/dd"
+                                            okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                            label="订单日期（终）"
+                                            value={storageInOutReducer.orderInParams.dateEnd=="" ? null : storageInOutReducer.orderInParams.dateEnd}
+                                            onChange={(date)=>{
+                                                dispatch(StorageInOutActionType.setOrderInParam({name: "dateEnd", value: date}))
+                                            }}
+                                />
+                            </Grid>
+                        </Grid>
+
+                        {/*查询按钮*/}
+                        <Grid item xs={1} style={{textAlign:'right'}}>
+                            <Fab color="primary" size="small" onClick={()=>{dispatch(storageInOutAction.getOrderInTabList(0))}}>
+                                <i className="mdi mdi-magnify mdi-24px"/>
+                            </Fab>
+                        </Grid>
+                    </Grid>
+
+                    {/* 下部分：检索结果显示区域 */}
+                    <TableContainer component={Paper} style={{marginTop: 20}}>
+                        <Table stickyHeader size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell className={classes.tableHead} align="center">订单号</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">退单号</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">商品号</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">商品</TableCell>
+                                    {/*<TableCell className={classes.tableHead} align="center">单价</TableCell>*/}
+                                    {/*<TableCell className={classes.tableHead} align="center">数量</TableCell>*/}
+                                    {/*<TableCell className={classes.tableHead} align="center">折扣</TableCell>*/}
+                                    {/*<TableCell className={classes.tableHead} align="center">实际金额</TableCell>*/}
+
+                                    <TableCell className={classes.tableHead} align="center">退货金额</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">退货数量</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">退货总额</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">退单日期</TableCell>
+
+                                    <TableCell className={classes.tableHead} align="center">状态</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">操作</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {storageInOutReducer.orderInData.dataList.map((row,index) => (
+                                    <TableRow key={'order-out-data-' + index}>
+                                        <TableCell align="center">{row.order_id}</TableCell>
+                                        <TableCell align="center">{row.order_refund_id}</TableCell>
+                                        <TableCell align="center">{row.prod_id}</TableCell>
+                                        <TableCell align="center">{row.prod_name}</TableCell>
+                                        {/*<TableCell align="center">{row.unit_price}</TableCell>*/}
+                                        {/*<TableCell align="center">{row.prod_count}</TableCell>*/}
+                                        {/*<TableCell align="center">{row.discount_prod_price}</TableCell>*/}
+                                        {/*<TableCell align="center">{row.actual_prod_price}</TableCell>*/}
+
+                                        <TableCell align="center">{row.prod_refund_price}</TableCell>
+                                        <TableCell align="center">{row.prod_refund_count}</TableCell>
+                                        <TableCell align="center">{row.total_refund_price}</TableCell>
+                                        <TableCell align="center">{row.date_id}</TableCell>
+
+
+                                        <TableCell align="center">{commonUtil.getJsonValue(sysConst.ORDER_REFUND_STORAGE_STATUS, row.status)}</TableCell>
+                                        <TableCell align="center">
+                                            {row.status === sysConst.PROD_ITEM_STATUS[0].value &&
+                                            <IconButton color="primary" edge="start" size="small" onClick={() => {initOrderInModal(row,'')}}>
+                                                <i className="mdi mdi-login"/>
+                                            </IconButton>}
+                                            {row.status === sysConst.PROD_ITEM_STATUS[1].value &&
+                                            <IconButton color="primary" edge="start" size="small" onClick={() => {initOrderInModal(row,'info')}}>
+                                                <i className="mdi mdi-table-of-contents"/>
+                                            </IconButton>}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                                {storageInOutReducer.orderInData.dataList.length === 0 &&
+                                <TableRow>
+                                    <TableCell colSpan={9} align="center">暂无数据</TableCell>
+                                </TableRow>}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+
+                    {/* 上下页按钮 */}
+                    <Box style={{textAlign: 'right', marginTop: 20}}>
+                        {storageInOutReducer.orderInData.start > 0 && storageInOutReducer.orderInData.dataSize > 0 &&
+                        <Button variant="contained" color="primary" style={{marginRight: 20}}
+                                onClick={()=>{dispatch(storageInOutAction.getOrderInTabList(storageInOutReducer.orderInData.start-(storageInOutReducer.orderInData.size-1)))}}>上一页</Button>}
+                        {storageInOutReducer.orderInData.dataSize >= storageInOutReducer.orderInData.size &&
+                        <Button variant="contained" color="primary" onClick={()=>{dispatch(storageInOutAction.getOrderInTabList(storageInOutReducer.orderInData.start+(storageInOutReducer.orderInData.size-1)))}}>下一页</Button>}
+                    </Box>
+
+                    <SimpleModal maxWidth={orderInModalData.pageType === 'info' ? 'md' : 'sm'}
+                                 title="退单入库"
+                                 open={orderInModalOpen}
+                                 onClose={()=>{setOrderInModalOpen(false)}}
+                                 showFooter={true}
+                                 footer={
+                                     <>
+                                         {orderInModalData.pageType !== 'info' && Object.keys(storageInOutReducer.orderInStorageInfo).length > 0 &&
+                                         <Button variant="contained" color="primary" onClick={submitOrderInModal}>确定</Button>}
+                                         <Button variant="contained" onClick={()=>{setOrderInModalOpen(false)}}>关闭</Button>
+                                     </>
+                                 }
+                    >
+                        <Grid container spacing={2}>
+                            {orderInModalData.pageType === 'info' &&
+                            <>
+                                <Typography gutterBottom className={classes.title}>库存信息</Typography>
+                                <Grid container spacing={2} style={{marginBottom:10}}>
+                                    <Grid item sm={6}>商品：{storageInOutReducer.orderInStorageInfo.product_name}</Grid>
+                                    <Grid item sm={6}>仓库：{storageInOutReducer.orderInStorageInfo.storage_name}</Grid>
+                                    <Grid item sm={6}>仓库分区：{storageInOutReducer.orderInStorageInfo.storage_area_name}</Grid>
+                                    <Grid item sm={6}>数量：{storageInOutReducer.orderInStorageInfo.storage_count}</Grid>
+                                </Grid>
+                            </>}
+
+                            {orderInModalData.pageType !== 'info' &&
+                            <>
+                                <Typography gutterBottom className={classes.title}>库存信息</Typography>
+                                <Grid container spacing={2} style={{marginBottom:10}}>
+                                    <Grid item sm={6}>商品：{storageInOutReducer.orderInStorageInfo.product_name || ''}</Grid>
+                                    <Grid item sm={6}>仓库：{storageInOutReducer.orderInStorageInfo.storage_name || ''}</Grid>
+                                    <Grid item sm={6}>仓库分区：{storageInOutReducer.orderInStorageInfo.storage_area_name || ''}</Grid>
+                                    <Grid item sm={6}>数量：{storageInOutReducer.orderInStorageInfo.storage_count || ''}</Grid>
+                                    <Grid item sm={12} style={{color:'red'}}>
+                                        {Object.keys(storageInOutReducer.orderInStorageInfo).length > 0 ? '返库商品将重新放在原来的仓储位置' : '该退单暂未出库，不能入库'}
+                                    </Grid>
+                                </Grid>
+
+                                <Grid container spacing={1}>
+                                    {/*<Grid item xs={4}>*/}
+                                    {/*    <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" value={modalData.prodCnt}*/}
+                                    {/*               onChange={(e) => {setModalData({...modalData,prodCnt:e.target.value})}}*/}
+                                    {/*               error={validation.prodCnt&&validation.prodCnt!=''} helperText={validation.prodCnt}/>*/}
+                                    {/*</Grid>*/}
+                                    <Grid item xs={6}>
+                                        <FormControl variant="outlined" fullWidth margin="dense">
+                                            <InputLabel>是否全新</InputLabel>
+                                            <Select label="是否全新"
+                                                    value={orderInModalData.oldFlag}
+                                                    onChange={(e, value) => {
+                                                        setOrderInModalData({...orderInModalData, oldFlag:e.target.value});
+                                                    }}
+                                            >
+                                                {sysConst.OLD_FLAG.map((item, index) => (
+                                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Autocomplete fullWidth options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
+                                                      value={orderInModalData.reUser}
+                                                      onChange={(event, value) => {
+                                                          setOrderInModalData({...orderInModalData,reUser:value});
+                                                      }}
+                                                      renderInput={(params) => <TextField {...params} label="领用人" margin="dense" variant="outlined"
+                                                                                          error={validation.reUser&&validation.reUser!=''} helperText={validation.reUser}/>}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={modalData.remark}
+                                                   onChange={(e) => {setOrderInModalData({...orderInModalData,remark:e.target.value})}}/>
+                                    </Grid>
                                 </Grid>
                             </>}
                         </Grid>
@@ -1320,7 +1595,8 @@ function StorageInOut(props) {
                                         <Grid item sm={6}>商品：{modalData.storageProdRelDetail.product_name}</Grid>
                                         <Grid item sm={6}>仓库：{modalData.storageProdRelDetail.storage_name}</Grid>
                                         <Grid item sm={6}>仓库分区：{modalData.storageProdRelDetail.storage_area_name}</Grid>
-                                        <Grid item sm={6}>仓库数量：{modalData.storageProdRelDetail.storage_count}</Grid>
+                                        <Grid item sm={6}>数量：{modalData.storageProdRelDetail.storage_count}</Grid>
+                                        <Grid item sm={12} style={{color:'red'}}>返库商品将重新放在原来的仓储位置</Grid>
                                     </Grid>}
 
                                     <Grid container spacing={1}>

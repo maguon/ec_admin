@@ -202,6 +202,118 @@ export const refundStorage = (data) => async (dispatch, getState) => {
     }
 };
 
+// TAB：退单入库 列表查询
+export const getOrderInTabList = (dataStart) => async (dispatch, getState) => {
+    try {
+        // 检索条件：开始位置
+        const start = dataStart;
+        // 检索条件：每页数量
+        const size = getState().StorageInOutReducer.orderInData.size;
+
+        // 检索条件
+        const queryParams = getState().StorageInOutReducer.orderInParams;
+        let conditionsObj = {
+            // 状态
+            status: queryParams.status,
+            // 订单ID
+            orderId: queryParams.orderId,
+            // 退单ID
+            orderRefundId: queryParams.orderRefundId,
+            // 商品ID
+            prodId: queryParams.productId,
+            // 退单日期
+            dateStart: commonUtil.getDateFormat(queryParams.dateStart),
+            dateEnd: commonUtil.getDateFormat(queryParams.dateEnd),
+        };
+
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/orderRefundProd?start=' + start + '&size=' + size;
+        // 检索条件
+        let conditions =  httpUtil.objToUrl(conditionsObj);
+        // 检索URL
+        url = conditions.length > 0 ? url + "&" + conditions : url;
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        let newData = getState().StorageInOutReducer.orderInData;
+        if (res.success) {
+            newData.start = start;
+            newData.dataSize = res.rows.length;
+            newData.dataList = res.rows.slice(0, size - 1);
+            dispatch({type: StorageInOutActionType.setOrderInData, payload: newData});
+        } else if (!res.success) {
+            Swal.fire("获取退单入库列表失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+// TAB：退单入库 列表查询
+export const getOrderInStorageInfo = (orderRefundProdId, orderId, orderProdId) => async (dispatch) => {
+    try {
+        let url;
+        if (orderRefundProdId == null) {
+            url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+                + '/storageProductRelDetail?orderId=' + orderId + '&orderProdId=' + orderProdId;
+        } else {
+            url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+                + '/storageProductRelDetail?orderRefundProdId=' + orderRefundProdId;
+        }
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success && res.rows.length > 0) {
+            dispatch({type: StorageInOutActionType.setOrderInStorageInfo, payload: res.rows[0]});
+        } else {
+            dispatch({type: StorageInOutActionType.setOrderInStorageInfo, payload: {}});
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+// TAB：退单入库 MODAL
+export const importOrderProduct = (data) => async (dispatch, getState) => {
+    try {
+        // 状态
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/storageProductRel/' + data.storageProductRelId + '/storProdRelDetailImport';
+        const params = {
+            // 出库
+            storageType: sysConst.STORAGE_OP_TYPE[0].value,
+            // 订单出库
+            storageSubType: sysConst.STORAGE_OP_IMPORT_TYPE[3].value,
+            // 商品数量
+            storageCount: parseFloat(data.prodCnt),
+            // 领用人
+            applyUserId: data.reUser === null ? '' : data.reUser.id,
+            // 订单
+            orderId: data.refundOrderItem.order_id,
+            // 退单号
+            orderRefundId: data.refundOrderItem.order_refund_id,
+            orderRefundProdId: data.refundOrderItem.id,
+            // 是否全新
+            oldFlag: data.oldFlag,
+            remark: data.remark
+        };
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpPost(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            Swal.fire("修改成功", "", "success");
+            dispatch(getOrderInTabList(getState().StorageInOutReducer.orderInData.start));
+        } else if (!res.success) {
+            Swal.fire("修改失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
 // TAB：订单出库 列表查询
 export const getOrderItemProdStorage = (dataStart) => async (dispatch, getState) => {
     try {
@@ -230,7 +342,6 @@ export const getOrderItemProdStorage = (dataStart) => async (dispatch, getState)
             // 仓库分区
             storageAreaId: queryParams.storageArea === null ? '' : queryParams.storageArea.id,
         };
-
 
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
@@ -277,11 +388,11 @@ export const getStorageProduct = (productId) => async (dispatch) => {
 };
 
 // TAB：订单出库 MODAL 确定出库
-export const outOrderProduct = (data) => async (dispatch, getState) => {
+export const exportOrderProduct = (data) => async (dispatch, getState) => {
     try {
         // 状态
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/storageProductRel/' + data.storageProduct.id + '/storageProductRelDetail';
+            + '/storageProductRel/' + data.storageProduct.id + '/storProdRelDetailExport';
         const params = {
             // 出库
             storageType: sysConst.STORAGE_OP_TYPE[1].value,

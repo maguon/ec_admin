@@ -37,6 +37,24 @@ const initialState = {
     },
     storageProductRelList: [],
     storageProductRelDetail: [],
+
+    // 订单出库
+    orderInData: {start: 0,size: 11,dataSize: 0, dataList: []},
+    orderInParams: {
+        // 状态
+        status: '',
+        // 订单ID
+        orderId: '',
+        // 退单ID
+        orderRefundId: '',
+        // 商品ID
+        productId: '',
+        // 退单日期
+        dateStart: '',
+        dateEnd: '',
+    },
+    orderInStorageInfo: {},
+
     // 订单出库
     orderOutData: {start: 0,size: 11,dataSize: 0, dataList: []},
     orderOutParams: {
@@ -140,6 +158,32 @@ export default handleActions({
         return {
             ...state,
             storageProductRelDetail: action.payload
+        }
+    },
+    [StorageInOutActionType.setOrderInData]: (state, action) => {
+        return {
+            ...state,
+            orderInData: action.payload
+        }
+    },
+    [StorageInOutActionType.setOrderInParams]: (state, action) => {
+        return {
+            ...state,
+            orderInParams: action.payload
+        }
+    },
+    [StorageInOutActionType.setOrderInParam]: (state, action) => {
+        const {name, value} = action.payload;
+        const paramsObj = {...state.orderInParams, [name]: value};
+        return {
+            ...state,
+            orderInParams: paramsObj
+        }
+    },
+    [StorageInOutActionType.setOrderInStorageInfo]: (state, action) => {
+        return {
+            ...state,
+            orderInStorageInfo: action.payload
         }
     },
     [StorageInOutActionType.setOrderOutData]: (state, action) => {
