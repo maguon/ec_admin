@@ -9,7 +9,6 @@ class ErrorPanel extends React.Component {
         super(props);
     }
     componentDidMount() {
-        // todo 222
     }
 
     render() {
