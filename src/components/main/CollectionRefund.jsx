@@ -184,7 +184,7 @@ function CollectionRefund(props) {
                                     <TableCell align="center">{commonUtil.getJsonValue(sysConst.PAYMENT_TYPE, row.payment_type)}</TableCell>
                                     <TableCell align="center">{row.date_id}</TableCell>
                                     <TableCell align="center">
-                                        <IconButton color="secondary" edge="start" size="small" onClick={()=>{deletePaymentItem(row.id,collectionRefundReducer.collectionRefundData.start)}}>
+                                        <IconButton disabled={row.status==1} color="secondary" edge="start" size="small" onClick={()=>{deletePaymentItem(row.id,collectionRefundReducer.collectionRefundData.start)}}>
                                             <i className="mdi mdi-delete purple-font"> </i>
                                         </IconButton>
                                         <IconButton color="primary" edge="start" size="small">
