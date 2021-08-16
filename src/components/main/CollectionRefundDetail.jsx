@@ -188,11 +188,11 @@ function CollectionRefundDetail(props) {
                                                     <Grid item xs={2} align='left'>实际价格:{service.actual_service_price}</Grid>
                                                 </Grid>}
 
-                                            <Grid container  spacing={3}>
+                                          {/*  <Grid container  spacing={3}>
                                                 <Grid item xs={2} align='left'>销售:{service.sale_user_name}</Grid>
                                                 <Grid item xs={2} align='left'>施工:{service.deploy_user_name}</Grid>
                                                 <Grid item xs={2} align='left'>验收:{service.check_user_name}</Grid>
-                                            </Grid>
+                                            </Grid>*/}
                                             <Divider className={classes.divider} variant="middle" />
                                         </Grid>
                                     ))
@@ -207,7 +207,7 @@ function CollectionRefundDetail(props) {
                                                 <Grid item xs={2} align='left'>数量:{item.prod_count}</Grid>
                                                 <Grid item xs={2} align='left'>折扣:{item.discount_prod_price}</Grid>
                                                 <Grid item xs={2} align='left'>实际价格:{item.actual_prod_price}</Grid>
-                                                <Grid item xs={2} align='left'>销售:{item.sale_user_name}</Grid>
+                                               {/* <Grid item xs={2} align='left'>销售:{item.sale_user_name}</Grid>*/}
                                             </Grid>
                                             <Divider className={classes.divider} variant="middle" />
                                         </Grid>

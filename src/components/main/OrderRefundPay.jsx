@@ -274,6 +274,7 @@ function OrderRefundPay(props) {
                             <TableCell className={classes.tableHead} align="center"
                                        style={{display: orderRefundPayReducer.orderData.dataList.length == 0 ? 'none' : 'block'}}>
                                 <Checkbox
+                                    disabled={(orderRefundPayReducer.orderData.dataList.every(item=>item.payment_status!==1))}
                                     checked={orderRefundPayReducer.orderData.dataList.length > 0 && selected.length + noSelectedId.length  == orderRefundPayReducer.orderData.dataList.length}
                                     onChange={(e, value) => {
                                         handleSelectAllClick(e.target.checked);
