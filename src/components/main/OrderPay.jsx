@@ -178,25 +178,7 @@ function OrderPay(props) {
                                    }}/>
                     </Grid>
 
-                    <Grid item xs={2}>
-                        <FormControl variant="outlined" fullWidth margin="dense">
-                            <InputLabel>订单类型</InputLabel>
-                            <Select label="订单类型"
-                                    value={orderPayReducer.queryParams.orderType}
-                                    onChange={(e, value) => {
-                                        dispatch(OrderPayActionType.setQueryPayParam({
-                                            name: "orderType",
-                                            value: e.target.value
-                                        }));
-                                    }}
-                            >
-                                <MenuItem value="">请选择</MenuItem>
-                                {sysConst.ORDER_TYPE.map((item, index) => (
-                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Grid>
+
 
                     <Grid item xs={2}>
                         <FormControl variant="outlined" fullWidth margin="dense">
@@ -236,18 +218,7 @@ function OrderPay(props) {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={2}>
-                        <Autocomplete fullWidth
-                                      options={commonReducer.userList}
-                                      getOptionLabel={(option) => option.real_name}
-                                      value={orderPayReducer.queryParams.reUser}
-                                      onChange={(event, value) => {
-                                          dispatch(OrderPayActionType.setQueryPayParam({name: "reUser", value: value}));
-                                      }}
-                                      renderInput={(params) => <TextField {...params} label="接单人" margin="dense"
-                                                                          variant="outlined"/>}
-                        />
-                    </Grid>
+
 
                     <Grid item xs={2}>
                         <Autocomplete fullWidth
@@ -277,6 +248,7 @@ function OrderPay(props) {
                                                                           variant="outlined"/>}
                         />
                     </Grid>
+
                     <Grid item xs={2}>
                         <TextField label="车牌" fullWidth margin="dense" variant="outlined"
                                    value={orderPayReducer.queryParams.clientSerial}
@@ -287,7 +259,37 @@ function OrderPay(props) {
                                        }))
                                    }}/>
                     </Grid>
-
+                    <Grid item xs={2}>
+                        <Autocomplete fullWidth
+                                      options={commonReducer.userList}
+                                      getOptionLabel={(option) => option.real_name}
+                                      value={orderPayReducer.queryParams.reUser}
+                                      onChange={(event, value) => {
+                                          dispatch(OrderPayActionType.setQueryPayParam({name: "reUser", value: value}));
+                                      }}
+                                      renderInput={(params) => <TextField {...params} label="接单人" margin="dense"
+                                                                          variant="outlined"/>}
+                        />
+                    </Grid>
+                    <Grid item xs={2}>
+                        <FormControl variant="outlined" fullWidth margin="dense">
+                            <InputLabel>订单类型</InputLabel>
+                            <Select label="订单类型"
+                                    value={orderPayReducer.queryParams.orderType}
+                                    onChange={(e, value) => {
+                                        dispatch(OrderPayActionType.setQueryPayParam({
+                                            name: "orderType",
+                                            value: e.target.value
+                                        }));
+                                    }}
+                            >
+                                <MenuItem value="">请选择</MenuItem>
+                                {sysConst.ORDER_TYPE.map((item, index) => (
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
                     <Grid item xs={2}>
                         <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"
                                     format="yyyy/MM/dd"

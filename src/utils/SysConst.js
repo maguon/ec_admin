@@ -353,6 +353,12 @@ export const ALL_PAGE_LIST = [
                 "icon": "mdi-chevron-right",
                 "usable": false
             },
+            {
+                "link": "/user_achievement",
+                "name": "员工绩效",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
 
         ]
     },
