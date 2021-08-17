@@ -30,16 +30,12 @@ export const getOrderRefundInfo = (orderRefundId) => async (dispatch) => {
     }
 };
 
-export const getOrderRefundService = (orderRefundId, orderId) => async (dispatch) => {
+export const getOrderServiceOpts = (orderId) => async (dispatch) => {
     try {
         // 基本检索URL
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderRefundService?orderRefundId=' + orderRefundId;
-        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderRefundService?orderId=' + orderId;
         let res = await httpUtil.httpGet(url);
-        dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
-            dispatch({type: OrderRefundDetailActionType.getOrderRefundSerVList, payload: res.rows});
-
             // 基本检索URL
             let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderItemService?orderId=' + orderId;
             let itemsRes = await httpUtil.httpGet(url);
@@ -62,6 +58,22 @@ export const getOrderRefundService = (orderRefundId, orderId) => async (dispatch
             } else {
                 dispatch({type: OrderRefundDetailActionType.getOrderAvailableSerVList, payload: []});
             }
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const getOrderRefundService = (orderRefundId, orderId) => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderRefundService?orderRefundId=' + orderRefundId;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: OrderRefundDetailActionType.getOrderRefundSerVList, payload: res.rows});
+            dispatch(getOrderServiceOpts(orderId));
         } else if (!res.success) {
             Swal.fire("获取退单服务列表失败", res.msg, "warning");
         }
@@ -70,16 +82,12 @@ export const getOrderRefundService = (orderRefundId, orderId) => async (dispatch
     }
 };
 
-export const getOrderRefundProd = (orderRefundId, orderId) => async (dispatch) => {
+export const getOrderProdOpts = (orderId) => async (dispatch) => {
     try {
         // 基本检索URL
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderRefundProd?orderRefundId=' + orderRefundId;
-        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderRefundProd?orderId=' + orderId;
         const res = await httpUtil.httpGet(url);
-        dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
-            dispatch({type: OrderRefundDetailActionType.getOrderRefundProdList, payload: res.rows});
-
             // 基本检索URL
             let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderItemProd?orderId=' + orderId;
             let itemsRes = await httpUtil.httpGet(url);
@@ -102,6 +110,22 @@ export const getOrderRefundProd = (orderRefundId, orderId) => async (dispatch) =
             } else {
                 dispatch({type: OrderRefundDetailActionType.getOrderAvailableProdList, payload: []});
             }
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const getOrderRefundProd = (orderRefundId, orderId) => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderRefundProd?orderRefundId=' + orderRefundId;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: OrderRefundDetailActionType.getOrderRefundProdList, payload: res.rows});
+            dispatch(getOrderProdOpts(orderId));
         } else if (!res.success) {
             Swal.fire("获取退单商品列表失败", res.msg, "warning");
         }
