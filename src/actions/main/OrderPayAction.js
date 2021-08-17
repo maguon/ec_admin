@@ -67,12 +67,13 @@ const getParams = () => (dispatch, getState) => {
     };
     return httpUtil.objToUrl(conditionsObj);
 };
-export const getAllOrder=(remarks,paymentType,selectedId,batchData)=>async (dispatch, getState) => {
+export const getAllOrder=(remarks,paymentType,selectedId,batchData,id)=>async (dispatch, getState) => {
     try {
         let params = {
             remark: remarks,
             type: 1,
             paymentType: paymentType,
+            clientAgentId:id,
             orderIds:selectedId,
             orderRefundIds: [0],
             actualPrice: batchData.totalActualPrice

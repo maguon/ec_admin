@@ -37,7 +37,7 @@ function OrderPay(props) {
     const [paymentType, setPaymentType] = React.useState(1);
     const [remarks, setRemarks] = React.useState('');
     const [flag, setFlag] = React.useState(true);
-
+    const [clientAgent,setClientAgent] = React.useState({id:'',name:''});
     useEffect(() => {
             let queryParams = {
                 // 订单编号
@@ -76,6 +76,7 @@ function OrderPay(props) {
         setPayType(1);
         setPaymentType(1);
         setRemarks('');
+        setClientAgent({id:'',name:''});
         if(selected.length==0){
             Swal.fire("请选择需要支付的订单", '', "warning");
         }else {
@@ -86,6 +87,7 @@ function OrderPay(props) {
                     batchData.totalActualPrice += Number(item.total_actual_price);
                     selectedId.push(Number(item.id));
             })
+            setClientAgent({id:selected[0].client_agent_id,name:selected[0].client_agent_name})
             setModalOpen(true);
         }
     }
@@ -132,7 +134,7 @@ function OrderPay(props) {
     };
     const isSelected = (id) => selected.indexOf(id) !== -1;
     const getAllOrderData = () => {
-        getAllOrder(remarks,paymentType,selectedId,batchData)
+        getAllOrder(remarks,paymentType,selectedId,batchData,clientAgent.id)
         setModalOpen(false);
     }
     //初始添加模态框值
@@ -148,6 +150,7 @@ function OrderPay(props) {
     };
     const modalClose = () => {
         setBatchData({servicePrice:0,prodPrice:0,totalDiscountPrice:0,totalActualPrice:0})
+        setClientAgent({id:'',name:''})
         setSelectedId([]);
         setModalOpen(false);
     }
@@ -568,7 +571,7 @@ function OrderPay(props) {
             >
                 <Grid container spacing={2}>
 
-                    <Grid item sm={6}>
+                    <Grid item sm={4}>
                         <TextField className={classes.selectCondition} disabled={true}
                                    select
                                    margin="dense"
@@ -587,7 +590,7 @@ function OrderPay(props) {
                             ))}
                         </TextField>
                     </Grid>
-                    <Grid item sm={6}>
+                    <Grid item sm={4}>
                         <TextField className={classes.selectCondition}
                                    select
                                    margin="dense"
@@ -606,7 +609,15 @@ function OrderPay(props) {
                             ))}
                         </TextField>
                     </Grid>
-
+                    <Grid item sm={4}>
+                        <TextField className={classes.selectCondition} disabled={true}
+                                   margin="dense"
+                                   label="客户集群"
+                                   value={clientAgent.name}
+                                   variant="outlined"
+                        >
+                        </TextField>
+                    </Grid>
                     <Grid item sm={3}>服务费：{batchData.servicePrice}</Grid>
                     <Grid item sm={3}>商品金额：{batchData.prodPrice}</Grid>
                     <Grid item sm={3}>折扣：{batchData.totalDiscountPrice}</Grid>
@@ -647,8 +658,8 @@ const mapDispatchToProps = (dispatch) => ({
     getOrderList: (dataStart) => {
         dispatch(orderPayAction.getOrderList(dataStart))
     },
-    getAllOrder:(remarks,paymentType,selectedId,batchData)=>{
-        dispatch(orderPayAction.getAllOrder(remarks,paymentType,selectedId,batchData))
+    getAllOrder:(remarks,paymentType,selectedId,batchData,id)=>{
+        dispatch(orderPayAction.getAllOrder(remarks,paymentType,selectedId,batchData,id))
     }
 });
 
