@@ -1,15 +1,41 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Link} from "react-router-dom";
 // 引入material-ui基础组件
-import {Box, Button, Divider, Fab, FormControl, Grid, InputLabel,MenuItem, Paper, Select, Table, TableBody,
-    TableCell, TableContainer, TableHead, TableRow, TextField, Typography, IconButton
+import {
+    Box,
+    Button,
+    Divider,
+    Fab,
+    FormControl,
+    Grid,
+    InputLabel,
+    MenuItem,
+    Paper,
+    Select,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TextField,
+    Typography,
+    IconButton,
+    Stepper,
+    Step,
+    StepLabel,
+    FormHelperText
 } from "@material-ui/core";
 import {DatePicker} from '@material-ui/pickers';
 import {makeStyles} from "@material-ui/core/styles";
-import {CollectionRefundActionType} from "../../types";
+import {ClientInformationDetailActionType, CollectionRefundActionType} from "../../types";
 import Swal from "sweetalert2";
+import {SimpleModal} from "../index";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import TabPanel from "@material-ui/lab/TabPanel";
 const CollectionRefundAction = require('../../actions/main/CollectionRefundAction');
+const commonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
@@ -21,9 +47,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function CollectionRefund(props) {
-    const {collectionRefundReducer,fromDetail,getCollectionRefundList,deletePaymentItem} = props;
+    const {collectionRefundReducer,commonReducer,fromDetail,getCollectionRefundList,deletePaymentItem,getClientAgentList} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
+    const [modalOpenFlag, setModalOpenFlag] = useState(false);
+    const [activeStep, setActiveStep] = React.useState(0);
+    // 模态数据
+    const [modalData, setModalData] = React.useState({clientAgent: null, remark: '' ,type: '', paymentType: null,finDateStart:null,finDateEnd:null,actualPrice:''});
+    // 模态步骤说明
+    const steps = ['选择客户集群', '填写详请信息'];
+    // 模态校验
+    const [validation,setValidation] = useState({});
     useEffect(() => {
         if (!fromDetail) {
             let obj = {
@@ -38,7 +72,69 @@ function CollectionRefund(props) {
         }
         getCollectionRefundList(collectionRefundReducer.collectionRefundData.start);
     }, []);
+    //初始添加模态框值
+    const handleAddOpen =() =>{
+        getClientAgentList();
+        setModalOpenFlag(true);
+        setModalData({clientAgent: null, remark: '' ,type: '', paymentType: null,finDateStart:null,finDateEnd:null,actualPrice:''});
+    }
+    // 关闭模态
+    const closeModal = () => {
+        setModalOpenFlag(false);
+    };
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    };
+    const handleNext = (step) => {
+        // 第一步：选择客户集群
+        if (step === 0) {
+            const validateObj = {};
+            if (!modalData.clientAgent) {
+                validateObj.clientAgent = '请选择客户集群';
+            }
+            if (!modalData.finDateStart) {
+                validateObj.finDateStart = '请选择完成时间(始)';
+            }
+            if (!modalData.finDateEnd) {
+                validateObj.finDateEnd = '请选择完成时间(终)';
+            }
+            setValidation(validateObj);
+            let errorCount = Object.keys(validateObj).length;
+            if (errorCount === 0) {
+                setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                // 清check内容
+                setValidation({});
+                props.getOrderStat(modalData);
+                props.getOrderRefundStat(modalData);
 
+            }
+        }
+        // 第二步：填写详情
+        if (step === 1) {
+            const validateObjStep = {};
+            if (!modalData.paymentType) {
+                validateObjStep.paymentType = '请选择支付方式';
+            }
+            setValidation(validateObjStep);
+            let errorCount = Object.keys(validateObjStep).length;
+            if (errorCount === 0) {
+                if(collectionRefundReducer.orderStatInfo.prod_price=='0'&&collectionRefundReducer.orderStatInfo.service_price=='0'&&
+                   collectionRefundReducer.orderStatInfo.total_actual_price=='0'&&collectionRefundReducer.orderStatInfo.total_discount_price=='0'&&
+                   collectionRefundReducer.orderRefundInfo.prod_refund_count=='0'&&collectionRefundReducer.orderRefundInfo.service_refund_count=='0'
+                ){
+                    setActiveStep(0);
+                    setModalOpenFlag(false);
+                    Swal.fire("无符合条件的订单!",'','warning');
+                }else {
+                    modalData.actualPrice=Number(collectionRefundReducer.orderStatInfo.total_actual_price)-Number(collectionRefundReducer.orderRefundInfo.total_refund_price);
+                    modalData.actualPrice>0?modalData.type=sysConst.PAY_TYPE[0].value:modalData.type=sysConst.PAY_TYPE[1].value;
+                    props.addPaymentItem(modalData);
+                    setModalOpenFlag(false);
+                }
+
+            }
+        }
+    };
     return (
         <div className={classes.root}>
             {/* 标题部分 */}
@@ -132,11 +228,16 @@ function CollectionRefund(props) {
                     </Grid>
                 </Grid>
                 <Grid item xs={1} container style={{textAlign: 'center',marginTop:10}}>
-                    <Grid item xs={12}>
+                    <Grid item xs={6}>
                         <Fab color="primary" size="small" onClick={() => {
                             dispatch(CollectionRefundAction.getCollectionRefundList(0))
                         }}>
                             <i className="mdi mdi-magnify mdi-24px"/>
+                        </Fab>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Fab size="small" color="primary" aria-label="add" onClick={()=>{handleAddOpen(null)}}>
+                            <i className="mdi mdi-plus mdi-24px" />
                         </Fab>
                     </Grid>
                 </Grid>
@@ -216,9 +317,119 @@ function CollectionRefund(props) {
                             dispatch(CollectionRefundAction.getCollectionRefundList(collectionRefundReducer.collectionRefundData.start + (collectionRefundReducer.collectionRefundData.size - 1)))
                         }}>下一页</Button>}
             </Box>
+
+            {/*模态框*/}
+            <SimpleModal
+                maxWidth="md"
+                maxHeight="md"
+                title="新增收款退款"
+                open={modalOpenFlag}
+                onClose={closeModal}
+                showFooter={true}
+                footer={
+                    <>
+                        <Button variant="contained" onClick={activeStep===0 ? closeModal : handleBack}>{activeStep===0 ? '关闭' : '返回'}</Button>
+                        <Button variant="contained" color="primary" onClick={() => {handleNext(activeStep)}}> {activeStep === steps.length - 1 ? '完成' : '下一步'}</Button>
+                    </>
+                }
+            >
+                {/* 步骤标题 */}
+                <Stepper activeStep={activeStep} alternativeLabel>
+                    {steps.map((label) => (<Step key={label}><StepLabel>{label}</StepLabel></Step>))}
+                </Stepper>
+                {/* 步骤内容 */}
+                <div align="center">
+                    {/*第一步添加ID*/}
+                    <div style={{display:activeStep==0?'block':'none'}}>
+                        <Grid container spacing={1} style={{marginBottom:10}}>
+                            <Grid item sm={4}>
+                                <Autocomplete fullWidth
+                                              options={commonReducer.clientAgentList}
+                                              getOptionLabel={(option) =>option.name}
+                                              value={modalData.clientAgent}
+                                              onChange={(event, value) => {
+                                                  setModalData({...modalData, clientAgent: value});
+                                              }}
+                                              renderInput={(params) => <TextField {...params} label="客户集群" margin="dense" variant="outlined"
+                                                                                  error={validation.clientAgent&&validation.clientAgent!=''}
+                                                                                  helperText={validation.clientAgent}
+                                              />}
+                                />
+                            </Grid>
+                            <Grid item sm={4}>
+                                <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"
+                                            format="yyyy/MM/dd"
+                                            okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                            label="完成日期（始）"
+                                            value={modalData.finDateStart}
+                                            onChange={(date) => {
+                                                setModalData({...modalData, finDateStart: date});
+                                            }}
+                                            error={validation.finDateStart&&validation.finDateStart!=null}
+                                            helperText={validation.finDateStart}
+                                />
+                            </Grid>
+                            <Grid item sm={4}>
+                                <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"
+                                            format="yyyy/MM/dd"
+                                            okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
+                                            label="完成日期（终）"
+                                            value={modalData.finDateEnd}
+                                            onChange={(date) => {
+                                                setModalData({...modalData, finDateEnd: date});
+                                            }}
+                                            error={validation.finDateEnd&&validation.finDateEnd!=null}
+                                            helperText={validation.finDateEnd}
+                                />
+                            </Grid>
+                        </Grid>
+                    </div>
+                    {/* 第二步添加商品详情 */}
+                    <div style={{display:activeStep==!0?'block':'none',margin:'20px 0',textAlign:'left'}}>
+                        <Grid  container spacing={3}>
+                            <Grid item xs={4}>
+                                <Autocomplete fullWidth
+                                              options={sysConst.PAYMENT_TYPE}
+                                              getOptionLabel={(option) =>option.label}
+                                              value={modalData.paymentType}
+                                              onChange={(event, value) => {
+                                                  setModalData({...modalData, paymentType: value});
+                                              }}
+                                              renderInput={(params) => <TextField {...params} label="支付方式" margin="dense" variant="outlined"
+                                                                                  error={validation.paymentType&&validation.paymentType!=''}
+                                                                                  helperText={validation.paymentType}
+                                              />}
+                                />
+                            </Grid>
+
+                            <Grid item xs={8}>
+                                <TextField
+                                    fullWidth={true}
+                                    margin="dense"
+                                    variant="outlined"
+                                    label="备注"
+                                    value={modalData.remark}
+                                    onChange={(event, value) => {
+                                        setModalData({...modalData, remark: event.target.value});
+                                    }}
+                                    InputLabelProps={{ shrink: true }}
+                                />
+                            </Grid>
+                            <Grid item sm={4}>服务费总额：{collectionRefundReducer.orderStatInfo.service_price}</Grid>
+                            <Grid item sm={4}>商品总额：{collectionRefundReducer.orderStatInfo.prod_price}</Grid>
+                            <Grid item sm={4}>实际总额：{collectionRefundReducer.orderStatInfo.total_actual_price}</Grid>
+                            <Grid item sm={4}>服务退款总额：{collectionRefundReducer.orderRefundInfo.service_refund_price}</Grid>
+                            <Grid item sm={4}>商品退款总额：{collectionRefundReducer.orderRefundInfo.prod_refund_price}</Grid>
+                            <Grid item sm={4}>退款总额：{collectionRefundReducer.orderRefundInfo.total_refund_price}</Grid>
+                        </Grid>
+
+                    </div>
+                </div>
+            </SimpleModal>
+
         </div>
     )
-}
+};
 
 const mapStateToProps = (state, ownProps) => {
     let fromDetail = false;
@@ -249,6 +460,18 @@ const mapDispatchToProps = (dispatch) => ({
             }
         });
     },
+    getClientAgentList:() => {
+        dispatch(commonAction.getClientAgentList())
+    },
+    getOrderStat:(data) => {
+        dispatch(CollectionRefundAction.getCollectionStat(data))
+    },
+    getOrderRefundStat:(data) => {
+        dispatch(CollectionRefundAction.getCollectionRefundStat(data))
+    },
+    addPaymentItem:(data)=>{
+        dispatch(CollectionRefundAction.addPaymentItem(data))
+    }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(CollectionRefund)

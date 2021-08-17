@@ -1,7 +1,6 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
-import {AppActionType, CollectionRefundActionType} from '../../types';
-import {getOrderInfo, getOrderItemService} from "./OrderDetailAction";
+import {AppActionType, CollectionRefundActionType, OrderRefundPayActionType} from '../../types';
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const commonUtil = require('../../utils/CommonUtil');
@@ -62,3 +61,87 @@ export const deletePaymentItem = (data,start) => async (dispatch) => {
         Swal.fire("操作失败", err.message, "error");
     }
 };
+export const getCollectionRefundStat =(data) =>async (dispatch)=>{
+    try {
+        let conditionsObj = {
+            clientAgentId:data.clientAgent.id,
+            finDateStart:commonUtil.formatDate(data.finDateStart, 'yyyyMMdd'),
+            finDateEnd:commonUtil.formatDate(data.finDateEnd, 'yyyyMMdd'),
+            paymentStatus:sysConst.ORDER_PAYMENT_STATUS[0].value
+        }
+        let conditions = httpUtil.objToUrl(conditionsObj);
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderRefundStat?';
+        // 检索URL
+        url = conditions.length > 0 ? url + "&" + conditions : url;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            if (res.rows.length > 0) {
+                dispatch({type: CollectionRefundActionType.setOrderRefundStat, payload: res.rows[0]});
+            } else {
+                return
+            }
+        } else if (!res.success) {
+            Swal.fire("获取订单信息失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+}
+export const getCollectionStat =(data) =>async (dispatch)=>{
+    try {
+        let conditionsObj = {
+            clientAgentId:data.clientAgent.id,
+            finDateStart:commonUtil.formatDate(data.finDateStart, 'yyyyMMdd'),
+            finDateEnd:commonUtil.formatDate(data.finDateEnd, 'yyyyMMdd'),
+            paymentStatus:sysConst.ORDER_PAYMENT_STATUS[0].value
+        }
+        let conditions = httpUtil.objToUrl(conditionsObj);
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/orderStat?';
+        // 检索URL
+        url = conditions.length > 0 ? url + "&" + conditions : url;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            if (res.rows.length > 0) {
+                dispatch({type: CollectionRefundActionType.setOrderStat, payload: res.rows[0]});
+            } else {
+                return
+            }
+        } else if (!res.success) {
+            Swal.fire("获取订单信息失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+}
+export const addPaymentItem=(param)=>async (dispatch, getState) => {
+    try {
+        let params = {
+            remark: param.remark,
+            type: param.type,
+            paymentType: param.paymentType.value,
+            finDateStart:commonUtil.formatDate(param.finDateStart, 'yyyyMMdd'),
+            finDateEnd:commonUtil.formatDate(param.finDateEnd, 'yyyyMMdd'),
+            actualPrice: param.actualPrice
+        };
+        // 基本url
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/clientAgent/'+param.clientAgent.id+'/payment';
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpPost(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch(getCollectionRefundList(0));
+            Swal.fire("添加成功", "", "success");
+        } else if (!res.success) {
+            Swal.fire('添加失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+}
+

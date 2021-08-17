@@ -401,6 +401,7 @@ function OrderRefundPay(props) {
                     <Grid item
                           sm={3}>订单类型：{commonUtil.getJsonValue(sysConst.ORDER_TYPE, orderList.order_type)}</Grid>
                     <Grid item sm={3}>订单状态：{commonUtil.getJsonValue(sysConst.ORDER_STATUS, orderList.status)}</Grid>
+                    <Grid item sm={3}>完成时间：{orderList.date_id}</Grid>
                     <Grid item sm={12}>订单备注：{orderList.client_remark}</Grid>
                     <Grid item sm={12}>操作备注：{orderList.op_remark}</Grid>
                 </Grid>

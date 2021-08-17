@@ -52,11 +52,11 @@ function CollectionRefundDetail(props) {
         getPaymentList(id);
         getOrderInfo(id);
     },[]);
-    const handleChange = (panel,id,orderRefundId,pType) => async(event, newExpanded) => {
+    const handleChange = (panel,id,orderRefundId) => async(event, newExpanded) => {
         setExpanded(newExpanded ? panel : false);
-        if(newExpanded&&pType==1){
+        if(newExpanded&&orderRefundId==0){
             getOrderBasic(id);
-        }else if(newExpanded&&pType==2){
+        }else if(newExpanded&&orderRefundId!==0){
             getOrderRefundBasic(orderRefundId);
         }else {
             return;
@@ -157,8 +157,8 @@ function CollectionRefundDetail(props) {
                 <Grid item xs={12}>
                 {/*订单编号  价格      接单人 备注  商品    服务     价格*/}
                 {collectionRefundDetailReducer.orderInfo.map((row,index) => (
-                    row.p_type==1?
-                        <Accordion key={'orderDetail'+index} className={classes.accordion} square expanded={expanded === 'panel'+index} onChange={handleChange('panel'+index,row.order_id,row.order_refund_id,row.p_type)}>
+                    row.order_refund_id==0?
+                        <Accordion key={'orderDetail'+index} className={classes.accordion} square expanded={expanded === 'panel'+index} onChange={handleChange('panel'+index,row.order_id,row.order_refund_id)}>
                             <AccordionSummary className={classes.accordionSummary} aria-controls="panel1d-content" id="panel1d-header" >
                                 <Grid container  spacing={3}>
                                     <Grid item xs align='left'>订单编号:{row.order_id}</Grid>
@@ -224,8 +224,8 @@ function CollectionRefundDetail(props) {
                 <Grid item xs={12}>
                     {/*订单编号  价格      接单人 备注  商品    服务     价格*/}
                     {collectionRefundDetailReducer.orderInfo.map((row,index) => (
-                        row.p_type==2?
-                            <Accordion key={'orderDetail'+index} className={classes.accordion} square expanded={expanded === 'panel'+index} onChange={handleChange('panel'+index,row.order_id,row.order_refund_id,row.p_type)}>
+                        row.order_refund_id!==0?
+                            <Accordion key={'orderDetail'+index} className={classes.accordion} square expanded={expanded === 'panel'+index} onChange={handleChange('panel'+index,row.order_id,row.order_refund_id)}>
                                 <AccordionSummary className={classes.accordionSummary} aria-controls="panel1d-content" id="panel1d-header" >
                                     <Grid container  spacing={3}>
                                         <Grid item xs={3} align='left'>订单编号:{row.order_id}</Grid>

@@ -22,6 +22,8 @@ const initialState = {
         // 数据列表
         dataList: []
     },
+    orderRefundInfo:[],
+    orderStatInfo:[]
 };
 
 export default handleActions({
@@ -44,5 +46,17 @@ export default handleActions({
             ...state,
             collectionRefundParam: action.payload
         }
-    }
+    },
+    [CollectionRefundActionType.setOrderRefundStat]: (state, action) => {
+        return {
+            ...state,
+            orderRefundInfo: action.payload
+        }
+    },
+    [CollectionRefundActionType.setOrderStat]: (state, action) => {
+        return {
+            ...state,
+            orderStatInfo: action.payload
+        }
+    },
 }, initialState)

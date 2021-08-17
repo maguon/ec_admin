@@ -452,11 +452,11 @@ function OrderPay(props) {
                             <TableCell colSpan={3}
                                        align="center">服务费总额：{orderPayReducer.orderStat.service_price}</TableCell>
                             <TableCell colSpan={3}
-                                       align="center">商品金额总额：{orderPayReducer.orderStat.prod_price}</TableCell>
+                                       align="center">商品总额：{orderPayReducer.orderStat.prod_price}</TableCell>
                             <TableCell colSpan={3}
                                        align="center">折扣总额：{orderPayReducer.orderStat.total_discount_price}</TableCell>
                             <TableCell colSpan={3} align="right"
-                                       style={{paddingRight: 40}}>实际金额总额：{orderPayReducer.orderStat.total_actual_price}</TableCell>
+                                       style={{paddingRight: 40}}>实际总额：{orderPayReducer.orderStat.total_actual_price}</TableCell>
                         </TableRow>}
                         {orderPayReducer.orderData.dataList.length === 0 &&
                         <TableRow>
@@ -501,6 +501,7 @@ function OrderPay(props) {
                     <Grid item
                           sm={3}>订单类型：{commonUtil.getJsonValue(sysConst.ORDER_TYPE, orderPayData.order_type)}</Grid>
                     <Grid item sm={3}>订单状态：{commonUtil.getJsonValue(sysConst.ORDER_STATUS, orderPayData.status)}</Grid>
+                    <Grid item sm={3}>完成时间：{orderPayData.fin_date_id}</Grid>
                     <Grid item sm={12}>订单备注：{orderPayData.client_remark}</Grid>
                     <Grid item sm={12}>操作备注：{orderPayData.op_remark}</Grid>
                 </Grid>
