@@ -43,7 +43,10 @@ import {
     OrderPay,
     CollectionRefund,
     CollectionRefundDetail,
-    OrderRefundPay
+    OrderRefundPay,
+    UserAchievement,
+    UserAchievementDetail
+
 } from "../components";
 
 export const routes = [
@@ -68,7 +71,8 @@ export const routesWithHeader = [
     {path: "/order_refund", exact: true, component: OrderRefund},
     {path: "/order_refund/:id", exact: true, component: OrderRefundDetail},
     {path: "/achievement", exact: true, component: Achievement},
-
+    {path: "/user_achievement", exact: true, component: UserAchievement},
+    {path: "/user_achievement/:id?finDateStart=:finDateStart&finDateEnd=:finDateEnd", exact: true, component: UserAchievementDetail},
     /** 采购管理 */
     //采购
     {path: "/purchase", exact: true, component: Purchase},
