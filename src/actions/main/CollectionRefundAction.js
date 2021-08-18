@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
-import {AppActionType, CollectionRefundActionType, OrderRefundPayActionType} from '../../types';
+import {AppActionType, CollectionRefundActionType} from '../../types';
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const commonUtil = require('../../utils/CommonUtil');

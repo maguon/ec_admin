@@ -2,38 +2,14 @@ import React, {useEffect, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Link} from "react-router-dom";
 // 引入material-ui基础组件
-import {
-    Box,
-    Button,
-    Divider,
-    Fab,
-    FormControl,
-    Grid,
-    InputLabel,
-    MenuItem,
-    Paper,
-    Select,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TextField,
-    Typography,
-    IconButton,
-    Stepper,
-    Step,
-    StepLabel,
-    FormHelperText
-} from "@material-ui/core";
+import {Box, Button, Divider, Fab, FormControl, Grid, InputLabel, MenuItem, Paper, Select, Table, TableBody,
+    TableCell, TableContainer, TableHead, TableRow, TextField, Typography, IconButton, Stepper, Step, StepLabel} from "@material-ui/core";
 import {DatePicker} from '@material-ui/pickers';
 import {makeStyles} from "@material-ui/core/styles";
-import {ClientInformationDetailActionType, CollectionRefundActionType} from "../../types";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import Swal from "sweetalert2";
 import {SimpleModal} from "../index";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import TabPanel from "@material-ui/lab/TabPanel";
+import {CollectionRefundActionType} from "../../types";
 const CollectionRefundAction = require('../../actions/main/CollectionRefundAction');
 const commonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');

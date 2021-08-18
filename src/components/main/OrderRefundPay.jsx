@@ -6,9 +6,8 @@ import {Box, Button, Divider, Fab, FormControl, Grid, InputLabel, makeStyles, Me
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from '@material-ui/pickers';
-import {OrderPayActionType, OrderRefundPayActionType} from "../../types";
 import {SimpleModal} from "../index";
-import {setOrderInfo} from "../../types/main/OrderDetailActionType";
+import {OrderPayActionType, OrderRefundPayActionType} from "../../types";
 const OrderRefundPayAction = require('../../actions/main/OrderRefundPayAction');
 const commonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');
