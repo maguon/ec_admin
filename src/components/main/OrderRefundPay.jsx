@@ -396,7 +396,7 @@ function OrderRefundPay(props) {
                     <Grid item sm={3}>商品金额：{orderList.actual_prod_price}</Grid>
                     <Grid item sm={3}>折扣：{orderList.total_discount_price}</Grid>
                     <Grid item sm={3}>实际金额：{orderList.total_actual_price}</Grid>
-                    <Grid item sm={3}>接单人：{orderList.reUser}</Grid>
+                    <Grid item sm={3}>接单人：{orderList.re_user_name}</Grid>
                     <Grid item
                           sm={3}>订单类型：{commonUtil.getJsonValue(sysConst.ORDER_TYPE, orderList.order_type)}</Grid>
                     <Grid item sm={3}>订单状态：{commonUtil.getJsonValue(sysConst.ORDER_STATUS, orderList.status)}</Grid>

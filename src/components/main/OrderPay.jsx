@@ -497,7 +497,7 @@ function OrderPay(props) {
                     <Grid item sm={3}>商品金额：{orderPayData.actual_prod_price}</Grid>
                     <Grid item sm={3}>折扣：{orderPayData.total_discount_price}</Grid>
                     <Grid item sm={3}>实际金额：{orderPayData.total_actual_price}</Grid>
-                    <Grid item sm={3}>接单人：{orderPayData.reUser}</Grid>
+                    <Grid item sm={3}>接单人：{orderPayData.re_user_name}</Grid>
                     <Grid item
                           sm={3}>订单类型：{commonUtil.getJsonValue(sysConst.ORDER_TYPE, orderPayData.order_type)}</Grid>
                     <Grid item sm={3}>订单状态：{commonUtil.getJsonValue(sysConst.ORDER_STATUS, orderPayData.status)}</Grid>
