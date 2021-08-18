@@ -32,7 +32,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from '@material-ui/pickers';
 // 引入Dialog
 import {SimpleModal} from "../index";
-import {OrderActionType} from "../../types";
+import {OrderActionType, CommonActionType} from "../../types";
 
 const orderAction = require('../../actions/main/OrderAction');
 const orderDetailAction = require('../../actions/main/OrderDetailAction');
@@ -580,9 +580,16 @@ function Order(props) {
                                               onChange={(event, value) => {
                                                   setModalData({...modalData, clientSerial: value});
                                               }}
+                                              onInputChange={(event, value) => {
+                                                if(value && value.length === 3){
+                                                  // 取得客户信息列表
+                                                  dispatch(commonAction.getClientByClientSerial(value)); 
+                                                }
+                                            }}
                                               renderInput={(params) => <TextField {...params} label="车牌号" margin="dense" variant="outlined"
-                                                                                  error={validation.clientSerial&&validation.clientSerial!=''}
-                                                                                  helperText={validation.clientSerial}
+                                                placeholder="输入3位，检索列表"  InputLabelProps={{ shrink: true }}
+                                                error={validation.clientSerial&&validation.clientSerial!=''}
+                                                helperText={validation.clientSerial}
                                               />}
                                 />
                             </Grid>
@@ -815,12 +822,11 @@ const mapDispatchToProps = (dispatch) => ({
     // 取得画面 select控件，基础数据
     getBaseSelectList: () => {
         dispatch(commonAction.getUserList());
-        dispatch(commonAction.getClientList());
         dispatch(commonAction.getClientAgentList());
     },
     getModalSelectList: () => {
-        // 取得客户信息列表
-        dispatch(commonAction.getClientList());
+        // 清空客户信息列表
+        dispatch(CommonActionType.setClientList([]));
         // 取得用户信息列表
         dispatch(commonAction.getUserList());
         // 取得服务列表
