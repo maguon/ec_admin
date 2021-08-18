@@ -178,7 +178,10 @@ function StorageCheck(props) {
                         <TextField label="商品" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }} disabled
                                    value={row.product_name}/>
                     </Grid>
-
+                    <Grid item sm={1}>
+                        <TextField label="是否全新" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }} disabled
+                                   value={commonUtil.getJsonValue(sysConst.OLD_FLAG, row.old_flag)}/>
+                    </Grid>
                     <Grid item sm={1}>
                         <TextField label="库存数" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }} disabled
                                    value={row.storage_count}/>
@@ -192,23 +195,27 @@ function StorageCheck(props) {
                                    }}
                         />
                     </Grid>
-                    <Grid item sm={3}>
-                        <TextField label="备注" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                   disabled={storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[1].value}
-                                   value={row.remark}
-                                   onChange={(e) => {
-                                       dispatch(StorageCheckDetailActionType.setDetailList({name: "remark", value: e.target.value, index: index}))
-                                   }}
-                        />
+                    <Grid item container sm={3}>
+                        <Grid item sm={10}>
+                            <TextField label="备注" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
+                                    disabled={storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[1].value}
+                                    value={row.remark}
+                                    onChange={(e) => {
+                                        dispatch(StorageCheckDetailActionType.setDetailList({name: "remark", value: e.target.value, index: index}))
+                                    }}
+                            />
+                        </Grid>
+
+                        {storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[0].value &&
+                        <Grid item xs={2} align="center">
+                            <IconButton>
+                                {/* check_status = 0 ,未check， = 1，则是正常 */}
+                                <i className={`mdi ${row.check_status === sysConst.STORAGE_CHECK_STATUS[0].value ? 'mdi-check-circle-outline blue' : (row.check_status === sysConst.STORAGE_CHECK_STATUS[1].value ? 'mdi-check-circle green' : 'mdi-alert-circle-outline red')} mdi-24px`}
+                                onClick={()=>{saveStorageCheckRel(row.id, row.check_count, row.remark)}}/>
+                            </IconButton>
+                        </Grid>}
                     </Grid>
-                    {storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[0].value &&
-                    <Grid item xs={1} align="center">
-                        <IconButton>
-                            {/* check_status = 0 ,未check， = 1，则是正常 */}
-                            <i className={`mdi ${row.check_status === sysConst.STORAGE_CHECK_STATUS[0].value ? 'mdi-check-circle-outline blue' : (row.check_status === sysConst.STORAGE_CHECK_STATUS[1].value ? 'mdi-check-circle green' : 'mdi-alert-circle-outline red')} mdi-24px`}
-                               onClick={()=>{saveStorageCheckRel(row.id, row.check_count, row.remark)}}/>
-                        </IconButton>
-                    </Grid>}
+
                 </Grid>
             ))}
             {/* 提升高度：当盘点详情过多时，避免 最后一条会被footer挡住 */}
