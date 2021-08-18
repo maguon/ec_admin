@@ -94,10 +94,7 @@ function CollectionRefund(props) {
             setValidation(validateObjStep);
             let errorCount = Object.keys(validateObjStep).length;
             if (errorCount === 0) {
-                if(collectionRefundReducer.orderStatInfo.prod_price=='0'&&collectionRefundReducer.orderStatInfo.service_price=='0'&&
-                   collectionRefundReducer.orderStatInfo.total_actual_price=='0'&&collectionRefundReducer.orderStatInfo.total_discount_price=='0'&&
-                   collectionRefundReducer.orderRefundInfo.prod_refund_count=='0'&&collectionRefundReducer.orderRefundInfo.service_refund_count=='0'
-                ){
+                if(collectionRefundReducer.orderStatInfo.order_count=='0'&&collectionRefundReducer.orderRefundInfo.order_refund_count =='0'){
                     setActiveStep(0);
                     setModalOpenFlag(false);
                     Swal.fire("无符合条件的订单!",'','warning');
@@ -363,6 +360,14 @@ function CollectionRefund(props) {
                     {/* 第二步添加商品详情 */}
                     <div style={{display:activeStep==!0?'block':'none',margin:'20px 0',textAlign:'left'}}>
                         <Grid  container spacing={3}>
+                            <Grid item sm={3}>订单笔数：{collectionRefundReducer.orderStatInfo.order_count}</Grid>
+                            <Grid item sm={3}>服务费总额：{collectionRefundReducer.orderStatInfo.service_price}</Grid>
+                            <Grid item sm={3}>商品总额：{collectionRefundReducer.orderStatInfo.prod_price}</Grid>
+                            <Grid item sm={3}>实际总额：{collectionRefundReducer.orderStatInfo.total_actual_price}</Grid>
+                            <Grid item sm={3}>退单笔数：{collectionRefundReducer.orderRefundInfo.order_refund_count}</Grid>
+                            <Grid item sm={3}>服务退款总额：{collectionRefundReducer.orderRefundInfo.service_refund_price}</Grid>
+                            <Grid item sm={3}>商品退款总额：{collectionRefundReducer.orderRefundInfo.prod_refund_price}</Grid>
+                            <Grid item sm={3}>退款总额：{collectionRefundReducer.orderRefundInfo.total_refund_price}</Grid>
                             <Grid item xs={4}>
                                 <Autocomplete fullWidth
                                               options={sysConst.PAYMENT_TYPE}
@@ -377,7 +382,6 @@ function CollectionRefund(props) {
                                               />}
                                 />
                             </Grid>
-
                             <Grid item xs={8}>
                                 <TextField
                                     fullWidth={true}
@@ -391,12 +395,6 @@ function CollectionRefund(props) {
                                     InputLabelProps={{ shrink: true }}
                                 />
                             </Grid>
-                            <Grid item sm={4}>服务费总额：{collectionRefundReducer.orderStatInfo.service_price}</Grid>
-                            <Grid item sm={4}>商品总额：{collectionRefundReducer.orderStatInfo.prod_price}</Grid>
-                            <Grid item sm={4}>实际总额：{collectionRefundReducer.orderStatInfo.total_actual_price}</Grid>
-                            <Grid item sm={4}>服务退款总额：{collectionRefundReducer.orderRefundInfo.service_refund_price}</Grid>
-                            <Grid item sm={4}>商品退款总额：{collectionRefundReducer.orderRefundInfo.prod_refund_price}</Grid>
-                            <Grid item sm={4}>退款总额：{collectionRefundReducer.orderRefundInfo.total_refund_price}</Grid>
                         </Grid>
 
                     </div>
