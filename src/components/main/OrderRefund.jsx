@@ -83,7 +83,7 @@ function OrderRefund(props) {
             activeStep: 0,
             serviceList: [],
             productList: [],
-            transferRefundPrice: '',
+            transferRefundPrice: '0',
             remark: ''
         });
         setModalOpen(true);
