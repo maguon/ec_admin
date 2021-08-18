@@ -53,3 +53,51 @@ export const getPurchaseRefundStat = () => async (dispatch) => {
         Swal.fire("操作失败", err.message, "error");
     }
 };
+
+// 未付款的订单
+export const getOrderStat = () => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/orderStat?paymentStatus=' + sysConst.ORDER_PAYMENT_STATUS[0].value;
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            if (res.rows.length > 0) {
+                dispatch({type: FinancePanelActionType.getOrderStat, payload: res.rows[0]});
+            } else {
+                dispatch({type: FinancePanelActionType.getOrderStat, payload: {}});
+            }
+        } else if (!res.success) {
+            Swal.fire("获取未付款的订单信息失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+// 未付款的退单
+export const getOrderRefundStat = () => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/orderRefundStat?paymentStatus=' + sysConst.ORDER_PAYMENT_STATUS[0].value;
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            if (res.rows.length > 0) {
+                dispatch({type: FinancePanelActionType.getOrderRefundStat, payload: res.rows[0]});
+            } else {
+                dispatch({type: FinancePanelActionType.getOrderRefundStat, payload: {}});
+            }
+        } else if (!res.success) {
+            Swal.fire("获取未付款的退单信息失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};

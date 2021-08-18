@@ -51,10 +51,27 @@ function OrderPanel(props) {
                     </Card>
                 </Grid>
 
-              {/*  <Grid item container xs={4}>
+                <Grid item container xs={4}>
                     <Card className={classes.card}>
+                        <CardContent>
+                            <Grid container spacing={1}>
+                                <Grid item xs={12}><Typography variant="h5" gutterBottom>今日订单</Typography></Grid>
+                                <Grid item xs={6}><Typography color="textSecondary">今日订单数：{OrderPanelReducer.todayOrderStat.order_count}</Typography></Grid>
+                            </Grid>
+                        </CardContent>
                     </Card>
-                </Grid>*/}
+                </Grid>
+
+                <Grid item container xs={4}>
+                    <Card className={classes.card}>
+                        <CardContent>
+                            <Grid container spacing={1}>
+                                <Grid item xs={12}><Typography variant="h5" gutterBottom>未完成的退单</Typography></Grid>
+                                <Grid item xs={6}><Typography color="textSecondary" >未完成的退单数：{OrderPanelReducer.orderRefundStat.order_refund_count}</Typography></Grid>
+                            </Grid>
+                        </CardContent>
+                    </Card>
+                </Grid>
             </Grid>
         </div>
     )
@@ -69,6 +86,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
     initData: () => {
         dispatch(OrderPanelAction.getOrderStat());
+        dispatch(OrderPanelAction.getTodayOrderStat());
+        dispatch(OrderPanelAction.getOrderRefundStat());
     }
 });
 
