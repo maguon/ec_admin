@@ -363,11 +363,11 @@ function OrderDetail(props) {
                     />
                 </Grid>
 
-                <Grid item xs={2}>
+                <Grid item xs={1}>
                     <TextField label="实际价格" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={newServiceData.actualServicePrice}/>
                 </Grid>
 
-                <Grid item container xs={5}>
+                <Grid item container xs={6} spacing={1}>
                     <Grid item xs={10}>
                         <TextField label="备注" fullWidth margin="dense" variant="outlined" value={newServiceData.remark} onChange={(e)=>{
                             setNewServiceData({...newServiceData, remark: e.target.value});
@@ -417,16 +417,22 @@ function OrderDetail(props) {
                         />
                     </Grid>
 
-                    <Grid item xs={2}>
+                    <Grid item xs={1}>
                         <TextField label="实际价格" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={item.actual_service_price}/>
                     </Grid>
 
-                    <Grid item container xs={5}>
-                        <Grid item xs={10}>
+                    <Grid item container xs={6} spacing={1}>
+                        <Grid item xs={6}>
                             <TextField label="备注" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} value={item.remark || ''} onChange={(e)=>{
                                 orderDetailReducer.orderSerVList[index].remark = e.target.value;
                                 dispatch(OrderDetailActionType.getOrderSerVList(orderDetailReducer.orderSerVList));
                             }}/>
+                        </Grid>
+                        <Grid item xs={2}>
+                            <TextField label="施工人" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={item.deploy_user_name}/>
+                        </Grid>
+                        <Grid item xs={2}>
+                            <TextField label="验收人" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={item.check_user_name}/>
                         </Grid>
                         {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 &&
                         <Grid item container xs={2}>
