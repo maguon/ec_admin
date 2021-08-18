@@ -82,23 +82,22 @@ function CollectionRefundDetail(props) {
             <h4>基本信息</h4>
             <div>
 
-                {
-                    collectionRefundDetailReducer.paymentInfo.type==1?
-                        <Grid container spacing={3}>
-                            <Grid item xs={3} align='left'>订单笔数:{Number(collectionRefundDetailReducer.paymentInfo.order_count)}</Grid>
-                            <Grid item xs={3} align='left'>商品金额:{collectionRefundDetailReducer.paymentInfo.prod_price}</Grid>
-                            <Grid item xs={3} align='left'>服务费:{collectionRefundDetailReducer.paymentInfo.service_price}</Grid>
-                            <Grid item xs={3} align='left'>付款金额:{collectionRefundDetailReducer.paymentInfo.total_order_price}</Grid>
-                        </Grid>
-                    :  <Grid container spacing={3}>
-                            <Grid item xs={3} align='left'>退款订单笔数:{collectionRefundDetailReducer.paymentInfo.order_refund_count}</Grid>
-                            <Grid item xs={3} align='left'>退款商品金额:{collectionRefundDetailReducer.paymentInfo.refund_prod_price}</Grid>
-                            <Grid item xs={3} align='left'>退款服务费:{collectionRefundDetailReducer.paymentInfo.refund_service_price}</Grid>
-                            <Grid item xs={3} align='left'>退款订单金额:{collectionRefundDetailReducer.paymentInfo.total_refund_price}</Grid>
-                       </Grid>
-                }
+
+
                 <Grid container spacing={3}>
-                    <Grid item xs={3} align='left'>计划付款金额:{collectionRefundDetailReducer.paymentInfo.plan_price}</Grid>
+                    <Grid item xs={3} align='left'>订单笔数:{Number(collectionRefundDetailReducer.paymentInfo.order_count)}</Grid>
+                    <Grid item xs={3} align='left'>商品金额:{collectionRefundDetailReducer.paymentInfo.prod_price}</Grid>
+                    <Grid item xs={3} align='left'>服务费:{collectionRefundDetailReducer.paymentInfo.service_price}</Grid>
+                    <Grid item xs={3} align='left'>付款金额:{collectionRefundDetailReducer.paymentInfo.total_order_price}</Grid>
+                </Grid>
+              <Grid container spacing={3}>
+                    <Grid item xs={3} align='left'>退款订单笔数:{Number(collectionRefundDetailReducer.paymentInfo.order_refund_count)}</Grid>
+                    <Grid item xs={3} align='left'>退款商品金额:{collectionRefundDetailReducer.paymentInfo.refund_prod_price}</Grid>
+                    <Grid item xs={3} align='left'>退款服务费:{collectionRefundDetailReducer.paymentInfo.refund_service_price}</Grid>
+                    <Grid item xs={3} align='left'>退款订单金额:{collectionRefundDetailReducer.paymentInfo.total_refund_price}</Grid>
+               </Grid>
+
+                <Grid container spacing={3}>
                     <Grid item xs={3} align='left'>支付状态:{commonUtil.getJsonValue(sysConst.ORDER_PAY_TYPE, collectionRefundDetailReducer.paymentInfo.status)}</Grid>
                     <Grid item xs={3} align='left'>付款类型:{commonUtil.getJsonValue(sysConst.PAY_TYPE, collectionRefundDetailReducer.paymentInfo.type)}</Grid>
                     <Grid item xs={3} align='left'>完成日期:{collectionRefundDetailReducer.paymentInfo.date_id}</Grid>
@@ -170,24 +169,13 @@ function CollectionRefundDetail(props) {
                                 {collectionRefundDetailReducer.orderServiceInfo.length!==0?
                                     collectionRefundDetailReducer.orderServiceInfo.map((service,index) => (
                                         <Grid key={service.id}>
-                                            {service.fixed_price=='0.00'?
                                                 <Grid container  spacing={3}>
                                                     <Grid item xs={2} align='left'>名称:{service.sale_service_name}</Grid>
-                                                    <Grid item xs={2} align='left'>单价:{service.unit_price}</Grid>
-                                                    <Grid item xs={2} align='left'>数量:{service.service_count}</Grid>
+                                                    <Grid item xs={2} align='left'>售价:{service.fixed_price=='0.00'?service.unit_price+'*'+Number(service.service_count):service.fixed_price}</Grid>
                                                     <Grid item xs={2} align='left'>总价:{service.service_price}</Grid>
                                                     <Grid item xs={2} align='left'>折扣:{service.discount_service_price}</Grid>
                                                     <Grid item xs={2} align='left'>实际价格:{service.actual_service_price}</Grid>
-                                                </Grid>:
-
-                                                <Grid container  spacing={3}>
-                                                    <Grid item xs={2} align='left'>名称:{service.sale_service_name}</Grid>
-                                                    <Grid item xs={2} align='left'>固定价格:{service.fixed_price}</Grid>
-                                                    <Grid item xs={2} align='left'>总价:{service.service_price}</Grid>
-                                                    <Grid item xs={2} align='left'>折扣:{service.discount_service_price}</Grid>
-                                                    <Grid item xs={2} align='left'>实际价格:{service.actual_service_price}</Grid>
-                                                </Grid>}
-
+                                                </Grid>
                                           {/*  <Grid container  spacing={3}>
                                                 <Grid item xs={2} align='left'>销售:{service.sale_user_name}</Grid>
                                                 <Grid item xs={2} align='left'>施工:{service.deploy_user_name}</Grid>
@@ -204,7 +192,7 @@ function CollectionRefundDetail(props) {
                                             <Grid container  spacing={3}>
                                                 <Grid item xs={2} align='left'>名称:{item.prod_name}</Grid>
                                                 <Grid item xs={2} align='left'>单价:{item.unit_price}</Grid>
-                                                <Grid item xs={2} align='left'>数量:{item.prod_count}</Grid>
+                                                <Grid item xs={2} align='left'>数量:{Number(item.prod_count)}</Grid>
                                                 <Grid item xs={2} align='left'>折扣:{item.discount_prod_price}</Grid>
                                                 <Grid item xs={2} align='left'>实际价格:{item.actual_prod_price}</Grid>
                                                {/* <Grid item xs={2} align='left'>销售:{item.sale_user_name}</Grid>*/}
@@ -238,24 +226,15 @@ function CollectionRefundDetail(props) {
                                     {collectionRefundDetailReducer.orderRefundSerVList.length!==0?
                                         collectionRefundDetailReducer.orderRefundSerVList.map((service,index) => (
                                             <Grid key={service.id}>
-                                                {service.fixed_price=='0.00'?
-                                                    <Grid container  spacing={3}>
-                                                        <Grid item xs={2} align='left'>名称:{service.sale_service_name}</Grid>
-                                                        <Grid item xs={2} align='left'>单价*数量:{service.unit_price}*{service.service_count}</Grid>
-                                                        <Grid item xs={2} align='left'>总价:{service.service_price}</Grid>
-                                                        <Grid item xs={2} align='left'>折扣:{service.discount_service_price}</Grid>
-                                                        <Grid item xs={2} align='left'>实际价格:{service.actual_service_price}</Grid>
-                                                        <Grid item xs={2} align='left'>服务退款:{service.service_refund_price}</Grid>
-                                                    </Grid>:
+                                                <Grid container  spacing={3}>
+                                                    <Grid item xs={2} align='left'>名称:{service.sale_service_name}</Grid>
+                                                    <Grid item xs={2} align='left'>售价:{service.fixed_price=='0.00'?service.unit_price+'*'+Number(service.service_count):service.fixed_price}</Grid>
+                                                    <Grid item xs={2} align='left'>总价:{service.service_price}</Grid>
+                                                    <Grid item xs={2} align='left'>折扣:{service.discount_service_price}</Grid>
+                                                    <Grid item xs={2} align='left'>实际价格:{service.actual_service_price}</Grid>
+                                                    <Grid item xs={2} align='left'>服务退款:{service.service_refund_price}</Grid>
+                                                </Grid>
 
-                                                    <Grid container  spacing={3}>
-                                                        <Grid item xs={2} align='left'>名称:{service.sale_service_name}</Grid>
-                                                        <Grid item xs={2} align='left'>固定价格:{service.fixed_price}</Grid>
-                                                        <Grid item xs={2} align='left'>总价:{service.service_price}</Grid>
-                                                        <Grid item xs={2} align='left'>折扣:{service.discount_service_price}</Grid>
-                                                        <Grid item xs={2} align='left'>实际价格:{service.actual_service_price}</Grid>
-                                                        <Grid item xs={2} align='left'>服务退款:{service.service_refund_price}</Grid>
-                                                    </Grid>}
 
                                               {/*  <Grid container  spacing={3}>
                                                     <Grid item xs={2} align='left'>销售:{service.sale_user_name}</Grid>
@@ -278,7 +257,7 @@ function CollectionRefundDetail(props) {
                                                     <Grid item xs={2} align='left'>实际价格:{item.actual_prod_price}</Grid>
                                                     <Grid item xs={2} align='left'>销售:{item.sale_user_name}</Grid>*/}
                                                     <Grid item xs={2} align='left'>商品退款:{item.prod_refund_price}</Grid>
-                                                    <Grid item xs={2} align='left'>退款数量:{item.prod_refund_count}</Grid>
+                                                    <Grid item xs={2} align='left'>退款数量:{Number(item.prod_refund_count)}</Grid>
                                                     <Grid item xs={2} align='left'>退款总价:{item.total_refund_price}</Grid>
                                                 </Grid>
                                                 <Divider className={classes.divider} variant="middle" />

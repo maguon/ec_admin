@@ -188,8 +188,7 @@ function Achievement (props){
                                         <TableRow>
                                             <TableCell className={classes.tableHead} align="center">订单号</TableCell>
                                             <TableCell className={classes.tableHead} align="center">名称</TableCell>
-                                            <TableCell className={classes.tableHead} align="center">销售单价*数量</TableCell>
-                                            <TableCell className={classes.tableHead} align="center">固定售价</TableCell>
+                                            <TableCell className={classes.tableHead} align="center">售价</TableCell>
                                             <TableCell className={classes.tableHead} align="center">折扣</TableCell>
                                             <TableCell className={classes.tableHead} align="center">实际价格</TableCell>
                                             <TableCell className={classes.tableHead} align="center">施工</TableCell>
@@ -202,8 +201,7 @@ function Achievement (props){
                                             <TableRow key={row.id}>
                                                 <TableCell align="center" >{row.order_id}</TableCell>
                                                 <TableCell align="center" >{row.sale_service_name}</TableCell>
-                                                <TableCell align="center" >{row.unit_price}*{row.service_count}</TableCell>
-                                                <TableCell align="center" >{row.fixed_price}</TableCell>
+                                                <TableCell align="center" >{row.fixed_price=='0.00'?row.unit_price+'*'+Number(row.service_count):row.fixed_price}</TableCell>
                                                 <TableCell align="center" >{row.discount_service_price}</TableCell>
                                                 <TableCell align="center" >{row.actual_service_price}</TableCell>
                                                 <TableCell align="center" >{row.deploy_user_name}</TableCell>
@@ -211,7 +209,7 @@ function Achievement (props){
                                                 <TableCell align="center" >{row.or_date_id}</TableCell>
                                             </TableRow>))}
                                         {achievementReducer.serviceData.serviceInfo.length === 0 &&
-                                        <TableRow style={{height:60}}><TableCell align="center" colSpan="9">暂无数据</TableCell></TableRow>
+                                        <TableRow style={{height:60}}><TableCell align="center" colSpan="8">暂无数据</TableCell></TableRow>
                                         }
                                     </TableBody>
                                 </Table>
@@ -314,7 +312,7 @@ function Achievement (props){
                                             <TableRow key={row.id}>
                                                 <TableCell align="center" >{row.order_id}</TableCell>
                                                 <TableCell align="center" >{row.prod_name}</TableCell>
-                                                <TableCell align="center" >{row.unit_price}*{row.prod_count}</TableCell>
+                                                <TableCell align="center" >{row.unit_price}*{Number(row.prod_count)}</TableCell>
                                                 <TableCell align="center" >{row.discount_prod_price}</TableCell>
                                                 <TableCell align="center" >{row.actual_prod_price}</TableCell>
                                                 <TableCell align="center" >{row.sale_user_name}</TableCell>

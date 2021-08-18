@@ -64,9 +64,10 @@ function OrderPay(props) {
                 finDateEnd: ''
             };
             dispatch(OrderPayActionType.setQueryPayParams(queryParams));
-        // 取得画面 select控件，基础数据
-        props.getBaseSelectList();
-        props.getOrderList(orderPayReducer.orderData.start);
+            orderPayReducer.orderStat=[];
+            // 取得画面 select控件，基础数据
+            props.getBaseSelectList();
+            props.getOrderList(0);
     }, []);
     const getOrderPayList=()=>{
         props.getOrderList(0)
