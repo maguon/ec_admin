@@ -345,8 +345,7 @@ function ClientInformationDetail (props){
                                                 {service.fixed_price=='0.00'?
                                                 <Grid container  spacing={3}>
                                                     <Grid item xs={2} align='left'>名称:{service.sale_service_name}</Grid>
-                                                    <Grid item xs={2} align='left'>单价:{service.unit_price}</Grid>
-                                                    <Grid item xs={2} align='left'>数量:{service.service_count}</Grid>
+                                                    <Grid item xs={2} align='left'>售价:{service.unit_price}*{service.service_count}</Grid>
                                                     <Grid item xs={2} align='left'>总价:{service.service_price}</Grid>
                                                     <Grid item xs={2} align='left'>折扣:{service.discount_service_price}</Grid>
                                                     <Grid item xs={2} align='left'>实际价格:{service.actual_service_price}</Grid>
@@ -354,7 +353,7 @@ function ClientInformationDetail (props){
 
                                                 <Grid container  spacing={3}>
                                                     <Grid item xs={2} align='left'>名称:{service.sale_service_name}</Grid>
-                                                    <Grid item xs={2} align='left'>固定价格:{service.fixed_price}</Grid>
+                                                    <Grid item xs={2} align='left'>售价:{service.fixed_price}</Grid>
                                                     <Grid item xs={2} align='left'>总价:{service.service_price}</Grid>
                                                     <Grid item xs={2} align='left'>折扣:{service.discount_service_price}</Grid>
                                                     <Grid item xs={2} align='left'>实际价格:{service.actual_service_price}</Grid>

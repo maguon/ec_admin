@@ -68,10 +68,7 @@ export const addPurchaseInfo = (supplier,paramsItem,transferCostType,transferCos
         let res = await httpUtil.httpPost(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true) {
-            dispatch(getPurchaseList(0));
-            Swal.fire("新增成功", "", "success");
-            // 刷新列表
-
+            window.location.href = '#!/purchase/'+res.rows[0].id;
         } else if (res.success === false) {
             Swal.fire("新增失败", res.msg, "warning");
         }

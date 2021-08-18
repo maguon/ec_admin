@@ -59,13 +59,13 @@ export const addServiceSetting = (params) => async (dispatch, getState) => {
             "totalProfit": params.totalPrice-params.totalCost,
             "salePerfType": params.salePerfType,
             "salePerfFixed": params.salePerfFixed==''?0:params.salePerfFixed,
-            "salePerfRatio": params.salePerfRatio==''?0:params.salePerfRatio,
+            "salePerfRatio": params.salePerfRatio==''?0:params.salePerfRatio/100,
             "deployPerfType": params.deployPerfType,
             "deployPerfFixed": params.deployPerfFixed==''?0:params.deployPerfFixed,
-            "deployPerfRatio": params.deployPerfRatio==''?0:params.deployPerfRatio,
+            "deployPerfRatio": params.deployPerfRatio==''?0:params.deployPerfRatio/100,
             "checkPerfType": params.checkPerfType,
             "checkPerfFixed": params.checkPerfFixed==''?0: params.checkPerfFixed,
-            "checkPerfRatio": params.checkPerfRatio==''?0: params.checkPerfRatio
+            "checkPerfRatio": params.checkPerfRatio==''?0:params.checkPerfRatio/100
         };
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/saleService';
@@ -101,13 +101,13 @@ export const updateServiceSettingItem = (params) => async (dispatch, getState) =
             "totalProfit": params.modifyTotalPrice-params.modifyTotalCost,
             "salePerfType": params.modifySalePerfType,
             "salePerfFixed": params.modifySalePerfFixed==''?0:params.modifySalePerfFixed,
-            "salePerfRatio": params.modifySalePerfRatio==''?0:params.modifySalePerfRatio,
+            "salePerfRatio": params.modifySalePerfRatio==''?0:params.modifySalePerfRatio/100,
             "deployPerfType": params.modifyDeployPerfType,
             "deployPerfFixed": params.modifyDeployPerfFixed==''?0:params.modifyDeployPerfFixed,
-            "deployPerfRatio": params.modifyDeployPerfRatio==''?0:params.modifyDeployPerfRatio,
+            "deployPerfRatio": params.modifyDeployPerfRatio==''?0:params.modifyDeployPerfRatio/100,
             "checkPerfType": params.modifyCheckPerfType,
             "checkPerfFixed": params.modifyCheckPerfFixed==''?0: params.modifyCheckPerfFixed,
-            "checkPerfRatio": params.modifyCheckPerfRatio==''?0: params.modifyCheckPerfRatio
+            "checkPerfRatio": params.modifyCheckPerfRatio==''?0: params.modifyCheckPerfRatio/100
         }
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpPut(apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/saleService/'+params.modifyId, paramsObj);

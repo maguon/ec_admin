@@ -193,6 +193,7 @@ function PurchaseDetail (props){
             getStorageProductArray(id);
         }
         if(newValue=='3'){
+            purchaseDetailReducer.purchaseRefundDetailInfo=[];
             getPurchaseRefundDetailInfo(id)
         }
     };

@@ -50,9 +50,10 @@ function OrderRefundPay(props) {
             dateEnd: '',
         };
         dispatch(OrderRefundPayActionType.setQueryPayParams(queryParams));
+        orderRefundPayReducer.orderRefundStat=[];
         // 取得画面 select控件，基础数据
         props.getBaseSelectList();
-        props.getOrderList(orderRefundPayReducer.orderData.start);
+        props.getOrderList(0);
     }, []);
     const modelOpen = () => {
         setPayType(2);
@@ -178,7 +179,7 @@ function OrderRefundPay(props) {
                                     }}
                             >
                                 <MenuItem value="">请选择</MenuItem>
-                                {sysConst.ORDER_STATUS.map((item, index) => (
+                                {sysConst.ORDER_REFUND_STATUS.map((item, index) => (
                                     <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
                                 ))}
                             </Select>

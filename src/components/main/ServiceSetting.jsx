@@ -298,13 +298,13 @@ function ServiceSetting (props){
         setModifyTotalCost(item.total_cost)
         setModifySalePerfType(item.sale_perf_type)
         setModifySalePerfFixed(item.sale_perf_fixed)
-        setModifySalePerfRatio(item.sale_perf_ratio)
+        setModifySalePerfRatio(item.sale_perf_ratio*100)
         setModifyDeployPerfType(item.deploy_perf_type)
         setModifyDeployPerfFixed(item.deploy_perf_fixed)
-        setModifyDeployPerfRatio(item.deploy_perf_ratio)
+        setModifyDeployPerfRatio(item.deploy_perf_ratio*100)
         setModifyCheckPerfType(item.check_perf_type)
         setModifyCheckPerfFixed(item.check_perf_fixed)
-        setModifyCheckPerfRatio(item.check_perf_ratio)
+        setModifyCheckPerfRatio(item.check_perf_ratio*100)
         setModifyRemarks(item.remark)
         setProductArray(null);
         setProductCount('');
@@ -477,13 +477,13 @@ function ServiceSetting (props){
                     </Grid>
                 </Grid>
                 {/*查询按钮*/}
-                <Grid item xs={1} style={{textAlign: 'right',marginTop:10}}>
+                <Grid item xs={1} style={{textAlign: 'center',marginTop:10}}>
                     <Fab color="primary" size="small" onClick={serviceSettingArray}>
                         <i className="mdi mdi-magnify mdi-24px"/>
                     </Fab>
                 </Grid>
                 {/*追加按钮*/}
-                <Grid item xs={1} style={{textAlign: 'right',marginTop:10}}>
+                <Grid item xs={1} style={{textAlign: 'center',marginTop:10}}>
                     <Fab color="primary" size="small" onClick={() => {modalOpen()}}>
                         <i className="mdi mdi-plus mdi-24px"/>
                     </Fab>
@@ -861,7 +861,7 @@ function ServiceSetting (props){
                             type='number'
                             margin="dense"
                             variant="outlined"
-                            label="提成比例"
+                            label="提成比例（%）"
                             value={salePerfRatio}
                             onChange={(e)=>setSalePerfRatio(e.target.value)}
                         />
@@ -883,7 +883,7 @@ function ServiceSetting (props){
                             type='number'
                             margin="dense"
                             variant="outlined"
-                            label="提成比例"
+                            label="提成比例（%）"
                             value={salePerfRatio}
                             onChange={(e)=>setSalePerfRatio(e.target.value)}
                         />
@@ -955,7 +955,7 @@ function ServiceSetting (props){
                             type='number'
                             margin="dense"
                             variant="outlined"
-                            label="提成比例"
+                            label="提成比例（%）"
                             value={deployPerfRatio}
                             onChange={(e)=>setDeployPerfRatio(e.target.value)}
                         />
@@ -977,7 +977,7 @@ function ServiceSetting (props){
                             type='number'
                             margin="dense"
                             variant="outlined"
-                            label="提成比例"
+                            label="提成比例（%）"
                             value={deployPerfRatio}
                             onChange={(e)=>setDeployPerfRatio(e.target.value)}
                         />
@@ -1050,7 +1050,7 @@ function ServiceSetting (props){
                             type='number'
                             margin="dense"
                             variant="outlined"
-                            label="提成比例"
+                            label="提成比例（%）"
                             value={checkPerfRatio}
                             onChange={(e)=>setCheckPerfRatio(e.target.value)}
                         />
@@ -1072,7 +1072,7 @@ function ServiceSetting (props){
                             type='number'
                             margin="dense"
                             variant="outlined"
-                            label="提成比例"
+                            label="提成比例（%）"
                             value={checkPerfRatio}
                             onChange={(e)=>setCheckPerfRatio(e.target.value)}
                         />
@@ -1379,7 +1379,7 @@ function ServiceSetting (props){
                                     type='number'
                                     margin="dense"
                                     variant="outlined"
-                                    label="提成比例"
+                                    label="提成比例（%）"
                                     value={modifySalePerfRatio}
                                     onChange={(e)=>setModifySalePerfRatio(e.target.value)}
                                 />
@@ -1401,7 +1401,7 @@ function ServiceSetting (props){
                                     type='number'
                                     margin="dense"
                                     variant="outlined"
-                                    label="提成比例"
+                                    label="提成比例（%）"
                                     value={modifySalePerfRatio}
                                     onChange={(e)=>setModifySalePerfRatio(e.target.value)}
                                 />
@@ -1473,7 +1473,7 @@ function ServiceSetting (props){
                                     type='number'
                                     margin="dense"
                                     variant="outlined"
-                                    label="提成比例"
+                                    label="提成比例（%）"
                                     value={modifyDeployPerfRatio}
                                     onChange={(e)=>setModifyDeployPerfRatio(e.target.value)}
                                 />
@@ -1495,7 +1495,7 @@ function ServiceSetting (props){
                                     type='number'
                                     margin="dense"
                                     variant="outlined"
-                                    label="提成比例"
+                                    label="提成比例（%）"
                                     value={modifyDeployPerfRatio}
                                     onChange={(e)=>setModifyDeployPerfRatio(e.target.value)}
                                 />
@@ -1567,7 +1567,7 @@ function ServiceSetting (props){
                                     type='number'
                                     margin="dense"
                                     variant="outlined"
-                                    label="提成比例"
+                                    label="提成比例（%）"
                                     value={modifyCheckPerfRatio}
                                     onChange={(e)=>setModifyCheckPerfRatio(e.target.value)}
                                 />
@@ -1588,7 +1588,7 @@ function ServiceSetting (props){
                                     type='number'
                                     margin="dense"
                                     variant="outlined"
-                                    label="提成比例"
+                                    label="提成比例（%）"
                                     value={modifyCheckPerfRatio}
                                     onChange={(e)=>setModifyCheckPerfRatio(e.target.value)}
                                 />

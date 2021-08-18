@@ -121,10 +121,10 @@ function UserAchievement(props) {
                         &&userAchievementReducer.userData.userInfo.map((row,index) => (
                             <TableRow key={'userAchievement-'+index}>
                                 <TableCell align="center">{row.real_name}</TableCell>
-                                <TableCell align="center">{row.deploy_count}</TableCell>
-                                <TableCell align="center">{row.deploy_perf}</TableCell>
-                                <TableCell align="center">{row.check_count}</TableCell>
-                                <TableCell align="center">{row.check_perf}</TableCell>
+                                <TableCell align="center">{row.deploy_count==null?0:row.deploy_count}</TableCell>
+                                <TableCell align="center">{row.deploy_perf==null?0:row.deploy_perf}</TableCell>
+                                <TableCell align="center">{row.check_count==null?0:row.check_count}</TableCell>
+                                <TableCell align="center">{row.check_perf==null?0:row.check_perf}</TableCell>
                                 <TableCell align="center">
                                     <IconButton color="primary" edge="start" size="small">
                                         <Link to={{pathname: '/user_achievement/' + row.id+'&finDateStart='+commonUtil.formatDate(userAchievementReducer.userParams.finDateStart, 'yyyyMMdd')+'&finDateEnd='+commonUtil.formatDate(userAchievementReducer.userParams.finDateEnd, 'yyyyMMdd')}}><i className="mdi mdi-table-search"/></Link>
