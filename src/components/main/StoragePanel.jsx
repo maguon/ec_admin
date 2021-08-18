@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {Card, CardContent, Divider, Grid, makeStyles, Typography} from "@material-ui/core";
 
 const storagePanelAction = require('../../actions/main/StoragePanelAction');
+const purchasePanelAction = require('../../actions/main/PurchasePanelAction');
 const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
     root: customTheme.root,
@@ -17,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function StoragePanel(props) {
-    const {storagePanelReducer} = props;
+    const {storagePanelReducer,purchasePanelReducer} = props;
     const classes = useStyles();
 
     useEffect(() => {
@@ -64,6 +65,17 @@ function StoragePanel(props) {
                         </CardContent>
                     </Card>
                 </Grid>
+
+                <Grid item container xs={4}>
+                    <Card className={classes.card}>
+                        <CardContent>
+                            <Grid container spacing={1}>
+                                <Grid item xs={12}><Typography variant="h5" gutterBottom>未出库的订单商品</Typography></Grid>
+                                <Grid item xs={6}><Typography color="textSecondary">未出库数：{purchasePanelReducer.orderStat.count}</Typography></Grid>
+                            </Grid>
+                        </CardContent>
+                    </Card>
+                </Grid>
             </Grid>
         </div>
     )
@@ -71,7 +83,8 @@ function StoragePanel(props) {
 
 const mapStateToProps = (state) => {
     return {
-        storagePanelReducer: state.StoragePanelReducer
+        storagePanelReducer: state.StoragePanelReducer,
+        purchasePanelReducer: state.PurchasePanelReducer
     }
 };
 
@@ -80,6 +93,7 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(storagePanelAction.getPurchaseItemStat());
         dispatch(storagePanelAction.getPurchaseRefundStat());
         dispatch(storagePanelAction.getStorageCheckStat());
+        dispatch(purchasePanelAction.getOrderStat());
     }
 });
 
