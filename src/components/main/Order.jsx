@@ -573,7 +573,7 @@ function Order(props) {
                     <div style={{display:activeStep==0?'block':'none'}}>
                         <Grid container spacing={1} style={{marginBottom:10}}>
                             <Grid item sm={6}>
-                                <Autocomplete fullWidth
+                                <Autocomplete fullWidth noOptionsText="无选项"
                                               options={commonReducer.clientList}
                                               getOptionLabel={(option) => option.client_serial + ' ' + option.name}
                                               value={modalData.clientSerial}
