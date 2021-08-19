@@ -19,6 +19,7 @@ export const getCollectionRefundList=(dataStart)=>async (dispatch, getState) => 
             paymentId: paramsObj.paymentId,
             status: paramsObj.status,
             type: paramsObj.type,
+            clientAgentId:paramsObj.clientAgentId==null?'':paramsObj.clientAgentId.id,
             paymentType: paramsObj.paymentType,
             dateStart: commonUtil.formatDate(paramsObj.dateStart, 'yyyyMMdd'),
             dateEnd:  commonUtil.formatDate(paramsObj.dateEnd, 'yyyyMMdd'),
