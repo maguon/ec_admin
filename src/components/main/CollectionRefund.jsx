@@ -40,12 +40,14 @@ function CollectionRefund(props) {
                 paymentId: '',
                 status: '',
                 type: '',
+                clientAgentId:'',
                 paymentType: '',
                 dateStart: '',
                 dateEnd: '',
             };
             dispatch(CollectionRefundActionType.setCollectionRefundParams(obj));
         }
+        getClientAgentList();
         getCollectionRefundList(collectionRefundReducer.collectionRefundData.start);
     }, []);
     //初始添加模态框值
@@ -124,6 +126,17 @@ function CollectionRefund(props) {
                                    }}/>
                     </Grid>
                     <Grid item xs={2}>
+                        <Autocomplete fullWidth
+                                      options={commonReducer.clientAgentList}
+                                      getOptionLabel={(option) =>option.name}
+                                      value={collectionRefundReducer.collectionRefundParam.clientAgentId}
+                                      onChange={(e, value) => {
+                                          dispatch(CollectionRefundActionType.setCollectionRefundParam({name: "clientAgentId", value: value}));
+                                      }}
+                                      renderInput={(params) => <TextField {...params} label="客户集群" margin="dense" variant="outlined"/>}
+                        />
+                    </Grid>
+                    <Grid item xs={2}>
                         <FormControl variant="outlined" fullWidth margin="dense">
                             <InputLabel>支付状态</InputLabel>
                             <Select label="支付状态"
@@ -177,7 +190,7 @@ function CollectionRefund(props) {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs={1}>
                         <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"
                                     format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
@@ -188,7 +201,7 @@ function CollectionRefund(props) {
                                     }}
                         />
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs={1}>
                         <DatePicker autoOk fullWidth clearable inputVariant="outlined" margin="dense"
                                     format="yyyy/MM/dd"
                                     okLabel="确定" clearLabel="清除" cancelLabel={false} showTodayButton todayLabel="今日"
@@ -221,6 +234,7 @@ function CollectionRefund(props) {
                     <TableHead>
                         <TableRow>
                             <TableCell className={classes.tableHead} align="center">订单支付ID</TableCell>
+                            <TableCell className={classes.tableHead} align="center">客户集群</TableCell>
                             <TableCell className={classes.tableHead} align="center">订单笔数</TableCell>
                             <TableCell className={classes.tableHead} align="center">商品金额</TableCell>
                             <TableCell className={classes.tableHead} align="center">服务费</TableCell>
@@ -243,6 +257,7 @@ function CollectionRefund(props) {
                             return (
                                 <TableRow key={row.id}>
                                     <TableCell align="center">{row.id}</TableCell>
+                                    <TableCell align="center">{row.c_name}</TableCell>
                                     <TableCell align="center">{Number(row.order_count)}</TableCell>
                                     <TableCell align="center">{row.prod_price}</TableCell>
                                     <TableCell align="center">{row.service_price}</TableCell>
@@ -272,7 +287,7 @@ function CollectionRefund(props) {
                         })}
                         {collectionRefundReducer.collectionRefundData.dataList.length === 0 &&
                         <TableRow>
-                            <TableCell colSpan={16} align="center">暂无数据</TableCell>
+                            <TableCell colSpan={17} align="center">暂无数据</TableCell>
                         </TableRow>}
                     </TableBody>
                 </Table>

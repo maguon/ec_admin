@@ -7,6 +7,7 @@ const initialState = {
         paymentId:'',
         status:'',
         type:'',
+        clientAgentId:null,
         paymentType:'',
         dateStart:'',
         dateEnd:'',
