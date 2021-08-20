@@ -126,11 +126,11 @@ function AuthoritySetting (props) {
 
                 {/* 新增用户群组 */}
                 <Grid item xs={1}>
-                    <Fab color="primary" size="small" onClick={()=>{openModal()}}><i className="mdi mdi-plus mdi-24px" /></Fab>
+                    <Fab color="primary" size="small" onClick={()=>{openModal()}}><i className="mdi mdi-plus mdi-24px"/></Fab>
                 </Grid>
                 {/* 删除用户群组 */}
                 <Grid item xs={1}>
-                    <Fab color="secondary" size="small" onClick={()=>{deleteUserType()}}><i className="mdi mdi-delete-forever mdi-24px" /></Fab>
+                    <Fab color="secondary" size="small" onClick={()=>{deleteUserType()}}><i className="mdi mdi-delete-forever mdi-24px"/></Fab>
                 </Grid>
             </Grid>
 
