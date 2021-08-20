@@ -6,7 +6,7 @@ import {Box, Button, Divider, Grid, IconButton, makeStyles, Paper,Fab, Table, Ta
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from '@material-ui/pickers';
 // 引入Dialog
-import {UserAchievementActionType} from "../../types";
+import {CommonActionType, StorageProductActionType, UserAchievementActionType} from "../../types";
 const UserAchievementAction = require('../../actions/main/UserAchievementAction');
 const commonAction = require('../../actions/layout/CommonAction');
 const commonUtil = require('../../utils/CommonUtil');
@@ -35,7 +35,7 @@ function UserAchievement(props) {
             dispatch(UserAchievementActionType.setUserQueryParams(queryParams));
         }
         // 取得画面 select控件，基础数据
-        props.getUserList();
+      /*  props.getUserInfo(type);*/
         props.getUserType();
         props.getUserAchievementList(userAchievementReducer.userData.start);
     }, []);
@@ -55,13 +55,23 @@ function UserAchievement(props) {
                                       value={userAchievementReducer.userParams.userType}
                                       onChange={(event, value) => {
                                           dispatch(UserAchievementActionType.setUserQueryParam({name: "userType", value: value}));
+                                          // 清空 子分类
+                                          dispatch(UserAchievementActionType.setUserQueryParam({name: "reUserId", value: null}));
+                                          // 根据选择内容，刷新 子分类 列表
+                                          if (value != null) {
+                                              dispatch(UserAchievementAction.getUserInfo(value.id));
+                                          } else {
+                                              dispatch(UserAchievementActionType.setUserArray([]));
+                                          }
+
                                       }}
                                       renderInput={(params) => <TextField {...params} label="用户群组" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
                     <Grid item xs={3}>
                         <Autocomplete fullWidth
-                                      options={commonReducer.userList}
+                                      options={userAchievementReducer.userList}
+                                      noOptionsText="无选项"
                                       getOptionLabel={(option) => option.real_name}
                                       value={userAchievementReducer.userParams.reUserId}
                                       onChange={(event, value) => {
@@ -133,7 +143,8 @@ function UserAchievement(props) {
                             </TableRow>
                         ))}
 
-                        {userAchievementReducer.userData.userInfo.length === 0 &&
+                        {userAchievementReducer.userData.userInfo.length === 0 &&(userAchievementReducer.userParams.finDateStart!==''&&userAchievementReducer.userParams.finDateEnd!==''&&
+                            userAchievementReducer.userParams.finDateStart!==null&&userAchievementReducer.userParams.finDateEnd!==null)&&
                         <TableRow>
                             <TableCell colSpan={6} align="center">暂无数据</TableCell>
                         </TableRow>}
@@ -179,8 +190,8 @@ const mapDispatchToProps = (dispatch) => ({
     getUserAchievementList: (dataStart) => {
         dispatch(UserAchievementAction.getUserAchievementList(dataStart))
     },
-    getUserList: () => {
-        dispatch(commonAction.getUserList())
+    getUserInfo: (type) => {
+        dispatch(UserAchievementAction.getUserInfo(type))
     },
 });
 export default connect(mapStateToProps, mapDispatchToProps)(UserAchievement)

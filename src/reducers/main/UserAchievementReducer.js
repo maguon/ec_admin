@@ -19,7 +19,8 @@ const initialState = {
         // 数据列表
         userInfo: [],
     },
-    typeData:[]
+    typeData:[],
+    userList:[],
 };
 export default handleActions({
     [UserAchievementActionType.setUserQueryParam]: (state, action) => {
@@ -49,5 +50,10 @@ export default handleActions({
         }
     },
 
-
+    [UserAchievementActionType.setUserArray]: (state, action) => {
+        return {
+            ...state,
+            userList: action.payload
+        }
+    },
 }, initialState)
