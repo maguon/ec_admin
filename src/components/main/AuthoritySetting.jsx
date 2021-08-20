@@ -1,17 +1,8 @@
-import React, {useEffect, useState} from 'react';
-import {connect} from 'react-redux';
+import React, {useEffect} from 'react';
+import {connect, useDispatch} from 'react-redux';
+import Swal from "sweetalert2";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import {
-    Button,
-    Checkbox,
-    Divider,
-    Fab,
-    FormControlLabel,
-    Grid,
-    makeStyles,
-    TextField,
-    Typography
-} from "@material-ui/core";
+import {Button,Checkbox,Divider,Fab,FormControlLabel,Grid,makeStyles,TextField,Typography} from "@material-ui/core";
 import {SimpleModal} from '../'
 import {AuthoritySettingActionType} from "../../types";
 
@@ -26,25 +17,58 @@ const useStyles = makeStyles((theme) => ({
 
 // 权限设置
 function AuthoritySetting (props) {
-    const {authoritySettingReducer, getUserGroupList, getMenuList, setCurrentRemark, changeMenuChk, addUserGroup, saveMenu} = props;
+    const {authoritySettingReducer, changeMenuChk} = props;
     const classes = useStyles();
-
-    // 执行1次，取得 用户群组列表 （填充select）
-    useEffect(()=>{
-        getUserGroupList();
-        setCurrentRemark('');
-    },[]);
+    const dispatch = useDispatch();
 
     // 头部条件：用户群组
-    const [currentUserType, setCurrentUserType] = useState(null);
+    const [currentUserType, setCurrentUserType] = React.useState(null);
+    // 模态状态
+    const [modalOpen, setModalOpen] = React.useState(false);
+    // 模态页面属性
+    const [typeName, setTypeName] = React.useState('');
+    const [remarks, setRemarks] = React.useState('');
+    const [validation,setValidation] = React.useState({});
+
+    // 执行1次
+    useEffect(()=>{
+        // 取得用户群组列表
+        dispatch(authoritySettingAction.getUserGroupList());
+        // 清空权限
+        dispatch(AuthoritySettingActionType.setMenuList([]))
+        // 清空备注
+        dispatch(AuthoritySettingActionType.setCurrentRemark(''))
+    },[]);
 
     // 变更select内容时触发，取得当前群组的 权限结构
     useEffect(()=>{
-        getMenuList(currentUserType);
+        if (currentUserType != null) {
+            dispatch(authoritySettingAction.getMenuList(currentUserType))
+        }
     },[currentUserType]);
 
-    // 模态状态
-    const [modalOpen, setModalOpen] = React.useState(false);
+    const deleteUserType = async () => {
+        if (currentUserType == null) {
+            Swal.fire("请选择要删除的用户群组", '', "warning");
+        } else {
+            Swal.fire({
+                title: "确定删除该用户群组",
+                text: "",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "确定",
+                cancelButtonText:"取消"
+            }).then(async (value) => {
+                if (value.isConfirmed) {
+                    let ret = await dispatch(authoritySettingAction.deleteUserType(currentUserType.value));
+                    if (ret) {
+                        setCurrentUserType(null);
+                    }
+                }
+            });
+        }
+    };
+
     const openModal = (event) => {
         // 清check内容
         setValidation({});
@@ -52,14 +76,7 @@ function AuthoritySetting (props) {
         setRemarks('');
         setModalOpen(true);
     };
-    const closeModal = (event) => {
-        setModalOpen(false);
-    };
 
-    // 模态页面属性
-    const [typeName, setTypeName] = React.useState('');
-    const [remarks, setRemarks] = useState('');
-    const [validation,setValidation] = useState({});
     const validate = ()=>{
         const validateObj ={};
         if (!typeName) {
@@ -71,8 +88,8 @@ function AuthoritySetting (props) {
     const submitModal = (event) => {
         const errorCount = validate();
         if(errorCount===0){
-            addUserGroup(typeName, remarks);
-            closeModal();
+            dispatch(authoritySettingAction.createUserGroup({typeName, remarks}))
+            setModalOpen(false);
         }
     };
 
@@ -84,7 +101,7 @@ function AuthoritySetting (props) {
 
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
-                <Grid container item xs={11} spacing={1}>
+                <Grid container item xs={10} spacing={1}>
                     <Grid item xs={3}>
                         <Autocomplete fullWidth disableClearable
                                       options={authoritySettingReducer.userGroupList}
@@ -101,7 +118,7 @@ function AuthoritySetting (props) {
                         <TextField fullWidth margin="dense" variant="outlined" label="备注" InputLabelProps={{ shrink: true }}
                                    value={authoritySettingReducer.currentRemark}
                                    onChange={(e) => {
-                                       setCurrentRemark(e.target.value)
+                                       dispatch(AuthoritySettingActionType.setCurrentRemark(e.target.value))
                                    }}
                         />
                     </Grid>
@@ -109,9 +126,11 @@ function AuthoritySetting (props) {
 
                 {/* 新增用户群组 */}
                 <Grid item xs={1}>
-                    <Fab color="primary" size="small" onClick={()=>{openModal()}}>
-                        <i className="mdi mdi-plus mdi-24px" />
-                    </Fab>
+                    <Fab color="primary" size="small" onClick={()=>{openModal()}}><i className="mdi mdi-plus mdi-24px" /></Fab>
+                </Grid>
+                {/* 删除用户群组 */}
+                <Grid item xs={1}>
+                    <Fab color="secondary" size="small" onClick={()=>{deleteUserType()}}><i className="mdi mdi-delete-forever mdi-24px" /></Fab>
                 </Grid>
             </Grid>
 
@@ -162,7 +181,7 @@ function AuthoritySetting (props) {
                 })}
                 {currentUserType != null &&
                 <Grid item xs={12}>
-                    <Button variant="contained" color="primary" onClick={()=>{saveMenu(currentUserType)}}>修改</Button>
+                    <Button variant="contained" color="primary" onClick={()=>{dispatch(authoritySettingAction.saveMenu(currentUserType))}}>修改</Button>
                 </Grid>}
             </Grid>
 
@@ -170,21 +189,19 @@ function AuthoritySetting (props) {
             <SimpleModal
                 title="新增用户群组"
                 open={modalOpen}
-                onClose={closeModal}
+                onClose={()=>{setModalOpen(false)}}
                 showFooter={true}
                 footer={
                     <>
                         <Button variant="contained" color="primary" onClick={submitModal}>确定</Button>
-                        <Button variant="contained" onClick={closeModal}>关闭</Button>
+                        <Button variant="contained" onClick={()=>{setModalOpen(false)}}>关闭</Button>
                     </>
                 }
             >
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <TextField fullWidth margin="dense" variant="outlined" label="用户群组名称" value={typeName}
-                                   onChange={(e) => {
-                                       setTypeName(e.target.value)
-                                   }}
+                                   onChange={(e) => {setTypeName(e.target.value)}}
                                    error={validation.typeName&&validation.typeName!=''}
                                    helperText={validation.typeName}
                         />
@@ -192,9 +209,7 @@ function AuthoritySetting (props) {
 
                     <Grid item xs={12}>
                         <TextField fullWidth margin="dense" variant="outlined" label="备注" multiline rows={4} value={remarks}
-                                   onChange={(e) => {
-                                       setRemarks(e.target.value)
-                                   }}/>
+                                   onChange={(e) => {setRemarks(e.target.value)}}/>
                     </Grid>
                 </Grid>
             </SimpleModal>
@@ -209,26 +224,8 @@ const mapStateToProps = (state, ownProps) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    getMenuList: (currentUserType) => {
-        if (currentUserType != null) {
-            dispatch(authoritySettingAction.getMenuList(currentUserType))
-        }
-    },
-    getUserGroupList: () => {
-        dispatch(authoritySettingAction.getUserGroupList());
-        dispatch(AuthoritySettingActionType.setMenuList([]))
-    },
-    setCurrentRemark: (value) => {
-        dispatch(AuthoritySettingActionType.setCurrentRemark(value))
-    },
-    addUserGroup: (typeName, remarks) => {
-        dispatch(authoritySettingAction.createUserGroup({typeName, remarks}))
-    },
     changeMenuChk: (event, key) => {
         dispatch(authoritySettingAction.changeMenuList(key, event.target.checked))
-    },
-    saveMenu: (currentUserType) => {
-        dispatch(authoritySettingAction.saveMenu(currentUserType))
     }
 });
 

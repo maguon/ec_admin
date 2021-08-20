@@ -11,7 +11,7 @@ const sysConst = require('../../utils/SysConst');
 export const getUserGroupList = () => async (dispatch, getState) => {
     try {
         // 基本检索URL
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/typeMenu';
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/userTypeList';
 
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
@@ -27,14 +27,14 @@ export const getUserGroupList = () => async (dispatch, getState) => {
     }
 };
 
-// 系统设置 -> 权限设置 取得画面列表
+// 系统设置 -> 权限设置 取得画面选择群组权限
 export const getMenuList = (conditionUserType) => async (dispatch, getState) => {
     try {
         // 检索条件：用户类型
         let type = conditionUserType === null ? '-1' : conditionUserType.value;
 
         // 基本检索URL
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/typeMenu?typeId=' + type;
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/type/' + type;
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
@@ -118,5 +118,30 @@ export const saveMenu = (currentUserType) => async (dispatch, getState) => {
         }
     } catch (err) {
         Swal.fire('操作失败', err.message, 'error');
+    }
+};
+
+export const deleteUserType = (id) => async (dispatch, getState) => {
+    try {
+        const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/type/' + id;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpDelete(url, {});
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            Swal.fire("删除成功", "", "success");
+            // 取得用户群组列表
+            dispatch(getUserGroupList());
+            // 清空权限
+            dispatch({type: AuthoritySettingActionType.setMenuList, payload: []});
+            // 清空备注
+            dispatch({type: AuthoritySettingActionType.setCurrentRemark, payload: ''});
+            return true;
+        } else if (!res.success) {
+            Swal.fire('删除失败', res.msg, 'warning');
+            return false;
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
     }
 };
