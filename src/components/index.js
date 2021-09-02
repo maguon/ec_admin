@@ -56,6 +56,7 @@ import CollectionRefund from './main/CollectionRefund';
 import OrderRefundPay from './main/OrderRefundPay';
 import UserAchievement from './main/UserAchievement';
 import UserAchievementDetail from './main/UserAchievementDetail';
+import CarModel from './main/CarModel';
 export {
     Header,
     Footer,
@@ -114,5 +115,6 @@ export {
     CollectionRefundDetail,
     OrderRefundPay,
     UserAchievement,
-    UserAchievementDetail
+    UserAchievementDetail,
+    CarModel
 }

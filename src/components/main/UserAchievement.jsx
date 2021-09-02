@@ -6,9 +6,8 @@ import {Box, Button, Divider, Grid, IconButton, makeStyles, Paper,Fab, Table, Ta
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from '@material-ui/pickers';
 // 引入Dialog
-import {CommonActionType, StorageProductActionType, UserAchievementActionType} from "../../types";
+import {UserAchievementActionType} from "../../types";
 const UserAchievementAction = require('../../actions/main/UserAchievementAction');
-const commonAction = require('../../actions/layout/CommonAction');
 const commonUtil = require('../../utils/CommonUtil');
 const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
@@ -35,7 +34,6 @@ function UserAchievement(props) {
             dispatch(UserAchievementActionType.setUserQueryParams(queryParams));
         }
         // 取得画面 select控件，基础数据
-      /*  props.getUserInfo(type);*/
         props.getUserType();
         props.getUserAchievementList(userAchievementReducer.userData.start);
     }, []);

@@ -548,6 +548,12 @@ export const ALL_PAGE_LIST = [
                 "usable": false
             },
             {
+                "link": "/car_model",
+                "name": "车型",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
+            {
                 "link": "/authority_setting",
                 "name": "权限设置",
                 "icon": "mdi-chevron-right",

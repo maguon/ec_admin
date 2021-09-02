@@ -45,8 +45,8 @@ import {
     CollectionRefundDetail,
     OrderRefundPay,
     UserAchievement,
-    UserAchievementDetail
-
+    UserAchievementDetail,
+    CarModel
 } from "../components";
 
 export const routes = [
@@ -139,4 +139,6 @@ export const routesWithHeader = [
     //服务项目设置
     {path: "/service_setting", exact: true, component: ServiceSetting},
     {path: "/upload", exact: true, component: UpLoadFile},
+    //车型
+    {path: "/car_model", exact: true, component: CarModel},
 ];

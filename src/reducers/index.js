@@ -49,6 +49,7 @@ import CollectionRefundReducer from './main/CollectionRefundReducer';
 import OrderRefundPayReducer from './main/OrderRefundPayReducer';
 import UserAchievementReducer from './main/UserAchievementReducer';
 import UserAchievementDetailReducer from './main/UserAchievementDetailReducer';
+import CarModelReducer from './main/CarModelReducer'
 export default combineReducers({
     form: reduxFormReducer,
     AppReducer,
@@ -99,5 +100,6 @@ export default combineReducers({
     CollectionRefundReducer,
     OrderRefundPayReducer,
     UserAchievementReducer,
-    UserAchievementDetailReducer
+    UserAchievementDetailReducer,
+    CarModelReducer
 });
