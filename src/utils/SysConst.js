@@ -84,6 +84,13 @@ export const STANDARD_TYPE = [
     {value: 1, label: "标准"}
 ];
 
+// 定价方式
+export const PRICE_TYPE = [
+    {value: 1, label: "固定售价"},
+    {value: 2, label: "按采购价比率"},
+    {value: 3, label: "按采购价加价"}
+];
+
 // 系统类型(1-进销存管理系统 )
 export const APP_TYPE = [
     {value: 1, label: "进销存管理系统"},
