@@ -56,8 +56,8 @@ function ProductManager(props) {
                 brand: null,
                 brandModel: null,
                 product: null,
-                standardType: null,
-                status: null
+                standardType: '',
+                status: ''
             };
             dispatch(ProductManagerActionType.setQueryParams(queryParams));
         }

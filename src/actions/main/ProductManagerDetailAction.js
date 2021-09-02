@@ -1,5 +1,5 @@
 import Swal from 'sweetalert2';
-import {apiHost} from '../../config/index';
+import {apiHost, fileHost} from '../../config/index';
 import {AppActionType, ProductManagerDetailActionType} from '../../types';
 
 const commonAction = require('../../actions/layout/CommonAction');
@@ -45,7 +45,10 @@ export const updateProduct = () => async (dispatch, getState) => {
             unitName: productInfo.unit_name,
             price: productInfo.price,
             standardType: productInfo.standard_type,
-            remark: productInfo.remark
+            remark: productInfo.remark,
+            image: productInfo.image,
+            // TODO
+            // barcode: productInfo.remark,
         };
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/product/' + productInfo.id;
@@ -95,6 +98,26 @@ export const getProductStorage = (productId) => async (dispatch) => {
         } else if (!res.success) {
             Swal.fire("获取库存信息失败", res.msg, "warning");
         }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const uploadProductImg = (formData) => (dispatch) => {
+    try {
+        // 基本url
+        let url = fileHost + '/api/user/' + localUtil.getSessionItem(sysConst.USER_ID) + '/image?imageType=1';
+        httpUtil.httpAsyncFormPost(url, formData, function (result) {
+            if (result.success === true) {
+                // 上传图片成功后，刷新画面显示图片
+                dispatch({type: ProductManagerDetailActionType.setProductInfo, payload: {name: "image", value: result.imageId}});
+                dispatch(updateProduct());
+            } else {
+                Swal.fire("上传图片失败", '', "warning");
+            }
+        }, function (err) {
+            Swal.fire("上传图片失败", err.msg, "warning");
+        });
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }

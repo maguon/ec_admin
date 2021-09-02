@@ -20,8 +20,8 @@ const initialState = {
         brand: null,
         brandModel: null,
         product: null,
-        standardType: null,
-        status: null
+        standardType: '',
+        status: ''
     }
 };
 
