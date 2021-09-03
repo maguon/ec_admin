@@ -1,4 +1,4 @@
-import {createHashHistory, createBrowserHistory} from 'history';
+import {createHashHistory} from 'history';
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
 import {AppActionType, OrderActionType} from '../../types';

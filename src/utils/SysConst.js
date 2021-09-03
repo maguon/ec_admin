@@ -60,6 +60,35 @@ export const REACT_SELECT_SEARCH_STYLE = {
     })
 };
 
+
+//pdf订单
+export const ORDER_PDF = {
+    ourName: '承修方(盖章):',
+    bank: "开户银行:",
+    bankSer: "账   号:",
+    contactName: 'E-mail:',
+    website: "网　 址:",
+    address: "地  址:",
+    mobile: '电   话:',
+    email: "传   真:",
+    client: "托修方 :",
+    deployId: '施工编号:',
+    opUser: "送修人 :",
+    tel: "联系电话:",
+    clientSerial: '车牌号码:',
+    carModel: "厂牌车型:",
+    VIN: "车辆VIN:",
+    dateStart: '进厂日期:',
+    dateEnd: "出厂日期:",
+    incomingMileage: "进厂里程:",
+    fixed: '工时定额:',
+    contractNo: "合同编号:",
+    certificateNo: "合格证号:",
+    classificationCode: "分类代号:",
+    executiveStandard: "执行标准:",
+};
+
+
 // 统计用：日期范围
 export const DATE_RANGE = [
     {value: 30, label: "近30天"},
