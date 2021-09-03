@@ -9,8 +9,10 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
     AppBar,
     Button,
+    Checkbox,
     Divider,
     FormControl,
+    FormControlLabel,
     Grid,
     IconButton,
     InputLabel,
@@ -30,6 +32,8 @@ import {
 } from "@material-ui/core";
 import {ProductManagerDetailActionType} from '../../types';
 import {fileHost} from '../../config/index';
+import TreeItem from "@material-ui/lab/TreeItem";
+import TreeView from "@material-ui/lab/TreeView";
 
 const productManagerDetailAction = require('../../actions/main/ProductManagerDetailAction');
 const commonAction = require('../../actions/layout/CommonAction');
@@ -50,10 +54,14 @@ function ProductManagerDetail(props) {
     const dispatch = useDispatch();
     const {id} = useParams();
 
+    // TAB 页面
+    const [tabValue, setTabValue] = React.useState('match');
     // 校验
     const [validation,setValidation] = useState({});
     // 商品图片
     const [productImgSrc,setProductImgSrc] = useState('');
+    // 适配车型
+    const [matchModel, setMatchModel] = useState(new Map());
 
     useEffect(() => {
         // 取得画面 select控件，基础数据
@@ -103,8 +111,8 @@ function ProductManagerDetail(props) {
         // 定价方式
         switch (productManagerDetailReducer.productInfo.price_type) {
             case sysConst.PRICE_TYPE[0].value:
-                if (!productManagerDetailReducer.productInfo.price && productManagerDetailReducer.productInfo.price !== 0) {
-                    validateObj.price ='请输入售价';
+                if (!productManagerDetailReducer.productInfo.fixed_price && productManagerDetailReducer.productInfo.fixed_price !== 0) {
+                    validateObj.fixed_price ='请输入售价';
                 }
                 break;
             case sysConst.PRICE_TYPE[1].value:
@@ -133,14 +141,19 @@ function ProductManagerDetail(props) {
         }
     };
 
-    // TAB 页面
-    const [tabValue, setTabValue] = React.useState('base');
-    const changeTab = (event, newValue) => {
+
+    const changeTab = async (event, newValue) => {
         setTabValue(newValue);
         switch (newValue) {
             case "base":
                 // 基本信息
                 dispatch(productManagerDetailAction.getProductInfo(id));
+                break;
+            case "match":
+                // 适配车型
+                dispatch(productManagerDetailAction.getCarBrandList());
+                let ret = await dispatch(productManagerDetailAction.getProductMatchModel(id));
+                setMatchModel(ret);
                 break;
             case "purchase":
                 // 采购记录
@@ -179,6 +192,16 @@ function ProductManagerDetail(props) {
         }
     };
 
+    const [expanded, setExpanded] = React.useState([]);
+    const handleToggle = (event, nodeIds) => {
+        setExpanded(nodeIds);
+    };
+
+    const clickLabel = (event, nodeIds) => {
+        event.preventDefault();
+        dispatch(productManagerDetailAction.getCarModelList(nodeIds))
+    };
+
     return (
         <div className={classes.root} style={{minWidth: 960}}>
             {/* 标题部分 */}
@@ -196,6 +219,7 @@ function ProductManagerDetail(props) {
                 <AppBar position="static" color="default">
                     <TabList onChange={changeTab} indicatorColor="primary" variant="fullWidth" textColor="primary">
                         <Tab label="基本信息" value="base" />
+                        <Tab label="适配车型" value="match" />
                         <Tab label="采购记录" value="purchase" />
                         <Tab label="库存" value="storage" />
                     </TabList>
@@ -370,12 +394,12 @@ function ProductManagerDetail(props) {
                             {productManagerDetailReducer.productInfo.price_type == sysConst.PRICE_TYPE[0].value &&
                             <Grid item sm={3}>
                                 <TextField label="售价" fullWidth margin="dense" variant="outlined" type="number"
-                                        value={productManagerDetailReducer.productInfo.price}
+                                        value={productManagerDetailReducer.productInfo.fixed_price}
                                         onChange={(e) => {
-                                            dispatch(ProductManagerDetailActionType.setProductInfo({name: "price",value: e.target.value || 0}))
+                                            dispatch(ProductManagerDetailActionType.setProductInfo({name: "fixed_price",value: e.target.value || 0}))
                                         }}
-                                        error={validation.price&&validation.price!=''}
-                                        helperText={validation.price}
+                                        error={validation.fixed_price&&validation.fixed_price!=''}
+                                        helperText={validation.fixed_price}
                                 />
                             </Grid>}
 
@@ -412,7 +436,7 @@ function ProductManagerDetail(props) {
                             <Grid item sm={3}>
                                 <TextField label="建议售价" fullWidth margin="dense" variant="outlined" type="number" disabled InputLabelProps={{shrink: true}}
                                         value={productManagerDetailReducer.productInfo.price_type == sysConst.PRICE_TYPE[0].value ? 
-                                            productManagerDetailReducer.productInfo.price : (productManagerDetailReducer.productInfo.price_type == sysConst.PRICE_TYPE[1].value ? 
+                                            productManagerDetailReducer.productInfo.fixed_price : (productManagerDetailReducer.productInfo.price_type == sysConst.PRICE_TYPE[1].value ?
                                                 (productManagerDetailReducer.productInfo.last_purchase_price *  productManagerDetailReducer.productInfo.price_raise_ratio).toFixed(2) : 
                                                 (parseFloat(productManagerDetailReducer.productInfo.last_purchase_price) + parseFloat(productManagerDetailReducer.productInfo.price_raise_value)).toFixed(2))}
                                 />
@@ -429,6 +453,61 @@ function ProductManagerDetail(props) {
                             />
                         </Grid>
                         <Grid item xs={12}><Button variant="contained" color="primary" style={{float:'right'}} onClick={updateProduct}>修改</Button></Grid>
+                    </Grid>
+                </TabPanel>
+
+                <TabPanel value="match">
+                    <Grid container spacing={0}>
+                        <Grid item xs={12}><Button variant="contained" color="primary" style={{float:'right'}}
+                                                   onClick={()=>{dispatch(productManagerDetailAction.updateMatchModel(id, matchModel))}}>修改</Button></Grid>
+                        <Grid item xs={12}>
+                            <TreeView
+                                className={classes.root}
+                                defaultCollapseIcon={<i className="mdi mdi-chevron-down mdi-24px" />}
+                                defaultExpandIcon={<i className="mdi mdi-chevron-right mdi-24px" />}
+                                expanded={expanded}
+                                onNodeToggle={handleToggle}
+                            >
+                                {productManagerDetailReducer.carBrandList.map(function (item) {
+                                    return (
+                                        <TreeItem
+                                            key={'brand' + item.id}
+                                            nodeId={'' + item.id}
+                                            style={{marginLeft:80, width: '80%'}}
+                                            label={item.brand_name}
+                                            onLabelClick={(e) => {clickLabel(e, item.id)}}
+                                        >
+                                            {item.sub && item.sub.map(function (child) {
+                                                return (
+                                                    <TreeItem
+                                                        key={'brand-model' + child.id}
+                                                        nodeId={'_' + child.id}
+                                                        label={<div>
+                                                            <FormControlLabel
+                                                                control={
+                                                                    <Checkbox
+                                                                        checked={matchModel.has(child.id)}
+                                                                        onChange={(e)=>{
+                                                                            if (e.target.checked) {
+                                                                                matchModel.set(child.id,'')
+                                                                            } else {
+                                                                                matchModel.delete(child.id,)
+                                                                            }
+                                                                            setMatchModel(new Map(matchModel));
+                                                                        }}
+                                                                    />
+                                                                }
+                                                                label={child.match_model_name + '  ' + child.id}
+                                                            />
+                                                        </div>}
+                                                    />
+                                                )
+                                            })}
+                                        </TreeItem>
+                                    )
+                                })}
+                            </TreeView>
+                        </Grid>
                     </Grid>
                 </TabPanel>
 

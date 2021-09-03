@@ -117,8 +117,6 @@ function ProductManager(props) {
             productSerial: '',
             // 单位
             unitName: '',
-            // 售价 *
-            price: '0',
             // 标准类型 *
             standardType: 1,
 
@@ -128,8 +126,8 @@ function ProductManager(props) {
             storageMax: '',
             // 定价方式 *
             priceType: 1,
-            // 售价 *
-            price: 0,
+            // 固定售价 *
+            fixedPrice: 0,
             // 比率 *
             priceRaiseRatio: 1,
             // 加价 *
@@ -175,8 +173,8 @@ function ProductManager(props) {
         // 定价方式
         switch (modalData.priceType) {
             case sysConst.PRICE_TYPE[0].value:
-                if (!modalData.price && modalData.price !== 0) {
-                    validateObj.price ='请输入售价';
+                if (!modalData.fixedPrice && modalData.fixedPrice !== 0) {
+                    validateObj.fixedPrice ='请输入售价';
                 }
                 break;
             case sysConst.PRICE_TYPE[1].value:
@@ -571,12 +569,12 @@ function ProductManager(props) {
 
                     {modalData.priceType == sysConst.PRICE_TYPE[0].value &&
                     <Grid item sm={3}>
-                        <TextField label="售价" fullWidth margin="dense" variant="outlined" type="number" value={modalData.price}
+                        <TextField label="售价" fullWidth margin="dense" variant="outlined" type="number" value={modalData.fixedPrice}
                                 onChange={(e) => {
-                                    setModalData({...modalData,price:e.target.value || 0});
+                                    setModalData({...modalData,fixedPrice:e.target.value || 0});
                                 }}
-                                error={validation.price&&validation.price!=''}
-                                helperText={validation.price}
+                                error={validation.fixedPrice&&validation.fixedPrice!=''}
+                                helperText={validation.fixedPrice}
                         />
                     </Grid>}
 

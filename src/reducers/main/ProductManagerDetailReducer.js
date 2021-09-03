@@ -33,6 +33,7 @@ const initialState = {
         // 备注
         remark: ''
     },
+    carBrandList:[],
     purchaseList:[],
     storageList:[]
 };
@@ -68,5 +69,26 @@ export default handleActions({
             ...state,
             storageList: action.payload
         }
-    }
+    },
+    [ProductManagerDetailActionType.setCarBrandList]: (state, action) => {
+        return {
+            ...state,
+            carBrandList: action.payload
+        }
+    },
+    [ProductManagerDetailActionType.setCarModelList]: (state, action) => {
+        let carBrandList = state.carBrandList;
+        if (action.payload && action.payload.length > 0) {
+            for (let i = 0; i < carBrandList.length; i++) {
+                if (carBrandList[i].id == action.payload[0].match_brand_id) {
+                    carBrandList[i].sub = action.payload;
+                    break;
+                }
+            }
+        }
+        return {
+            ...state,
+            carBrandList: carBrandList
+        }
+    },
 }, initialState)

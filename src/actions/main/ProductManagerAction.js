@@ -79,20 +79,19 @@ export const changeStatus = (id, status) => async (dispatch, getState) => {
 export const saveModalData = (modalData) => async (dispatch, getState) => {
     try {
         const params = {
-            categoryId: modalData.category.id,
-            categorySubId: modalData.categorySub.id,
-            brandId: modalData.brand.id,
-            brandModelId: modalData.brandModel.id,
+            remark: modalData.remark,
             productName: modalData.productName,
             productSName: modalData.productSName,
             productSerial: modalData.productSerial,
             productAddress: modalData.productAddress,
-            unitName: modalData.unitName,
-            price: modalData.price,
+            categoryId: modalData.category.id,
+            categorySubId: modalData.categorySub.id,
+            brandId: modalData.brand.id,
+            brandModelId: modalData.brandModel.id,
             standardType: modalData.standardType,
-            remark: modalData.remark,
-
+            unitName: modalData.unitName,
             priceType: modalData.priceType,
+            fixedPrice: modalData.fixedPrice,
             priceRaiseRatio: modalData.priceRaiseRatio,
             priceRaiseValue: modalData.priceRaiseValue,
             lastPurchasePrice: modalData.lastPurchasePrice,
