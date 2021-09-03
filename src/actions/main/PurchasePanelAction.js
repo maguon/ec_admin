@@ -1,5 +1,5 @@
 import Swal from 'sweetalert2';
-import {AppActionType, PurchasePanelActionType} from '../../types';
+import {AppActionType, ClientAgentActionType, PurchasePanelActionType} from '../../types';
 import {apiHost} from '../../config';
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
@@ -52,21 +52,27 @@ export const getPurchaseRefundStat = () => async (dispatch) => {
         Swal.fire("操作失败", err.message, "error");
     }
 };
-//未出库的订单商品
-export const getOrderStat = () => async (dispatch) => {
+
+//库存预警商品
+export const getProdStoreWarning = (params) => async (dispatch,getState) => {
     try {
+    /*    const start = params;
+        const size = getState().PurchasePanelReducer.size;*/
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/orderItemProdStorage?orderItemType=' + sysConst.STORAGE_OP_TYPE[0].value;
+            + '/prodStoreWarning?';
 
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
             if (res.rows.length > 0) {
-                dispatch({type: PurchasePanelActionType.getOrderStat, payload: res.count});
+                dispatch({type: PurchasePanelActionType.getProdStoreWarning, payload: res.rows});
+               /* dispatch({type: PurchasePanelActionType.getProdStoreWarningStart, payload: start});
+                dispatch({type: PurchasePanelActionType.getProdStoreWarningSize, payload: res.rows.length});
+                dispatch({type: PurchasePanelActionType.getProdStoreWarning, payload: res.rows.slice(0, size - 1)});*/
             } else {
-                dispatch({type: PurchasePanelActionType.getOrderStat, payload: {}});
+                dispatch({type: PurchasePanelActionType.getProdStoreWarning, payload: {}});
             }
         } else if (!res.success) {
             Swal.fire("获取未出库的订单商品信息失败", res.msg, "warning");
