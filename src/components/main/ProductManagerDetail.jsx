@@ -64,6 +64,7 @@ function ProductManagerDetail(props) {
     }, []);
 
     useEffect(() => {
+        setValidation({});
         if (productManagerDetailReducer.productInfo.brand != null && productManagerDetailReducer.productInfo.id == id) {
             // 接口数据 组装的 商品图片
             let imgUrl = "http://" + fileHost + "/api/image/" + productManagerDetailReducer.productInfo.image;
@@ -88,8 +89,32 @@ function ProductManagerDetail(props) {
         if (!productManagerDetailReducer.productInfo.brand_model) {
             validateObj.brand_model ='请选择品牌型号';
         }
-        if (!productManagerDetailReducer.productInfo.price) {
-            validateObj.price ='请输入售价';
+        if (!productManagerDetailReducer.productInfo.storage_min) {
+            validateObj.storage_min ='请输入最小库存';
+        }
+        if (!productManagerDetailReducer.productInfo.storage_max) {
+            validateObj.storage_max ='请输入最大库存';
+        }
+
+        // 建议售价
+        switch (productManagerDetailReducer.productInfo.price_type) {
+            case sysConst.PRICE_TYPE[0].value:
+                if (!productManagerDetailReducer.productInfo.price && productManagerDetailReducer.productInfo.price !== 0) {
+                    validateObj.price ='请输入售价';
+                }
+                break;
+            case sysConst.PRICE_TYPE[1].value:
+                if (!productManagerDetailReducer.productInfo.price_raise_ratio) {
+                    validateObj.price_raise_ratio ='请输入比率';
+                }
+                break;
+            case sysConst.PRICE_TYPE[2].value:
+                if (!productManagerDetailReducer.productInfo.price_raise_value && productManagerDetailReducer.productInfo.price_raise_value !== 0) {
+                    validateObj.price_raise_value ='请输入加价';
+                }
+                break;
+            default:
+                break;
         }
         setValidation(validateObj);
         return Object.keys(validateObj).length
@@ -131,7 +156,7 @@ function ProductManagerDetail(props) {
             let file = document.getElementById('product_image').files[0];
             if (file) {
                 // 文件格式限制
-                if ((/\.(jpe?g|png|gif|svg|bmp|tiff?)$/i).test(file.name)) {
+                if (file.type.indexOf("image") >= 0) {
                     // 文件限制: 1M
                     let max_size = 1 * 1024 * 1024; 
                     if (file.size > max_size) {
@@ -142,7 +167,7 @@ function ProductManagerDetail(props) {
                         dispatch(productManagerDetailAction.uploadProductImg(formData));
                     }
                 } else {
-                    Swal.fire('支持的图片类型为. (jpeg,jpg,png,gif,svg,bmp,tiff)', "", "warning");
+                    Swal.fire("请选择图片文件", "", "warning");
                 }
             }
         }
@@ -174,9 +199,10 @@ function ProductManagerDetail(props) {
                     <Grid container spacing={2}>
                         <Grid item container sm={5} style={{textAlign: 'center', alignContent: 'center', justifyContent:'center'}}>
                             <form id="addForm" encType="multipart/form-data" method="post">
-                                <div style={{display: 'inline-block', position: 'relative', overflow:'hidden',width: 280, height: 280, border:'1px solid grey'}}>
-                                    <img style={{width: 280, height: 280}} src={productImgSrc}/>
-                                    <input id="product_image" name="product_image" type="file" onChange={updateProductImg} style={{position: 'absolute',right: 0,top: 0,fontSize: 280,opacity: 0}}/>
+                                <div style={{alignContent: 'center', justifyContent:'center',display: 'inline-block', position: 'relative', 
+                                overflow:'hidden',width: 280, height: 280, border:'1px solid grey'}}>
+                                    <img style={{width: 280, height: 280,objectFit: 'cover', objectPosition: 'center'}} src={productImgSrc}/>
+                                    <input id="product_image" name="product_image" type="file" onChange={updateProductImg} style={{position: 'absolute',right: 0,top: 0,fontSize: 280,opacity: 0, cursor: 'pointer'}}/>
                                 </div>
                             </form>
                         </Grid>
@@ -299,16 +325,94 @@ function ProductManagerDetail(props) {
                                 />
                             </Grid>
                             <Grid item sm={3}>
+                                <TextField label="最小库存" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}}
+                                        value={productManagerDetailReducer.productInfo.storage_min}
+                                        onChange={(e) => {
+                                            dispatch(ProductManagerDetailActionType.setProductInfo({name: "storage_min",value: e.target.value}))
+                                        }}
+                                        error={validation.storage_min&&validation.storage_min!=''}
+                                        helperText={validation.storage_min}
+                                />
+                            </Grid>
+                            <Grid item sm={3}>
+                                <TextField label="最大库存" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}}
+                                        value={productManagerDetailReducer.productInfo.storage_max}
+                                        onChange={(e) => {
+                                            dispatch(ProductManagerDetailActionType.setProductInfo({name: "storage_max",value: e.target.value}))
+                                        }}
+                                        error={validation.storage_max&&validation.storage_max!=''}
+                                        helperText={validation.storage_max}
+                                />
+                            </Grid>
+
+                            <Grid item sm={3}>
+                                <FormControl variant="outlined" fullWidth margin="dense">
+                                    <InputLabel shrink>定价方式</InputLabel>
+                                    <Select label="定价方式"
+                                        value={productManagerDetailReducer.productInfo.price_type}
+                                        onChange={(e, value) => {
+                                            dispatch(ProductManagerDetailActionType.setProductInfo({name: "price_type",value: e.target.value}))
+                                        }}
+                                    >
+                                        {sysConst.PRICE_TYPE.map((item, index) => (
+                                            <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+
+                            {productManagerDetailReducer.productInfo.price_type == sysConst.PRICE_TYPE[0].value &&
+                            <Grid item sm={3}>
                                 <TextField label="售价" fullWidth margin="dense" variant="outlined" type="number"
                                         value={productManagerDetailReducer.productInfo.price}
                                         onChange={(e) => {
-                                            dispatch(ProductManagerDetailActionType.setProductInfo({name: "price",value: e.target.value}))
+                                            dispatch(ProductManagerDetailActionType.setProductInfo({name: "price",value: e.target.value || 0}))
                                         }}
                                         error={validation.price&&validation.price!=''}
                                         helperText={validation.price}
                                 />
+                            </Grid>}
+
+                            {productManagerDetailReducer.productInfo.price_type == sysConst.PRICE_TYPE[1].value &&
+                            <Grid item sm={3}>
+                                <TextField label="比率" fullWidth margin="dense" variant="outlined" type="number"
+                                        value={productManagerDetailReducer.productInfo.price_raise_ratio}
+                                        onChange={(e) => {
+                                            dispatch(ProductManagerDetailActionType.setProductInfo({name: "price_raise_ratio",value: e.target.value || 1}))
+                                        }}
+                                        error={validation.price_raise_ratio&&validation.price_raise_ratio!=''}
+                                        helperText={validation.price_raise_ratio}
+                                />
+                            </Grid>}
+
+                            {productManagerDetailReducer.productInfo.price_type == sysConst.PRICE_TYPE[2].value &&
+                            <Grid item sm={3}>
+                                <TextField label="加价" fullWidth margin="dense" variant="outlined" type="number"
+                                        value={productManagerDetailReducer.productInfo.price_raise_value}
+                                        onChange={(e) => {
+                                            dispatch(ProductManagerDetailActionType.setProductInfo({name: "price_raise_value",value: e.target.value || 0}))
+                                        }}
+                                        error={validation.price_raise_value&&validation.price_raise_value!=''}
+                                        helperText={validation.price_raise_value}
+                                />
+                            </Grid>}
+
+                            <Grid item sm={3}>
+                                <TextField label="当前采购价" fullWidth margin="dense" variant="outlined" type="number" disabled InputLabelProps={{shrink: true}}
+                                        value={productManagerDetailReducer.productInfo.last_purchase_price}
+                                />
+                            </Grid>
+
+                            <Grid item sm={3}>
+                                <TextField label="建议售价" fullWidth margin="dense" variant="outlined" type="number" disabled InputLabelProps={{shrink: true}}
+                                        value={productManagerDetailReducer.productInfo.price_type == sysConst.PRICE_TYPE[0].value ? 
+                                            productManagerDetailReducer.productInfo.price : (productManagerDetailReducer.productInfo.price_type == sysConst.PRICE_TYPE[1].value ? 
+                                                (productManagerDetailReducer.productInfo.last_purchase_price *  productManagerDetailReducer.productInfo.price_raise_ratio).toFixed(2) : 
+                                                (parseFloat(productManagerDetailReducer.productInfo.last_purchase_price) + parseFloat(productManagerDetailReducer.productInfo.price_raise_value)).toFixed(2))}
+                                />
                             </Grid>
                         </Grid>
+
 
                         <Grid item xs={12}>
                             <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={4}

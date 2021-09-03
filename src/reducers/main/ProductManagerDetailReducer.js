@@ -21,6 +21,8 @@ const initialState = {
         product_address: '',
         // 标准类型（标准、非标准）
         standard_type: '',
+        // 定价方式
+        price_type: '',
         // 单位
         unit_name: '',
         // 单价

@@ -34,6 +34,7 @@ export const updateProduct = () => async (dispatch, getState) => {
     try {
         const productInfo = getState().ProductManagerDetailReducer.productInfo;
         const params = {
+            remark: productInfo.remark,
             categoryId: productInfo.category.id,
             categorySubId: productInfo.category_sub.id,
             brandId: productInfo.brand.id,
@@ -45,8 +46,14 @@ export const updateProduct = () => async (dispatch, getState) => {
             unitName: productInfo.unit_name,
             price: productInfo.price,
             standardType: productInfo.standard_type,
-            remark: productInfo.remark,
             image: productInfo.image,
+
+            priceType: productInfo.price_type,
+            priceRaiseRatio: (productInfo.price_raise_ratio),
+            priceRaiseValue: productInfo.price_raise_value,
+            lastPurchasePrice: productInfo.last_purchase_price,
+            storageMin: productInfo.storage_min,
+            storageMax: productInfo.storage_max,
             // TODO
             // barcode: productInfo.remark,
         };
