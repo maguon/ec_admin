@@ -125,7 +125,7 @@ function Achievement (props){
                                                       onChange={(event, value) => {
                                                           dispatch(AchievementActionType.setServiceParam({name: "saleServiceId", value: value}));
                                                       }}
-                                                      renderInput={(params) => <TextField {...params} label="名称" margin="dense" variant="outlined"/>}
+                                                      renderInput={(params) => <TextField {...params} label="服务名称" margin="dense" variant="outlined"/>}
                                         />
                                     </Grid>
                                     {/*施工*/}
@@ -187,7 +187,7 @@ function Achievement (props){
                                     <TableHead >
                                         <TableRow>
                                             <TableCell className={classes.tableHead} align="center">订单号</TableCell>
-                                            <TableCell className={classes.tableHead} align="center">名称</TableCell>
+                                            <TableCell className={classes.tableHead} align="center">服务名称</TableCell>
                                             <TableCell className={classes.tableHead} align="center">售价</TableCell>
                                             <TableCell className={classes.tableHead} align="center">折扣</TableCell>
                                             <TableCell className={classes.tableHead} align="center">实际价格</TableCell>
@@ -249,7 +249,7 @@ function Achievement (props){
                                                       onChange={(event, value) => {
                                                           dispatch(AchievementActionType.setProductParam({name: "prodId", value: value}));
                                                       }}
-                                                      renderInput={(params) => <TextField {...params} label="名称" margin="dense" variant="outlined"/>}
+                                                      renderInput={(params) => <TextField {...params} label="商品名称" margin="dense" variant="outlined"/>}
                                         />
                                     </Grid>
                                     {/*销售*/}
@@ -304,6 +304,8 @@ function Achievement (props){
                                             <TableCell className={classes.tableHead} align="center">折扣</TableCell>
                                             <TableCell className={classes.tableHead} align="center">实际价格</TableCell>
                                             <TableCell className={classes.tableHead} align="center">销售</TableCell>
+                                            <TableCell className={classes.tableHead} align="center">采购单号</TableCell>
+                                            <TableCell className={classes.tableHead} align="center">供应商</TableCell>
                                             <TableCell className={classes.tableHead} align="center">时间</TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -316,10 +318,12 @@ function Achievement (props){
                                                 <TableCell align="center" >{row.discount_prod_price}</TableCell>
                                                 <TableCell align="center" >{row.actual_prod_price}</TableCell>
                                                 <TableCell align="center" >{row.sale_user_name}</TableCell>
+                                                <TableCell align="center" >{row.order_id}</TableCell>
+                                                <TableCell align="center" >{row.supplier_name}</TableCell>
                                                 <TableCell align="center" >{row.date_id}</TableCell>
                                             </TableRow>))}
                                         {achievementReducer.productData.productInfo.length === 0 &&
-                                        <TableRow style={{height:60}}><TableCell align="center" colSpan="7">暂无数据</TableCell></TableRow>
+                                        <TableRow style={{height:60}}><TableCell align="center" colSpan="9">暂无数据</TableCell></TableRow>
                                         }
                                     </TableBody>
                                 </Table>

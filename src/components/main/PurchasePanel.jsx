@@ -110,7 +110,7 @@ function StoragePanel(props) {
                                              {purchasePanelReducer.prodStoreWarning.map((row) => (
                                                  <TableRow key={row.id}>
                                                      <TableCell align="center">{row.product_name}</TableCell>
-                                                     <TableCell align="center">在库{row.storage_count}({row.storage_min==null?0:row.storage_min}-{row.storage_max})</TableCell>
+                                                     <TableCell align="center">在库:{row.storage_count+row.unit_name}({row.storage_min==null?0:row.storage_min}-{row.storage_max})</TableCell>
                                                  </TableRow>
                                              ))}
                                              {purchasePanelReducer.prodStoreWarning.length === 0 &&
