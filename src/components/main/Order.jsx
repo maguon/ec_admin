@@ -622,7 +622,7 @@ function Order(props) {
                             <Grid item sm={12}>地址：{modalData.clientSerial.address}</Grid>
                         </Grid>}
 
-                        {/*  服务信息：  服务名称，服务价格，折扣，实际价格 */}
+                        {/*  服务 */}
                         <Grid container spacing={1}>
                             <Grid item container sm={1}>
                                 <Grid item sm={6}><Typography gutterBottom className={classes.title}>服务</Typography></Grid>
@@ -684,29 +684,29 @@ function Order(props) {
                                         </Grid>
                                     </>}
 
-                                <Grid item xs={2}>
-                                    <TextField label="折扣" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.discountServicePrice}
-                                               onChange={(e)=>{
-                                                   modalData.serviceList[index].discountServicePrice = e.target.value;
-                                                   calcRealPrice(index, item);
-                                               }}
-                                               error={validation.serviceList[index].discountServicePrice!=''}
-                                               helperText={validation.serviceList[index].discountServicePrice}
-                                    />
-                                </Grid>
+                                {/*<Grid item xs={2}>*/}
+                                {/*    <TextField label="折扣" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.discountServicePrice}*/}
+                                {/*               onChange={(e)=>{*/}
+                                {/*                   modalData.serviceList[index].discountServicePrice = e.target.value;*/}
+                                {/*                   calcRealPrice(index, item);*/}
+                                {/*               }}*/}
+                                {/*               error={validation.serviceList[index].discountServicePrice!=''}*/}
+                                {/*               helperText={validation.serviceList[index].discountServicePrice}*/}
+                                {/*    />*/}
+                                {/*</Grid>*/}
 
                                 <Grid item xs={2}>
                                     <TextField label="实际价格" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={item.realPrice}/>
                                 </Grid>
 
-                                <Grid item container xs={3}>
-                                    <Grid item xs={10}>
+                                <Grid item container xs={5}>
+                                    <Grid item xs={11}>
                                         <TextField label="备注" fullWidth margin="dense" variant="outlined" value={item.remark} onChange={(e)=>{
                                             modalData.serviceList[index].remark = e.target.value;
                                             setModalData({...modalData});
                                         }}/>
                                     </Grid>
-                                    <Grid item xs={2} align='center'>
+                                    <Grid item xs={1} align='center'>
                                         <IconButton color="secondary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{deleteService(index)}}>
                                             <i className="mdi mdi-delete purple-font"> </i>
                                         </IconButton>
@@ -715,7 +715,7 @@ function Order(props) {
                             </Grid>
                         ))}
 
-                        {/*  商品信息： 商品名称，价格，折扣，实际价格 */}
+                        {/*  商品 */}
                         <Grid container spacing={1}>
                             <Grid item container sm={1}>
                                 <Grid item sm={6}><Typography gutterBottom className={classes.title}>商品</Typography></Grid>
@@ -761,29 +761,29 @@ function Order(props) {
                                     />
                                 </Grid>
 
-                                <Grid item xs={2}>
-                                    <TextField label="折扣" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.discountProdPrice}
-                                               onChange={(e)=>{
-                                                   modalData.productList[index].discountProdPrice = e.target.value;
-                                                   calcProdPrice(index);
-                                               }}
-                                               error={validation.productList.length>0 && validation.productList[index].discountProdPrice && validation.productList[index].discountProdPrice!=''}
-                                               helperText={validation.productList[index].discountProdPrice}
-                                    />
-                                </Grid>
+                                {/*<Grid item xs={2}>*/}
+                                {/*    <TextField label="折扣" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.discountProdPrice}*/}
+                                {/*               onChange={(e)=>{*/}
+                                {/*                   modalData.productList[index].discountProdPrice = e.target.value;*/}
+                                {/*                   calcProdPrice(index);*/}
+                                {/*               }}*/}
+                                {/*               error={validation.productList.length>0 && validation.productList[index].discountProdPrice && validation.productList[index].discountProdPrice!=''}*/}
+                                {/*               helperText={validation.productList[index].discountProdPrice}*/}
+                                {/*    />*/}
+                                {/*</Grid>*/}
 
                                 <Grid item xs={2}>
                                     <TextField label="实际价格" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={item.realPrice}/>
                                 </Grid>
 
-                                <Grid item container xs={3}>
-                                    <Grid item xs={10}>
+                                <Grid item container xs={5}>
+                                    <Grid item xs={11}>
                                         <TextField label="备注" fullWidth margin="dense" variant="outlined" value={item.remark} onChange={(e)=>{
                                             modalData.productList[index].remark = e.target.value;
                                             setModalData({...modalData});
                                         }}/>
                                     </Grid>
-                                    <Grid item xs={2} align='center'>
+                                    <Grid item xs={1} align='center'>
                                         <IconButton color="secondary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{deleteProduct(index)}}>
                                             <i className="mdi mdi-delete purple-font"> </i>
                                         </IconButton>

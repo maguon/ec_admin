@@ -354,20 +354,20 @@ function OrderDetail(props) {
                     </Grid>
                 </>}
 
-                <Grid item xs={1}>
-                    <TextField label="折扣" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={newServiceData.discountServicePrice}
-                               onChange={(e)=>{
-                                   calcNewServicePrice(newServiceData.serviceInfo, e.target.value);
-                               }}
-                               error={validation.discountServicePrice&&validation.discountServicePrice!=''} helperText={validation.discountServicePrice}
-                    />
-                </Grid>
+                {/*<Grid item xs={1}>*/}
+                {/*    <TextField label="折扣" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={newServiceData.discountServicePrice}*/}
+                {/*               onChange={(e)=>{*/}
+                {/*                   calcNewServicePrice(newServiceData.serviceInfo, e.target.value);*/}
+                {/*               }}*/}
+                {/*               error={validation.discountServicePrice&&validation.discountServicePrice!=''} helperText={validation.discountServicePrice}*/}
+                {/*    />*/}
+                {/*</Grid>*/}
 
                 <Grid item xs={1}>
                     <TextField label="实际价格" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={newServiceData.actualServicePrice}/>
                 </Grid>
 
-                <Grid item container xs={6} spacing={1}>
+                <Grid item container xs={7} spacing={1}>
                     <Grid item xs={10}>
                         <TextField label="备注" fullWidth margin="dense" variant="outlined" value={newServiceData.remark} onChange={(e)=>{
                             setNewServiceData({...newServiceData, remark: e.target.value});
@@ -407,21 +407,21 @@ function OrderDetail(props) {
                         </Grid>
                     </>}
 
-                    <Grid item xs={1}>
-                        <TextField label="折扣" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.discount_service_price}
-                                   onChange={(e)=>{
-                                       orderDetailReducer.orderSerVList[index].discount_service_price = e.target.value || 0;
-                                       dispatch(OrderDetailActionType.getOrderSerVList(orderDetailReducer.orderSerVList));
-                                       calcListServicePrice(index, item);
-                                   }}
-                        />
-                    </Grid>
+                    {/*<Grid item xs={1}>*/}
+                    {/*    <TextField label="折扣" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.discount_service_price}*/}
+                    {/*               onChange={(e)=>{*/}
+                    {/*                   orderDetailReducer.orderSerVList[index].discount_service_price = e.target.value || 0;*/}
+                    {/*                   dispatch(OrderDetailActionType.getOrderSerVList(orderDetailReducer.orderSerVList));*/}
+                    {/*                   calcListServicePrice(index, item);*/}
+                    {/*               }}*/}
+                    {/*    />*/}
+                    {/*</Grid>*/}
 
                     <Grid item xs={1}>
                         <TextField label="实际价格" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={item.actual_service_price}/>
                     </Grid>
 
-                    <Grid item container xs={6} spacing={1}>
+                    <Grid item container xs={7} spacing={1}>
                         <Grid item xs={6}>
                             <TextField label="备注" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} value={item.remark || ''} onChange={(e)=>{
                                 orderDetailReducer.orderSerVList[index].remark = e.target.value;
@@ -493,20 +493,20 @@ function OrderDetail(props) {
                     />
                 </Grid>
 
-                <Grid item xs={1}>
-                    <TextField label="折扣" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={newProdData.discountProdPrice}
-                               onChange={(e)=>{
-                                   calcNewProdPrice(newProdData.productInfo, newProdData.prodCount, e.target.value);
-                               }}
-                               error={validation.discountProdPrice&&validation.discountProdPrice!=''} helperText={validation.discountProdPrice}
-                    />
-                </Grid>
+                {/*<Grid item xs={1}>*/}
+                {/*    <TextField label="折扣" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={newProdData.discountProdPrice}*/}
+                {/*               onChange={(e)=>{*/}
+                {/*                   calcNewProdPrice(newProdData.productInfo, newProdData.prodCount, e.target.value);*/}
+                {/*               }}*/}
+                {/*               error={validation.discountProdPrice&&validation.discountProdPrice!=''} helperText={validation.discountProdPrice}*/}
+                {/*    />*/}
+                {/*</Grid>*/}
 
                 <Grid item xs={2}>
                     <TextField label="实际价格" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={newProdData.actualProdPrice}/>
                 </Grid>
 
-                <Grid item container xs={5}>
+                <Grid item container xs={6}>
                     <Grid item xs={10}>
                         <TextField label="备注" fullWidth margin="dense" variant="outlined" value={newProdData.remark} onChange={(e)=>{
                             setNewProdData({...newProdData, remark: e.target.value});
@@ -545,21 +545,21 @@ function OrderDetail(props) {
                         />
                     </Grid>
 
-                    <Grid item xs={1}>
-                        <TextField label="折扣" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.discount_prod_price}
-                                   onChange={(e)=>{
-                                       orderDetailReducer.orderProdList[index].discount_prod_price = e.target.value || 0;
-                                       dispatch(OrderDetailActionType.getOrderProdList(orderDetailReducer.orderProdList));
-                                       calcListProdPrice(index);
-                                   }}
-                        />
-                    </Grid>
+                    {/*<Grid item xs={1}>*/}
+                    {/*    <TextField label="折扣" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.discount_prod_price}*/}
+                    {/*               onChange={(e)=>{*/}
+                    {/*                   orderDetailReducer.orderProdList[index].discount_prod_price = e.target.value || 0;*/}
+                    {/*                   dispatch(OrderDetailActionType.getOrderProdList(orderDetailReducer.orderProdList));*/}
+                    {/*                   calcListProdPrice(index);*/}
+                    {/*               }}*/}
+                    {/*    />*/}
+                    {/*</Grid>*/}
 
                     <Grid item xs={2}>
                         <TextField label="实际价格" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={item.actual_prod_price}/>
                     </Grid>
 
-                    <Grid item container xs={5}>
+                    <Grid item container xs={6}>
                         <Grid item xs={10}>
                             <TextField label="备注" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} value={item.remark} onChange={(e)=>{
                                 orderDetailReducer.orderProdList[index].remark = e.target.value;
