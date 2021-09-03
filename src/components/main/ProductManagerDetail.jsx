@@ -55,7 +55,7 @@ function ProductManagerDetail(props) {
     const {id} = useParams();
 
     // TAB 页面
-    const [tabValue, setTabValue] = React.useState('match');
+    const [tabValue, setTabValue] = React.useState('base');
     // 校验
     const [validation,setValidation] = useState({});
     // 商品图片
@@ -81,10 +81,10 @@ function ProductManagerDetail(props) {
             // 图片地址有效
             imgObj.onload = () => {
                 setProductImgSrc(imgUrl + "?" + commonUtil.formatDate(new Date(), 'yyyy-MM-dd_hh:mm:ss S'));
-            }
+            };
             // 图片地址无效，使用默认图片
             imgObj.onerror = () => {
-                setProductImgSrc('/default_product.png' + "?" + commonUtil.formatDate(new Date(), 'yyyy-MM-dd_hh:mm:ss S'));
+                setProductImgSrc('/default_product.png?' + commonUtil.formatDate(new Date(), 'yyyy-MM-dd_hh:mm:ss S'));
             }
         }
     }, [productManagerDetailReducer.productInfo]);
@@ -140,7 +140,6 @@ function ProductManagerDetail(props) {
             dispatch(productManagerDetailAction.updateProduct());
         }
     };
-
 
     const changeTab = async (event, newValue) => {
         setTabValue(newValue);
