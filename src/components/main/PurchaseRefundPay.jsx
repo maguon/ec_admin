@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import Swal from "sweetalert2";
 // 引入material-ui基础组件
 import {
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 function PurchaseRefundPay(props) {
     const {purchaseRefundPayReducer, commonReducer, confirmPay} = props;
     const classes = useStyles();
-
+    const dispatch = useDispatch();
     /** 检索条件 */
     // 退款日期
     const [paymentDateStart, setPaymentDateStart] = React.useState(null);
@@ -60,10 +60,12 @@ function PurchaseRefundPay(props) {
         props.getBaseSelectList();
         let dataStart = props.purchaseRefundPayReducer.purchaseRefundData.start;
         props.getPurchaseRefundList(paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus,dataStart);
+        dispatch(purchaseRefundPayAction.getPurchaseRefundPayStat({paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus}))
     }, []);
 
     // 查询列表
     const queryPurchaseRefundList = () => {
+        dispatch(purchaseRefundPayAction.getPurchaseRefundPayStat({paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus}))
         // 默认第一页
         props.getPurchaseRefundList(paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus, 0);
     };
@@ -165,7 +167,7 @@ function PurchaseRefundPay(props) {
                 </Grid>
 
                 {/*查询按钮*/}
-                <Grid item xs={1} style={{textAlign:'right'}}>
+                <Grid item xs={1} style={{textAlign:'center', marginTop: 10}}>
                     <Fab color="primary" size="small" onClick={queryPurchaseRefundList}>
                         <i className="mdi mdi-magnify mdi-24px"/>
                     </Fab>
@@ -224,6 +226,22 @@ function PurchaseRefundPay(props) {
                                 </TableCell>
                             </TableRow>
                         ))}
+
+
+                           {purchaseRefundPayReducer.purchaseRefundData.dataList.length !== 0&&
+                        <TableRow>
+                            <TableCell colSpan={8}/>
+                            <TableCell colSpan={1}
+                                       align="center">总退款单：{purchaseRefundPayReducer.purchaseRefundPayStatData.count}</TableCell>
+                            <TableCell colSpan={1}
+                                       align="center">总退货数量：{purchaseRefundPayReducer.purchaseRefundPayStatData.refund_count}</TableCell>
+                            <TableCell colSpan={1}
+                                       align="center">退款总价：{purchaseRefundPayReducer.purchaseRefundPayStatData.total_cost}</TableCell>
+                            <TableCell colSpan={1} align="right"
+                                       style={{paddingRight: 40}}>总退款盈亏：{purchaseRefundPayReducer.purchaseRefundPayStatData.refund_profile}</TableCell>
+                        </TableRow>}
+
+
                         {purchaseRefundPayReducer.purchaseRefundData.dataList.length === 0 &&
                         <TableRow>
                             <TableCell colSpan={12} align="center">暂无数据</TableCell>

@@ -14,7 +14,8 @@ const initialState = {
         dataList: []
     },
     // 检索结果
-    modalData: []
+    modalData: [],
+    purchaseRefundPayStatData:[]
 };
 
 export default handleActions({
@@ -28,6 +29,12 @@ export default handleActions({
         return {
             ...state,
             modalData: action.payload
+        }
+    },
+    [PurchaseRefundPayActionType.setPurchaseRefundPayStatData]: (state, action) => {
+        return {
+            ...state,
+            purchaseRefundPayStatData: action.payload
         }
     }
 }, initialState)
