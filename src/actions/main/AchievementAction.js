@@ -49,6 +49,8 @@ export const getOrderItemProd = (params) => async (dispatch, getState) => {
         // 基本检索URL
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/orderItemProd?start=' + start + '&size=' + size;
         let paramsObj = {
+            purchaseId:param.purchaseId,
+            supplierId:param.supplierId == null? '' : param.supplierId.id,
             orderId:param.orderId,
             dateStart:commonUtil.formatDate(param.dateStart, 'yyyyMMdd'),
             dateEnd:commonUtil.formatDate(param.dateEnd, 'yyyyMMdd'),

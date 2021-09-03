@@ -58,6 +58,8 @@ function Achievement (props){
                 dateEnd:''
             };
         let productParams= {
+                purchaseId:'',
+                supplierId:null,
                 orderId:'',
                 saleUserId:null,
                 prodId:null,
@@ -240,6 +242,24 @@ function Achievement (props){
                                                    onChange={(e)=>{dispatch(AchievementActionType.setProductParam({name: "orderId", value: e.target.value}))}}/>
 
                                     </Grid>
+                                    {/*采购单号*/}
+                                    <Grid item xs>
+                                        <TextField label="采购单号" fullWidth margin="dense" variant="outlined" type="number" value={achievementReducer.productParams.purchaseId}
+                                                   onChange={(e)=>{dispatch(AchievementActionType.setProductParam({name: "purchaseId", value: e.target.value}))}}/>
+
+                                    </Grid>
+                                    {/*供应商*/}
+                                    <Grid item  xs>
+                                        <Autocomplete fullWidth
+                                                      options={commonReducer.supplierList}
+                                                      getOptionLabel={(option) => option.supplier_name}
+                                                      value={achievementReducer.productParams.supplierId}
+                                                      onChange={(event, value) => {
+                                                          dispatch(AchievementActionType.setProductParam({name: "supplierId", value: value}));
+                                                      }}
+                                                      renderInput={(params) => <TextField {...params} label="供应商" margin="dense" variant="outlined"/>}
+                                        />
+                                    </Grid>
                                     {/*名称*/}
                                     <Grid item  xs>
                                         <Autocomplete fullWidth
@@ -318,7 +338,7 @@ function Achievement (props){
                                                 <TableCell align="center" >{row.discount_prod_price}</TableCell>
                                                 <TableCell align="center" >{row.actual_prod_price}</TableCell>
                                                 <TableCell align="center" >{row.sale_user_name}</TableCell>
-                                                <TableCell align="center" >{row.order_id}</TableCell>
+                                                <TableCell align="center" >{row.purchase_id}</TableCell>
                                                 <TableCell align="center" >{row.supplier_name}</TableCell>
                                                 <TableCell align="center" >{row.date_id}</TableCell>
                                             </TableRow>))}
@@ -363,6 +383,8 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(commonAction.getSaleServiceList());
         // 取得商品列表
         dispatch(commonAction.getProductList());
+        // 取得供应商列表
+        dispatch(commonAction.getSupplierList());
     },
     getOrderItemService: (start) => {
         dispatch(AchievementAction.getOrderItemService(start));

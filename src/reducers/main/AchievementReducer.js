@@ -11,6 +11,8 @@ const initialState = {
         dateEnd:''
     },
     productParams: {
+        purchaseId:'',
+        supplierId:null,
         orderId:'',
         saleUserId:null,
         prodId:null,
