@@ -457,8 +457,15 @@ function ProductManagerDetail(props) {
 
                 <TabPanel value="match">
                     <Grid container spacing={0}>
-                        <Grid item xs={12}><Button variant="contained" color="primary" style={{float:'right'}}
-                                                   onClick={()=>{dispatch(productManagerDetailAction.updateMatchModel(id, matchModel))}}>修改</Button></Grid>
+                        <Grid item sm={2}><Typography gutterBottom className={classes.title}>适配车型</Typography></Grid>
+                        {productManagerDetailReducer.currentMatchList.length > 0 && productManagerDetailReducer.currentMatchList[0].match_brand_id != null &&
+                        <Grid item sm={10} container spacing={0}>
+                            {productManagerDetailReducer.currentMatchList.map((item,index)=>(
+                                <Grid item sm={3} style={{marginBottom:5}}>{item.match_brand_name + '-' + item.match_model_name}</Grid>
+                            ))}
+                        </Grid>}
+                        <Grid item sm={12} style={{marginTop: 10, marginBottom: 10}}><Divider light className={classes.divider}/></Grid>
+
                         <Grid item xs={12}>
                             <TreeView
                                 className={classes.root}
@@ -481,11 +488,9 @@ function ProductManagerDetail(props) {
                                                     <TreeItem
                                                         key={'brand-model' + child.id}
                                                         nodeId={'_' + child.id}
-                                                        label={<div>
-                                                            <FormControlLabel
+                                                        label={<FormControlLabel
                                                                 control={
-                                                                    <Checkbox
-                                                                        checked={matchModel.has(child.id)}
+                                                                    <Checkbox checked={matchModel.has(child.id)}
                                                                         onChange={(e)=>{
                                                                             if (e.target.checked) {
                                                                                 matchModel.set(child.id,'')
@@ -496,9 +501,8 @@ function ProductManagerDetail(props) {
                                                                         }}
                                                                     />
                                                                 }
-                                                                label={child.match_model_name + '  ' + child.id}
-                                                            />
-                                                        </div>}
+                                                                label={child.match_model_name}
+                                                            />}
                                                     />
                                                 )
                                             })}
@@ -507,6 +511,8 @@ function ProductManagerDetail(props) {
                                 })}
                             </TreeView>
                         </Grid>
+                        <Grid item xs={12}><Button variant="contained" color="primary" style={{float:'right'}}
+                                                   onClick={()=>{dispatch(productManagerDetailAction.updateMatchModel(id, matchModel))}}>修改</Button></Grid>
                     </Grid>
                 </TabPanel>
 

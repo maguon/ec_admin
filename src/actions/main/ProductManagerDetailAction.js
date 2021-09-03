@@ -137,11 +137,14 @@ export const getProductMatchModel = (productId) => async (dispatch) => {
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success && res.rows.length > 0) {
+            dispatch({type: ProductManagerDetailActionType.setCurrentMatchList, payload: res.rows});
             if (res.rows[0].match_model != null && res.rows[0].match_model.length > 0) {
                 res.rows[0].match_model.forEach((item) => {
                     matchModel.set(item,'');
                 });
             }
+        } else {
+            dispatch({type: ProductManagerDetailActionType.setCurrentMatchList, payload: []});
         }
         return matchModel;
     } catch (err) {
@@ -201,6 +204,7 @@ export const updateMatchModel = (productId, matchModel) => async (dispatch, getS
         let res = await httpUtil.httpPut(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
+            dispatch(getProductMatchModel(productId));
             Swal.fire("保存成功", "", "success");
         } else if (!res.success) {
             Swal.fire("保存失败", res.msg, "warning");

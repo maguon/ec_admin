@@ -34,6 +34,7 @@ const initialState = {
         remark: ''
     },
     carBrandList:[],
+    currentMatchList: [],
     purchaseList:[],
     storageList:[]
 };
@@ -89,6 +90,12 @@ export default handleActions({
         return {
             ...state,
             carBrandList: carBrandList
+        }
+    },
+    [ProductManagerDetailActionType.setCurrentMatchList]: (state, action) => {
+        return {
+            ...state,
+            currentMatchList: action.payload
         }
     },
 }, initialState)
