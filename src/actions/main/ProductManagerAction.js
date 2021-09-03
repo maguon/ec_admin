@@ -90,7 +90,14 @@ export const saveModalData = (modalData) => async (dispatch, getState) => {
             unitName: modalData.unitName,
             price: modalData.price,
             standardType: modalData.standardType,
-            remark: modalData.remark
+            remark: modalData.remark,
+
+            priceType: modalData.priceType,
+            priceRaiseRatio: modalData.priceRaiseRatio,
+            priceRaiseValue: modalData.priceRaiseValue,
+            lastPurchasePrice: modalData.lastPurchasePrice,
+            storageMin: modalData.storageMin,
+            storageMax: modalData.storageMax,
         };
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/product';

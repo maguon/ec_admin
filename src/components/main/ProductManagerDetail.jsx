@@ -89,14 +89,18 @@ function ProductManagerDetail(props) {
         if (!productManagerDetailReducer.productInfo.brand_model) {
             validateObj.brand_model ='请选择品牌型号';
         }
-        if (!productManagerDetailReducer.productInfo.storage_min) {
+        if (!productManagerDetailReducer.productInfo.storage_min && productManagerDetailReducer.productInfo.storage_min !== 0) {
             validateObj.storage_min ='请输入最小库存';
+        } else if (!(/^\d+$/.test(productManagerDetailReducer.productInfo.storage_min))) {
+            validateObj.storage_min ='请输入大于等于0的整数';
         }
         if (!productManagerDetailReducer.productInfo.storage_max) {
             validateObj.storage_max ='请输入最大库存';
+        } else if (!(/^\d+$/.test(productManagerDetailReducer.productInfo.storage_max))) {
+            validateObj.storage_max ='请输入大于等于0的整数';
         }
 
-        // 建议售价
+        // 定价方式
         switch (productManagerDetailReducer.productInfo.price_type) {
             case sysConst.PRICE_TYPE[0].value:
                 if (!productManagerDetailReducer.productInfo.price && productManagerDetailReducer.productInfo.price !== 0) {
@@ -106,6 +110,8 @@ function ProductManagerDetail(props) {
             case sysConst.PRICE_TYPE[1].value:
                 if (!productManagerDetailReducer.productInfo.price_raise_ratio) {
                     validateObj.price_raise_ratio ='请输入比率';
+                } else if (!(/^\d+(\.\d{1,2})?$/.test(productManagerDetailReducer.productInfo.price_raise_ratio))) {
+                    validateObj.price_raise_ratio ='请输入大于等于0的浮点数（最多2位小数）';
                 }
                 break;
             case sysConst.PRICE_TYPE[2].value:

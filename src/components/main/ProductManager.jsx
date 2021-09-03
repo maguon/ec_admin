@@ -121,6 +121,22 @@ function ProductManager(props) {
             price: '0',
             // 标准类型 *
             standardType: 1,
+
+            // 最小库存 *
+            storageMin: '',
+            // 最大库存 *
+            storageMax: '',
+            // 定价方式 *
+            priceType: 1,
+            // 售价 *
+            price: 0,
+            // 比率 *
+            priceRaiseRatio: 1,
+            // 加价 *
+            priceRaiseValue: 0,
+            // 当前采购价 *
+            lastPurchasePrice: '',
+
             // 备注
             remark: '',
         });
@@ -145,8 +161,41 @@ function ProductManager(props) {
         if (!modalData.productName) {
             validateObj.productName ='请输入商品名称';
         }
-        if (!modalData.price) {
-            validateObj.price ='请输入售价';
+        if (!modalData.storageMin) {
+            validateObj.storageMin ='请输入最小库存';
+        } else if (!(/^\d+$/.test(modalData.storageMin))) {
+            validateObj.storageMin ='请输入大于等于0的整数';
+        }
+
+        if (!modalData.storageMax) {
+            validateObj.storageMax ='请输入最大库存';
+        } else if (!(/^\d+$/.test(modalData.storageMax))) {
+            validateObj.storageMax ='请输入大于等于0的整数';
+        }
+        // 定价方式
+        switch (modalData.priceType) {
+            case sysConst.PRICE_TYPE[0].value:
+                if (!modalData.price && modalData.price !== 0) {
+                    validateObj.price ='请输入售价';
+                }
+                break;
+            case sysConst.PRICE_TYPE[1].value:
+                if (!modalData.priceRaiseRatio) {
+                    validateObj.priceRaiseRatio ='请输入比率';
+                } else if (!(/^\d+(\.\d{1,2})?$/.test(modalData.priceRaiseRatio))) {
+                    validateObj.priceRaiseRatio ='请输入大于等于0的浮点数（最多2位小数）';
+                }
+                break;
+            case sysConst.PRICE_TYPE[2].value:
+                if (!modalData.priceRaiseValue && modalData.priceRaiseValue !== 0) {
+                    validateObj.priceRaiseValue ='请输入加价';
+                }
+                break;
+            default:
+                break;
+        }
+        if (!modalData.lastPurchasePrice) {
+            validateObj.lastPurchasePrice ='请输入当前采购价';
         }
         setValidation(validateObj);
         return Object.keys(validateObj).length
@@ -482,15 +531,99 @@ function ProductManager(props) {
                                    }}
                         />
                     </Grid>
+
                     <Grid item sm={3}>
-                        <TextField label="售价" fullWidth margin="dense" variant="outlined" type="number" value={modalData.price}
-                                   onChange={(e) => {
-                                       setModalData({...modalData,price:e.target.value});
-                                   }}
-                                   error={validation.price&&validation.price!=''}
-                                   helperText={validation.price}
+                        <TextField label="最小库存" fullWidth margin="dense" variant="outlined" type="number" 
+                                value={modalData.storageMin}
+                                onChange={(e) => {
+                                    setModalData({...modalData,storageMin:e.target.value});
+                                }}
+                                error={validation.storageMin&&validation.storageMin!=''}
+                                helperText={validation.storageMin}
                         />
                     </Grid>
+                    <Grid item sm={3}>
+                        <TextField label="最大库存" fullWidth margin="dense" variant="outlined" type="number" 
+                                value={modalData.storageMax}
+                                onChange={(e) => {
+                                    setModalData({...modalData,storageMax:e.target.value});
+                                }}
+                                error={validation.storageMax&&validation.storageMax!=''}
+                                helperText={validation.storageMax}
+                        />
+                    </Grid>
+
+                    <Grid item sm={3}>
+                        <FormControl variant="outlined" fullWidth margin="dense">
+                            <InputLabel>定价方式</InputLabel>
+                            <Select label="定价方式"
+                                value={modalData.priceType}
+                                onChange={(e, value) => {
+                                    setModalData({...modalData,priceType:e.target.value});
+                                }}
+                            >
+                                {sysConst.PRICE_TYPE.map((item, index) => (
+                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+
+                    {modalData.priceType == sysConst.PRICE_TYPE[0].value &&
+                    <Grid item sm={3}>
+                        <TextField label="售价" fullWidth margin="dense" variant="outlined" type="number" value={modalData.price}
+                                onChange={(e) => {
+                                    setModalData({...modalData,price:e.target.value || 0});
+                                }}
+                                error={validation.price&&validation.price!=''}
+                                helperText={validation.price}
+                        />
+                    </Grid>}
+
+                    {modalData.priceType == sysConst.PRICE_TYPE[1].value &&
+                    <Grid item sm={3}>
+                        <TextField label="比率" fullWidth margin="dense" variant="outlined" type="number"
+                                value={modalData.priceRaiseRatio}
+                                onChange={(e) => {
+                                    setModalData({...modalData,priceRaiseRatio:e.target.value || 1});
+                                }}
+                                error={validation.priceRaiseRatio&&validation.priceRaiseRatio!=''}
+                                helperText={validation.priceRaiseRatio}
+                        />
+                    </Grid>}
+
+                    {modalData.priceType == sysConst.PRICE_TYPE[2].value &&
+                    <Grid item sm={3}>
+                        <TextField label="加价" fullWidth margin="dense" variant="outlined" type="number"
+                                value={modalData.priceRaiseValue}
+                                onChange={(e) => {
+                                    setModalData({...modalData,priceRaiseValue:e.target.value || 0});
+                                }}
+                                error={validation.priceRaiseValue&&validation.priceRaiseValue!=''}
+                                helperText={validation.priceRaiseValue}
+                        />
+                    </Grid>}
+
+                    <Grid item sm={3}>
+                        <TextField label="当前采购价" fullWidth margin="dense" variant="outlined" type="number" 
+                                value={modalData.lastPurchasePrice}
+                                onChange={(e) => {
+                                    setModalData({...modalData,lastPurchasePrice:e.target.value});
+                                }}
+                                error={validation.lastPurchasePrice&&validation.lastPurchasePrice!=''}
+                                helperText={validation.lastPurchasePrice}
+                        />
+                    </Grid>
+
+                    <Grid item sm={3}>
+                        <TextField label="建议售价" fullWidth margin="dense" variant="outlined" type="number" disabled InputLabelProps={{shrink: true}}
+                                value={modalData.priceType == sysConst.PRICE_TYPE[0].value ?  modalData.price : (modalData.priceType == sysConst.PRICE_TYPE[1].value ? 
+                                        (modalData.lastPurchasePrice *  modalData.priceRaiseRatio).toFixed(2) : 
+                                        (parseFloat(modalData.lastPurchasePrice) + parseFloat(modalData.priceRaiseValue)).toFixed(2))}
+                        />
+                    </Grid>
+
+
                     <Grid item xs={12}>
                         <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={modalData.remark}
                                    onChange={(e) => {
