@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import Swal from "sweetalert2";
 // 引入material-ui基础组件
 import {
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 function PurchasePay(props) {
     const {purchasePayReducer, commonReducer, confirmPay} = props;
     const classes = useStyles();
-
+    const dispatch = useDispatch();
     /** 检索条件 */
     // 采购日期
     const [planDateStart, setPlanDateStart] = React.useState(null);
@@ -63,10 +63,12 @@ function PurchasePay(props) {
         props.getBaseSelectList();
         let dataStart = props.purchasePayReducer.purchasePayData.start;
         props.getPurchasePayList(planDateStart,planDateEnd,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus,dataStart);
+        dispatch(purchasePayAction.getPurchasePayStat({planDateStart,planDateEnd,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus}))
     }, []);
 
     // 查询列表
     const queryPurchasePayList = () => {
+        dispatch(purchasePayAction.getPurchasePayStat({planDateStart,planDateEnd,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus}))
         // 默认第一页
         props.getPurchasePayList(planDateStart,planDateEnd,paymentDateStart,paymentDateEnd,purchaseId,supplier,paymentStatus, 0);
     };
@@ -244,6 +246,20 @@ function PurchasePay(props) {
                                 </TableCell>
                             </TableRow>
                         ))}
+
+                        {purchasePayReducer.purchasePayData.dataList.length !== 0 &&
+                        <TableRow>
+                            <TableCell colSpan={6}/>
+                            <TableCell colSpan={1}
+                                       align="center">总采购单：{purchasePayReducer.purchasePayStatData.count}</TableCell>
+                            <TableCell colSpan={1}
+                                       align="center">总运费：{purchasePayReducer.purchasePayStatData.transfer_cost}</TableCell>
+                            <TableCell colSpan={1}
+                                       align="center">总商品成本：{purchasePayReducer.purchasePayStatData.product_cost}</TableCell>
+                            <TableCell colSpan={1}  align="center"
+                                       style={{paddingRight: 40}}>总成本：{purchasePayReducer.purchasePayStatData.total_cost}</TableCell>
+                        </TableRow>}
+
                         {purchasePayReducer.purchasePayData.dataList.length === 0 &&
                         <TableRow>
                             <TableCell colSpan={10} align="center">暂无数据</TableCell>

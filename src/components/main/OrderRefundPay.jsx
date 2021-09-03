@@ -50,9 +50,9 @@ function OrderRefundPay(props) {
             dateEnd: '',
         };
         dispatch(OrderRefundPayActionType.setQueryPayParams(queryParams));
-        orderRefundPayReducer.orderRefundStat=[];
         // 取得画面 select控件，基础数据
         props.getBaseSelectList();
+        props.getOrderRefundStat();
         props.getOrderList(0);
     }, []);
     const modelOpen = () => {
@@ -145,7 +145,6 @@ function OrderRefundPay(props) {
     const getOrderRefundList=()=>{
         props.getOrderList(0);
         props.getOrderRefundStat();
-
     }
     return (
         <div className={classes.root}>
@@ -347,15 +346,10 @@ function OrderRefundPay(props) {
                         {Object.keys(orderRefundPayReducer.orderRefundStat).length !== 0&&orderRefundPayReducer.orderRefundStat.service_refund_price!=='0'&&
                         orderRefundPayReducer.orderRefundStat.prod_refund_price!=='0'&&orderRefundPayReducer.orderRefundStat.total_refund_price!=='0'&&
                             <TableRow>
-                                <TableCell rowSpan={4} />
-                                <TableCell rowSpan={4} />
-                                <TableCell rowSpan={4} />
-                                <TableCell rowSpan={4} />
-                                <TableCell rowSpan={4} />
-                                <TableCell rowSpan={4} />
-                                <TableCell colSpan={2} align="center">服务退款总额：{orderRefundPayReducer.orderRefundStat.service_refund_price}</TableCell>
-                                <TableCell colSpan={2} align="center">商品退款总额：{orderRefundPayReducer.orderRefundStat.prod_refund_price}</TableCell>
-                                <TableCell colSpan={2} align="right" style={{paddingRight:40}}>总额：{orderRefundPayReducer.orderRefundStat.total_refund_price}</TableCell>
+                                <TableCell colSpan={11} />
+                                <TableCell colSpan={1} align="center">服务退款总额：{orderRefundPayReducer.orderRefundStat.service_refund_price}</TableCell>
+                                <TableCell colSpan={1} align="center">商品退款总额：{orderRefundPayReducer.orderRefundStat.prod_refund_price}</TableCell>
+                                <TableCell colSpan={1} align="right" style={{paddingRight:40}}>总额：{orderRefundPayReducer.orderRefundStat.total_refund_price}</TableCell>
                             </TableRow>}
                         {orderRefundPayReducer.orderData.dataList.length === 0 &&
                         <TableRow>

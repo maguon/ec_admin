@@ -64,7 +64,7 @@ function OrderPay(props) {
                 finDateEnd: ''
             };
             dispatch(OrderPayActionType.setQueryPayParams(queryParams));
-            orderPayReducer.orderStat=[];
+            dispatch(orderPayAction.getOrderStat())
             // 取得画面 select控件，基础数据
             props.getBaseSelectList();
             props.getOrderList(0);
@@ -444,19 +444,14 @@ function OrderPay(props) {
                         {Object.keys(orderPayReducer.orderStat).length !== 0 &&orderPayReducer.orderStat.service_price!=='0'&&orderPayReducer.orderStat.prod_price!=='0'&&
                         orderPayReducer.orderStat.total_discount_price!=='0'&&orderPayReducer.orderStat.total_actual_price!=='0'&&
                         <TableRow>
-                            <TableCell rowSpan={4}/>
-                            <TableCell rowSpan={4}/>
-                            <TableCell rowSpan={4}/>
-                            <TableCell rowSpan={4}/>
-                            <TableCell rowSpan={4}/>
-                            <TableCell rowSpan={4}/>
-                            <TableCell colSpan={3}
+                            <TableCell colSpan={9}/>
+                            <TableCell colSpan={2}
                                        align="center">服务费总额：{orderPayReducer.orderStat.service_price}</TableCell>
-                            <TableCell colSpan={3}
+                            <TableCell colSpan={2}
                                        align="center">商品总额：{orderPayReducer.orderStat.prod_price}</TableCell>
-                            <TableCell colSpan={3}
+                            <TableCell colSpan={2}
                                        align="center">折扣总额：{orderPayReducer.orderStat.total_discount_price}</TableCell>
-                            <TableCell colSpan={3} align="right"
+                            <TableCell colSpan={2} align="right"
                                        style={{paddingRight: 40}}>实际总额：{orderPayReducer.orderStat.total_actual_price}</TableCell>
                         </TableRow>}
                         {orderPayReducer.orderData.dataList.length === 0 &&
