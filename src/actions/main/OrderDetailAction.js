@@ -323,10 +323,10 @@ export const downLoadPDF = (orderId) => async (dispatch, getState) => {
             ['承修方(盖章):' + sysConst.ORDER_PDF.companyName, "开户银行:" + sysConst.ORDER_PDF.bank,"账   号:" +sysConst.ORDER_PDF.bankSer],
             ['E-mail:' + sysConst.ORDER_PDF.contactName, '',"网　 址:" +sysConst.ORDER_PDF.website],
             ["地  址:" + sysConst.ORDER_PDF.address,'电   话:' +sysConst.ORDER_PDF.mobile,"传   真:" + sysConst.ORDER_PDF.email],
-            ["托修方 :"+ orderInfo.client_agent_name,'','施工编号:'+ orderInfo.id],
-            ["送修人 :"+ orderInfo.client_name,'',"联系电话:" + orderInfo.client_tel],
+            ["托修方 :"+ orderInfo.client_agent_name,"送修人 :"+ orderInfo.client_name,"联系电话:" + orderInfo.client_tel],
             ['车牌号码:' + orderInfo.client_serial,"厂牌车型:" + '',"车辆VIN:"+orderInfo.client_serial_detail],
-            ['进厂日期:' + orderInfo.date_id,"出厂日期:"+ orderInfo.fin_date_id==null?'':orderInfo.fin_date_id,"进厂里程:"+ ''],
+            ['进厂日期:' + orderInfo.date_id,"出厂日期:"+ (orderInfo.fin_date_id==null?'':orderInfo.fin_date_id),"进厂里程:"+ ''],
+            ['施工编号:'+ orderInfo.id]
         ];
 
         const doc = new jsPDF();
