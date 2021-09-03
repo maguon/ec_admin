@@ -320,13 +320,13 @@ export const downLoadPDF = (orderId) => async (dispatch, getState) => {
 
         // 初始化jsPdf，并输出title，logo，以及body 头部
         let bodyHeader = [
-            [sysConst.ORDER_PDF.ourName + '大连鸿菘实业有限公司', sysConst.ORDER_PDF.bank + '中国银行股份有限公司大连保税区支行','',sysConst.ORDER_PDF.bankSer +'316873254265'],
-            [sysConst.ORDER_PDF.contactName + orderInfo.supplier_name, sysConst.ORDER_PDF.website +''],
-            [sysConst.ORDER_PDF.address + '大连市保税区瑞港路6号',sysConst.ORDER_PDF.mobile +'13342290165', '',sysConst.ORDER_PDF.email + '0411-66771175'],
-            [sysConst.ORDER_PDF.client + orderInfo.client_agent_name,    sysConst.ORDER_PDF.deployId+ orderInfo.id, sysConst.ORDER_PDF.opUser+ orderInfo.client_name,sysConst.ORDER_PDF.tel + orderInfo.client_tel],
-            [sysConst.ORDER_PDF.clientSerial + orderInfo.client_serial,sysConst.ORDER_PDF.carModel + '',sysConst.ORDER_PDF.VIN+orderInfo.client_serial_detail],
-            [sysConst.ORDER_PDF.dateStart + orderInfo.date_id,sysConst.ORDER_PDF.dateEnd+ orderInfo.fin_date_id==null?'':orderInfo.fin_date_id,sysConst.ORDER_PDF.incomingMileage+ ''/*, {content: sysConst.ORDER_PDF.fixed+ '□ 行业', styles: {halign: 'right'}}*/],
-            /*[sysConst.ORDER_PDF.contractNo + '',sysConst.ORDER_PDF.certificateNo+ '',sysConst.ORDER_PDF.classificationCode + '', {content: sysConst.ORDER_PDF.executiveStandard+'□ 制造企业', styles: {halign: 'right'}}],*/
+            ['承修方(盖章):' + sysConst.ORDER_PDF.companyName, "开户银行:" + sysConst.ORDER_PDF.bank,"账   号:" +sysConst.ORDER_PDF.bankSer],
+            ['E-mail:' + sysConst.ORDER_PDF.contactName, '',"网　 址:" +sysConst.ORDER_PDF.website],
+            ["地  址:" + sysConst.ORDER_PDF.address,'电   话:' +sysConst.ORDER_PDF.mobile,"传   真:" + sysConst.ORDER_PDF.email],
+            ["托修方 :"+ orderInfo.client_agent_name,'','施工编号:'+ orderInfo.id],
+            ["送修人 :"+ orderInfo.client_name,'',"联系电话:" + orderInfo.client_tel],
+            ['车牌号码:' + orderInfo.client_serial,"厂牌车型:" + '',"车辆VIN:"+orderInfo.client_serial_detail],
+            ['进厂日期:' + orderInfo.date_id,"出厂日期:"+ orderInfo.fin_date_id==null?'':orderInfo.fin_date_id,"进厂里程:"+ ''],
         ];
 
         const doc = new jsPDF();
@@ -336,7 +336,7 @@ export const downLoadPDF = (orderId) => async (dispatch, getState) => {
         // 标题部分，白色背景，居中，粗体，20号字
         doc.autoTable({
             startY: 10,
-            body: [[{content: '大连鸿菘实业有限公司结算清单', styles: {halign: 'center', fillColor: 255, fontStyle: 'bold', fontSize: 20}}]],
+            body: [[{content: sysConst.ORDER_PDF.title, styles: {halign: 'center', fillColor: 255, fontStyle: 'bold', fontSize: 20}}]],
             didParseCell: function (data) {
                 data.cell.styles.font = 'simhei'
             },
@@ -346,7 +346,7 @@ export const downLoadPDF = (orderId) => async (dispatch, getState) => {
             doc.autoTable({
                 body: bodyHeader,
                 didParseCell: function (data) {
-                    data.cell.styles.fontSize = 8;
+                    data.cell.styles.fontSize = 10;
                     data.cell.styles.cellPadding=0;
                     // 黑体字
                     data.cell.styles.font = 'simhei';
@@ -355,7 +355,7 @@ export const downLoadPDF = (orderId) => async (dispatch, getState) => {
                 }
             });
         }
-        let finalY = 30
+        let finalY = 45
         //1
         doc.autoTable({
             startY: finalY+15,
