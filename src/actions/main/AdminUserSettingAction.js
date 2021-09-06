@@ -43,13 +43,29 @@ export const getUserTypeList = () => async (dispatch) => {
         if (res.success === true) {
             dispatch({type: AdminUserSettingActionType.setTypeArray, payload: res.rows});
         } else if (res.success === false) {
-            Swal.fire('保存失败', res.msg, 'warning');
+            Swal.fire('群组查询失败', res.msg, 'warning');
         }
     } catch (err) {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
 
+//绩效查找
+export const getPerfLevelList = () => async (dispatch) => {
+    try {
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/userPerfLevel';
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success === true) {
+            dispatch({type: AdminUserSettingActionType.setPerfLevelArray, payload: res.rows});
+        } else if (res.success === false) {
+            Swal.fire('绩效查询失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire('操作失败', err.message, 'error');
+    }
+};
 // 系统设置 -> 员工管理 添加员工
 export const addUser = (params) => async (dispatch) => {
     try {

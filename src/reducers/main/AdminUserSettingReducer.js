@@ -19,6 +19,7 @@ const initialState = {
     //详情
     adminItem:[],
     typeArray:[],
+    perfLevelArray:[]
 };
 export default handleActions({
     [AdminUserSettingActionType.setQueryObj]: (state, action) => {
@@ -51,4 +52,11 @@ export default handleActions({
             typeArray: action.payload
         }
     },
+    [AdminUserSettingActionType.setPerfLevelArray]: (state, action) => {
+        return {
+            ...state,
+            perfLevelArray: action.payload
+        }
+    },
+
 }, initialState)

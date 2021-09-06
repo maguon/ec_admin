@@ -1,10 +1,28 @@
 import React, {useEffect,useState}from 'react';
 import {connect} from 'react-redux';
 import Swal from 'sweetalert2';
-import {Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Box,Fab,Switch} from "@material-ui/core";
+import {
+    Button,
+    Divider,
+    Grid,
+    Typography,
+    Paper,
+    TextField,
+    TableContainer,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody,
+    IconButton,
+    Box,
+    Fab,
+    Switch,
+} from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import {makeStyles} from "@material-ui/core/styles";
 import {SimpleModal} from '../index';
-import {AdminUserSettingActionType} from '../../types';
+import {AdminUserSettingActionType, OrderActionType} from '../../types';
 const adminUserSettingAction = require('../../actions/main/AdminUserSettingAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
@@ -43,6 +61,7 @@ function AdminUserSetting (props) {
     const [modalOpenFlag, setModalOpenFlag] = useState(false);
     const [adminUsername, setAdminUsername] = useState("");
     const [type, setType] = useState("");
+    const [perfLevelId, setPerfLevelId] = useState(null);
     const [adminUserPhone, setAdminUserPhone] = useState("");
     const [password, setPassword] = useState("");
     const [gender, setGender] = useState("1");
@@ -68,6 +87,7 @@ function AdminUserSetting (props) {
     useEffect(()=>{
         props.getUserList();
         props.getUserTypeList();
+        props.getPerfLevelList();
     },[]);
     //验证()
     const validate = ()=>{
@@ -98,14 +118,14 @@ function AdminUserSetting (props) {
     const addUser= ()=>{
         const errorCount = validate();
         if(errorCount==0){
-            props.addUser(adminUsername, adminUserPhone,password,gender,type,1);
+            props.addUser(adminUsername, adminUserPhone,password,gender,type,perfLevelId,1);
             setModalOpenFlag(false);
         }
     }
     const setUser= ()=>{
         const errorCount = validate();
         if(errorCount==0){
-            props.updateUserInfo(adminUsername, gender,type,id);
+            props.updateUserInfo(adminUsername, gender,type,perfLevelId,id);
             setModalOpenFlag(false);
         }
     }
@@ -127,6 +147,7 @@ function AdminUserSetting (props) {
             setModalCreateFlag(true);
             setAdminUsername('');
             setType('1032');
+            setPerfLevelId('1032');
             setAdminUserPhone('');
             setPassword('');
             setGender('1');
@@ -134,6 +155,7 @@ function AdminUserSetting (props) {
             setModalCreateFlag(false);
             setAdminUsername(user.real_name);
             setType(user.type);
+            setPerfLevelId(user.perf_level_id)
             setAdminUserPhone(user.phone);
             setGender(user.gender);
             setId(user.id);
@@ -368,6 +390,46 @@ function AdminUserSetting (props) {
                     <Grid item xs>
                         <TextField fullWidth
                                    margin='normal'
+                                   label="用户姓名"
+                                   name="adminUsername"
+                                   type="text"
+                                   variant="outlined"
+                                   onChange={(e)=>{
+                                       setAdminUsername(e.target.value)
+                                   }}
+                                   error={validation.adminUsername&&validation.adminUsername!=''}
+                                   helperText={validation.adminUsername}
+                                   value={adminUsername}
+
+                        />
+                    </Grid>
+                    <Grid item xs>
+                        <TextField className={classes.select}
+                                   select
+                                   label="性别"
+                                   name="gender"
+                                   type="text"
+                                   onChange={(e)=>{
+                                       setGender(e.target.value)
+                                   }}
+                                   value={gender}
+                                   SelectProps={{
+                                       native: true,
+                                   }}
+                                   variant="outlined"
+                        >
+                            {sysConst.GENDER.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </TextField>
+                    </Grid>
+                </Grid>
+                <Grid  container spacing={3}>
+                    <Grid item xs>
+                        <TextField fullWidth
+                                   margin='normal'
                                    disabled={modalCreateFlag?false:true}
                                    name="adminUserPhone"
                                    type="text"
@@ -382,24 +444,6 @@ function AdminUserSetting (props) {
 
                         />
                     </Grid>
-                    <Grid item xs>
-                        <TextField fullWidth
-                                   margin='normal'
-                                   label="用户姓名"
-                                   name="adminUsername"
-                                   type="text"
-                                   variant="outlined"
-                                   onChange={(e)=>{
-                                       setAdminUsername(e.target.value)
-                                   }}
-                                   error={validation.adminUsername&&validation.adminUsername!=''}
-                                   helperText={validation.adminUsername}
-                                   value={adminUsername}
-
-                        />
-                    </Grid>
-                </Grid>
-                <Grid  container spacing={3}>
                     {modalCreateFlag==true ?  <Grid item xs>
                         <TextField fullWidth
                                    label="密码"
@@ -442,21 +486,21 @@ function AdminUserSetting (props) {
                     <Grid item xs>
                         <TextField className={classes.select}
                                    select
-                                   label="性别"
-                                   name="gender"
+                                   label="绩效群组"
+                                   name="perfLevelId"
                                    type="text"
                                    onChange={(e)=>{
-                                       setGender(e.target.value)
+                                       setPerfLevelId(e.target.value)
                                    }}
-                                   value={gender}
+                                   value={perfLevelId}
                                    SelectProps={{
                                        native: true,
                                    }}
                                    variant="outlined"
                         >
-                            {sysConst.GENDER.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
+                            {adminUserSettingReducer.perfLevelArray.map((option) => (
+                                <option key={option.id} value={option.id}>
+                                    {option.perf_name}
                                 </option>
                             ))}
                         </TextField>
@@ -481,10 +525,13 @@ const mapDispatchToProps = (dispatch) => ({
     getUserTypeList:() =>{
         dispatch(adminUserSettingAction.getUserTypeList())
     },
+    getPerfLevelList:()=>{
+        dispatch(adminUserSettingAction.getPerfLevelList())
+    },
     //添加员工
-    addUser: (realName, phone,password,gender,type,status) => {
+    addUser: (realName, phone,password,gender,type,perfLevelId,status) => {
         if (realName.length > 0 && phone.length > 0 && password.length > 0) {
-            dispatch(adminUserSettingAction.addUser({realName, phone,password,gender,type,status}));
+            dispatch(adminUserSettingAction.addUser({realName, phone,password,gender,type,perfLevelId,status}));
         }
     },
     //获取列表
@@ -497,9 +544,9 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(adminUserSettingAction.getUserById(id))
     },
     //修改员工信息
-    updateUserInfo: (realName, gender,type,id) => {
+    updateUserInfo: (realName, gender,type,perfLevelId,id) => {
         if (realName.length > 0) {
-            dispatch(adminUserSettingAction.updateUserInfo({realName, gender,type},id))
+            dispatch(adminUserSettingAction.updateUserInfo({realName, gender,type,perfLevelId},id))
         }
     },
     //修改状态
