@@ -68,28 +68,38 @@ function OrderDetail(props) {
     const [validation,setValidation] = React.useState({});
 
     //初始添加模态框值
-    const initModal = (orderItemService, orderStatus) => {
+    const initModal = async (item, pageType, pageTitle) => {
         // 清check内容
         setValidation({});
         // 初始化模态数据
-        setModalData({
-            orderItemService: orderItemService,
-            orderStatus: orderStatus,
-            deployUser: {id: orderItemService.deploy_user_id,real_name: orderItemService.deploy_user_name},
-            checkUser: {id: orderItemService.check_user_id,real_name: orderItemService.check_user_name}
-        });
-        // 设定模态打开
-        setModalOpen(true);
+        if (pageType === 'deploy' || pageType === 'check') {
+            setModalData({
+                orderItemService: item,
+                pageType: pageType,
+                pageTitle: pageTitle,
+                deployUser: {id: item.deploy_user_id,real_name: item.deploy_user_name},
+                checkUser: {id: item.check_user_id,real_name: item.check_user_name}
+            });
+            setModalOpen(true);
+        } else {
+            let ret = await dispatch(orderDetailAction.getStorageProductRelDetail(item.order_id, item.id));
+            setModalData({
+                pageType: pageType,
+                pageTitle: pageTitle,
+                storageProductRelDetail: ret
+            });
+            setModalOpen(true);
+        }
     };
 
     const submitModal = () => {
         const validateObj ={};
-        if (modalData.orderStatus === sysConst.ORDER_STATUS[1].value) {
+        if (modalData.pageType === 'deploy') {
             if (!modalData.deployUser) {
                 validateObj.deployUser ='请选择施工人';
             }
         }
-        if (modalData.orderStatus === sysConst.ORDER_STATUS[2].value) {
+        if (modalData.pageType === 'check') {
             if (!modalData.checkUser) {
                 validateObj.checkUser ='请选择验收人';
             }
@@ -436,15 +446,17 @@ function OrderDetail(props) {
                         </Grid>
                         {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 &&
                         <Grid item container xs={2}>
-                            <Grid item xs={4} align='center'>
-                                {orderDetailReducer.orderInfo.status == sysConst.ORDER_STATUS[1].value &&
-                                <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{initModal(item, orderDetailReducer.orderInfo.status)}}>
-                                    <span style={{fontSize: 14}}>派</span>
-                                </IconButton>}
-                                {orderDetailReducer.orderInfo.status == sysConst.ORDER_STATUS[2].value &&
-                                <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{initModal(item, orderDetailReducer.orderInfo.status)}}>
-                                    <span style={{fontSize: 14}}>验</span>
-                                </IconButton>}
+                            <Grid item xs={4} container align='center'>
+                                <Grid item xs={6}>
+                                    <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{initModal(item, 'deploy', '新增施工人')}}>
+                                        <span style={{fontSize: 14}}>派</span>
+                                    </IconButton>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{initModal(item, 'check', '新增验收人')}}>
+                                        <span style={{fontSize: 14}}>验</span>
+                                    </IconButton>
+                                </Grid>
                             </Grid>
                             <Grid item xs={4} align='center'>
                                 <IconButton color="secondary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{deleteService(item)}}>
@@ -566,12 +578,22 @@ function OrderDetail(props) {
                                 dispatch(OrderDetailActionType.getOrderProdList(orderDetailReducer.orderProdList));
                             }}/>
                         </Grid>
-                        {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 &&
                         <Grid item container xs={2} align='center'>
-                            <Grid item xs={4} align='center'>
-                                {item.status === sysConst.PROD_ITEM_STATUS[0].value ? <div style={{fontSize: 14, paddingTop: 18}}>未</div> : <div style={{fontSize: 14, paddingTop: 18}}>领</div>}
-                            </Grid>
                             {item.status === sysConst.PROD_ITEM_STATUS[0].value &&
+                            <Grid item xs={4} align='center'>
+                                <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{Swal.fire("暂未领取", '', "warning");}}>
+                                    <span style={{fontSize: 14}}>未</span>
+                                </IconButton>
+                            </Grid>}
+
+                            {item.status !== sysConst.PROD_ITEM_STATUS[0].value &&
+                            <Grid item xs={4} align='center'>
+                                <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{initModal(item, 'receive', '领取信息')}}>
+                                    <span style={{fontSize: 14}}>领</span>
+                                </IconButton>
+                            </Grid>}
+
+                            {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 && item.status === sysConst.PROD_ITEM_STATUS[0].value &&
                             <>
                                 <Grid item xs={4} align='center'>
                                     <IconButton color="secondary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{deleteProd(item)}}>
@@ -584,7 +606,7 @@ function OrderDetail(props) {
                                     </IconButton>
                                 </Grid>
                             </>}
-                        </Grid>}
+                        </Grid>
                     </Grid>
                 </Grid>
             ))}
@@ -593,19 +615,20 @@ function OrderDetail(props) {
             <Grid style={{height: 50}}>&nbsp;</Grid>
             <SimpleModal
                 maxWidth={'sm'}
-                title={modalData.orderStatus===sysConst.ORDER_STATUS[1].value ? "新增施工人" : "新增验收人"}
+                title={modalData.pageTitle}
                 open={modalOpen}
                 onClose={()=>{setModalOpen(false)}}
                 showFooter={true}
                 footer={
                     <>
-                        <Button variant="contained" color="primary" onClick={submitModal}>确定</Button>
+                        {(modalData.pageType ==='deploy' || modalData.pageType ==='check') &&
+                        <Button variant="contained" color="primary" onClick={submitModal}>确定</Button>}
                         <Button variant="contained" onClick={()=>{setModalOpen(false)}}>关闭</Button>
                     </>
                 }
             >
                 <Grid container spacing={2}>
-                    {modalData.orderStatus===sysConst.ORDER_STATUS[1].value &&
+                    {modalData.pageType==='deploy' &&
                     <Grid item sm={12}>
                         <Autocomplete fullWidth disableClearable
                                       options={commonReducer.userList}
@@ -618,7 +641,7 @@ function OrderDetail(props) {
                                               error={validation.deployUser&&validation.deployUser!=''} helperText={validation.deployUser}/>}
                         />
                     </Grid>}
-                    {modalData.orderStatus===sysConst.ORDER_STATUS[2].value &&
+                    {modalData.pageType==='check' &&
                     <Grid item sm={12}>
                         <Autocomplete fullWidth disableClearable
                                       options={commonReducer.userList}
@@ -631,6 +654,37 @@ function OrderDetail(props) {
                                               error={validation.checkUser&&validation.checkUser!=''} helperText={validation.checkUser}/>}
                         />
                     </Grid>}
+                    {modalData.pageType==='receive' &&
+                    <Grid item sm={12} container spacing={1}>
+                        {/*{modalData.storageProductRelDetail.apply_real_name + '于 ' + commonUtil.getDateTime(modalData.storageProductRelDetail.created_on)*/}
+                        {/*+ ' 在' + modalData.storageProductRelDetail.storage_name + ' ' + modalData.storageProductRelDetail.storage_area_name*/}
+                        {/*+ ' 领取 ' + modalData.storageProductRelDetail.product_name + ' ' + modalData.storageProductRelDetail.storage_count + '个'}*/}
+                        <Grid item sm={6}>
+                            <TextField label="领用人" fullWidth margin="dense" variant="outlined"value={modalData.storageProductRelDetail.apply_real_name}/>
+                        </Grid>
+
+                        <Grid item sm={6}>
+                            <TextField label="领取时间" fullWidth margin="dense" variant="outlined"value={commonUtil.getDateTime(modalData.storageProductRelDetail.created_on)}/>
+                        </Grid>
+
+                        <Grid item sm={6}>
+                            <TextField label="仓库" fullWidth margin="dense" variant="outlined"value={modalData.storageProductRelDetail.storage_name}/>
+                        </Grid>
+
+                        <Grid item sm={6}>
+                            <TextField label="仓库分区" fullWidth margin="dense" variant="outlined"value={modalData.storageProductRelDetail.storage_area_name}/>
+                        </Grid>
+
+                        <Grid item sm={6}>
+                            <TextField label="商品" fullWidth margin="dense" variant="outlined"value={modalData.storageProductRelDetail.product_name}/>
+                        </Grid>
+
+                        <Grid item sm={6}>
+                            <TextField label="数量" fullWidth margin="dense" variant="outlined"value={modalData.storageProductRelDetail.storage_count}/>
+                        </Grid>
+                    </Grid>}
+{/*                    {modalData.pageType==='no-data' &&
+                    <Grid item sm={12}>暂未领取</Grid>}*/}
                 </Grid>
             </SimpleModal>
         </div>
