@@ -1,7 +1,25 @@
 import React, {useEffect, useState} from 'react';
 import {connect,useDispatch} from 'react-redux';
 import {Link, useParams} from "react-router-dom";
-import {Button, Grid, Typography, TextField, IconButton, AppBar, Tab, Tabs, TableContainer, Paper, Table, TableHead, TableRow, TableBody, TableCell, Fab,} from "@material-ui/core";
+import {
+    Button,
+    Grid,
+    Typography,
+    TextField,
+    IconButton,
+    AppBar,
+    Tab,
+    Tabs,
+    TableContainer,
+    Paper,
+    Table,
+    TableHead,
+    TableRow,
+    TableBody,
+    TableCell,
+    Fab,
+    Box,
+} from "@material-ui/core";
 import TabContext from '@material-ui/lab/TabContext';
 import TabPanel from '@material-ui/lab/TabPanel';
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -82,10 +100,10 @@ function ClientAgentDetail (props){
         }
         if(newValue==2){
             clientAgentDetailReducer.clientArray=[];
-            getClientInfo(id)
+            getClientInfo(id,0)
         }
         if(newValue==3){
-            getInvoiceList(id)
+            getInvoiceList(id,0)
         }
     };
     //验证()
@@ -328,7 +346,7 @@ function ClientAgentDetail (props){
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {clientAgentDetailReducer.clientArray.map((row) => (
+                                        {clientAgentDetailReducer.clientData.clientArray.map((row) => (
                                             <TableRow key={'table-row-' + row.id} style={{paddingTop:15}}>
                                                 <TableCell align="center" >{row.id}</TableCell>
                                                 <TableCell align="center" >{row.client_serial}</TableCell>
@@ -341,7 +359,7 @@ function ClientAgentDetail (props){
                                                 <TableCell align="center" >{row.date_id}</TableCell>
                                             </TableRow>
                                         ))}
-                                        {clientAgentDetailReducer.clientArray.length === 0 &&
+                                        {clientAgentDetailReducer.clientData.clientArray.length === 0 &&
                                         <TableRow>
                                             <TableCell colSpan={9} style={{textAlign: 'center'}}>暂无数据</TableCell>
                                         </TableRow>}
@@ -349,6 +367,18 @@ function ClientAgentDetail (props){
                                 </Table>
                             </TableContainer>
                         </Grid>
+                        <Box style={{textAlign: 'right', marginTop: 20}}>
+                            {clientAgentDetailReducer.clientData.dataSize >=clientAgentDetailReducer.clientData.size &&
+                            <Button className={classes.button} variant="contained" color="primary"  size="small"
+                                    onClick={()=>{dispatch(ClientAgentDetailAction.getClientInfo(id,clientAgentDetailReducer.clientData.start+(clientAgentDetailReducer.clientData.size-1)))}}>
+                                下一页
+                            </Button>}
+                            {clientAgentDetailReducer.clientData.start > 0 &&clientAgentDetailReducer.clientData.dataSize > 0 &&
+                            <Button className={classes.button} variant="contained" color="primary"  size="small" style={{marginRight: 20}}
+                                    onClick={()=>{dispatch(ClientAgentDetailAction.getClientInfo(id,clientAgentDetailReducer.clientData.start-(clientAgentDetailReducer.clientData.size-1)))}}>
+                                上一页
+                            </Button>}
+                        </Box>
                     </TabPanel>
                     <TabPanel value='3'>
                         <Grid item xs align="right">
@@ -372,7 +402,7 @@ function ClientAgentDetail (props){
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {clientAgentDetailReducer.invoiceArray.map((row) => (
+                                        {clientAgentDetailReducer.invoiceData.invoiceArray.map((row) => (
                                             <TableRow key={'table-row-' + row.id} style={{paddingTop:15}}>
                                                 <TableCell align="center">{row.id}</TableCell>
                                                 <TableCell align="center">{commonUtil.getJsonValue(sysConst.INVOICE_TYPE,row.invoice_type)}</TableCell>
@@ -388,7 +418,7 @@ function ClientAgentDetail (props){
                                                 </TableCell>
                                             </TableRow>
                                         ))}
-                                        {clientAgentDetailReducer.invoiceArray.length === 0 &&
+                                        {clientAgentDetailReducer.invoiceData.invoiceArray.length === 0 &&
                                         <TableRow>
                                             <TableCell colSpan={9} style={{textAlign: 'center'}}>暂无数据</TableCell>
                                         </TableRow>}
@@ -396,6 +426,18 @@ function ClientAgentDetail (props){
                                 </Table>
                             </TableContainer>
                         </Grid>
+                        <Box style={{textAlign: 'right', marginTop: 20}}>
+                            {clientAgentDetailReducer.invoiceData.dataSize >=clientAgentDetailReducer.invoiceData.size &&
+                            <Button className={classes.button} variant="contained" color="primary"  size="small"
+                                    onClick={()=>{dispatch(ClientAgentDetailAction.getInvoiceList(id,clientAgentDetailReducer.invoiceData.start+(clientAgentDetailReducer.invoiceData.size-1)))}}>
+                                下一页
+                            </Button>}
+                            {clientAgentDetailReducer.invoiceData.start > 0 &&clientAgentDetailReducer.invoiceData.dataSize > 0 &&
+                            <Button className={classes.button} variant="contained" color="primary"  size="small" style={{marginRight: 20}}
+                                    onClick={()=>{dispatch(ClientAgentDetailAction.getInvoiceList(id,clientAgentDetailReducer.invoiceData.start-(clientAgentDetailReducer.invoiceData.size-1)))}}>
+                                上一页
+                            </Button>}
+                        </Box>
                     </TabPanel>
                 </TabContext>
             </div>
@@ -677,14 +719,14 @@ const mapDispatchToProps = (dispatch) => ({
     getClientAgentInfo:(id)=>{
         dispatch(ClientAgentDetailAction.getClientAgentInfo(id));
     },
-    getClientInfo:(id)=>{
-        dispatch(ClientAgentDetailAction.getClientInfo(id));
+    getClientInfo:(id,start)=>{
+        dispatch(ClientAgentDetailAction.getClientInfo(id,start));
     },
     updateClientAgent:(id)=>{
         dispatch(ClientAgentDetailAction.updateClientAgent(id));
     },
-    getInvoiceList:(id)=>{
-        dispatch(ClientAgentDetailAction.getInvoiceList(id));
+    getInvoiceList:(id,start)=>{
+        dispatch(ClientAgentDetailAction.getInvoiceList(id,start));
     },
     addInvoice:(id,{invoiceTitle,invoiceType,invoiceBank,invoiceBankSer,settleType,invoiceAddress,addInvoiceRemark})=>{
         dispatch(ClientAgentDetailAction.addInvoice(id,{invoiceTitle,invoiceType,invoiceBank,invoiceBankSer,settleType,invoiceAddress,addInvoiceRemark}));

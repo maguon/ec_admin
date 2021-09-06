@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config/index';
-import {AppActionType, ClientInformationDetailActionType} from '../../types';
+import {AppActionType, ClientAgentDetailActionType, ClientInformationDetailActionType} from '../../types';
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
@@ -88,16 +88,22 @@ export const updateClient = () => async (dispatch, getState) => {
         Swal.fire("操作失败", err.message, "error");
     }
 };
-export const getOrderList =(id) => async (dispatch, getState) => {
+export const getOrderList =(id,params) => async (dispatch, getState) => {
     try{
+        const start = params;
+        const size = getState().ClientInformationDetailReducer.orderData.size;
         // 基本检索URL
-        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/order?clientId='+id;
+        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/order?clientId='+id+'&start=' + start + '&size=' + size;
         // 检索URL
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-        if (res.success === true && res.rows.length>0) {
-            dispatch({type: ClientInformationDetailActionType.getOrderList, payload: res.rows});
+        let newOrderData = getState(). ClientInformationDetailReducer.orderData;
+        if (res.success) {
+            newOrderData.start = start;
+            newOrderData.dataSize = res.rows.length;
+            newOrderData.orderInfo = res.rows.slice(0, size - 1);
+            dispatch({type: ClientInformationDetailActionType.getOrderList, payload: newOrderData});
         } else if (res.success === false) {
             Swal.fire('获取订单信息失败', res.msg, 'warning');
         }

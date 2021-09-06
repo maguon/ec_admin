@@ -15,7 +15,16 @@ const initialState = {
     },
     referUserInfo:[],
     clientAgentInfo:[],
-    orderInfo:[],
+    orderData:{
+        // 开始位置
+        start: 0,
+        // 每页数量
+        size: 11,
+        // 检索结果数量
+        dataSize: 0,
+        // 数据列表
+        orderInfo: [],
+    },
     orderItemProdInfo:[],
     orderItemServiceInfo:[]
 };
@@ -23,11 +32,6 @@ const initialState = {
 export default handleActions({
     [ClientInformationDetailActionType.getClientInfo]: (state, action) => {
         let ret = action.payload;
-       /* if( action.payload.refer_real_name==null){
-            ret.refer_user=null
-        }else {
-            ret.refer_user={id:action.payload.refer_user,real_name:action.payload.refer_real_name};
-        }*/
         ret.client_agent_id={id:action.payload.client_agent_id,name:action.payload.client_agent_name}
 
         return {
@@ -59,7 +63,7 @@ export default handleActions({
     [ClientInformationDetailActionType.getOrderList]: (state, action) => {
         return {
             ...state,
-            orderInfo: action.payload
+            orderData: action.payload
         }
     },
     [ClientInformationDetailActionType.getOrderItemProdList]: (state, action) => {

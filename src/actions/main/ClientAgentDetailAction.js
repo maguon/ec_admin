@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config/index';
-import {AppActionType,ClientAgentDetailActionType} from '../../types';
+import {AppActionType, ClientAgentDetailActionType} from '../../types';
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
@@ -76,16 +76,22 @@ export const getClientAgentArray = () => async (dispatch) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
-export const getInvoiceList =(id)  => async (dispatch) =>{
+export const getInvoiceList =(id,params)  => async (dispatch,getState) =>{
     try {
+        const start = params;
+        const size = getState().ClientAgentDetailReducer.invoiceData.size;
         // 基本检索URL
-        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/clientAgentInvoice?clientAgentId='+id;
+        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/clientAgentInvoice?clientAgentId='+id+'&start=' + start + '&size=' + size;
         // 检索URL
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-        if (res.success === true && res.rows.length>0) {
-            dispatch({type: ClientAgentDetailActionType.getInvoiceList, payload: res.rows});
+        let newInvoiceData = getState(). ClientAgentDetailReducer.invoiceData;
+        if (res.success) {
+            newInvoiceData.start = start;
+            newInvoiceData.dataSize = res.rows.length;
+            newInvoiceData.invoiceArray = res.rows.slice(0, size - 1);
+            dispatch({type: ClientAgentDetailActionType.getInvoiceList, payload: newInvoiceData});
         } else if (res.success === false) {
             Swal.fire('获取发票信息失败', res.msg, 'warning');
         }
@@ -93,17 +99,22 @@ export const getInvoiceList =(id)  => async (dispatch) =>{
         Swal.fire('操作失败', err.message, 'error');
     }
 }
-
-export const getClientInfo =(id)  => async (dispatch) =>{
+export const getClientInfo =(id,params)  => async (dispatch,getState) =>{
     try {
+        const start = params;
+        const size = getState().ClientAgentDetailReducer.clientData.size;
         // 基本检索URL
-        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/client?clientAgentId='+id;
+        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/client?clientAgentId='+id+'&start=' + start + '&size=' + size;
         // 检索URL
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-        if (res.success === true && res.rows.length>0) {
-            dispatch({type: ClientAgentDetailActionType.getClientInfo, payload: res.rows});
+        let newClientData = getState(). ClientAgentDetailReducer.clientData;
+        if (res.success) {
+            newClientData.start = start;
+            newClientData.dataSize = res.rows.length;
+            newClientData.clientArray = res.rows.slice(0, size - 1);
+            dispatch({type: ClientAgentDetailActionType.getClientInfo, payload: newClientData});
         } else if (res.success === false) {
             Swal.fire('获取发票信息失败', res.msg, 'warning');
         }
@@ -129,7 +140,7 @@ export const addInvoice=(id,params)=>async (dispatch) =>{
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
             // 更新select框 数据
-            dispatch(getInvoiceList(id));
+            dispatch(getInvoiceList(id,0));
             Swal.fire("保存成功", "", "success");
         } else if (!res.success) {
             Swal.fire('保存失败', res.msg, 'warning');
@@ -153,7 +164,7 @@ export const updateInvoice=(clientAgentId,id,params)=>async (dispatch)=>{
         const res = await httpUtil.httpPut(apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/clientAgentInvoice/'+id, paramsObj);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true) {
-            dispatch(getInvoiceList(clientAgentId));
+            dispatch(getInvoiceList(clientAgentId,0));
             Swal.fire("修改成功", "", "success");
         } else if (res.success === false) {
             Swal.fire('修改失败', res.msg, 'warning');
