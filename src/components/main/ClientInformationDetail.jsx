@@ -12,7 +12,7 @@ import {
     Tabs,
     Accordion,
     AccordionSummary,
-    Divider, FormControl, InputLabel, MenuItem, Select
+    Divider, FormControl, InputLabel, MenuItem, Select, TableRow, TableCell, Box
 } from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import TabContext from '@material-ui/lab/TabContext';
@@ -96,7 +96,7 @@ function ClientInformationDetail (props){
             clientInformationDetailReducer.orderInfo=[];
             clientInformationDetailReducer.orderItemProdInfo=[];
             clientInformationDetailReducer.orderItemServiceInfo=[];
-            getOrderList(id);
+            getOrderList(id,0);
             getOrderItemProd(id);
             getOrderItemService(id);
         }
@@ -318,7 +318,7 @@ function ClientInformationDetail (props){
                     </TabPanel>
                     <TabPanel value='2'>
                         {/*订单编号  价格      接单人 备注  商品    服务     价格*/}
-                        {clientInformationDetailReducer.orderInfo.map((row,index) => (
+                        {clientInformationDetailReducer.orderData.orderInfo.map((row,index) => (
                             <Accordion key={'order'+index} className={classes.accordion} square expanded={expanded === 'panel'+index} onChange={handleChange('panel'+index)}>
                                 <AccordionSummary className={classes.accordionSummary} aria-controls="panel1d-content" id="panel1d-header">
                                     <Grid container  spacing={3}>
@@ -390,7 +390,24 @@ function ClientInformationDetail (props){
 
                             </Accordion>
                         ))}
+                        {clientInformationDetailReducer.orderData.orderInfo.length==0&&
+                        <Accordion>
+                            <AccordionSummary> <Grid container  spacing={3}> <Grid item xs align='center'>暂无数据</Grid></Grid></AccordionSummary>
+                        </Accordion>}
 
+                        <Box style={{textAlign: 'right', marginTop: 20}}>
+                            {clientInformationDetailReducer.orderData.dataSize >=clientInformationDetailReducer.orderData.size &&
+                            <Button className={classes.button} variant="contained" color="primary"  size="small"
+                                    onClick={()=>{dispatch(ClientInformationDetailAction.getOrderList(id,clientInformationDetailReducer.orderData.start+(clientInformationDetailReducer.orderData.size-1)))}}>
+                                下一页
+                            </Button>}
+                            {clientInformationDetailReducer.orderData.start > 0 &&clientInformationDetailReducer.orderData.dataSize > 0 &&
+                            <Button className={classes.button} variant="contained" color="primary"  size="small" style={{marginRight: 20}}
+                                    onClick={()=>{dispatch(ClientInformationDetailAction.getOrderList(id,clientInformationDetailReducer.orderData.start-(clientInformationDetailReducer.orderData.size-1)))}}>
+                                上一页
+                            </Button>}
+                        </Box>
+                        
                     </TabPanel>
                 </TabContext>
             </div>
@@ -416,8 +433,8 @@ const mapDispatchToProps = (dispatch) => ({
     updateClient:() => {
         dispatch(ClientInformationDetailAction.updateClient());
     },
-    getOrderList:(id)=>{
-        dispatch(ClientInformationDetailAction.getOrderList(id));
+    getOrderList:(id,start)=>{
+        dispatch(ClientInformationDetailAction.getOrderList(id,start));
     },
     getOrderItemProd:(id)=>{
         dispatch(ClientInformationDetailAction.getOrderItemProd(id));

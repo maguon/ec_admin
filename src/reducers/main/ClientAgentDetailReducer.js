@@ -13,8 +13,26 @@ const initialState = {
         source_type:0
     },
     currentUserArray:[],
-    invoiceArray:[],
-    clientArray:[],
+    invoiceData:{
+        // 开始位置
+        start: 0,
+        // 每页数量
+        size: 11,
+        // 检索结果数量
+        dataSize: 0,
+        // 数据列表
+        invoiceArray: [],
+    },
+    clientData:{
+        // 开始位置
+        start: 0,
+        // 每页数量
+        size: 11,
+        // 检索结果数量
+        dataSize: 0,
+        // 数据列表
+        clientArray:[],
+    }
 };
 
 export default handleActions({
@@ -51,14 +69,13 @@ export default handleActions({
     [ClientAgentDetailActionType.getInvoiceList]: (state, action) => {
         return {
             ...state,
-            invoiceArray: action.payload
+            invoiceData: action.payload
         }
     },
     [ClientAgentDetailActionType.getClientInfo]: (state, action) => {
         return {
             ...state,
-            clientArray: action.payload
+            clientData: action.payload
         }
     },
-
 }, initialState)
