@@ -341,6 +341,7 @@ function ProductManager(props) {
                             <TableCell className={classes.tableHead} align="center">标准类型</TableCell>
                             <TableCell className={classes.tableHead} align="center">单位</TableCell>
                             <TableCell className={classes.tableHead} align="right">售价</TableCell>
+                            <TableCell className={classes.tableHead} align="right">库存</TableCell>
                             <TableCell className={classes.tableHead} align="center">状态</TableCell>
                             <TableCell className={classes.tableHead} align="center">操作</TableCell>
                         </TableRow>
@@ -357,6 +358,10 @@ function ProductManager(props) {
                                 <TableCell align="center">{commonUtil.getJsonValue(sysConst.STANDARD_TYPE, row.standard_type)}</TableCell>
                                 <TableCell align="center">{row.unit_name}</TableCell>
                                 <TableCell align="right">{row.price}</TableCell>
+                                <TableCell align="right">
+                                    {((row.storage_min != null && row.storage_count < row.storage_min) || (row.storage_max != null && row.storage_count > row.storage_max))
+                                        ? <span style={{color: "red"}}>{row.storage_count}</span> : <span>{row.storage_count}</span>}
+                                </TableCell>
                                 <TableCell align="center">{commonUtil.getJsonValue(sysConst.USE_FLAG, row.status)}</TableCell>
                                 <TableCell align="center">
                                     {/* 停用/可用 状态 */}
@@ -377,7 +382,7 @@ function ProductManager(props) {
 
                         {productManagerReducer.productData.dataList.length === 0 &&
                         <TableRow>
-                            <TableCell colSpan={11} align="center">暂无数据</TableCell>
+                            <TableCell colSpan={12} align="center">暂无数据</TableCell>
                         </TableRow>
                         }
                     </TableBody>
