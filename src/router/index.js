@@ -46,7 +46,8 @@ import {
     OrderRefundPay,
     UserAchievement,
     UserAchievementDetail,
-    CarModel
+    CarModel,
+    UserPerfLevel
 } from "../components";
 
 export const routes = [
@@ -134,7 +135,9 @@ export const routesWithHeader = [
     {path: "/admin_user_setting", exact: true, component: AdminUserSetting},
     // App系统
     {path: "/app_setting", exact: true, component: AppSetting},
-    // 权限管理
+    // 绩效设置
+    {path: "/user_perf_level", exact: true, component: UserPerfLevel},
+    // 权限设置
     {path: "/authority_setting", exact: true, component: AuthoritySetting},
     //服务项目设置
     {path: "/service_setting", exact: true, component: ServiceSetting},
