@@ -1,22 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
-import Swal from "sweetalert2";
 // 引入material-ui基础组件
 import {
     Box,
     Button,
     Divider,
     Fab,
-    FormControl,
-    FormHelperText,
     Grid,
     IconButton,
-    InputLabel,
     makeStyles,
-    MenuItem,
     Paper,
-    Select,
-    Switch,
     Table,
     TableBody,
     TableCell,
@@ -28,11 +21,8 @@ import {
 } from "@material-ui/core";
 // 引入Dialog
 import {SimpleModal} from "../index";
-import {ProductManagerActionType} from "../../types";
 
-const appSettingAction = require('../../actions/main/AppSettingAction');
-const sysConst = require('../../utils/SysConst');
-const commonUtil = require('../../utils/CommonUtil');
+const userPerfLevelAction = require('../../actions/main/UserPerfLevelAction');
 const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
     root: customTheme.root,
@@ -41,37 +31,20 @@ const useStyles = makeStyles((theme) => ({
     tableHead: customTheme.tableHead
 }));
 
-function AppSetting(props) {
-    const {appSettingReducer, changeStatus, deleteApp, saveModalData} = props;
+function UserPerfLevel(props) {
+    const {userPerfLevelReducer} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
 
     useEffect(() => {
-        let dataStart = props.appSettingReducer.appData.start;
-        // props.getAppList(paramDeviceType, paramStatus, dataStart);
-        // dispatch(ProductManagerActionType.setQueryParams(queryParams));
+        dispatch(userPerfLevelAction.getUserPerfLevel(userPerfLevelReducer.userPerfLevelData.start));
     }, []);
-
-    // 上一页
-    const getPrePage = () => {
-        // props.getAppList(paramDeviceType, paramStatus, props.appSettingReducer.appData.start - (props.appSettingReducer.appData.size - 1));
-    };
-
-    // 下一页
-    const getNextPage = () => {
-        // props.getAppList(paramDeviceType, paramStatus, props.appSettingReducer.appData.start + (props.appSettingReducer.appData.size - 1));
-    };
 
     // 模态属性
     const [modalOpen, setModalOpen] = React.useState(false);
     // 模态数据
     const [modalData, setModalData] = React.useState({});
     const [validation,setValidation] = useState({});
-
-    // 关闭模态
-    const closeModal = () => {
-        setModalOpen(false);
-    };
 
     //初始添加模态框值
     const initModal =(data) =>{
@@ -83,47 +56,41 @@ function AppSetting(props) {
         if (data == null) {
             setModalData({pageType:'new', perfName: '', remark: '', saleRatio: 1, deployRatio: 1, checkRatio: 1});
         } else {
-            setModalData({pageType:'edit', uid:data.id, perfName: data.perfName, remark: data.remark, saleRatio: data.saleRatio, deployRatio: data.deployRatio, checkRatio: data.checkRatio});
+            setModalData({pageType:'edit', uid:data.id, perfName: data.perf_name, remark: data.remark, saleRatio: data.sale_ratio, deployRatio: data.deploy_ratio, checkRatio: data.check_ratio});
         }
     };
 
+    const validate = ()=>{
+        const validateObj ={};
+        if (!modalData.perfName) {
+            validateObj.perfName ='请输入绩效名';
+        }
+        if (!modalData.saleRatio) {
+            validateObj.saleRatio ='请输入销售提成率';
+        } else if (!(/^\d+(\.\d{1,2})?$/.test(modalData.saleRatio))) {
+            validateObj.saleRatio ='请输入大于等于0的浮点数（最多2位小数）';
+        }
+        if (!modalData.deployRatio) {
+            validateObj.deployRatio ='请输入实施提成率';
+        } else if (!(/^\d+(\.\d{1,2})?$/.test(modalData.deployRatio))) {
+            validateObj.deployRatio ='请输入大于等于0的浮点数（最多2位小数）';
+        }
+        if (!modalData.checkRatio) {
+            validateObj.checkRatio ='请输入验收提成率';
+        } else if (!(/^\d+(\.\d{1,2})?$/.test(modalData.checkRatio))) {
+            validateObj.checkRatio ='请输入大于等于0的浮点数（最多2位小数）';
+        }
+        setValidation(validateObj);
+        return Object.keys(validateObj).length
+    };
 
-    // const validate = ()=>{
-    //     const validateObj ={};
-    //     if(pageType==='new'){
-    //         if (!appType) {
-    //             validateObj.appType ='请选择App类型';
-    //         }
-    //         if (!deviceType) {
-    //             validateObj.deviceType ='请选择系统类型';
-    //         }
-    //         if (!forceUpdate) {
-    //             validateObj.forceUpdate ='请选择强制更新';
-    //         }
-    //     }
-    //     if (!version) {
-    //         validateObj.version ='请输入版本号';
-    //     }
-    //     if (!versionNum) {
-    //         validateObj.versionNum ='请输入版本序号';
-    //     }
-    //     if (!minVersionNum) {
-    //         validateObj.minVersionNum ='请输入最低版本号';
-    //     }
-    //     if (!url) {
-    //         validateObj.url ='请输入下载地址';
-    //     }
-    //     setValidation(validateObj);
-    //     return Object.keys(validateObj).length
-    // };
-    //
-    // const submitModal= ()=>{
-    //     const errorCount = validate();
-    //     if(errorCount===0){
-    //         saveModalData(pageType, uid, appType, deviceType, forceUpdate, version, versionNum, minVersionNum, url, remark, paramDeviceType, paramStatus);
-    //         setModalOpen(false);
-    //     }
-    // };
+    const submitModal= ()=>{
+        const errorCount = validate();
+        if(errorCount===0){
+            dispatch(userPerfLevelAction.saveModalData(modalData));
+            setModalOpen(false);
+        }
+    };
 
     return (
         <div className={classes.root}>
@@ -133,9 +100,9 @@ function AppSetting(props) {
 
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
-                <Grid container item xs={10} spacing={1}> </Grid>
+                <Grid container item xs={11} spacing={1}> </Grid>
                 {/*追加按钮*/}
-                <Grid item xs={1}>
+                <Grid item xs={1} style={{textAlign:'right'}}>
                     <Fab color="primary" size="small" onClick={() => {initModal(null)}}>
                         <i className="mdi mdi-plus mdi-24px"/>
                     </Fab>
@@ -148,170 +115,111 @@ function AppSetting(props) {
                     <TableHead>
                         <TableRow>
                             <TableCell className={classes.tableHead} align="center">ID</TableCell>
-                            <TableCell className={classes.tableHead} align="center">绩效名</TableCell>
-                            <TableCell className={classes.tableHead} align="left">销售提成率</TableCell>
-                            <TableCell className={classes.tableHead} align="left">实施提成率</TableCell>
-                            <TableCell className={classes.tableHead} align="left">验收提成率</TableCell>
+                            <TableCell className={classes.tableHead} align="left">绩效名</TableCell>
+                            <TableCell className={classes.tableHead} align="center">销售提成率</TableCell>
+                            <TableCell className={classes.tableHead} align="center">实施提成率</TableCell>
+                            <TableCell className={classes.tableHead} align="center">验收提成率</TableCell>
+                            <TableCell className={classes.tableHead} align="center">操作</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {appSettingReducer.appData.dataList.map((row) => (
+                        {userPerfLevelReducer.userPerfLevelData.dataList.map((row) => (
                             <TableRow key={'table-row-' + row.id}>
-                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.APP_TYPE, row.app_type)}</TableCell>
-                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.DEVICE_TYPE, row.device_type)}</TableCell>
-                                <TableCell align="left">{row.version}</TableCell>
-                                <TableCell align="left">{row.version_num}</TableCell>
-                                <TableCell align="left">{row.min_version_num}</TableCell>
-                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.FORCE_UPDATE, row.force_update)}</TableCell>
-                                <TableCell align="center">{commonUtil.getJsonValue(sysConst.USE_FLAG, row.status)}</TableCell>
+                                <TableCell align="center">{row.id}</TableCell>
+                                <TableCell align="left">{row.perf_name}</TableCell>
+                                <TableCell align="center">{row.sale_ratio}</TableCell>
+                                <TableCell align="center">{row.deploy_ratio}</TableCell>
+                                <TableCell align="center">{row.check_ratio}</TableCell>
                                 <TableCell align="center">
                                     {/* 编辑按钮 */}
                                     <IconButton color="primary" edge="start" size="small" onClick={() => {initModal(row)}}>
-                                        <i className="mdi mdi-table-search"/>
+                                        <i className="mdi mdi-pencil"/>
                                     </IconButton>
                                 </TableCell>
                             </TableRow>
                         ))}
 
-                        {appSettingReducer.appData.dataList.length === 0 &&
+                        {userPerfLevelReducer.userPerfLevelData.dataList.length === 0 &&
                         <TableRow>
-                            <TableCell colSpan={8} align="center">暂无数据</TableCell>
-                        </TableRow>
-                        }
+                            <TableCell colSpan={6} align="center">暂无数据</TableCell>
+                        </TableRow>}
                     </TableBody>
                 </Table>
             </TableContainer>
 
             {/* 上下页按钮 */}
             <Box style={{textAlign: 'right', marginTop: 20}}>
-                {appSettingReducer.appData.start > 0 && appSettingReducer.appData.dataSize > 0 &&
-                <Button variant="contained" color="primary" style={{marginRight: 20}} onClick={getPrePage}>上一页</Button>}
-                {appSettingReducer.appData.dataSize >= appSettingReducer.appData.size &&
-                <Button variant="contained" color="primary" onClick={getNextPage}>下一页</Button>}
+                {userPerfLevelReducer.userPerfLevelData.start > 0 && userPerfLevelReducer.userPerfLevelData.dataSize > 0 &&
+                <Button variant="contained" color="primary" style={{marginRight: 20}}
+                        onClick={()=>{dispatch(userPerfLevelAction.getUserPerfLevel(userPerfLevelReducer.userPerfLevelData.start-(userPerfLevelReducer.userPerfLevelData.size-1)))}}>上一页</Button>}
+                {userPerfLevelReducer.userPerfLevelData.dataSize >= userPerfLevelReducer.userPerfLevelData.size &&
+                <Button variant="contained" color="primary"
+                        onClick={()=>{dispatch(userPerfLevelAction.getUserPerfLevel(userPerfLevelReducer.userPerfLevelData.start+(userPerfLevelReducer.userPerfLevelData.size-1)))}}>下一页</Button>}
             </Box>
-
-            {/* maxWidth */}
-            {/*<MenuItem value="444">xs</MenuItem>*/}
-            {/*<MenuItem value="600">sm</MenuItem>*/}
-            {/*<MenuItem value="960">md</MenuItem>*/}
-            {/*<MenuItem value="1280">lg</MenuItem>*/}
-            {/*<MenuItem value="full">xl</MenuItem>*/}
 
             {/* 模态：新增/修改 */}
             <SimpleModal
                 maxWidth={'sm'}
-                title={modalData.pageType === 'edit' ? '修改App' : '新增App'}
+                title={modalData.pageType === 'edit' ? '修改绩效设置' : '新增绩效设置'}
                 open={modalOpen}
-                onClose={closeModal}
+                onClose={()=>{setModalOpen(false)}}
                 showFooter={true}
                 footer={
                     <>
-                        {/*<Button variant="contained" color="primary" onClick={submitModal}>确定</Button>*/}
-                        <Button variant="contained" onClick={closeModal}>关闭</Button>
+                        <Button variant="contained" color="primary" onClick={submitModal}>确定</Button>
+                        <Button variant="contained" onClick={()=>{setModalOpen(false)}}>关闭</Button>
                     </>
                 }
             >
                 <Grid container spacing={1}>
-                    {modalData.pageType === 'edit' && <Grid item sm={12}><Typography color="primary">App编号：{modalData.uid}</Typography></Grid>}
-                    <Grid item sm={4}>
-                        <FormControl variant="outlined" fullWidth margin="dense">
-                            <InputLabel>App类型</InputLabel>
-                            <Select label="App类型"
-                                value={modalData.appType}
-                                onChange={(event, value) => {
-                                    // setAppType(event.target.value);
-                                }}
-                                error={validation.appType&&validation.appType!=''}
-                            >
-                                {sysConst.APP_TYPE.map((item, index) => (
-                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
-                                ))}
-                            </Select>
-                            {(validation.appType&&validation.appType!='') && <FormHelperText style={{color: 'red'}}>{validation.appType}</FormHelperText>}
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={4}>
-                        <FormControl variant="outlined" fullWidth margin="dense">
-                            <InputLabel>系统类型</InputLabel>
-                            <Select label="系统类型"
-                                value={modalData.deviceType}
-                                onChange={(event, value) => {
-                                    // setDeviceType(event.target.value);
-                                }}
-                                error={validation.deviceType&&validation.deviceType!=''}
-                            >
-                                {sysConst.DEVICE_TYPE.map((item, index) => (
-                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
-                                ))}
-                            </Select>
-                            {(validation.deviceType&&validation.deviceType!='') && <FormHelperText style={{color: 'red'}}>{validation.deviceType}</FormHelperText>}
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={4}>
-                        <FormControl variant="outlined" fullWidth margin="dense">
-                            <InputLabel>强制更新</InputLabel>
-                            <Select label="强制更新"
-                                value={modalData.forceUpdate}
-                                onChange={(event, value) => {
-                                    // setForceUpdate(event.target.value);
-                                }}
-                                error={validation.forceUpdate&&validation.forceUpdate!=''}
-                            >
-                                {sysConst.FORCE_UPDATE.map((item, index) => (
-                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
-                                ))}
-                            </Select>
-                            {(validation.forceUpdate&&validation.forceUpdate!='') && <FormHelperText style={{color: 'red'}}>{validation.forceUpdate}</FormHelperText>}
-                        </FormControl>
-                    </Grid>
-
-                    <Grid item xs={4}>
-                        <TextField label="版本号" fullWidth margin="dense" variant="outlined" value={modalData.version}
-                                   onChange={(e) => {
-                                       // setVersion(e.target.value)
-                                   }}
-                                   error={validation.version&&validation.version!=''}
-                                   helperText={validation.version}
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField label="版本序号" fullWidth margin="dense" variant="outlined" value={modalData.versionNum} type="number"
-                                   onChange={(e) => {
-                                       // setVersionNum(e.target.value)
-                                   }}
-                                   error={validation.versionNum&&validation.versionNum!=''}
-                                   helperText={validation.versionNum}
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField label="最低版本号" fullWidth margin="dense" variant="outlined" value={modalData.minVersionNum} type="number"
-                                   onChange={(e) => {
-                                       // setMinVersionNum(e.target.value)
-                                   }}
-                                   error={validation.minVersionNum&&validation.minVersionNum!=''}
-                                   helperText={validation.minVersionNum}
-                        />
-                    </Grid>
+                    {modalData.pageType === 'edit' && <Grid item sm={12}><Typography color="primary">ID：{modalData.uid}</Typography></Grid>}
 
                     <Grid item xs={12}>
-                        <TextField label="下载地址" fullWidth margin="dense" variant="outlined" value={modalData.url}
+                        <TextField label="绩效名" fullWidth margin="dense" variant="outlined" value={modalData.perfName}
                                    onChange={(e) => {
-                                       // setUrl(e.target.value)
+                                       setModalData({...modalData, perfName: e.target.value})
                                    }}
-                                   error={validation.url&&validation.url!=''}
-                                   helperText={validation.url}
+                                   error={validation.perfName&&validation.perfName!=''}
+                                   helperText={validation.perfName}
+                        />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <TextField label="销售提成率" fullWidth margin="dense" variant="outlined" value={modalData.saleRatio} type="number"
+                                   onChange={(e) => {
+                                       setModalData({...modalData, saleRatio: e.target.value})
+                                   }}
+                                   error={validation.saleRatio&&validation.saleRatio!=''}
+                                   helperText={validation.saleRatio}
+                        />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <TextField label="实施提成率" fullWidth margin="dense" variant="outlined" value={modalData.deployRatio} type="number"
+                                   onChange={(e) => {
+                                       setModalData({...modalData, deployRatio: e.target.value})
+                                   }}
+                                   error={validation.deployRatio&&validation.deployRatio!=''}
+                                   helperText={validation.deployRatio}
+                        />
+                    </Grid>
+
+                    <Grid item xs={4}>
+                        <TextField label="验收提成率" fullWidth margin="dense" variant="outlined" value={modalData.checkRatio} type="number"
+                                   onChange={(e) => {
+                                       setModalData({...modalData, checkRatio: e.target.value})
+                                   }}
+                                   error={validation.checkRatio&&validation.checkRatio!=''}
+                                   helperText={validation.checkRatio}
                         />
 
                     </Grid>
                     <Grid item xs={12}>
                         <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={4} value={modalData.remark}
                                    onChange={(e) => {
-                                       // setRemark(e.target.value)
+                                       setModalData({...modalData, remark: e.target.value})
                                    }}
                         />
                     </Grid>
                 </Grid>
-
             </SimpleModal>
         </div>
     )
@@ -319,28 +227,11 @@ function AppSetting(props) {
 
 const mapStateToProps = (state) => {
     return {
-        appSettingReducer: state.AppSettingReducer
+        userPerfLevelReducer: state.UserPerfLevelReducer
     }
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    getAppList: (paramDeviceType, paramStatus, dataStart) => {
-        dispatch(appSettingAction.getAppList({paramDeviceType, paramStatus, dataStart}))
-    },
-    saveModalData: (pageType, uid, appType, deviceType, forceUpdate, version, versionNum, minVersionNum, url, remark, paramDeviceType, paramStatus) => {
-        dispatch(appSettingAction.saveModalData({
-            pageType,
-            uid,
-            appType,
-            deviceType,
-            forceUpdate,
-            version,
-            versionNum,
-            minVersionNum,
-            url,
-            remark
-        }, {paramDeviceType, paramStatus}));
-    }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(AppSetting)
+export default connect(mapStateToProps, mapDispatchToProps)(UserPerfLevel)

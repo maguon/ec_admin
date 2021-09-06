@@ -1,9 +1,9 @@
 import {handleActions} from 'redux-actions';
-import {AppSettingActionType} from '../../types';
+import {UserPerfLevelActionType} from '../../types';
 
 const initialState = {
     // 检索结果
-    appData: {
+    userPerfLevelData: {
         // 开始位置
         start: 0,
         // 每页数量
@@ -13,8 +13,6 @@ const initialState = {
         // 数据列表
         dataList: []
     },
-    // 检索条件：模态状态
-    modalOpen: false,
     // 检索结果
     modalData: {
         // 新增 / 修改 区分
@@ -41,19 +39,13 @@ const initialState = {
 };
 
 export default handleActions({
-    [AppSettingActionType.setAppData]: (state, action) => {
+    [UserPerfLevelActionType.getUserPerfLevelData]: (state, action) => {
         return {
             ...state,
-            appData: action.payload
+            userPerfLevelData: action.payload
         }
     },
-    [AppSettingActionType.setModalOpen]: (state, action) => {
-        return {
-            ...state,
-            modalOpen: action.payload
-        }
-    },
-    [AppSettingActionType.setModalData]: (state, action) => {
+    [UserPerfLevelActionType.setModalData]: (state, action) => {
         return {
             ...state,
             modalData: action.payload
