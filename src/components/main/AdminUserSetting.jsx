@@ -22,7 +22,7 @@ import {
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {makeStyles} from "@material-ui/core/styles";
 import {SimpleModal} from '../index';
-import {AdminUserSettingActionType, OrderActionType} from '../../types';
+import {AdminUserSettingActionType} from '../../types';
 const adminUserSettingAction = require('../../actions/main/AdminUserSettingAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
@@ -34,8 +34,7 @@ const useStyles = makeStyles((theme) => ({
     pageTitle: customTheme.pageTitle,
     pageDivider: customTheme.pageDivider,
     select: {
-        width: '100%',
-        marginTop:'16px'
+       width: '100%'
     },
     selectCondition: {width: '100%'},
     button:{
@@ -60,7 +59,7 @@ function AdminUserSetting (props) {
     const [paramStatus,setParamStatus]=useState("-1");
     const [modalOpenFlag, setModalOpenFlag] = useState(false);
     const [adminUsername, setAdminUsername] = useState("");
-    const [type, setType] = useState("");
+    const [type, setType] = useState(null);
     const [perfLevelId, setPerfLevelId] = useState(null);
     const [adminUserPhone, setAdminUserPhone] = useState("");
     const [password, setPassword] = useState("");
@@ -92,40 +91,39 @@ function AdminUserSetting (props) {
     //验证()
     const validate = ()=>{
         const validateObj ={}
-        if(modalCreateFlag==true){
             if (!adminUserPhone) {
                 validateObj.adminUserPhone ='请输入手机号';
-            } else if (adminUserPhone.length != 11) {
+            } else if (adminUserPhone.length != 11&&modalCreateFlag==true) {
                 validateObj.adminUserPhone ='请输入11位手机号';
             }
+            if (!type||type.type_name==null) {
+                validateObj.type ='请输入用户集群';
+            }
+            if (!perfLevelId||perfLevelId.perf_name==null) {
+                validateObj.perfLevelId ='请输入绩效集群';
+            }
             if (!adminUsername) {
                 validateObj.adminUsername ='请输入用户姓名';
             }
-            if (!password) {
+            if (!password&&modalCreateFlag==true) {
                 validateObj.password ='请输入密码';
-            }else if (password.length <6) {
+            }else if (password.length <6&&modalCreateFlag==true) {
                 validateObj.password ='请输入大于6位的密码';
             }
-        }
-        if(modalCreateFlag==false){
-            if (!adminUsername) {
-                validateObj.adminUsername ='请输入用户姓名';
-            }
-        }
         setValidation(validateObj);
         return Object.keys(validateObj).length
     }
     const addUser= ()=>{
         const errorCount = validate();
         if(errorCount==0){
-            props.addUser(adminUsername, adminUserPhone,password,gender,type,perfLevelId,1);
+            props.addUser(adminUsername, adminUserPhone,password,gender,type.id,perfLevelId.id,1);
             setModalOpenFlag(false);
         }
     }
     const setUser= ()=>{
         const errorCount = validate();
         if(errorCount==0){
-            props.updateUserInfo(adminUsername, gender,type,perfLevelId,id);
+            props.updateUserInfo(adminUsername, gender,type.id,perfLevelId.id,id);
             setModalOpenFlag(false);
         }
     }
@@ -146,16 +144,17 @@ function AdminUserSetting (props) {
         if (user == null) {
             setModalCreateFlag(true);
             setAdminUsername('');
-            setType('1032');
-            setPerfLevelId('1032');
+            setType(null);
+            setPerfLevelId(null);
             setAdminUserPhone('');
             setPassword('');
             setGender('1');
         } else {
+            setValidation({});
             setModalCreateFlag(false);
             setAdminUsername(user.real_name);
-            setType(user.type);
-            setPerfLevelId(user.perf_level_id)
+            setType({id:user.type,type_name:user.type_name});
+            setPerfLevelId({id:user.perf_level_id,perf_name:user.perf_name})
             setAdminUserPhone(user.phone);
             setGender(user.gender);
             setId(user.id);
@@ -312,6 +311,7 @@ function AdminUserSetting (props) {
                                 <TableCell className={classes.head} align="center">手机</TableCell>
                                 <TableCell className={classes.head} align="center">用户名称</TableCell>
                                 <TableCell className={classes.head} align="center">用户群组</TableCell>
+                                <TableCell className={classes.head} align="center">绩效群组</TableCell>
                                 <TableCell className={classes.head} align="center">性别</TableCell>
                                 <TableCell className={classes.head} align="center">状态</TableCell>
                                 <TableCell className={classes.head} align="center">操作</TableCell>
@@ -323,6 +323,7 @@ function AdminUserSetting (props) {
                                     <TableCell align="center" >{row.phone}</TableCell>
                                     <TableCell align="center">{row.real_name}</TableCell>
                                     <TableCell align="center">{row.type_name}</TableCell>
+                                    <TableCell align="center">{row.perf_name}</TableCell>
                                     <TableCell align="center">{commonUtil.getJsonValue(sysConst.GENDER, row.gender)}</TableCell>
                                     <TableCell align="center">{commonUtil.getJsonValue(sysConst.USE_FLAG, row.status)}</TableCell>
                                     <TableCell align="center">
@@ -342,7 +343,7 @@ function AdminUserSetting (props) {
                                     </TableCell>
                                 </TableRow>))}
                             { adminUserSettingReducer.adminArray.length === 0 &&
-                                <TableRow style={{height:60}}><TableCell align="center" colSpan="6">暂无数据</TableCell></TableRow>
+                                <TableRow style={{height:60}}><TableCell align="center" colSpan="7">暂无数据</TableCell></TableRow>
                             }
                         </TableBody>
                     </Table>
@@ -359,8 +360,6 @@ function AdminUserSetting (props) {
                     上一页
                 </Button>}
             </Box>
-
-
 
             {/*添加或修改用户信息*/}
             <SimpleModal
@@ -389,7 +388,7 @@ function AdminUserSetting (props) {
                 <Grid  container spacing={3}>
                     <Grid item xs>
                         <TextField fullWidth
-                                   margin='normal'
+                                   margin='dense'
                                    label="用户姓名"
                                    name="adminUsername"
                                    type="text"
@@ -407,6 +406,7 @@ function AdminUserSetting (props) {
                         <TextField className={classes.select}
                                    select
                                    label="性别"
+                                   margin='dense'
                                    name="gender"
                                    type="text"
                                    onChange={(e)=>{
@@ -429,7 +429,7 @@ function AdminUserSetting (props) {
                 <Grid  container spacing={3}>
                     <Grid item xs>
                         <TextField fullWidth
-                                   margin='normal'
+                                   margin='dense'
                                    disabled={modalCreateFlag?false:true}
                                    name="adminUserPhone"
                                    type="text"
@@ -448,7 +448,7 @@ function AdminUserSetting (props) {
                         <TextField fullWidth
                                    label="密码"
                                    name="password"
-                                   margin="normal"
+                                   margin="dense"
                                    type="password"
                                    variant="outlined"
                                    onChange={(e) => {
@@ -462,48 +462,32 @@ function AdminUserSetting (props) {
                 </Grid>
                 <Grid  container spacing={3}>
                     <Grid item xs>
-                        <TextField className={classes.select}
-                                   select
-                                   label="用户群组"
-                                   name="type"
-                                   type="text"
-                                   onChange={(e)=>{
-                                       setType(e.target.value)
-                                   }}
-                                   value={type}
-                                   SelectProps={{
-                                       native: true,
-                                   }}
-                                   variant="outlined"
-                        >
-                            {adminUserSettingReducer.typeArray.map((option) => (
-                                <option key={option.id} value={option.id}>
-                                    {option.type_name}
-                                </option>
-                            ))}
-                        </TextField>
+                        <Autocomplete fullWidth={true}
+                                      options={adminUserSettingReducer.typeArray}
+                                      getOptionLabel={(option) => option.type_name}
+                                      onChange={(e,value)=>{
+                                          setType(value)
+                                      }}
+                                      value={type}
+                                      renderInput={(params) => <TextField {...params} label="用户群组" margin="dense" variant="outlined"
+                                                                          error={validation.type&&validation.type!=''}
+                                                                          helperText={validation.type}
+
+                                      />}
+                        />
                     </Grid>
                     <Grid item xs>
-                        <TextField className={classes.select}
-                                   select
-                                   label="绩效群组"
-                                   name="perfLevelId"
-                                   type="text"
-                                   onChange={(e)=>{
-                                       setPerfLevelId(e.target.value)
-                                   }}
-                                   value={perfLevelId}
-                                   SelectProps={{
-                                       native: true,
-                                   }}
-                                   variant="outlined"
-                        >
-                            {adminUserSettingReducer.perfLevelArray.map((option) => (
-                                <option key={option.id} value={option.id}>
-                                    {option.perf_name}
-                                </option>
-                            ))}
-                        </TextField>
+                        <Autocomplete fullWidth={true}
+                                      options={adminUserSettingReducer.perfLevelArray}
+                                      getOptionLabel={(option) => option.perf_name}
+                                      onChange={(e,value)=>{
+                                          setPerfLevelId(value)
+                                      }}
+                                      value={perfLevelId}
+                                      renderInput={(params) => <TextField {...params} label="绩效群组" margin="dense" variant="outlined"
+                                                                          error={validation.perfLevelId&&validation.perfLevelId!=''}
+                                                                          helperText={validation.perfLevelId}/>}
+                        />
                     </Grid>
                 </Grid>
             </SimpleModal>

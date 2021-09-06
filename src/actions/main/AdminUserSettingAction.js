@@ -72,11 +72,13 @@ export const addUser = (params) => async (dispatch) => {
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpPost(apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/user', params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-        if (res.success === true) {
+        if (res.success === true&&res.rows.length!==0) {
             dispatch(getUserList());
             Swal.fire("增加成功", "", "success");
+        } else if(res.success === true&&res.rows.length==0){
+            Swal.fire("手机号相同,增加失败", "", "warning");
         } else if (res.success === false) {
-            Swal.fire('保存失败', res.msg, 'warning');
+            Swal.fire('增加失败', res.msg, 'warning');
         }
     } catch (err) {
         Swal.fire('操作失败', err.message, 'error');
