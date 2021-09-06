@@ -48,6 +48,7 @@ import * as OrderRefundPayActionType from './main/OrderRefundPayActionType';
 import * as UserAchievementActionType from './main/UserAchievementActionType';
 import * as UserAchievementDetailActionType from './main/UserAchievementDetailActionType';
 import * as CarModelActionType from './main/CarModelActionType';
+import * as UserPerfLevelActionType from './main/UserPerfLevelActionType';
 export {
     AppActionType,
     CommonActionType,
@@ -98,5 +99,6 @@ export {
     OrderRefundPayActionType,
     UserAchievementActionType,
     UserAchievementDetailActionType,
-    CarModelActionType
+    CarModelActionType,
+    UserPerfLevelActionType
 }

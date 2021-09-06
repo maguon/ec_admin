@@ -57,6 +57,7 @@ import OrderRefundPay from './main/OrderRefundPay';
 import UserAchievement from './main/UserAchievement';
 import UserAchievementDetail from './main/UserAchievementDetail';
 import CarModel from './main/CarModel';
+import UserPerfLevel from './main/UserPerfLevel';
 export {
     Header,
     Footer,
@@ -116,5 +117,6 @@ export {
     OrderRefundPay,
     UserAchievement,
     UserAchievementDetail,
-    CarModel
+    CarModel,
+    UserPerfLevel
 }
