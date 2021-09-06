@@ -8,6 +8,8 @@ const initialState = {
     purchaseRefundStat: {},
     // 盘点未完成
     storageCheckStat: {},
+    // 订单统计
+    orderStat: {},
 };
 
 export default handleActions({
@@ -27,6 +29,12 @@ export default handleActions({
         return {
             ...state,
             storageCheckStat: action.payload
+        }
+    },
+    [StoragePanelActionType.getOrderStat]: (state, action) => {
+        return {
+            ...state,
+            orderStat: action.payload
         }
     },
 }, initialState);

@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 import {Card, CardContent, Divider, Grid, makeStyles, Typography} from "@material-ui/core";
 
 const storagePanelAction = require('../../actions/main/StoragePanelAction');
-const purchasePanelAction = require('../../actions/main/PurchasePanelAction');
 const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
     root: customTheme.root,
@@ -18,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function StoragePanel(props) {
-    const {storagePanelReducer,purchasePanelReducer} = props;
+    const {storagePanelReducer} = props;
     const classes = useStyles();
 
     useEffect(() => {
@@ -71,7 +70,7 @@ function StoragePanel(props) {
                         <CardContent>
                             <Grid container spacing={1}>
                                 <Grid item xs={12}><Typography variant="h5" gutterBottom>未出库的订单商品</Typography></Grid>
-                                <Grid item xs={6}><Typography color="textSecondary">未出库数：{purchasePanelReducer.orderStat.count}</Typography></Grid>
+                                <Grid item xs={6}><Typography color="textSecondary">未出库数：{storagePanelReducer.orderStat.count}</Typography></Grid>
                             </Grid>
                         </CardContent>
                     </Card>
@@ -83,8 +82,7 @@ function StoragePanel(props) {
 
 const mapStateToProps = (state) => {
     return {
-        storagePanelReducer: state.StoragePanelReducer,
-        purchasePanelReducer: state.PurchasePanelReducer
+        storagePanelReducer: state.StoragePanelReducer
     }
 };
 
@@ -93,7 +91,7 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(storagePanelAction.getPurchaseItemStat());
         dispatch(storagePanelAction.getPurchaseRefundStat());
         dispatch(storagePanelAction.getStorageCheckStat());
-        dispatch(purchasePanelAction.getOrderStat());
+        dispatch(storagePanelAction.getOrderStat());
     }
 });
 
