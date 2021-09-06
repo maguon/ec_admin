@@ -64,6 +64,24 @@ export const getOrderItemProd = (orderId) => async (dispatch) => {
     }
 };
 
+export const getStorageProductRelDetail = (orderId, orderItemProdId) => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/storageProductRelDetail?orderId=' + orderId + '&orderItemProdId=' + orderItemProdId;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success && res.rows.length > 0) {
+            return res.rows[0];
+        } else {
+            return {};
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
 export const saveOrder = () => async (dispatch, getState) => {
     try {
         const orderInfo = getState().OrderDetailReducer.orderInfo;
@@ -276,7 +294,7 @@ export const saveModalData = (modalData) => async (dispatch, getState) => {
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/orderItemService/' + modalData.orderItemService.id;
-        if (modalData.orderStatus === sysConst.ORDER_STATUS[1].value) {
+        if (modalData.pageType === 'deploy') {
             params = {
                 deployUserId: modalData.deployUser == null ? '' : modalData.deployUser.id,
                 deployUserName: modalData.deployUser == null ? '' : modalData.deployUser.real_name
