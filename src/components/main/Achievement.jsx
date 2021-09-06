@@ -200,7 +200,7 @@ function Achievement (props){
                                     </TableHead>
                                     <TableBody>
                                         {achievementReducer.serviceData.serviceInfo.length > 0 &&achievementReducer.serviceData.serviceInfo.map((row) => (
-                                            <TableRow key={row.id}>
+                                            <TableRow key={'service-'+row.id}>
                                                 <TableCell align="center" >{row.order_id}</TableCell>
                                                 <TableCell align="center" >{row.sale_service_name}</TableCell>
                                                 <TableCell align="center" >{row.fixed_price=='0.00'?row.unit_price+'*'+Number(row.service_count):row.fixed_price}</TableCell>
@@ -330,8 +330,8 @@ function Achievement (props){
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {achievementReducer.productData.productInfo.length > 0 &&achievementReducer.productData.productInfo.map((row) => (
-                                            <TableRow key={row.id}>
+                                        {achievementReducer.productData.productInfo.length > 0 &&achievementReducer.productData.productInfo.map((row,index) => (
+                                            <TableRow key={'prod-'+index}>
                                                 <TableCell align="center" >{row.order_id}</TableCell>
                                                 <TableCell align="center" >{row.prod_name}</TableCell>
                                                 <TableCell align="center" >{row.unit_price}*{Number(row.prod_count)}</TableCell>
