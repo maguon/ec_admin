@@ -200,26 +200,26 @@ function AppSetting(props) {
             {/* 模态：新增/修改 */}
             <SimpleModal
                 maxWidth={'sm'}
-                title={pageType === 'edit' ? '修改App' : '新增App'}
+                title={modalData.pageType === 'edit' ? '修改App' : '新增App'}
                 open={modalOpen}
                 onClose={closeModal}
                 showFooter={true}
                 footer={
                     <>
-                        <Button variant="contained" color="primary" onClick={submitModal}>确定</Button>
+                        {/*<Button variant="contained" color="primary" onClick={submitModal}>确定</Button>*/}
                         <Button variant="contained" onClick={closeModal}>关闭</Button>
                     </>
                 }
             >
                 <Grid container spacing={1}>
-                    {pageType === 'edit' && <Grid item sm={12}><Typography color="primary">App编号：{uid}</Typography></Grid>}
+                    {modalData.pageType === 'edit' && <Grid item sm={12}><Typography color="primary">App编号：{modalData.uid}</Typography></Grid>}
                     <Grid item sm={4}>
                         <FormControl variant="outlined" fullWidth margin="dense">
                             <InputLabel>App类型</InputLabel>
                             <Select label="App类型"
-                                value={appType}
+                                value={modalData.appType}
                                 onChange={(event, value) => {
-                                    setAppType(event.target.value);
+                                    // setAppType(event.target.value);
                                 }}
                                 error={validation.appType&&validation.appType!=''}
                             >
@@ -234,9 +234,9 @@ function AppSetting(props) {
                         <FormControl variant="outlined" fullWidth margin="dense">
                             <InputLabel>系统类型</InputLabel>
                             <Select label="系统类型"
-                                value={deviceType}
+                                value={modalData.deviceType}
                                 onChange={(event, value) => {
-                                    setDeviceType(event.target.value);
+                                    // setDeviceType(event.target.value);
                                 }}
                                 error={validation.deviceType&&validation.deviceType!=''}
                             >
@@ -251,9 +251,9 @@ function AppSetting(props) {
                         <FormControl variant="outlined" fullWidth margin="dense">
                             <InputLabel>强制更新</InputLabel>
                             <Select label="强制更新"
-                                value={forceUpdate}
+                                value={modalData.forceUpdate}
                                 onChange={(event, value) => {
-                                    setForceUpdate(event.target.value);
+                                    // setForceUpdate(event.target.value);
                                 }}
                                 error={validation.forceUpdate&&validation.forceUpdate!=''}
                             >
@@ -266,27 +266,27 @@ function AppSetting(props) {
                     </Grid>
 
                     <Grid item xs={4}>
-                        <TextField label="版本号" fullWidth margin="dense" variant="outlined" value={version}
+                        <TextField label="版本号" fullWidth margin="dense" variant="outlined" value={modalData.version}
                                    onChange={(e) => {
-                                       setVersion(e.target.value)
+                                       // setVersion(e.target.value)
                                    }}
                                    error={validation.version&&validation.version!=''}
                                    helperText={validation.version}
                         />
                     </Grid>
                     <Grid item xs={4}>
-                        <TextField label="版本序号" fullWidth margin="dense" variant="outlined" value={versionNum} type="number"
+                        <TextField label="版本序号" fullWidth margin="dense" variant="outlined" value={modalData.versionNum} type="number"
                                    onChange={(e) => {
-                                       setVersionNum(e.target.value)
+                                       // setVersionNum(e.target.value)
                                    }}
                                    error={validation.versionNum&&validation.versionNum!=''}
                                    helperText={validation.versionNum}
                         />
                     </Grid>
                     <Grid item xs={4}>
-                        <TextField label="最低版本号" fullWidth margin="dense" variant="outlined" value={minVersionNum} type="number"
+                        <TextField label="最低版本号" fullWidth margin="dense" variant="outlined" value={modalData.minVersionNum} type="number"
                                    onChange={(e) => {
-                                       setMinVersionNum(e.target.value)
+                                       // setMinVersionNum(e.target.value)
                                    }}
                                    error={validation.minVersionNum&&validation.minVersionNum!=''}
                                    helperText={validation.minVersionNum}
@@ -294,9 +294,9 @@ function AppSetting(props) {
                     </Grid>
 
                     <Grid item xs={12}>
-                        <TextField label="下载地址" fullWidth margin="dense" variant="outlined" value={url}
+                        <TextField label="下载地址" fullWidth margin="dense" variant="outlined" value={modalData.url}
                                    onChange={(e) => {
-                                       setUrl(e.target.value)
+                                       // setUrl(e.target.value)
                                    }}
                                    error={validation.url&&validation.url!=''}
                                    helperText={validation.url}
@@ -304,9 +304,9 @@ function AppSetting(props) {
 
                     </Grid>
                     <Grid item xs={12}>
-                        <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={4} value={remark}
+                        <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={4} value={modalData.remark}
                                    onChange={(e) => {
-                                       setRemark(e.target.value)
+                                       // setRemark(e.target.value)
                                    }}
                         />
                     </Grid>
