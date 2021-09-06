@@ -13,29 +13,8 @@ const initialState = {
         // 数据列表
         dataList: []
     },
-    // 检索结果
-    modalData: {
-        // 新增 / 修改 区分
-        pageType: '',
-        // 唯一键
-        uid : -1,
-        // App类型
-        appType: null,
-        // 系统类型
-        deviceType: null,
-        // 强制更新
-        forceUpdate: null,
-        // 版本号
-        version: '',
-        // 版本序号
-        versionNum: 0,
-        // 最低版本号
-        minVersionNum: 0,
-        // 下载地址
-        url: '',
-        // 备注
-        remarks: ''
-    }
+    // 模态数据
+    modalData: {pageType: '',perfName: '', remark: '', saleRatio: 1, deployRatio: 1, checkRatio: 1}
 };
 
 export default handleActions({
