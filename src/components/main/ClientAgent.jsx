@@ -81,7 +81,7 @@ function ClientAgent (props) {
                 <Grid container item xs={10} spacing={1}>
                     {/*客户类型  普通  大客户clientType*/}
                     <Grid item  xs>
-                        <Autocomplete fullWidth={true}
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true}
                                       options={sysConst.CLIENT_TYPE}
                                       getOptionLabel={(option) => option.label}
                                       value={clientAgentReducer.queryClientObj.clientType}
@@ -93,7 +93,7 @@ function ClientAgent (props) {
                     </Grid>
                     {/*客户来源*/}
                     <Grid item  xs>
-                        <Autocomplete fullWidth={true}
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true}
                                       options={sysConst.SOURCE_TYPE}
                                       getOptionLabel={(option) => option.label}
                                       value={clientAgentReducer.queryClientObj.sourceType}
@@ -115,7 +115,7 @@ function ClientAgent (props) {
 
                     {/*状态status*/}
                     <Grid item  xs>
-                        <Autocomplete fullWidth={true}
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true}
                                       options={sysConst.USE_FLAG}
                                       getOptionLabel={(option) => option.label}
                                       value={clientAgentReducer.queryClientObj.status}

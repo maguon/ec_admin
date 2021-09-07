@@ -225,7 +225,7 @@ function OrderPay(props) {
 
 
                     <Grid item xs={2}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                       options={commonReducer.clientAgentList}
                                       getOptionLabel={(option) => option.name}
                                       value={orderPayReducer.queryParams.clientAgent}
@@ -241,7 +241,7 @@ function OrderPay(props) {
                     </Grid>
 
                     <Grid item xs={2}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                       options={commonReducer.clientList}
                                       getOptionLabel={(option) => option.name}
                                       value={orderPayReducer.queryParams.client}
@@ -264,7 +264,7 @@ function OrderPay(props) {
                                    }}/>
                     </Grid>
                     <Grid item xs={2}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                       options={commonReducer.userList}
                                       getOptionLabel={(option) => option.real_name}
                                       value={orderPayReducer.queryParams.reUser}

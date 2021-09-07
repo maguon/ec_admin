@@ -154,7 +154,7 @@ function ClientInformationDetail (props){
                         <Grid  container spacing={3}>
                             {/*客户集群clientAgentId*/}
                             <Grid item xs>
-                                <Autocomplete fullWidth
+                                <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                               options={clientInformationDetailReducer.clientAgentInfo}
                                               getOptionLabel={(option) => option.name}
                                               value={clientInformationDetailReducer.clientInfo.client_agent_id}
@@ -271,7 +271,7 @@ function ClientInformationDetail (props){
                             </Grid>
                             {/*推荐人 referUser*/}
                             <Grid item xs>
-                               {/* <Autocomplete fullWidth disabled={true}
+                               {/* <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth disabled={true}
                                               options={clientInformationDetailReducer.referUserInfo}
                                               getOptionLabel={(option) => option.real_name}
                                               value={clientInformationDetailReducer.clientInfo.refer_user}

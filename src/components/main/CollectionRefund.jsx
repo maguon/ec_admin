@@ -126,7 +126,7 @@ function CollectionRefund(props) {
                                    }}/>
                     </Grid>
                     <Grid item xs={2}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                       options={commonReducer.clientAgentList}
                                       getOptionLabel={(option) =>option.name}
                                       value={collectionRefundReducer.collectionRefundParam.clientAgentId}
@@ -331,7 +331,7 @@ function CollectionRefund(props) {
                     <div style={{display:activeStep==0?'block':'none'}}>
                         <Grid container spacing={1} style={{marginBottom:10}}>
                             <Grid item sm={4}>
-                                <Autocomplete fullWidth
+                                <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                               options={commonReducer.clientAgentList}
                                               getOptionLabel={(option) =>option.name}
                                               value={modalData.clientAgent}
@@ -384,7 +384,7 @@ function CollectionRefund(props) {
                             <Grid item sm={3}>商品退款总额：{collectionRefundReducer.orderRefundInfo.prod_refund_price}</Grid>
                             <Grid item sm={3}>退款总额：{collectionRefundReducer.orderRefundInfo.total_refund_price}</Grid>
                             <Grid item xs={4}>
-                                <Autocomplete fullWidth
+                                <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                               options={sysConst.PAYMENT_TYPE}
                                               getOptionLabel={(option) =>option.label}
                                               value={modalData.paymentType}

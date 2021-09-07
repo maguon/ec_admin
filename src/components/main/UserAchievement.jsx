@@ -47,7 +47,7 @@ function UserAchievement(props) {
             <Grid container spacing={3}>
                 <Grid container item xs={10} spacing={1}>
                     <Grid item xs={3}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                       options={userAchievementReducer.typeData}
                                       getOptionLabel={(option) => option.type_name}
                                       value={userAchievementReducer.userParams.userType}
@@ -67,7 +67,7 @@ function UserAchievement(props) {
                         />
                     </Grid>
                     <Grid item xs={3}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                       options={userAchievementReducer.userList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.real_name}

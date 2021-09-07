@@ -161,7 +161,7 @@ function PurchasePay(props) {
                     </Grid>
 
                     <Grid item xs={3}>
-                        <Autocomplete id="condition-supplier" fullWidth
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} id="condition-supplier" fullWidth
                                       options={commonReducer.supplierList}
                                       getOptionLabel={(option) => option.supplier_name}
                                       value={supplier}

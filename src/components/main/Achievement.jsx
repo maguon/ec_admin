@@ -120,7 +120,8 @@ function Achievement (props){
                                     </Grid>
                                     {/*名称*/}
                                     <Grid item  xs>
-                                        <Autocomplete fullWidth
+                                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
+                                                      ListboxProps={{ style: { maxHeight: '175px' } }}
                                                       options={commonReducer.saleServiceList}
                                                       getOptionLabel={(option) => option.service_name}
                                                       value={achievementReducer.serviceParams.saleServiceId}
@@ -132,7 +133,8 @@ function Achievement (props){
                                     </Grid>
                                     {/*施工*/}
                                     <Grid item  xs>
-                                        <Autocomplete fullWidth
+                                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
+                                                      ListboxProps={{ style: { maxHeight: '175px' } }}
                                                       options={commonReducer.userList}
                                                       getOptionLabel={(option) => option.real_name}
                                                       value={achievementReducer.serviceParams.deployUserId}
@@ -144,7 +146,8 @@ function Achievement (props){
                                     </Grid>
                                     {/*验收*/}
                                     <Grid item  xs>
-                                        <Autocomplete fullWidth
+                                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
+                                                      ListboxProps={{ style: { maxHeight: '175px' } }}
                                                       options={commonReducer.userList}
                                                       getOptionLabel={(option) => option.real_name}
                                                       value={achievementReducer.serviceParams.checkUserId}
@@ -250,7 +253,7 @@ function Achievement (props){
                                     </Grid>
                                     {/*供应商*/}
                                     <Grid item  xs>
-                                        <Autocomplete fullWidth
+                                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                                       options={commonReducer.supplierList}
                                                       getOptionLabel={(option) => option.supplier_name}
                                                       value={achievementReducer.productParams.supplierId}
@@ -262,7 +265,7 @@ function Achievement (props){
                                     </Grid>
                                     {/*名称*/}
                                     <Grid item  xs>
-                                        <Autocomplete fullWidth
+                                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                                       options={commonReducer.productList}
                                                       getOptionLabel={(option) => option.product_name}
                                                       value={achievementReducer.productParams.prodId}
@@ -274,7 +277,7 @@ function Achievement (props){
                                     </Grid>
                                     {/*销售*/}
                                     <Grid item  xs>
-                                        <Autocomplete fullWidth
+                                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                                       options={commonReducer.userList}
                                                       getOptionLabel={(option) => option.real_name}
                                                       value={achievementReducer.productParams.saleUserId}

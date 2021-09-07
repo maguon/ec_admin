@@ -393,7 +393,7 @@ function ServiceSetting (props){
                 <Grid container item xs={10} spacing={1}>
                     {/*服务类型serviceType*/}
                     <Grid item  xs>
-                        <Autocomplete fullWidth={true}
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true}
                                       options={sysConst.SERVICE_TYPE}
                                       getOptionLabel={(option) => option.label}
                                       value={serviceSettingReducer.queryObj.serviceType}
@@ -405,7 +405,7 @@ function ServiceSetting (props){
                     </Grid>
                     {/*服务价格类型servicePriceType*/}
                     <Grid item  xs>
-                        <Autocomplete fullWidth={true}
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true}
                                       options={sysConst.SERVICE_PRICE_TYPE}
                                       getOptionLabel={(option) => option.label}
                                       value={serviceSettingReducer.queryObj.servicePriceType}
@@ -417,7 +417,7 @@ function ServiceSetting (props){
                     </Grid>
                     {/*服务成本类型serviceCostType*/}
                     <Grid item  xs>
-                        <Autocomplete fullWidth={true}
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true}
                                       options={sysConst.SERVICE_PRICE_TYPE}
                                       getOptionLabel={(option) => option.label}
                                       value={serviceSettingReducer.queryObj.serviceCostType}
@@ -429,7 +429,7 @@ function ServiceSetting (props){
                     </Grid>
                     {/*销售提成类型salePerfType*/}
                     <Grid item  xs>
-                        <Autocomplete fullWidth={true}
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true}
                                       options={sysConst.SALE_PERF_TYPE}
                                       getOptionLabel={(option) => option.label}
                                       value={serviceSettingReducer.queryObj.salePerfType}
@@ -441,7 +441,7 @@ function ServiceSetting (props){
                     </Grid>
                     {/*施工提成类型deployPerfType*/}
                     <Grid item  xs>
-                        <Autocomplete fullWidth={true}
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true}
                                       options={sysConst.SALE_PERF_TYPE}
                                       getOptionLabel={(option) => option.label}
                                       value={serviceSettingReducer.queryObj.deployPerfType}
@@ -453,7 +453,7 @@ function ServiceSetting (props){
                     </Grid>
                     {/*验收提成类型checkPerfType*/}
                     <Grid item  xs>
-                        <Autocomplete fullWidth={true}
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true}
                                       options={sysConst.SALE_PERF_TYPE}
                                       getOptionLabel={(option) => option.label}
                                       value={serviceSettingReducer.queryObj.checkPerfType}
@@ -465,7 +465,7 @@ function ServiceSetting (props){
                     </Grid>
                     {/*状态status*/}
                     <Grid item  xs>
-                        <Autocomplete fullWidth={true}
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true}
                                       options={sysConst.USE_FLAG}
                                       getOptionLabel={(option) => option.label}
                                       value={serviceSettingReducer.queryObj.status}
@@ -1606,7 +1606,7 @@ function ServiceSetting (props){
                     <TabPanel value='2' style={{height:'410px'}}>
                         <Grid  container spacing={3}>
                             <Grid item xs>
-                                <Autocomplete fullWidth
+                                <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                               options={purchaseReducer.productArray}
                                               getOptionLabel={(option) => option.product_name}
                                               value={productArray}

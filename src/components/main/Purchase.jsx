@@ -215,7 +215,7 @@ function Purchase (props){
                 <Grid container item xs={10} spacing={1}>
                     {/*供应商名称*/}
                     <Grid item xs={3}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                       id="condition-category"
                                       options={purchaseReducer.supplierArray}
                                       getOptionLabel={(option) => option.supplier_name}

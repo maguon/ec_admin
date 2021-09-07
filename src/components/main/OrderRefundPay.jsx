@@ -204,7 +204,7 @@ function OrderRefundPay(props) {
                         </FormControl>
                     </Grid>
                     <Grid item xs>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                       options={commonReducer.clientAgentList}
                                       getOptionLabel={(option) => option.name}
                                       value={orderRefundPayReducer.queryParams.clientAgent}
@@ -220,7 +220,7 @@ function OrderRefundPay(props) {
                     </Grid>
 
                     <Grid item xs>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                       options={commonReducer.clientList}
                                       getOptionLabel={(option) => option.name}
                                       value={orderRefundPayReducer.queryParams.client}

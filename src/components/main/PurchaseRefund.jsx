@@ -291,7 +291,7 @@ function PurchaseRefund (props){
 
                     {/*供应商名称*/}
                     <Grid item xs>
-                        <Autocomplete id="condition-supplier" fullWidth
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} id="condition-supplier" fullWidth
                                       options={purchaseReducer.supplierArray}
                                       getOptionLabel={(option) => option.supplier_name}
                                       onChange={(event, value) => {
@@ -303,7 +303,7 @@ function PurchaseRefund (props){
                     </Grid>
                     {/*商品名称*/}
                     <Grid item xs>
-                        <Autocomplete id="condition-supplier" fullWidth
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} id="condition-supplier" fullWidth
                                       options={purchaseReducer.productArray}
                                       getOptionLabel={(option) => option.product_name}
                                       onChange={(event, value) => {

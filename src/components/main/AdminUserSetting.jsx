@@ -462,7 +462,7 @@ function AdminUserSetting (props) {
                 </Grid>
                 <Grid  container spacing={3}>
                     <Grid item xs>
-                        <Autocomplete fullWidth={true}
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true}
                                       options={adminUserSettingReducer.typeArray}
                                       getOptionLabel={(option) => option.type_name}
                                       onChange={(e,value)=>{
@@ -477,7 +477,7 @@ function AdminUserSetting (props) {
                         />
                     </Grid>
                     <Grid item xs>
-                        <Autocomplete fullWidth={true}
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true}
                                       options={adminUserSettingReducer.perfLevelArray}
                                       getOptionLabel={(option) => option.perf_name}
                                       onChange={(e,value)=>{

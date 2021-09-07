@@ -150,7 +150,7 @@ function Supplier (props){
                     {/*供应商名称*/}
 
                     <Grid item xs={3}>
-                        <Autocomplete fullWidth={true} id="paramSupplierId"
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true} id="paramSupplierId"
                                       options={commonReducer.supplierList}
                                       getOptionLabel={(option) => option.supplier_name}
                                       value={supplierReducer.queryObj.supplierId}
@@ -163,7 +163,7 @@ function Supplier (props){
 
                     {/*供应商类型*/}
                     <Grid item  xs={6} sm={3}>
-                        <Autocomplete fullWidth={true} id="paramSupplierType"
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true} id="paramSupplierType"
                                       options={sysConst.SUPPLIER_TYPE}
                                       getOptionLabel={(option) => option.label}
                                       value={supplierReducer.queryObj.supplierType}

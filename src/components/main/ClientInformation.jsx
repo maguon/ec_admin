@@ -164,7 +164,7 @@ function ClientInformation (props) {
                     </Grid>
                     {/*推荐人 referUser*/}
                     <Grid item xs>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                       options={clientInformationReducer.referUserArray}
                                       getOptionLabel={(option) => option.real_name}
                                       value={clientInformationReducer.queryClientObj.referUser}
@@ -177,7 +177,7 @@ function ClientInformation (props) {
 
                     {/*客户来源*/}
                     <Grid item  xs>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                       options={sysConst.SOURCE_TYPE}
                                       getOptionLabel={(option) => option.label}
                                       value={clientInformationReducer.queryClientObj.sourceType}
@@ -189,7 +189,7 @@ function ClientInformation (props) {
                     </Grid>
                     {/*客户集群*/}
                     <Grid item  xs>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                       options={clientInformationReducer.clientAgentArray}
                                       getOptionLabel={(option) => option.name}
                                       value={clientInformationReducer.queryClientObj.clientAgentId}
@@ -204,7 +204,7 @@ function ClientInformation (props) {
 
                     {/*状态status*/}
                     <Grid item  xs>
-                        <Autocomplete fullWidth={true}
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true}
                                       options={sysConst.USE_FLAG}
                                       getOptionLabel={(option) => option.label}
                                       value={clientInformationReducer.queryClientObj.status}
@@ -337,7 +337,7 @@ function ClientInformation (props) {
                 <Grid  container spacing={3}>
                     {/*客户集群clientAgentId*/}
                     <Grid item xs>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                       options={clientInformationReducer.clientAgentArray}
                                       getOptionLabel={(option) => option.name}
                                       value={clientAgentId}
@@ -442,7 +442,7 @@ function ClientInformation (props) {
                     {/*推荐人 referUser*/}
                     <Grid item xs>
                         <Autocomplete fullWidth
-                                      ListboxProps={{ style: { maxHeight: '11rem' } }}
+                                      ListboxProps={{ style: { maxHeight: '175px' } }}
                                       options={clientInformationReducer.referUserArray}
                                       getOptionLabel={(option) => option.real_name}
                                       value={referUser}
