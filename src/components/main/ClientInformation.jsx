@@ -35,12 +35,18 @@ const StyledTableCell = withStyles((theme) => ({
         fontWeight:'bold',
         background:'#F7F6F9',
         borderTop: '2px solid #D4D4D4'
-
-    }
+    },
+    option: {
+        fontSize: 28,
+        '& > span': {
+            marginRight: 10,
+            fontSize: 30,
+        },
+    },
 }))(TableCell);
 
 function ClientInformation (props) {
-    const {clientInformationReducer,getClientInformationList,getUserArray,changeStatus,fromDetail,getClientAgent,addClientInformation} = props;
+    const {clientInformationReducer,appReducer,getClientInformationList,getUserArray,changeStatus,fromDetail,getClientAgent,addClientInformation} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     const [modalOpenFlag, setModalOpenFlag] = useState(false);
@@ -100,7 +106,7 @@ function ClientInformation (props) {
         setTel('');
         setName('');
         setAddress('');
-        setReferUser(null);
+        setReferUser(appReducer.currentUser);
     }
     // 关闭模态
     const modalClose = () => {
@@ -436,6 +442,7 @@ function ClientInformation (props) {
                     {/*推荐人 referUser*/}
                     <Grid item xs>
                         <Autocomplete fullWidth
+                                      ListboxProps={{ style: { maxHeight: '11rem' } }}
                                       options={clientInformationReducer.referUserArray}
                                       getOptionLabel={(option) => option.real_name}
                                       value={referUser}
@@ -443,7 +450,6 @@ function ClientInformation (props) {
                                       renderInput={(params) => <TextField {...params} label="推荐人" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
-
                 </Grid>
                 <Grid  container spacing={3}>
                     {/*备注remark*/}
@@ -469,6 +475,7 @@ const mapStateToProps = (state, ownProps) => {
     }
     return {
         clientInformationReducer: state.ClientInformationReducer,
+        appReducer: state.AppReducer,
         fromDetail: fromDetail
     }
 }
