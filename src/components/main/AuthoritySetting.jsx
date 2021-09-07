@@ -103,7 +103,7 @@ function AuthoritySetting (props) {
             <Grid container spacing={3}>
                 <Grid container item xs={10} spacing={1}>
                     <Grid item xs={3}>
-                        <Autocomplete fullWidth disableClearable
+                        <Autocomplete ListboxProps={{style: {maxHeight: '175px'}}} fullWidth disableClearable
                                       options={authoritySettingReducer.userGroupList}
                                       getOptionLabel={(option) => option.label}
                                       value={currentUserType}

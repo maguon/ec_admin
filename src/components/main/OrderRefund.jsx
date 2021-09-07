@@ -449,7 +449,7 @@ function OrderRefund(props) {
                                                   }}/>
                                     </Grid>
                                     <Grid item xs={9}>
-                                        <Autocomplete fullWidth disableClearable disabled options={commonReducer.saleServiceList}
+                                        <Autocomplete fullWidth disableClearable disabled ListboxProps={{style: {maxHeight: '175px'}}} options={commonReducer.saleServiceList}
                                                       getOptionLabel={(option) => option.service_name}
                                                       value={{id: item.sale_service_id,service_name: item.sale_service_name}}
                                                       renderInput={(params) => <TextField {...params} label="服务名称" margin="dense" variant="outlined"/>}
@@ -521,7 +521,7 @@ function OrderRefund(props) {
                                                   }}/>
                                     </Grid>
                                     <Grid item xs={9}>
-                                        <Autocomplete fullWidth disableClearable disabled options={commonReducer.productList}
+                                        <Autocomplete fullWidth disableClearable disabled ListboxProps={{style: {maxHeight: '175px'}}} options={commonReducer.productList}
                                                       getOptionLabel={(option) => option.product_name}
                                                       value={{id: item.prod_id, product_name: item.prod_name}}
                                                       renderInput={(params) => <TextField {...params} label="商品名称" margin="dense" variant="outlined"/>}

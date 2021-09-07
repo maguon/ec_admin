@@ -237,7 +237,7 @@ function ProductManagerDetail(props) {
                         </Grid>
                         <Grid item container sm={7} spacing={2}>
                             <Grid item sm={6}>
-                                <Autocomplete fullWidth disableClearable
+                                <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
                                             options={commonReducer.categoryList}
                                             getOptionLabel={(option) => option.category_name}
                                             value={productManagerDetailReducer.productInfo.category}
@@ -253,7 +253,7 @@ function ProductManagerDetail(props) {
                                 />
                             </Grid>
                             <Grid item sm={6}>
-                                <Autocomplete fullWidth disableClearable
+                                <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
                                             options={commonReducer.categorySubList}
                                             noOptionsText="无选项"
                                             getOptionLabel={(option) => option.category_sub_name}
@@ -267,7 +267,7 @@ function ProductManagerDetail(props) {
                                 />
                             </Grid>
                             <Grid item sm={6}>
-                                <Autocomplete fullWidth disableClearable
+                                <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
                                             options={commonReducer.brandList}
                                             getOptionLabel={(option) => option.brand_name}
                                             value={productManagerDetailReducer.productInfo.brand}
@@ -283,7 +283,7 @@ function ProductManagerDetail(props) {
                                 />
                             </Grid>
                             <Grid item sm={6}>
-                                <Autocomplete fullWidth disableClearable
+                                <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
                                             options={commonReducer.brandModelList}
                                             noOptionsText="无选项"
                                             getOptionLabel={(option) => option.brand_model_name}

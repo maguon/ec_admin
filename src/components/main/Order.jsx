@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Link} from "react-router-dom";
-import Swal from "sweetalert2";
 // 引入material-ui基础组件
 import {
     Box,
@@ -367,7 +366,7 @@ function Order(props) {
                     </Grid>
 
                     <Grid item xs={2}>
-                        <Autocomplete fullWidth
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.userList}
                                       getOptionLabel={(option) => option.real_name}
                                       value={modalData.reUser}
@@ -379,7 +378,7 @@ function Order(props) {
                     </Grid>
 
                     <Grid item xs={2}>
-                        <Autocomplete fullWidth
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.clientAgentList}
                                       getOptionLabel={(option) => option.name}
                                       value={modalData.clientAgent}
@@ -391,7 +390,7 @@ function Order(props) {
                     </Grid>
 
                     <Grid item xs={2}>
-                        <Autocomplete fullWidth
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.clientList}
                                       getOptionLabel={(option) => option.name}
                                       value={modalData.client}
@@ -573,7 +572,7 @@ function Order(props) {
                     <div style={{display:activeStep==0?'block':'none'}}>
                         <Grid container spacing={1} style={{marginBottom:10}}>
                             <Grid item sm={6}>
-                                <Autocomplete fullWidth noOptionsText="无选项"
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}} noOptionsText="无选项"
                                               options={commonReducer.clientList}
                                               getOptionLabel={(option) => option.client_serial + ' ' + option.name}
                                               value={modalData.clientSerial}
@@ -594,7 +593,7 @@ function Order(props) {
                                 />
                             </Grid>
                             <Grid item sm={6}>
-                                <Autocomplete fullWidth
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                               options={commonReducer.userList}
                                               getOptionLabel={(option) => option.real_name}
                                               value={modalData.user}
@@ -640,7 +639,7 @@ function Order(props) {
                         {modalData.serviceList.map((item,index)=>(
                             <Grid  container spacing={1} key={index}>
                                 <Grid item xs={3}>
-                                    <Autocomplete fullWidth
+                                    <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                                   options={commonReducer.saleServiceList}
                                                   disableClearable
                                                   getOptionLabel={(option) => option.service_name}
@@ -730,7 +729,7 @@ function Order(props) {
                         {modalData.productList.map((item,index)=>(
                             <Grid container spacing={1} key={index}>
                                 <Grid item xs={3}>
-                                    <Autocomplete fullWidth
+                                    <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                                   options={commonReducer.productList}
                                                   disableClearable
                                                   getOptionLabel={(option) => option.product_name}
@@ -821,7 +820,11 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => ({
     // 取得画面 select控件，基础数据
     getBaseSelectList: () => {
+        // 接单人
         dispatch(commonAction.getUserList());
+        // 客户
+        dispatch(commonAction.getClientList());
+        // 客户集群
         dispatch(commonAction.getClientAgentList());
     },
     getModalSelectList: () => {

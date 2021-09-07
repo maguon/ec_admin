@@ -434,7 +434,8 @@ function StorageInOut(props) {
                             </Grid>
 
                             <Grid item xs={2}>
-                                <Autocomplete fullWidth options={commonReducer.storageList} getOptionLabel={(option) => option.storage_name}
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={commonReducer.storageList} getOptionLabel={(option) => option.storage_name}
                                               onChange={(event, value) => {
                                                   // 选择时 将当前选中值 赋值 reducer
                                                   dispatch(StorageInOutActionType.setPurchaseParam({name: "storage", value: value}));
@@ -452,7 +453,8 @@ function StorageInOut(props) {
                                 />
                             </Grid>
                             <Grid item xs={2}>
-                                <Autocomplete fullWidth options={commonReducer.storageAreaList} getOptionLabel={(option) => option.storage_area_name}
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={commonReducer.storageAreaList} getOptionLabel={(option) => option.storage_area_name}
                                               noOptionsText="无选项"
                                               onChange={(event, value) => {
                                                   dispatch(StorageInOutActionType.setPurchaseParam({name: "storageArea", value: value}));
@@ -463,7 +465,8 @@ function StorageInOut(props) {
                             </Grid>
 
                             <Grid item xs={2}>
-                                <Autocomplete fullWidth options={commonReducer.supplierList} getOptionLabel={(option) => option.supplier_name}
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={commonReducer.supplierList} getOptionLabel={(option) => option.supplier_name}
                                               onChange={(event, value) => {
                                                   dispatch(StorageInOutActionType.setPurchaseParam({name: "supplier", value: value}));
                                               }}
@@ -577,7 +580,8 @@ function StorageInOut(props) {
                             ))}
 
                             <Grid item sm={5}>
-                                <Autocomplete fullWidth options={commonReducer.storageList} getOptionLabel={(option) => option.storage_name}
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={commonReducer.storageList} getOptionLabel={(option) => option.storage_name}
                                               value={purchaseModalData.storage}
                                               onChange={(event, value) => {
                                                   setPurchaseModalData({...purchaseModalData, storage: value, storageArea: null});
@@ -595,7 +599,8 @@ function StorageInOut(props) {
                                 />
                             </Grid>
                             <Grid item sm={5}>
-                                <Autocomplete fullWidth options={commonReducer.storageAreaList} getOptionLabel={(option) => option.storage_area_name}
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={commonReducer.storageAreaList} getOptionLabel={(option) => option.storage_area_name}
                                               noOptionsText="无选项"
                                               value={purchaseModalData.storageArea}
                                               onChange={(event, value) => {
@@ -678,7 +683,8 @@ function StorageInOut(props) {
                             </Grid>
 
                             <Grid item xs={2}>
-                                <Autocomplete fullWidth options={commonReducer.supplierList} getOptionLabel={(option) => option.supplier_name}
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={commonReducer.supplierList} getOptionLabel={(option) => option.supplier_name}
                                               value={storageInOutReducer.refundParams.supplier}
                                               onChange={(event, value) => {
                                                   dispatch(StorageInOutActionType.setRefundParam({name: "supplier", value: value}));
@@ -815,7 +821,8 @@ function StorageInOut(props) {
                             {refundModalData.pageType !== 'info' &&
                             <>
                                 <Grid item sm={12}>
-                                    <Autocomplete fullWidth options={storageInOutReducer.storageProductRelList}
+                                    <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                                  options={storageInOutReducer.storageProductRelList}
                                                   noOptionsText="无选项"
                                                   getOptionLabel={(option) => option.storage_name + '-' + option.storage_area_name + '-' + option.product_name + '-' + option.storage_count}
                                                   value={refundModalData.storageProduct}
@@ -1036,7 +1043,8 @@ function StorageInOut(props) {
                                         </FormControl>
                                     </Grid>
                                     <Grid item xs={6}>
-                                        <Autocomplete fullWidth options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
+                                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                                      options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
                                                       value={orderInModalData.reUser}
                                                       onChange={(event, value) => {
                                                           setOrderInModalData({...orderInModalData,reUser:value});
@@ -1083,7 +1091,8 @@ function StorageInOut(props) {
                             </Grid>
 
                             <Grid item xs={2}>
-                                <Autocomplete fullWidth options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
                                               value={storageInOutReducer.orderOutParams.reUser}
                                               onChange={(event, value) => {
                                                   dispatch(StorageInOutActionType.setOrderOutParam({name: "reUser", value: value}));
@@ -1120,7 +1129,8 @@ function StorageInOut(props) {
                             </Grid>
 
                             <Grid item xs={2}>
-                                <Autocomplete fullWidth options={commonReducer.supplierList} getOptionLabel={(option) => option.supplier_name}
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={commonReducer.supplierList} getOptionLabel={(option) => option.supplier_name}
                                               value={storageInOutReducer.orderOutParams.supplier}
                                               onChange={(event, value) => {
                                                   dispatch(StorageInOutActionType.setOrderOutParam({name: "supplier", value: value}));
@@ -1130,7 +1140,8 @@ function StorageInOut(props) {
                             </Grid>
 
                             <Grid item xs={2}>
-                                <Autocomplete fullWidth options={commonReducer.storageList} getOptionLabel={(option) => option.storage_name}
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={commonReducer.storageList} getOptionLabel={(option) => option.storage_name}
                                               onChange={(event, value) => {
                                                   // 选择时 将当前选中值 赋值 reducer
                                                   dispatch(StorageInOutActionType.setOrderOutParam({name: "storage", value: value}));
@@ -1148,7 +1159,8 @@ function StorageInOut(props) {
                                 />
                             </Grid>
                             <Grid item xs={2}>
-                                <Autocomplete fullWidth options={commonReducer.storageAreaList} getOptionLabel={(option) => option.storage_area_name}
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={commonReducer.storageAreaList} getOptionLabel={(option) => option.storage_area_name}
                                               noOptionsText="无选项"
                                               onChange={(event, value) => {
                                                   dispatch(StorageInOutActionType.setOrderOutParam({name: "storageArea", value: value}));
@@ -1274,7 +1286,8 @@ function StorageInOut(props) {
                             {orderOutModalData.pageType !== 'info' &&
                             <>
                                 <Grid item sm={12}>
-                                    <Autocomplete fullWidth options={storageInOutReducer.storageProductList}
+                                    <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                                  options={storageInOutReducer.storageProductList}
                                                   noOptionsText="无选项"
                                                   getOptionLabel={(option) => option.storage_name + '-' + option.storage_area_name + '-' + option.product_name + '-' + option.storage_count}
                                                   value={orderOutModalData.storageProduct}
@@ -1287,7 +1300,8 @@ function StorageInOut(props) {
                                     />
                                 </Grid>
                                 <Grid item sm={12}>
-                                    <Autocomplete fullWidth options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
+                                    <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                                  options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
                                                   value={orderOutModalData.reUser}
                                                   onChange={(event, value) => {
                                                       setOrderOutModalData({...orderOutModalData,reUser:value});
@@ -1350,7 +1364,8 @@ function StorageInOut(props) {
                             </Grid>
 
                             <Grid item xs={2}>
-                                <Autocomplete fullWidth options={commonReducer.storageList} getOptionLabel={(option) => option.storage_name}
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={commonReducer.storageList} getOptionLabel={(option) => option.storage_name}
                                               value={storageInOutReducer.storageProductDetailParams.storage}
                                               onChange={(event, value) => {
                                                   // 选择时 将当前选中值 赋值 reducer
@@ -1368,7 +1383,8 @@ function StorageInOut(props) {
                                 />
                             </Grid>
                             <Grid item xs={2}>
-                                <Autocomplete fullWidth options={commonReducer.storageAreaList} getOptionLabel={(option) => option.storage_area_name}
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={commonReducer.storageAreaList} getOptionLabel={(option) => option.storage_area_name}
                                               noOptionsText="无选项"
                                               value={storageInOutReducer.storageProductDetailParams.storageArea}
                                               onChange={(event, value) => {
@@ -1379,7 +1395,8 @@ function StorageInOut(props) {
                             </Grid>
 
                             <Grid item xs={2}>
-                                <Autocomplete fullWidth options={commonReducer.supplierList} getOptionLabel={(option) => option.supplier_name}
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={commonReducer.supplierList} getOptionLabel={(option) => option.supplier_name}
                                               value={storageInOutReducer.storageProductDetailParams.supplier}
                                               onChange={(event, value) => {
                                                   dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "supplier", value: value}));
@@ -1518,7 +1535,8 @@ function StorageInOut(props) {
                         {modalData.type === 'out' &&
                         <Grid container spacing={2}>
                             <Grid item sm={12}>
-                                <Autocomplete fullWidth options={commonReducer.productList} getOptionLabel={(option) => option.product_name}
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={commonReducer.productList} getOptionLabel={(option) => option.product_name}
                                               value={modalData.product}
                                               onChange={(event, value) => {
                                                   setModalData({...modalData,product:value});
@@ -1536,7 +1554,8 @@ function StorageInOut(props) {
                             </Grid>
 
                             <Grid item sm={12}>
-                                <Autocomplete fullWidth noOptionsText="无选项" options={storageInOutReducer.storageProductList}
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              noOptionsText="无选项" options={storageInOutReducer.storageProductList}
                                               getOptionLabel={(option) => option.storage_name + '-' + option.storage_area_name + '-' + option.product_name + '-' + option.storage_count}
                                               value={modalData.storageProduct}
                                               onChange={(event, value) => {
@@ -1555,7 +1574,8 @@ function StorageInOut(props) {
                             </Grid>
 
                             <Grid item sm={6}>
-                                <Autocomplete fullWidth options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
                                               value={modalData.reUser}
                                               onChange={(event, value) => {
                                                   setModalData({...modalData,reUser:value});
@@ -1622,7 +1642,8 @@ function StorageInOut(props) {
                                         </FormControl>
                                     </Grid>
                                     <Grid item xs={4}>
-                                        <Autocomplete fullWidth options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
+                                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                                      options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
                                                       value={modalData.reUser}
                                                       onChange={(event, value) => {
                                                           setModalData({...modalData,reUser:value});

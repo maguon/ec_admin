@@ -217,7 +217,7 @@ function ProductManager(props) {
             <Grid container spacing={3}>
                 <Grid container item xs={10} spacing={1}>
                     <Grid item xs={2}>
-                        <Autocomplete fullWidth
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.categoryList}
                                       getOptionLabel={(option) => option.category_name}
                                       value={productManagerReducer.queryParams.category}
@@ -234,7 +234,7 @@ function ProductManager(props) {
                         />
                     </Grid>
                     <Grid item xs={2}>
-                        <Autocomplete fullWidth
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.categorySubList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.category_sub_name}
@@ -247,7 +247,7 @@ function ProductManager(props) {
                     </Grid>
 
                     <Grid item xs={2}>
-                        <Autocomplete fullWidth
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.brandList}
                                       getOptionLabel={(option) => option.brand_name}
                                       value={productManagerReducer.queryParams.brand}
@@ -265,7 +265,7 @@ function ProductManager(props) {
                         />
                     </Grid>
                     <Grid item xs={2}>
-                        <Autocomplete fullWidth
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.brandModelList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.brand_model_name}
@@ -415,7 +415,7 @@ function ProductManager(props) {
             >
                 <Grid container spacing={1}>
                     <Grid item sm={6}>
-                        <Autocomplete fullWidth
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.categoryList}
                                       getOptionLabel={(option) => option.category_name}
                                       value={modalData.category}
@@ -434,7 +434,7 @@ function ProductManager(props) {
                         />
                     </Grid>
                     <Grid item sm={6}>
-                        <Autocomplete fullWidth
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.categorySubList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.category_sub_name}
@@ -448,7 +448,7 @@ function ProductManager(props) {
                         />
                     </Grid>
                     <Grid item sm={6}>
-                        <Autocomplete fullWidth
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.brandList}
                                       getOptionLabel={(option) => option.brand_name}
                                       value={modalData.brand}
@@ -467,7 +467,7 @@ function ProductManager(props) {
                         />
                     </Grid>
                     <Grid item sm={6}>
-                        <Autocomplete fullWidth
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.brandModelList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.brand_model_name}

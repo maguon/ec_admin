@@ -155,7 +155,7 @@ function OrderRefundDetail(props) {
             {orderRefundDetailReducer.orderRefundInfo.status !== 7 &&
             <Grid container spacing={1}>
                 <Grid item xs={2}>
-                    <Autocomplete fullWidth disableClearable
+                    <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
                                   options={orderRefundDetailReducer.orderAvailableSerVList}
                                   getOptionLabel={(option) => option.sale_service_name}
                                   value={newServiceData.serviceInfo}
@@ -310,7 +310,7 @@ function OrderRefundDetail(props) {
             {orderRefundDetailReducer.orderRefundInfo.status !== 7 &&
             <Grid container spacing={1}>
                 <Grid item xs={2}>
-                    <Autocomplete fullWidth disableClearable
+                    <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
                                   options={orderRefundDetailReducer.orderAvailableProdList}
                                   getOptionLabel={(option) => option.prod_name}
                                   value={newProdData.productInfo}

@@ -128,7 +128,7 @@ function StorageProduct(props) {
             <Grid container spacing={3}>
                 <Grid container item xs={10} spacing={1}>
                     <Grid item xs={3}>
-                        <Autocomplete fullWidth
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.storageList}
                                       getOptionLabel={(option) => option.storage_name}
                                       value={storageProductReducer.queryParams.storage}
@@ -148,7 +148,7 @@ function StorageProduct(props) {
                         />
                     </Grid>
                     <Grid item xs={3}>
-                        <Autocomplete fullWidth
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.storageAreaList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.storage_area_name}
@@ -161,7 +161,7 @@ function StorageProduct(props) {
                     </Grid>
 
                     <Grid item xs={3}>
-                        <Autocomplete fullWidth
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.supplierList}
                                       getOptionLabel={(option) => option.supplier_name}
                                       value={storageProductReducer.queryParams.supplier}
@@ -173,7 +173,7 @@ function StorageProduct(props) {
                     </Grid>
 
                     <Grid item xs={3}>
-                        <Autocomplete fullWidth
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.productList}
                                       getOptionLabel={(option) => option.product_name}
                                       value={storageProductReducer.queryParams.product}
@@ -321,7 +321,7 @@ function StorageProduct(props) {
                     <Grid item sm={6}>商品：{modalData.storageProduct.product_name}</Grid>
                     <Grid item sm={6}>库存：{modalData.storageProduct.storage_count}</Grid>
                     <Grid item sm={6}>
-                        <Autocomplete fullWidth
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.storageList}
                                       getOptionLabel={(option) => option.storage_name}
                                       value={modalData.storage}
@@ -341,7 +341,7 @@ function StorageProduct(props) {
                         />
                     </Grid>
                     <Grid item sm={6}>
-                        <Autocomplete fullWidth
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.storageAreaList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.storage_area_name}

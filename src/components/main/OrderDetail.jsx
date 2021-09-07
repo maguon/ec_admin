@@ -271,7 +271,7 @@ function OrderDetail(props) {
                 </Grid>
 
                 <Grid item sm={3}>
-                    <Autocomplete fullWidth disableClearable
+                    <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
                                   disabled={orderDetailReducer.orderInfo.status === 7 || orderDetailReducer.orderInfo.status === 0}
                                   options={commonReducer.userList}
                                   getOptionLabel={(option) => option.real_name}
@@ -337,7 +337,7 @@ function OrderDetail(props) {
             {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 &&
             <Grid  container spacing={1}>
                 <Grid item xs={2}>
-                    <Autocomplete fullWidth disableClearable
+                    <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
                                   options={commonReducer.saleServiceList}
                                   getOptionLabel={(option) => option.service_name}
                                   value={newServiceData.serviceInfo}
@@ -480,7 +480,7 @@ function OrderDetail(props) {
             {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 &&
             <Grid container spacing={1}>
                 <Grid item xs={2}>
-                    <Autocomplete fullWidth disableClearable
+                    <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
                                   options={commonReducer.productList}
                                   getOptionLabel={(option) => option.product_name}
                                   value={newProdData.productInfo}
@@ -535,7 +535,7 @@ function OrderDetail(props) {
             {orderDetailReducer.orderProdList.map((item,index)=>(
                 <Grid container spacing={1} key={index}>
                     <Grid item xs={2}>
-                        <Autocomplete fullWidth disableClearable disabled
+                        <Autocomplete fullWidth disableClearable disabled ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.productList}
                                       getOptionLabel={(option) => option.product_name}
                                       value={{id:item.prod_id,product_name:item.prod_name}}
@@ -630,7 +630,7 @@ function OrderDetail(props) {
                 <Grid container spacing={2}>
                     {modalData.pageType==='deploy' &&
                     <Grid item sm={12}>
-                        <Autocomplete fullWidth disableClearable
+                        <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.userList}
                                       getOptionLabel={(option) => option.real_name}
                                       value={modalData.deployUser}
@@ -643,7 +643,7 @@ function OrderDetail(props) {
                     </Grid>}
                     {modalData.pageType==='check' &&
                     <Grid item sm={12}>
-                        <Autocomplete fullWidth disableClearable
+                        <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.userList}
                                       getOptionLabel={(option) => option.real_name}
                                       value={modalData.checkUser}

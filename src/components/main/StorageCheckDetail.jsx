@@ -236,7 +236,7 @@ function StorageCheck(props) {
             >
                 <Grid container spacing={2}>
                     <Grid item sm={6}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{style: {maxHeight: '175px'}}} fullWidth
                                       options={commonReducer.storageList}
                                       getOptionLabel={(option) => option.storage_name}
                                       value={modalData.storage}
@@ -256,7 +256,7 @@ function StorageCheck(props) {
                         />
                     </Grid>
                     <Grid item sm={6}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{style: {maxHeight: '175px'}}} fullWidth
                                       options={commonReducer.storageAreaList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.storage_area_name}
@@ -272,7 +272,7 @@ function StorageCheck(props) {
                     </Grid>
 
                     <Grid item sm={6}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{style: {maxHeight: '175px'}}} fullWidth
                                       options={commonReducer.supplierList}
                                       getOptionLabel={(option) => option.supplier_name}
                                       value={modalData.supplier}
@@ -283,7 +283,7 @@ function StorageCheck(props) {
                         />
                     </Grid>
                     <Grid item sm={6}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{style: {maxHeight: '175px'}}} fullWidth
                                       options={commonReducer.productList}
                                       getOptionLabel={(option) => option.product_name}
                                       value={modalData.product}

@@ -288,7 +288,7 @@ function StorageCheck(props) {
             >
                 <Grid container spacing={2}>
                     <Grid item sm={6}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{style: {maxHeight: '175px'}}} fullWidth
                                       options={commonReducer.storageList}
                                       getOptionLabel={(option) => option.storage_name}
                                       value={storageChkInfo.storage}
@@ -305,7 +305,7 @@ function StorageCheck(props) {
                         />
                     </Grid>
                     <Grid item sm={6}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{style: {maxHeight: '175px'}}} fullWidth
                                       options={commonReducer.storageAreaList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.storage_area_name}
@@ -318,7 +318,7 @@ function StorageCheck(props) {
                     </Grid>
 
                     <Grid item sm={6}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{style: {maxHeight: '175px'}}} fullWidth
                                       options={commonReducer.categoryList}
                                       getOptionLabel={(option) => option.category_name}
                                       value={storageChkInfo.category}
@@ -335,7 +335,7 @@ function StorageCheck(props) {
                         />
                     </Grid>
                     <Grid item sm={6}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{style: {maxHeight: '175px'}}} fullWidth
                                       options={commonReducer.categorySubList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.category_sub_name}
@@ -347,7 +347,7 @@ function StorageCheck(props) {
                         />
                     </Grid>
                     <Grid item sm={6}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{style: {maxHeight: '175px'}}} fullWidth
                                       options={commonReducer.brandList}
                                       getOptionLabel={(option) => option.brand_name}
                                       value={storageChkInfo.brand}
@@ -364,7 +364,7 @@ function StorageCheck(props) {
                         />
                     </Grid>
                     <Grid item sm={6}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{style: {maxHeight: '175px'}}} fullWidth
                                       options={commonReducer.brandModelList}
                                       noOptionsText="无选项"
                                       getOptionLabel={(option) => option.brand_model_name}
@@ -377,7 +377,7 @@ function StorageCheck(props) {
                     </Grid>
 
                     <Grid item sm={6}>
-                        <Autocomplete fullWidth
+                        <Autocomplete ListboxProps={{style: {maxHeight: '175px'}}} fullWidth
                                       options={commonReducer.supplierList}
                                       getOptionLabel={(option) => option.supplier_name}
                                       value={storageChkInfo.supplier}
