@@ -72,7 +72,7 @@ export default handleActions({
             invoiceData: action.payload
         }
     },
-    [ClientAgentDetailActionType.getClientInfo]: (state, action) => {
+    [ClientAgentDetailActionType.getClientAgentDetailInfo]: (state, action) => {
         return {
             ...state,
             clientData: action.payload

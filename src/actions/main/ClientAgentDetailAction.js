@@ -114,7 +114,7 @@ export const getClientInfo =(id,params)  => async (dispatch,getState) =>{
             newClientData.start = start;
             newClientData.dataSize = res.rows.length;
             newClientData.clientArray = res.rows.slice(0, size - 1);
-            dispatch({type: ClientAgentDetailActionType.getClientInfo, payload: newClientData});
+            dispatch({type: ClientAgentDetailActionType.getClientAgentDetailInfo, payload: newClientData});
         } else if (res.success === false) {
             Swal.fire('获取发票信息失败', res.msg, 'warning');
         }

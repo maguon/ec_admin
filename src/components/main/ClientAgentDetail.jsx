@@ -93,13 +93,13 @@ function ClientAgentDetail (props){
     },[]);
     const changeTab = (event, newValue) => {
         clientAgentDetailReducer.invoiceArray=[];
+        clientAgentDetailReducer.clientArray=[];
         setValue(newValue);
         if(newValue==1){
             setValidation({});
             getClientAgentInfo(id);
         }
         if(newValue==2){
-            clientAgentDetailReducer.clientArray=[];
             getClientInfo(id,0)
         }
         if(newValue==3){
