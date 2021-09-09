@@ -323,6 +323,12 @@ export const PAYMENT_TYPE = [
     {value: 1, label: "挂账"},
     {value: 2, label: "现金"}
 ];
+
+//unique
+export const PROD_UNIQUE_STATUS =[
+    {value: 0, label: "未验收"},
+    {value: 1, label: "验收"}
+]
 // 用于权限设定（包含所有机能设定）
 export const ALL_PAGE_LIST = [
     {

@@ -1,14 +1,36 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {connect,useDispatch} from 'react-redux';
 import {Link, useParams} from "react-router-dom";
 import Swal from "sweetalert2";
-import {Button, Grid, Typography, TextField, IconButton, FormControl, InputLabel, Select, Tab, Tabs,
-        MenuItem, Fab, AppBar, TableContainer, Paper, Table, TableHead, TableRow, TableBody, TableCell, FormHelperText} from "@material-ui/core";
+import {
+    Button,
+    Grid,
+    Typography,
+    TextField,
+    IconButton,
+    FormControl,
+    InputLabel,
+    Select,
+    Tab,
+    Tabs,
+    MenuItem,
+    Fab,
+    AppBar,
+    TableContainer,
+    Paper,
+    Table,
+    TableHead,
+    TableRow,
+    TableBody,
+    TableCell,
+    FormHelperText, Divider,
+} from "@material-ui/core";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
 import TabContext from "@material-ui/lab/TabContext";
 import TabPanel from "@material-ui/lab/TabPanel";
 import {SimpleModal} from "../index";
 import {PurchaseDetailActionType} from '../../types';
+import {CSVReader} from "react-papaparse";
 const PurchaseDetailAction = require('../../actions/main/PurchaseDetailAction');
 const PurchaseAction =require('../../actions/main/PurchaseAction');
 const commonUtil = require('../../utils/CommonUtil');
@@ -33,7 +55,9 @@ const StyledTableCell = withStyles((theme) => ({
 }))(TableCell);
 //采购---详情
 function PurchaseDetail (props){
-    const {purchaseDetailReducer,getPurchaseDetailInfo,getPurchaseItemDetailInfo,updateStatus,updatePurchaseDetailInfo,updatePurchaseDetailItemInfo,getPurchaseRefundDetailInfo,getProductList,getStorageProductArray,addRefundDetailItem,downLoadPDF} = props;
+    const {purchaseDetailReducer,getPurchaseDetailInfo,getPurchaseItemDetailInfo,updateStatus,updatePurchaseDetailInfo,
+        updatePurchaseDetailItemInfo,getPurchaseRefundDetailInfo,getStorageProductArray,addRefundDetailItem,
+        downLoadPDF} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     const {id} = useParams();
@@ -41,6 +65,7 @@ function PurchaseDetail (props){
     const [addTransferCostTypeFlag, setAddTransferCostTypeFlag] = useState(true);
     const [purchaseCountTotal, setPurchaseCountTotal] = useState(0);
     const [modalOpenFlag, setModalOpenFlag] = useState(false);
+    const [modalUniqueOpenFlag, setUniqueModalOpenFlag] = useState(false);
     const [modalItemOpenFlag, setModalItemOpenFlag] = useState(false);
     const [value, setValue] = React.useState('1');
     const [addTransferCostType, setAddTransferCostType] = useState(1);
@@ -52,11 +77,23 @@ function PurchaseDetail (props){
     const [addStorageType, setAddStorageType] = useState(0);
     const [addStorageTypeItem, setAddStorageTypeItem] = useState(0);
     const [validation,setValidation] = useState({});
+    const [uniqueValidation,setUniqueValidation] = useState({});
     const [addValidation,setAddValidation] = useState({});
+    const [productUnique,setProductUnique] = useState('');
+    const [inputFile,setInputFile] =useState([]);
+    const [allInfo,setAllInfo] =useState(null);
+    const [errInfo,setErrInfo] =useState([]);
+    const [fileName,setFileName]=useState('');
+    const [dataBox,setDataBox]=useState(false);
+    const [successData,setSuccessData]=useState(false);
+    const [purchaseItemId,setPurchaseItemId]=useState('');
+    const [productId,setProductId]=useState('');
+    const [productName,setProductName]=useState('');
+    const [count,setCount]=useState('');
+    const buttonRef = useRef();
     useEffect(()=>{
         getPurchaseDetailInfo(id);
         getPurchaseItemDetailInfo(id);
-        getProductList(id);
     },[]);
     useEffect(()=>{
         setAddStorageTypeItem(1)
@@ -97,7 +134,6 @@ function PurchaseDetail (props){
         if (addProduct=='-1'||addProduct=='') {
             validateObj.addProduct ='请输入商品';
         }
-
         if(addStorageType==0){
             for(var value of purchaseDetailReducer.purchaseDetailItemInfo){
                 if(value.id==addProduct.id){
@@ -160,6 +196,17 @@ function PurchaseDetail (props){
         setAddValidation(addValidateObj);
         return Object.keys(addValidateObj).length
     }
+    const uniqueValidate = ()=>{
+        const validateObj ={};
+        if (!productUnique) {
+            validateObj.productUnique ='请输入编码';
+        }
+        if(productUnique.length>40){
+            validateObj.productUnique ='编码长度过长';
+        }
+        setUniqueValidation(validateObj);
+        return Object.keys(validateObj).length
+    }
     //初始添加模态框值
     const handleAddOpen =() =>{
         setModalOpenFlag(true);
@@ -214,6 +261,69 @@ function PurchaseDetail (props){
                 }
             }
         }
+    }
+    const handleOnBrandFileLoad = (file,fileName)=>{
+        setAllInfo(file);
+        setInputFile([]);
+        var ext = fileName&&fileName.name.slice(fileName.name.lastIndexOf(".")+1).toLowerCase();
+        if ("csv" != ext) {
+            Swal.fire("文件类型错误");
+            return false;
+        } else {
+            for (let i = 0; i < file.length; i++) {
+                for(let j = 0;j<file[i].data.length; j++) {
+                    if(file[i].data[j].length>0&&file[i].data[j].length<=40){
+                        inputFile.push(file[i].data[j]);
+                    }else if(file[i].data[j].length>40){
+                        errInfo.push(file[i].data[j]);
+                    }
+                }
+            }
+            if(count - purchaseDetailReducer.uniqueList.length>= inputFile.length){
+                if(errInfo.length==0){
+                    setDataBox(false);
+                    setSuccessData(true);
+                }else {
+                    setDataBox(true);
+                    setSuccessData(false);
+                }
+            }else {
+                Swal.fire("编码数量应小于等于商品数量");
+            }
+        }
+    }
+    const openUniqueModel =(id,pro,name,count)=>{
+        setPurchaseItemId(id);
+        setProductId(pro);
+        setProductName(name);
+        setCount(count);
+        dispatch(PurchaseDetailAction.getUniqueList(id))
+        setDataBox(false);
+        setUniqueModalOpenFlag(true);
+    }
+    const closeUniqueModel =()=>{
+        setUniqueModalOpenFlag(false);
+    }
+    const addUniqueItem =()=>{
+        const errorCount = uniqueValidate();
+        if(errorCount==0){
+            setInputFile([productUnique]);
+            dispatch(PurchaseDetailAction.addUniqueInfo({purchaseItemId,productId,id,productName,inputFile}))
+            setProductUnique('');
+        }
+    }
+    const addUniqueAll=(e)=>{
+        if (buttonRef.current) {
+            buttonRef.current.open(e)
+        }
+    }
+    const uploadCsv =()=>{
+        dispatch(PurchaseDetailAction.addUniqueInfo({purchaseItemId,productId,id,productName,inputFile}))
+        setDataBox(false);
+        setSuccessData(false);
+    }
+    const deleteRel=(purchaseItem,product,id)=>{
+        dispatch(PurchaseDetailAction.deleteRel({purchaseItem,product,id}))
     }
     return(
         <div className={classes.root}>
@@ -369,9 +479,10 @@ function PurchaseDetail (props){
                                     />
                                 </Grid>
                                 <Grid item xs={1}  align="center"  style={{display:purchaseDetailReducer.purchaseDetailInfo.status==3?'block':'none',marginTop:'14px'}}>
-
                                         <i className="mdi mdi-check mdi-24px"  style={{color:'#3f51b5'}} onClick={() => {updatePurchaseDetailItemInfo(item.id,index)}}/>
-
+                                </Grid>
+                                <Grid item xs={1}  align="center"  style={{display:purchaseDetailReducer.purchaseDetailInfo.status==3?'none':'block',marginTop:'14px'}}>
+                                    <i className="mdi mdi-rename-box mdi-24px"  style={{color:'#3f51b5'}} onClick={() => {openUniqueModel(item.id,item.product_id,item.product_name,item.purchase_count )}}/>
                                 </Grid>
                             </Grid>
                         ))}
@@ -406,52 +517,6 @@ function PurchaseDetail (props){
                             </Grid>
                             <Grid item xs={4}></Grid>
                         </Grid>
-                        {/* PDF 输出用 DIV */}
-                        <div id="purchaseId" className={classes.pdfPage} style={{marginTop: -99999}}>
-                            <Grid container spacing={0}>
-                                <Grid item sm={12} className={classes.pdfTitle}>采购单</Grid>
-                                <Grid item sm={2}><img style={{width: 120,paddingLeft:30,marginTop:15}} src="/logo120.png"  alt=""/></Grid>
-                                <Grid item container sm={10} spacing={0}>
-                                    <Grid item sm={6}><b>采购单号：</b>{purchaseDetailReducer.purchaseDetailInfo.id}</Grid>
-                                    <Grid item sm={6}><b>操作人员：</b>{purchaseDetailReducer.purchaseDetailInfo.op_user}</Grid>
-                                    <Grid item sm={6}><b>供应商名称：</b>{purchaseDetailReducer.purchaseDetailInfo.supplier_name}</Grid>
-                                    <Grid item sm={6}><b>联系人姓名：</b>{purchaseDetailReducer.supplierDetailArray.contact_name}</Grid>
-                                    <Grid item sm={6}><b>手机：</b>{purchaseDetailReducer.supplierDetailArray.mobile}</Grid>
-                                    <Grid item sm={6}><b>邮箱：</b>{purchaseDetailReducer.supplierDetailArray.email}</Grid>
-                                    <Grid item sm={6}><b>电话：</b>{purchaseDetailReducer.supplierDetailArray.tel}</Grid>
-                                    <Grid item sm={6}><b>传真：</b>{purchaseDetailReducer.supplierDetailArray.fax}</Grid>
-                                    <Grid item sm={12}><b>地址：</b>{purchaseDetailReducer.supplierDetailArray.address}</Grid>
-                                    <Grid item sm={6}><b>公司抬头：</b>{purchaseDetailReducer.supplierDetailArray.invoice_title}</Grid>
-                                    <Grid item sm={6}><b>开户行：</b>{purchaseDetailReducer.supplierDetailArray.invoice_bank}</Grid>
-                                    <Grid item sm={6}><b>开户行账号：</b>{purchaseDetailReducer.supplierDetailArray.invoice_bank_ser}</Grid>
-                                    <Grid item sm={6}><b>开户地址：</b>{purchaseDetailReducer.supplierDetailArray.invoice_address}</Grid>
-                                </Grid>
-                            </Grid>
-                            <Grid container spacing={0} style={{paddingTop: 25}}>
-                                <Grid item sm={2} className={classes.tblHeader}>商品名称</Grid>
-                                <Grid item sm={2} className={classes.tblHeader}>单价</Grid>
-                                <Grid item sm={2} className={classes.tblHeader}>数量</Grid>
-                                <Grid item sm={2} className={classes.tblHeader}>总价</Grid>
-                                <Grid item sm={4} className={classes.tblLastHeader}>备注</Grid>
-                            </Grid>
-                            {purchaseDetailReducer.purchaseDetailItemInfo.map((row, index) => (
-                                <Grid container spacing={0} key={index}>
-                                    <Grid item sm={2} className={classes.tblBody}>{row.product_name}</Grid>
-                                    <Grid item sm={2} className={classes.tblBody}>{row.unit_cost}</Grid>
-                                    <Grid item sm={2} className={classes.tblBody}>{row.purchase_count}</Grid>
-                                    <Grid item sm={2} className={classes.tblBody}>{Number(row.unit_cost*row.purchase_count)}</Grid>
-                                    <Grid item sm={4} className={classes.tblLastBody}>{row.remark}</Grid>
-                                </Grid>
-                            ))}
-                            <Grid container spacing={0} style={{paddingTop: 35}}  align='right'>
-                                <Grid item sm={8}>{commonUtil.getJsonValue(sysConst.TRANSFER_COST_TYPE,purchaseDetailReducer.purchaseDetailInfo.transfer_cost_type)}运费:{purchaseDetailReducer.purchaseDetailInfo.transfer_cost}</Grid>
-                                <Grid item sm={4}>总价:{purchaseDetailReducer.purchaseDetailInfo.total_cost}</Grid>
-                            </Grid>
-                            <Grid container spacing={0} style={{paddingTop: 35}}  align='left'>
-                                <Grid item sm={12}>备注:{purchaseDetailReducer.purchaseDetailInfo.remark}</Grid>
-                            </Grid>
-                        </div>
-
                     </TabPanel>
                     <TabPanel value='2'>
                         <Grid item xs align="right">
@@ -824,6 +889,120 @@ function PurchaseDetail (props){
                     </Grid>
                 </Grid>
             </SimpleModal>
+
+            <SimpleModal
+                title= "编码信息"
+                open={modalUniqueOpenFlag}
+                onClose={closeUniqueModel}
+                showFooter={true}
+                footer={
+                    <>
+                        <Button onClick={closeUniqueModel} color="primary" autoFocus>
+                            取消
+                        </Button>
+                    </>
+                }
+            >
+                <Grid  container spacing={3}>
+                    <Grid item xs>
+                        <TextField
+                            fullWidth={true}
+                            type='text'
+                            margin="dense"
+                           /* inputProps={{
+                                maxLength: 40,
+                            }}*/
+                            variant="outlined"
+                            value={productUnique}
+                            onChange={(e)=>setProductUnique(e.target.value)}
+                            error={uniqueValidation.productUnique && uniqueValidation.productUnique!=''}
+                            helperText={uniqueValidation.productUnique}
+                        />
+                    </Grid>
+                    <Grid item xs={1}>
+                        <IconButton color="primary" edge="start"  size="medium" style={{marginTop:5}} disabled={count<=purchaseDetailReducer.uniqueList.length}
+                                    onClick={() => {addUniqueItem()}}>
+                            <i className="mdi mdi-plus mdi-24px"/>
+                        </IconButton>
+                    </Grid>
+                    <Grid item xs={1}>
+                        <CSVReader
+                            ref={buttonRef}
+                            noClick
+                            noDrag
+                            noProgressBar
+                            onFileLoad={handleOnBrandFileLoad}
+                        >
+                            {( {file} ) => {
+                               /* setInputFile(file);*/
+                                return (
+                                    <aside>
+                                        <IconButton color="primary" edge="start"  size="medium" style={{marginTop:5}}
+                                                    onClick={addUniqueAll} disabled={count<=purchaseDetailReducer.uniqueList.length}>
+                                            <i className="mdi mdi-upload mdi-24px"/>
+                                        </IconButton>
+                                        <TextField  value={file? file.name:''} style={{display:'none'}}
+                                                    onChange={(e,value)=>setFileName(value)} />
+                                    </aside>
+                                )}}
+                        </CSVReader>
+                    </Grid>
+                </Grid>
+                <div style={{display:dataBox?'block':'none'}}>
+                    <p  xs={12} align='center' style={{padding: "20px",background:'#f50057',color:'white',fontSize:'18px'}}>错误数据<span>{errInfo.length}</span>条，请修改后重新上传</p>
+                    <TableContainer component={Paper}>
+                        <Table  size={'small'} aria-label="a dense table">
+                            <TableHead >
+                                <TableRow style={{height:50}}>
+                                    <TableCell className={classes.head} align="center">序号</TableCell>
+                                    <TableCell className={classes.head} align="center">编码</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {errInfo.map((item,index)=>(
+                                    <TableRow key={'csv-'+index}>
+                                        <TableCell align="center" >{index+1}</TableCell>
+                                        <TableCell align="center" >{item}</TableCell>
+                                    </TableRow>
+
+                                ))}
+
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </div>
+                {/*上传校验*/}
+                <div style={{display:successData?'block':'none'}}>
+                    <p align='center'>
+                        <Button variant="contained"  color="primary" onClick={uploadCsv} >
+                            导入数据库
+                        </Button>
+                    </p>
+
+                </div>
+                <Grid container spacing={1}>
+                    <TableContainer component={Paper} style={{marginTop:20}}>
+                        <Table  size='small' aria-label="a dense table">
+                            <TableBody>
+                                {purchaseDetailReducer.uniqueList.length > 0 &&purchaseDetailReducer.uniqueList.map((row) => (
+                                    <TableRow key={row.id}>
+                                        <TableCell align="left" >{row.unique_id}</TableCell>
+                                        <TableCell align="right" >
+                                            <IconButton color="secondary" size="small" edge="start" onClick={() => {deleteRel(row.purchase_item_id,row.product_id,row.id)}}
+                                                        disabled={row.status!==0} >
+                                                <i className="mdi mdi-delete"/>
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>))}
+                                {purchaseDetailReducer.uniqueList.length === 0 &&
+                                <TableRow style={{height:60}}><TableCell align="center" colSpan="3">暂无数据</TableCell></TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Grid>
+
+            </SimpleModal>
         </div>
     )
 }
@@ -868,9 +1047,6 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
     getPurchaseRefundDetailInfo:(id)=>{
         dispatch(PurchaseDetailAction.getPurchaseRefundDetailInfo(id))
     },
-    getProductList:(id)=>{
-        dispatch(PurchaseDetailAction.getProductList(id))
-    },
     getStorageProductArray:(id)=>{
         dispatch(PurchaseDetailAction.getStorageProductArray(id))
     },
@@ -879,6 +1055,9 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
     },
     downLoadPDF: (purchaseDetailInfo,purchaseDetailItemInfo,name) => {
         dispatch(PurchaseAction.downLoadPDF(purchaseDetailInfo,purchaseDetailItemInfo,name))
+    },
+    getUniqueList:(id)=>{
+        dispatch(PurchaseDetailAction.getUniqueList(id))
     }
 });
 export default connect(mapStateToProps, mapDispatchToProps)(PurchaseDetail)

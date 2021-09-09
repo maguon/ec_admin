@@ -15,28 +15,9 @@ export const getPurchaseDetailInfo = (params) => async (dispatch, getState) => {
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true && res.rows.length>0) {
             dispatch({type: PurchaseDetailActionType.getPurchaseDetailInfo, payload: res.rows[0]});
+            dispatch({type: PurchaseDetailActionType.getProductDetailArray, payload: res.rows});
         } else if (res.success === false) {
             Swal.fire('获取供应商信息失败', res.msg, 'warning');
-        }
-    } catch (err) {
-        Swal.fire('操作失败', err.message, 'error');
-    }
-};
-
-//商品
-export const getProductList = (params) => async (dispatch) => {
-    try {
-        // 基本检索URL
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchaseItem?purchaseId='+params;
-
-        dispatch({type: AppActionType.showLoadProgress, payload: true});
-        const res = await httpUtil.httpGet(url);
-        dispatch({type: AppActionType.showLoadProgress, payload: false});
-
-        if (res.success) {
-            dispatch({type: PurchaseDetailActionType.getProductDetailArray, payload: res.rows});
-        } else if (!res.success) {
-            Swal.fire('获取商品列表失败', res.msg, 'warning');
         }
     } catch (err) {
         Swal.fire('操作失败', err.message, 'error');
@@ -54,7 +35,7 @@ export const getPurchaseItemDetailInfo = (params) => async (dispatch, getState) 
         if (res.success === true && res.rows.length>0) {
             dispatch({type: PurchaseDetailActionType.getPurchaseDetailItemInfo, payload: res.rows});
         } else if (res.success === false) {
-            Swal.fire('获取供应商信息失败', res.msg, 'warning');
+            Swal.fire('获取采购信息失败', res.msg, 'warning');
         }
     } catch (err) {
         Swal.fire('操作失败', err.message, 'error');
@@ -99,6 +80,7 @@ export const updatePurchaseDetailInfoStatus = (id,params) => async (dispatch, ge
         Swal.fire('操作失败', err.message, 'error');
     }
 }
+
 export const updatePurchaseDetailItemInfo = (paramsId,index) => async (dispatch, getState) => {
     try {
         const params = getState().PurchaseDetailReducer.purchaseDetailItemInfo[index];
@@ -155,6 +137,8 @@ export const getStorageProductArray = (params) => async (dispatch) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
+
+
 export const addRefundDetailItem = (id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType) => async (dispatch) => {
     try {
         let params = {
@@ -184,3 +168,59 @@ export const addRefundDetailItem = (id,item,addTransferCostType,addTransferCost,
         Swal.fire("操作失败", err.message, "error");
     }
 };
+
+export const addUniqueInfo = (param) => async (dispatch) => {
+    try {
+        let params = {
+            purchaseId: param.id,
+            productName: param.productName,
+            uniqueIdArray: param.inputFile
+        };
+        // 基本url
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchaseItem/'+param.purchaseItemId+'/product/'+param.productId+'/uniqueRel';
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpPost(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch(getUniqueList(param.purchaseItemId));
+        } else if (!res.success) {
+            Swal.fire('保存失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const getUniqueList=(params) => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchaseItemUniqueRel?purchaseItemId='+params;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: PurchaseDetailActionType.getUniqueList, payload: res.rows});
+        } else if (!res.success) {
+            Swal.fire('获取编码列表失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire('操作失败', err.message, 'error');
+    }
+}
+
+export const deleteRel =(params) => async (dispatch, getState) => {
+    try {
+        const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/purchaseItem/' + params.purchaseItem + '/product/'+params.product+'/purchaseItemUniqueRel/'+params.id;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpDelete(url, {});
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch(getUniqueList(params.purchaseItem));
+        } else if (!res.success) {
+            /*  Swal.fire('删除失败', res.msg, 'warning');*/
+        }
+    } catch (err) {
+        /* Swal.fire("操作失败", err.message, "error");*/
+    }
+}

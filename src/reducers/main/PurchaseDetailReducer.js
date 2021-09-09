@@ -21,6 +21,7 @@ const initialState = {
     productDetailArray:[],
     storageProductArray:[],
     supplierDetailArray: {},
+    uniqueList:[],
 };
 export default handleActions({
     [PurchaseDetailActionType.getPurchaseDetailInfo]: (state, action) => {
@@ -79,4 +80,11 @@ export default handleActions({
             supplierDetailArray: action.payload
         }
     },
+    [PurchaseDetailActionType.getUniqueList]: (state, action) => {
+        return {
+            ...state,
+            uniqueList: action.payload
+        }
+    },
+
 }, initialState)
