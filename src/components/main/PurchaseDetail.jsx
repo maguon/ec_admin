@@ -491,12 +491,12 @@ function PurchaseDetail (props){
                                                }}
                                     />
                                 </Grid>
-                                <Grid item xs={1}  align="center"  style={{display:purchaseDetailReducer.purchaseDetailInfo.status==3?'block':'none',marginTop:'14px'}}>
-                                        <i className="mdi mdi-check mdi-24px"  style={{color:'#3f51b5'}} onClick={() => {updatePurchaseDetailItemInfo(item.id,index)}}/>
-                                </Grid>
-                                <Grid item xs={1}  align="center"  style={{display:purchaseDetailReducer.purchaseDetailInfo.status==3?'none':'block',marginTop:'14px'}}>
+                                {purchaseDetailReducer.purchaseDetailInfo.status==3&&<Grid item xs={1}  align="center"  style={{marginTop:'14px'}}>
+                                    <i className="mdi mdi-check mdi-24px"  style={{color:'#3f51b5'}} onClick={() => {updatePurchaseDetailItemInfo(item.id,index)}}/>
+                                </Grid>}
+                                {purchaseDetailReducer.purchaseDetailInfo.status!==3&&<Grid item xs={1}  align="center"  style={{marginTop:'14px'}}>
                                     <i className="mdi mdi-rename-box mdi-24px"  style={{color:'#3f51b5'}} onClick={() => {openUniqueModel(item.id,item.product_id,item.product_name,item.purchase_count )}}/>
-                                </Grid>
+                                </Grid>}
                             </Grid>
                         ))}
                         {/*备注*/}
@@ -518,16 +518,16 @@ function PurchaseDetail (props){
                                     <i className="mdi mdi-file-pdf" style={{fontSize:40}}/>
                                 </IconButton>
                             </Grid>
-                            <Grid item xs  align="center" style={{display:purchaseDetailReducer.purchaseDetailInfo.status==3?'block':'none',marginTop:'30px'}}>
+                            {purchaseDetailReducer.purchaseDetailInfo.status==3&&<Grid item xs  align="center" style={{marginTop:'30px'}}>
                                 <Button variant="contained" color="primary" onClick={updatePurchaseDetailInfo}>保存</Button>
-                            </Grid>
+                            </Grid>}
 
-                            <Grid item xs  align="center"   style={{display:purchaseDetailReducer.purchaseDetailInfo.status==1?'block':'none',marginTop:'30px'}}>
+                            {purchaseDetailReducer.purchaseDetailInfo.status==1&&<Grid item xs  align="center"   style={{marginTop:'30px'}}>
                                 <Button variant="contained" color="secondary"  onClick={() => {updateStatus(id,3)}}>开始处理</Button>
-                            </Grid>
-                            <Grid item xs  align="center"  style={{display:purchaseDetailReducer.purchaseDetailInfo.status==3?'block':'none',marginTop:'30px'}}>
+                            </Grid>}
+                            {purchaseDetailReducer.purchaseDetailInfo.status==3&&<Grid item xs  align="center"  style={{marginTop:'30px'}}>
                                 <Button variant="contained" color="secondary"  onClick={() => {updateStatus(id,7)}}>完成</Button>
-                            </Grid>
+                            </Grid>}
                             <Grid item xs={4}></Grid>
                         </Grid>
                     </TabPanel>
@@ -904,7 +904,7 @@ function PurchaseDetail (props){
             </SimpleModal>
 
             <SimpleModal
-                title= "编码信息"
+                title= "唯一编码信息"
                 open={modalUniqueOpenFlag}
                 onClose={closeUniqueModel}
                 showFooter={true}
@@ -958,21 +958,20 @@ function PurchaseDetail (props){
                         </CSVReader>
                     </Grid>
                 </Grid>
-                <div style={{display:warningFlag?'block':'none'}}><Alert severity="warning">编码数量应小于等于商品数量</Alert></div>
-                <div style={{display:fileTypeFlag?'block':'none'}}><Alert severity="warning">文件类型错误</Alert></div>
-                <div style={{display:purchaseDetailReducer.addInfoFlag?'block':'none'}}><Alert severity="warning">与已添加的编码有重复</Alert></div>
-                <div style={{display:dataBox?'block':'none'}}><Alert severity="error">格式错误{errInfo.length}条</Alert></div>
+                {warningFlag&&<Alert severity="warning">编码数量应小于等于商品数量</Alert>}
+                {fileTypeFlag&&<Alert severity="warning">文件类型错误</Alert>}
+                {purchaseDetailReducer.addInfoFlag&&<Alert severity="warning">与已添加的编码有重复</Alert>}
+                {dataBox&&<Alert severity="error">格式错误{errInfo.length}条</Alert>}
                 {/*上传校验*/}
-                <div style={{display:successData?'block':'none'}}>
-                    <Alert severity="success"
-                    action={
-                    <Button size="small" color="inherit" onClick={uploadCsv} >
-                        导入数据库
-                    </Button>
-                }>
+                {successData&&<Alert severity="success"
+                                     action={
+                                         <Button size="small" color="inherit" onClick={uploadCsv} >
+                                             导入数据库
+                                         </Button>
+                                     }>
                     共计{inputFile.length}条
-                    </Alert>
-                </div>
+                </Alert>}
+
                 <Grid container spacing={1}>
                     <TableContainer component={Paper} style={{marginTop:20,maxHeight: 200}}>
                         <Table  size='small' aria-label="a dense table">
