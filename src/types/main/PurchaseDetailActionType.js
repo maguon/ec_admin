@@ -8,4 +8,6 @@ export const getProductDetailArray = createAction('GET_PURCHASE_DETAIL_ARRAY');
 export const getStorageProductArray = createAction('GET_STORAGE_PRODUCT_ARRAY');
 export const getSupplierDetailArray = createAction('GET_SUPPLIER_DETAIL_ARRAY');
 export const getUniqueList = createAction('GET_UNIQUE_LIST');
+export const addFlag = createAction('ADD_FLAG');
+
 

@@ -184,7 +184,7 @@ export const addUniqueInfo = (param) => async (dispatch) => {
         if (res.success) {
             dispatch(getUniqueList(param.purchaseItemId));
         } else if (!res.success) {
-            Swal.fire('保存失败', res.msg, 'warning');
+            dispatch({type: PurchaseDetailActionType.addFlag, payload: true});
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
@@ -208,7 +208,7 @@ export const getUniqueList=(params) => async (dispatch) => {
     }
 }
 
-export const deleteRel =(params) => async (dispatch, getState) => {
+export const deleteRel =(params) => async (dispatch) => {
     try {
         const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/purchaseItem/' + params.purchaseItem + '/product/'+params.product+'/purchaseItemUniqueRel/'+params.id;
@@ -217,9 +217,7 @@ export const deleteRel =(params) => async (dispatch, getState) => {
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
             dispatch(getUniqueList(params.purchaseItem));
-        } else if (!res.success) {
-            /*  Swal.fire('删除失败', res.msg, 'warning');*/
-        }
+        } else if (!res.success) {}
     } catch (err) {
         /* Swal.fire("操作失败", err.message, "error");*/
     }

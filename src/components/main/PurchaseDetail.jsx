@@ -2,30 +2,10 @@ import React, {useEffect, useRef, useState} from 'react';
 import {connect,useDispatch} from 'react-redux';
 import {Link, useParams} from "react-router-dom";
 import Swal from "sweetalert2";
-import {
-    Button,
-    Grid,
-    Typography,
-    TextField,
-    IconButton,
-    FormControl,
-    InputLabel,
-    Select,
-    Tab,
-    Tabs,
-    MenuItem,
-    Fab,
-    AppBar,
-    TableContainer,
-    Paper,
-    Table,
-    TableHead,
-    TableRow,
-    TableBody,
-    TableCell,
-    FormHelperText, Divider,
+import {Button, Grid, Typography, TextField, IconButton, FormControl, InputLabel, Select, Tab, Tabs, MenuItem, Fab, AppBar, TableContainer, Paper, Table, TableHead, TableRow, TableBody, TableCell, FormHelperText,
 } from "@material-ui/core";
 import {makeStyles, withStyles} from "@material-ui/core/styles";
+import {Alert} from '@material-ui/lab';
 import TabContext from "@material-ui/lab/TabContext";
 import TabPanel from "@material-ui/lab/TabPanel";
 import {SimpleModal} from "../index";
@@ -43,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: 30
     },
     pageTitle: customTheme.pageTitle,
-    pageDivider: customTheme.pageDivider,
+    pageDivider: customTheme.pageDivider
 }));
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -60,6 +40,7 @@ function PurchaseDetail (props){
         downLoadPDF} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
+    const buttonRef = useRef();
     const {id} = useParams();
     const [transferCostTypeFlag, setTransferCostTypeFlag] = useState(true);
     const [addTransferCostTypeFlag, setAddTransferCostTypeFlag] = useState(true);
@@ -81,16 +62,15 @@ function PurchaseDetail (props){
     const [addValidation,setAddValidation] = useState({});
     const [productUnique,setProductUnique] = useState('');
     const [inputFile,setInputFile] =useState([]);
-    const [allInfo,setAllInfo] =useState(null);
     const [errInfo,setErrInfo] =useState([]);
-    const [fileName,setFileName]=useState('');
     const [dataBox,setDataBox]=useState(false);
     const [successData,setSuccessData]=useState(false);
     const [purchaseItemId,setPurchaseItemId]=useState('');
     const [productId,setProductId]=useState('');
     const [productName,setProductName]=useState('');
     const [count,setCount]=useState('');
-    const buttonRef = useRef();
+    const [warningFlag,setWarningFlag]=useState(false);
+    const [fileTypeFlag,setFileTypeFlag]=useState(false);
     useEffect(()=>{
         getPurchaseDetailInfo(id);
         getPurchaseItemDetailInfo(id);
@@ -263,11 +243,15 @@ function PurchaseDetail (props){
         }
     }
     const handleOnBrandFileLoad = (file,fileName)=>{
-        setAllInfo(file);
-        setInputFile([]);
-        var ext = fileName&&fileName.name.slice(fileName.name.lastIndexOf(".")+1).toLowerCase();
+        let inputFile=[];
+        let errInfo=[];
+        let ext = fileName&&fileName.name.slice(fileName.name.lastIndexOf(".")+1).toLowerCase();
         if ("csv" != ext) {
-            Swal.fire("文件类型错误");
+            setFileTypeFlag(true);
+            purchaseDetailReducer.addInfoFlag=false;
+            setSuccessData(false);
+            setWarningFlag(false);
+            setDataBox(false);
             return false;
         } else {
             for (let i = 0; i < file.length; i++) {
@@ -281,35 +265,57 @@ function PurchaseDetail (props){
             }
             if(count - purchaseDetailReducer.uniqueList.length>= inputFile.length){
                 if(errInfo.length==0){
+                    setInputFile(inputFile);
+                    purchaseDetailReducer.addInfoFlag=false;
                     setDataBox(false);
+                    setWarningFlag(false);
+                    setFileTypeFlag(false);
                     setSuccessData(true);
                 }else {
-                    setDataBox(true);
+                    setErrInfo(errInfo);
+                    purchaseDetailReducer.addInfoFlag=false;
                     setSuccessData(false);
+                    setWarningFlag(false);
+                    setFileTypeFlag(false);
+                    setDataBox(true);
+
                 }
             }else {
-                Swal.fire("编码数量应小于等于商品数量");
+                setDataBox(false);
+                setSuccessData(false);
+                setFileTypeFlag(false);
+                purchaseDetailReducer.addInfoFlag=false;
+                setWarningFlag(true);
             }
         }
     }
+
     const openUniqueModel =(id,pro,name,count)=>{
+        purchaseDetailReducer.addInfoFlag=false;
+        setSuccessData(false);
+        setFileTypeFlag(false);
+        setWarningFlag(false);
+        setDataBox(false);
         setPurchaseItemId(id);
         setProductId(pro);
         setProductName(name);
         setCount(count);
         dispatch(PurchaseDetailAction.getUniqueList(id))
-        setDataBox(false);
         setUniqueModalOpenFlag(true);
     }
     const closeUniqueModel =()=>{
         setUniqueModalOpenFlag(false);
     }
-    const addUniqueItem =()=>{
+    const addUniqueInfo =()=>{
         const errorCount = uniqueValidate();
         if(errorCount==0){
-            setInputFile([productUnique]);
+            let inputFile=[productUnique];
             dispatch(PurchaseDetailAction.addUniqueInfo({purchaseItemId,productId,id,productName,inputFile}))
             setProductUnique('');
+            setDataBox(false);
+            setSuccessData(false);
+            setWarningFlag(false);
+            setFileTypeFlag(false);
         }
     }
     const addUniqueAll=(e)=>{
@@ -321,8 +327,15 @@ function PurchaseDetail (props){
         dispatch(PurchaseDetailAction.addUniqueInfo({purchaseItemId,productId,id,productName,inputFile}))
         setDataBox(false);
         setSuccessData(false);
+        setWarningFlag(false);
+        setFileTypeFlag(false);
     }
     const deleteRel=(purchaseItem,product,id)=>{
+        setDataBox(false);
+        setSuccessData(false);
+        setWarningFlag(false);
+        setFileTypeFlag(false);
+        purchaseDetailReducer.addInfoFlag=false;
         dispatch(PurchaseDetailAction.deleteRel({purchaseItem,product,id}))
     }
     return(
@@ -921,7 +934,7 @@ function PurchaseDetail (props){
                     </Grid>
                     <Grid item xs={1}>
                         <IconButton color="primary" edge="start"  size="medium" style={{marginTop:5}} disabled={count<=purchaseDetailReducer.uniqueList.length}
-                                    onClick={() => {addUniqueItem()}}>
+                                    onClick={() => {addUniqueInfo()}}>
                             <i className="mdi mdi-plus mdi-24px"/>
                         </IconButton>
                     </Grid>
@@ -934,54 +947,34 @@ function PurchaseDetail (props){
                             onFileLoad={handleOnBrandFileLoad}
                         >
                             {( {file} ) => {
-                               /* setInputFile(file);*/
                                 return (
                                     <aside>
                                         <IconButton color="primary" edge="start"  size="medium" style={{marginTop:5}}
                                                     onClick={addUniqueAll} disabled={count<=purchaseDetailReducer.uniqueList.length}>
                                             <i className="mdi mdi-upload mdi-24px"/>
                                         </IconButton>
-                                        <TextField  value={file? file.name:''} style={{display:'none'}}
-                                                    onChange={(e,value)=>setFileName(value)} />
                                     </aside>
                                 )}}
                         </CSVReader>
                     </Grid>
                 </Grid>
-                <div style={{display:dataBox?'block':'none'}}>
-                    <p  xs={12} align='center' style={{padding: "20px",background:'#f50057',color:'white',fontSize:'18px'}}>错误数据<span>{errInfo.length}</span>条，请修改后重新上传</p>
-                    <TableContainer component={Paper}>
-                        <Table  size={'small'} aria-label="a dense table">
-                            <TableHead >
-                                <TableRow style={{height:50}}>
-                                    <TableCell className={classes.head} align="center">序号</TableCell>
-                                    <TableCell className={classes.head} align="center">编码</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {errInfo.map((item,index)=>(
-                                    <TableRow key={'csv-'+index}>
-                                        <TableCell align="center" >{index+1}</TableCell>
-                                        <TableCell align="center" >{item}</TableCell>
-                                    </TableRow>
-
-                                ))}
-
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </div>
+                <div style={{display:warningFlag?'block':'none'}}><Alert severity="warning">编码数量应小于等于商品数量</Alert></div>
+                <div style={{display:fileTypeFlag?'block':'none'}}><Alert severity="warning">文件类型错误</Alert></div>
+                <div style={{display:purchaseDetailReducer.addInfoFlag?'block':'none'}}><Alert severity="warning">与已添加的编码有重复</Alert></div>
+                <div style={{display:dataBox?'block':'none'}}><Alert severity="error">格式错误{errInfo.length}条</Alert></div>
                 {/*上传校验*/}
                 <div style={{display:successData?'block':'none'}}>
-                    <p align='center'>
-                        <Button variant="contained"  color="primary" onClick={uploadCsv} >
-                            导入数据库
-                        </Button>
-                    </p>
-
+                    <Alert severity="success"
+                    action={
+                    <Button size="small" color="inherit" onClick={uploadCsv} >
+                        导入数据库
+                    </Button>
+                }>
+                    共计{inputFile.length}条
+                    </Alert>
                 </div>
                 <Grid container spacing={1}>
-                    <TableContainer component={Paper} style={{marginTop:20}}>
+                    <TableContainer component={Paper} style={{marginTop:20,maxHeight: 200}}>
                         <Table  size='small' aria-label="a dense table">
                             <TableBody>
                                 {purchaseDetailReducer.uniqueList.length > 0 &&purchaseDetailReducer.uniqueList.map((row) => (
@@ -1001,7 +994,6 @@ function PurchaseDetail (props){
                         </Table>
                     </TableContainer>
                 </Grid>
-
             </SimpleModal>
         </div>
     )
