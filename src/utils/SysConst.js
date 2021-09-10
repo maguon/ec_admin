@@ -329,6 +329,13 @@ export const PROD_UNIQUE_STATUS =[
     {value: 0, label: "未验收"},
     {value: 1, label: "验收"}
 ]
+
+// 是否需要验证 唯一识别码
+export const UNIQUE_FLAG =[
+    {value: 0, label: "不需要"},
+    {value: 1, label: "需要"}
+];
+
 // 用于权限设定（包含所有机能设定）
 export const ALL_PAGE_LIST = [
     {
