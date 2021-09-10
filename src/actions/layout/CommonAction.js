@@ -278,3 +278,22 @@ export const getUserList = () =>async (dispatch) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
+
+// 根据 采购明细ID 取得 唯一标识码 列表
+export const getPurchaseItemUnique = (purchaseItemId) => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/purchaseItemUniqueRel?purchaseItemId=' + purchaseItemId;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            return res.rows;
+        } else {
+            return [];
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};

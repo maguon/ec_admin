@@ -3,9 +3,9 @@ import {connect, useDispatch} from 'react-redux';
 // 引入material-ui基础组件
 import {
     Box,
-    Button,
+    Button, Checkbox,
     Divider,
-    Fab, FormControl,
+    Fab, FormControl, FormControlLabel,
     Grid,
     IconButton, InputLabel,
     makeStyles, MenuItem,
@@ -77,13 +77,15 @@ function StorageProduct(props) {
     };
 
     //初始添加模态框值
-    const initModal =(item) =>{
+    const initModal = async (item) =>{
         // 清空仓库分区
         dispatch(CommonActionType.setStorageAreaList([]));
+        // 根据purchase_item_id 取得唯一标识码 列表
+        let ret = await dispatch(commonAction.getPurchaseItemUnique(item.purchase_item_id));
         // 清check内容
         setValidation({});
         // 页面属性
-        setModalData({storageProduct:item,storage:null,storageArea:null,count:'',remark:''});
+        setModalData({selectAll: false, purchaseItemUnique:ret,storageProduct:item,storage:null,storageArea:null,count:'',remark:''});
         // 设定模态打开
         setModalOpen(true);
     };
@@ -303,7 +305,7 @@ function StorageProduct(props) {
                         onClick={()=>{dispatch(storageProductAction.getStorageProductList(storageProductReducer.storageProductData.start+(storageProductReducer.storageProductData.size-1)))}}>下一页</Button>}
             </Box>
 
-            <SimpleModal maxWidth={'sm'}
+            <SimpleModal maxWidth={'lg'}
                          title="移库"
                          open={modalOpen}
                          onClose={closeModal}
@@ -315,12 +317,62 @@ function StorageProduct(props) {
                              </>
                          }
             >
-                <Grid container spacing={2}>
-                    <Grid item sm={6}>仓库：{modalData.storageProduct.storage_name}</Grid>
-                    <Grid item sm={6}>仓库分区：{modalData.storageProduct.storage_area_name}</Grid>
-                    <Grid item sm={6}>商品：{modalData.storageProduct.product_name}</Grid>
-                    <Grid item sm={6}>库存：{modalData.storageProduct.storage_count}</Grid>
-                    <Grid item sm={6}>
+                <Grid container spacing={1}>
+                    <Grid item sm={3}>商品：{modalData.storageProduct.product_name}</Grid>
+                    <Grid item sm={4}>仓库：{modalData.storageProduct.storage_name}</Grid>
+                    <Grid item sm={4}>仓库分区：{modalData.storageProduct.storage_area_name}</Grid>
+                    <Grid item sm={1}>库存：{modalData.storageProduct.storage_count}</Grid>
+                    {/* 需要校验 唯一标识码 */}
+                    {modalData.storageProduct.unique_flag == sysConst.UNIQUE_FLAG[1].value &&
+                    <Grid item sm={12} container>
+                        <Grid item sm={12}>
+                            <FormControlLabel key="select-all" label="全选"
+                                              control={
+                                                  <Checkbox color="primary" key={'select-all-chk'}
+                                                            checked={modalData.selectAll}
+                                                            onChange={(e) => {
+                                                                modalData.purchaseItemUnique.forEach((item) => {
+                                                                    item.checked = e.target.checked;
+                                                                });
+                                                                setModalData({
+                                                                    ...modalData,
+                                                                    selectAll: e.target.checked,
+                                                                    purchaseItemUnique: modalData.purchaseItemUnique,
+                                                                    count: e.target.checked ? modalData.purchaseItemUnique.length : 0
+                                                                });
+                                                            }}
+                                                  />
+                                              }
+                            />
+                        </Grid>
+                        {modalData.purchaseItemUnique.map((row, index) => (
+                            <Grid item sm={4}>
+                                <FormControlLabel key={'checkbox_child_' + index} label={row.unique_id}
+                                                  control={
+                                                      <Checkbox color="primary" key={'checkbox_child_chk_' + index}
+                                                                checked={row.checked == true}
+                                                                onChange={(e) => {
+                                                                    modalData.purchaseItemUnique[index].checked = e.target.checked;
+                                                                    let selectedSize = 0;
+                                                                    modalData.purchaseItemUnique.forEach((item) => {
+                                                                        if (item.checked === true) {
+                                                                            selectedSize++;
+                                                                        }
+                                                                    });
+                                                                    setModalData({
+                                                                        ...modalData,
+                                                                        selectAll: selectedSize === modalData.purchaseItemUnique.length,
+                                                                        purchaseItemUnique: modalData.purchaseItemUnique,
+                                                                        count: selectedSize
+                                                                    });
+                                                                }}
+                                                      />
+                                                  }
+                                />
+                            </Grid>))}
+                    </Grid>}
+
+                    <Grid item sm={5}>
                         <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.storageList}
                                       getOptionLabel={(option) => option.storage_name}
@@ -340,7 +392,7 @@ function StorageProduct(props) {
                                       />}
                         />
                     </Grid>
-                    <Grid item sm={6}>
+                    <Grid item sm={5}>
                         <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.storageAreaList}
                                       noOptionsText="无选项"
@@ -356,7 +408,7 @@ function StorageProduct(props) {
                         />
                     </Grid>
 
-                    <Grid item xs={12}>
+                    <Grid item xs={2}>
                         <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" value={modalData.count}
                                    onChange={(e)=>{setModalData({...modalData, count: e.target.value});}}
                                    error={validation.count&&validation.count!=''}
@@ -365,7 +417,7 @@ function StorageProduct(props) {
                     </Grid>
 
                     <Grid item xs={12}>
-                        <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={modalData.remark}
+                        <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={1} value={modalData.remark}
                                    onChange={(e) => {setModalData({...modalData, remark: e.target.value})}}/>
                     </Grid>
                 </Grid>

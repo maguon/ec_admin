@@ -56,7 +56,6 @@ export const getPurchaseItemRefund = (purchaseItemId) => async (dispatch) => {
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/purchaseRefund?purchaseItemId=' + purchaseItemId;
-
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
@@ -88,6 +87,28 @@ export const putInStorage = (data) => async (dispatch, getState) => {
         if (res.success) {
             Swal.fire("修改成功", "", "success");
             dispatch(getPurchaseItemStorage(getState().StorageInOutReducer.purchaseItemStorage.start));
+        } else if (!res.success) {
+            Swal.fire("修改失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+// TAB：采购入库 采购商品入库MODAL 更新 唯一标识码
+export const changeUniqueRelStatus = (data) => async (dispatch) => {
+    try {
+        // 状态
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/purchaseItem/' + data.purchaseItem.purchase_item_id + '/product/'+ data.purchaseItem.product_id  +'/uniqueRelStatus';
+        const params = {
+            uniqueRelIdArray: data.uniqueRelIdArray
+        };
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpPut(url, params);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch(putInStorage(data));
         } else if (!res.success) {
             Swal.fire("修改失败", res.msg, "warning");
         }
@@ -526,17 +547,21 @@ export const inOutStorageProduct = (data) => async (dispatch, getState) => {
         }
 
         let params = {
+            remark: data.remark,
+            // 商品数量
+            storageCount: data.prodCnt,
             // 出库
             storageType: storageType,
             // 内部领料出库
             storageSubType: storageSubType,
-            // 商品数量
-            storageCount: data.prodCnt,
             // 领用人
             applyUserId: data.reUser === null ? '' : data.reUser.id,
-            remark: data.remark
         };
-        if (data.type === 'in') {
+        if (data.type === 'out') {
+            if (data.uniqueFlag === sysConst.UNIQUE_FLAG[1].value) {
+                params = {...params, prodUniqueArr: data.prodUniqueArr};
+            }
+        } else {
             params = {...params, oldFlag: data.oldFlag};
         }
         dispatch({type: AppActionType.showLoadProgress, payload: true});
