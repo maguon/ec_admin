@@ -217,14 +217,21 @@ function StorageInOut(props) {
         }
         setValidation(validateObj);
         if(Object.keys(validateObj).length===0){
+            if (purchaseModalData.purchaseItem.unique_flag === sysConst.UNIQUE_FLAG[1].value) {
+                let uniqueRelIdArray = [];
+                purchaseModalData.purchaseItemUnique.forEach((item) => {
+                    if (item.checked === true) {
+                        uniqueRelIdArray.push(item.id)
+                    }
+                });
+                dispatch(storageInOutAction.changeUniqueRelStatus({...purchaseModalData, uniqueRelIdArray: uniqueRelIdArray}));
+            } else {
+                dispatch(storageInOutAction.putInStorage(purchaseModalData));
+            }
+
+            // 关闭模态
             setPurchaseModalOpen(false);
-            let uniqueRelIdArray = [];
-            purchaseModalData.purchaseItemUnique.forEach((item) => {
-                if (item.checked === true) {
-                    uniqueRelIdArray.push(item.id)
-                }
-            });
-            dispatch(storageInOutAction.changeUniqueRelStatus({...purchaseModalData, uniqueRelIdArray: uniqueRelIdArray}));
+            //清空外层检索条件部分 仓库分区下拉列表
             if (storageInOutReducer.purchaseParams.storage != null) {
                 dispatch(commonAction.getStorageAreaList(storageInOutReducer.purchaseParams.storage.id));
             } else {
@@ -327,7 +334,7 @@ function StorageInOut(props) {
     const initRefundModal = (item, pageType) => {
         // 清check内容
         setValidation({});
-        setRefundModalData({...refundModalData,pageType:pageType,purchaseRefund:item,storageProduct:null,remark:''});
+        setRefundModalData({...refundModalData,pageType:pageType,purchaseRefund:item,uniqueFlag: sysConst.UNIQUE_FLAG[0].value,purchaseItemUnique:[],storageProduct:null,remark:''});
         // 取得库存商品信息
         if (pageType === 'info') {
             dispatch(storageInOutAction.getStorageProductRelDetail(item.storage_rel_id))
@@ -344,10 +351,21 @@ function StorageInOut(props) {
             validateObj.storageProduct ='请选择库存商品';
         }else if (refundModalData.storageProduct.storage_count < refundModalData.purchaseRefund.refund_count) {
             validateObj.storageProduct ='库存商品数量小于退货数量，不能退货';
+        } else if (refundModalData.prodCnt != refundModalData.purchaseRefund.refund_count) {
+            validateObj.prodCnt ='出库数量与退货数量不符';
         }
         setValidation(validateObj);
         if(Object.keys(validateObj).length===0){
-            dispatch(storageInOutAction.refundStorage(refundModalData));
+            let prodUniqueArr = [];
+            if (refundModalData.uniqueFlag === sysConst.UNIQUE_FLAG[1].value) {
+                refundModalData.purchaseItemUnique.forEach((item) => {
+                    if (item.checked == true) {
+                        prodUniqueArr.push(item.unique_id)
+                    }
+                });
+            }
+            // TODO
+            dispatch(storageInOutAction.refundStorage({...refundModalData,prodUniqueArr:prodUniqueArr}));
             setRefundModalOpen(false);
         }
     };
@@ -897,7 +915,7 @@ function StorageInOut(props) {
                         <Button variant="contained" color="primary" onClick={()=>{dispatch(storageInOutAction.getPurchaseRefund(storageInOutReducer.purchaseRefundData.start+(storageInOutReducer.purchaseRefundData.size-1)))}}>下一页</Button>}
                     </Box>
 
-                    <SimpleModal maxWidth={refundModalData.pageType === 'info' ? 'md' : 'sm'}
+                    <SimpleModal maxWidth={refundModalData.pageType === 'info' ? 'md' : 'lg'}
                                  title="退货出库"
                                  open={refundModalOpen}
                                  onClose={()=>{setRefundModalOpen(false)}}
@@ -945,14 +963,24 @@ function StorageInOut(props) {
 
                             {refundModalData.pageType !== 'info' &&
                             <>
-                                <Grid item sm={12}>
+                                <Grid item sm={10}>
                                     <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                                   options={storageInOutReducer.storageProductRelList}
                                                   noOptionsText="无选项"
                                                   getOptionLabel={(option) => option.storage_name + '-' + option.storage_area_name + '-' + option.product_name + '-' + option.storage_count}
                                                   value={refundModalData.storageProduct}
                                                   onChange={(event, value) => {
-                                                      setRefundModalData({...refundModalData,storageProduct:value});
+                                                      if (value != null) {
+                                                          let purchaseItemUnique = [];
+                                                          if (value.unique_flag === sysConst.UNIQUE_FLAG[1].value && value.prod_unique_arr != null && value.prod_unique_arr.length > 0) {
+                                                              value.prod_unique_arr.forEach((item) => {
+                                                                  purchaseItemUnique.push({unique_id : item, checked : false});
+                                                              });
+                                                          }
+                                                          setRefundModalData({...refundModalData,storageProduct:value, selectAll: false, prodCnt:0,uniqueFlag: value.unique_flag, purchaseItemUnique: purchaseItemUnique});
+                                                      } else {
+                                                          setRefundModalData({...refundModalData,storageProduct:value, selectAll: false, prodCnt:0,uniqueFlag: sysConst.UNIQUE_FLAG[0].value, purchaseItemUnique: []});
+                                                      }
                                                   }}
                                                   renderInput={(params) => <TextField {...params} label="仓库" margin="dense" variant="outlined"
                                                                                       error={validation.storageProduct&&validation.storageProduct!=''}
@@ -961,8 +989,63 @@ function StorageInOut(props) {
                                     />
                                 </Grid>
 
+                                {refundModalData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value &&
+                                <Grid item xs={2}>
+                                    <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" disabled value={refundModalData.prodCnt}
+                                               error={validation.prodCnt&&validation.prodCnt!=''} helperText={validation.prodCnt}/>
+                                </Grid>}
+
+                                {refundModalData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value &&
+                                <Grid item sm={12} container>
+                                    <Grid item sm={12}>
+                                        <FormControlLabel key="select-all" label="全选"
+                                                          control={
+                                                              <Checkbox color="primary" key={'select-all-chk'}
+                                                                        checked={refundModalData.selectAll}
+                                                                        onChange={(e) => {
+                                                                            refundModalData.purchaseItemUnique.forEach((item) => {
+                                                                                item.checked = e.target.checked;
+                                                                            });
+                                                                            setRefundModalData({
+                                                                                ...refundModalData,
+                                                                                selectAll: e.target.checked,
+                                                                                purchaseItemUnique: refundModalData.purchaseItemUnique,
+                                                                                prodCnt: e.target.checked ? refundModalData.purchaseItemUnique.length : 0
+                                                                            });
+                                                                        }}
+                                                              />
+                                                          }
+                                        />
+                                    </Grid>
+                                    {refundModalData.purchaseItemUnique.map((row, index) => (
+                                        <Grid item sm={4}>
+                                            <FormControlLabel key={'checkbox_child_' + index} label={row.unique_id}
+                                                              control={
+                                                                  <Checkbox color="primary" key={'checkbox_child_chk_' + index}
+                                                                            checked={row.checked == true}
+                                                                            onChange={(e) => {
+                                                                                refundModalData.purchaseItemUnique[index].checked = e.target.checked;
+                                                                                let selectedSize = 0;
+                                                                                refundModalData.purchaseItemUnique.forEach((item) => {
+                                                                                    if (item.checked === true) {
+                                                                                        selectedSize++;
+                                                                                    }
+                                                                                });
+                                                                                setRefundModalData({
+                                                                                    ...refundModalData,
+                                                                                    selectAll: selectedSize === refundModalData.purchaseItemUnique.length,
+                                                                                    purchaseItemUnique: refundModalData.purchaseItemUnique,
+                                                                                    prodCnt: selectedSize
+                                                                                });
+                                                                            }}
+                                                                  />
+                                                              }
+                                            />
+                                        </Grid>))}
+                                </Grid>}
+
                                 <Grid item xs={12}>
-                                    <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={refundModalData.remark}
+                                    <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={1} value={refundModalData.remark}
                                                onChange={(e) => {setRefundModalData({...refundModalData,remark:e.target.value})}}/>
                                 </Grid>
                             </>}
@@ -1693,7 +1776,7 @@ function StorageInOut(props) {
                                                         }}
                                                         disabled={row.unique_flag === sysConst.UNIQUE_FLAG[0].value}
                                             >
-                                                <i className="mdi mdi-table-of-contents"/>
+                                                <i className="mdi mdi-barcode-scan"/>
                                             </IconButton>
                                         </TableCell>
                                     </TableRow>
