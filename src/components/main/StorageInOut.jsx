@@ -402,7 +402,21 @@ function StorageInOut(props) {
                 if(Object.keys(validateObj).length===0){
                     let ret = await dispatch(storageInOutAction.getStorageProductRelDetailInfo(modalData.inOutNo));
                     if (ret.length > 0) {
-                        setModalData({...modalData,storageProdRelDetail: ret[0],oldFlag: ret[0].old_flag, activeStep:modalData.activeStep + 1});
+                        let purchaseItemUnique = [];
+                        if (ret[0].unique_flag === sysConst.UNIQUE_FLAG[1].value && ret[0].prod_unique_arr != null && ret[0].prod_unique_arr.length > 0) {
+                            ret[0].prod_unique_arr.forEach((item) => {
+                                purchaseItemUnique.push({unique_id : item, checked : false});
+                            });
+                        }
+                        setModalData({
+                            ...modalData,
+                            selectAll: false,
+                            uniqueFlag: ret[0].unique_flag,
+                            purchaseItemUnique: purchaseItemUnique,
+                            storageProdRelDetail: ret[0],
+                            oldFlag: ret[0].old_flag,
+                            activeStep: modalData.activeStep + 1
+                        });
                     } else {
                         setValidation({inOutNo:'没有该出库记录,请重新输入'});
                     }
@@ -417,10 +431,21 @@ function StorageInOut(props) {
                     validateObj.prodCnt ='请输入数量';
                 }else if (modalData.storageProdRelDetail.storage_count < modalData.prodCnt) {
                     validateObj.prodCnt ='入库数量不能大于库存商品数量';
+                } else if (modalData.prodCnt <= 0) {
+                    validateObj.prodCnt ='数量应大于0';
                 }
+
                 setValidation(validateObj);
                 if(Object.keys(validateObj).length===0){
-                    dispatch(storageInOutAction.inOutStorageProduct(modalData));
+                    let prodUniqueArr = [];
+                    if (modalData.uniqueFlag === sysConst.UNIQUE_FLAG[1].value) {
+                        modalData.purchaseItemUnique.forEach((item) => {
+                            if (item.checked == true) {
+                                prodUniqueArr.push(item.unique_id)
+                             }
+                        });
+                    }
+                    dispatch(storageInOutAction.inOutStorageProduct({...modalData,prodUniqueArr:prodUniqueArr}));
                     setModalOpen(false);
                 }
             }
@@ -1781,9 +1806,58 @@ function StorageInOut(props) {
                                         <Grid item sm={12} style={{color:'red'}}>返库商品将重新放在原来的仓储位置</Grid>
                                     </Grid>}
 
+                                    {modalData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value &&
+                                    <Grid item sm={12} container>
+                                        <Grid item sm={12}>
+                                            <FormControlLabel key="select-all" label="全选"
+                                                              control={
+                                                                  <Checkbox color="primary" key={'select-all-chk'}
+                                                                            checked={modalData.selectAll}
+                                                                            onChange={(e) => {
+                                                                                modalData.purchaseItemUnique.forEach((item) => {
+                                                                                    item.checked = e.target.checked;
+                                                                                });
+                                                                                setModalData({
+                                                                                    ...modalData,
+                                                                                    selectAll: e.target.checked,
+                                                                                    purchaseItemUnique: modalData.purchaseItemUnique,
+                                                                                    prodCnt: e.target.checked ? modalData.purchaseItemUnique.length : 0
+                                                                                });
+                                                                            }}
+                                                                  />
+                                                              }
+                                            />
+                                        </Grid>
+                                        {modalData.purchaseItemUnique.map((row, index) => (
+                                            <Grid item sm={4}>
+                                                <FormControlLabel key={'checkbox_child_' + index} label={row.unique_id}
+                                                                  control={
+                                                                      <Checkbox color="primary" key={'checkbox_child_chk_' + index}
+                                                                                checked={row.checked == true}
+                                                                                onChange={(e) => {
+                                                                                    modalData.purchaseItemUnique[index].checked = e.target.checked;
+                                                                                    let selectedSize = 0;
+                                                                                    modalData.purchaseItemUnique.forEach((item) => {
+                                                                                        if (item.checked === true) {
+                                                                                            selectedSize++;
+                                                                                        }
+                                                                                    });
+                                                                                    setModalData({
+                                                                                        ...modalData,
+                                                                                        selectAll: selectedSize === modalData.purchaseItemUnique.length,
+                                                                                        purchaseItemUnique: modalData.purchaseItemUnique,
+                                                                                        prodCnt: selectedSize
+                                                                                    });
+                                                                                }}
+                                                                      />
+                                                                  }
+                                                />
+                                            </Grid>))}
+                                    </Grid>}
                                     <Grid container spacing={1}>
                                     <Grid item xs={4}>
                                         <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" value={modalData.prodCnt}
+                                                   disabled={modalData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value}
                                                    onChange={(e) => {setModalData({...modalData,prodCnt:e.target.value})}}
                                                    error={validation.prodCnt&&validation.prodCnt!=''} helperText={validation.prodCnt}/>
                                     </Grid>
@@ -1816,7 +1890,7 @@ function StorageInOut(props) {
                                     </Grid>
 
                                     <Grid item xs={12}>
-                                        <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={modalData.remark}
+                                        <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={1} value={modalData.remark}
                                                    onChange={(e) => {setModalData({...modalData,remark:e.target.value})}}/>
                                     </Grid>
                                     </Grid>

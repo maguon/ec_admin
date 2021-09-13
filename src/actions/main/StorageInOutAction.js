@@ -559,9 +559,12 @@ export const inOutStorageProduct = (data) => async (dispatch, getState) => {
         };
         if (data.type === 'out') {
             if (data.uniqueFlag === sysConst.UNIQUE_FLAG[1].value) {
-                params = {...params, prodUniqueArr: data.prodUniqueArr};
+                params = {...params, prodUniqueArr: data.prodUniqueArr, uniqueFlag: data.uniqueFlag};
             }
         } else {
+            if (data.uniqueFlag === sysConst.UNIQUE_FLAG[1].value) {
+                params = {...params, prodUniqueArr: data.prodUniqueArr, uniqueFlag: data.uniqueFlag};
+            }
             params = {...params, oldFlag: data.oldFlag};
         }
         dispatch({type: AppActionType.showLoadProgress, payload: true});
