@@ -64,11 +64,11 @@ export const getOrderItemProd = (orderId) => async (dispatch) => {
     }
 };
 
-export const getStorageProductRelDetail = (orderId, orderItemProdId) => async (dispatch) => {
+export const getStorageProductRelDetail = (orderId, orderProdId) => async (dispatch) => {
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/storageProductRelDetail?orderId=' + orderId + '&orderItemProdId=' + orderItemProdId;
+            + '/storageProductRelDetail?orderId=' + orderId + '&orderProdId=' + orderProdId;
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});

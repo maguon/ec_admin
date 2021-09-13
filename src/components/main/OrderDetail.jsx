@@ -63,7 +63,7 @@ function OrderDetail(props) {
     // 模态属性
     const [modalOpen, setModalOpen] = React.useState(false);
     // 模态数据
-    const [modalData, setModalData] = React.useState({});
+    const [modalData, setModalData] = React.useState({storageProductRelDetail:{}});
     // 校验
     const [validation,setValidation] = React.useState({});
 
@@ -74,6 +74,7 @@ function OrderDetail(props) {
         // 初始化模态数据
         if (pageType === 'deploy' || pageType === 'check') {
             setModalData({
+                ...modalData,
                 orderItemService: item,
                 pageType: pageType,
                 pageTitle: pageTitle,
@@ -84,6 +85,7 @@ function OrderDetail(props) {
         } else {
             let ret = await dispatch(orderDetailAction.getStorageProductRelDetail(item.order_id, item.id));
             setModalData({
+                ...modalData,
                 pageType: pageType,
                 pageTitle: pageTitle,
                 storageProductRelDetail: ret
@@ -614,7 +616,7 @@ function OrderDetail(props) {
             {/* 提升高度：当盘点详情过多时，避免 最后一条会被footer挡住 */}
             <Grid style={{height: 50}}>&nbsp;</Grid>
             <SimpleModal
-                maxWidth={'sm'}
+                maxWidth={modalData.pageType ==='receive' ? 'lg' : 'sm'}
                 title={modalData.pageTitle}
                 open={modalOpen}
                 onClose={()=>{setModalOpen(false)}}
@@ -659,29 +661,38 @@ function OrderDetail(props) {
                         {/*{modalData.storageProductRelDetail.apply_real_name + '于 ' + commonUtil.getDateTime(modalData.storageProductRelDetail.created_on)*/}
                         {/*+ ' 在' + modalData.storageProductRelDetail.storage_name + ' ' + modalData.storageProductRelDetail.storage_area_name*/}
                         {/*+ ' 领取 ' + modalData.storageProductRelDetail.product_name + ' ' + modalData.storageProductRelDetail.storage_count + '个'}*/}
-                        <Grid item sm={6}>
-                            <TextField label="领用人" fullWidth margin="dense" variant="outlined"value={modalData.storageProductRelDetail.apply_real_name}/>
-                        </Grid>
 
-                        <Grid item sm={6}>
-                            <TextField label="领取时间" fullWidth margin="dense" variant="outlined"value={commonUtil.getDateTime(modalData.storageProductRelDetail.created_on)}/>
-                        </Grid>
-
-                        <Grid item sm={6}>
-                            <TextField label="仓库" fullWidth margin="dense" variant="outlined"value={modalData.storageProductRelDetail.storage_name}/>
-                        </Grid>
-
-                        <Grid item sm={6}>
-                            <TextField label="仓库分区" fullWidth margin="dense" variant="outlined"value={modalData.storageProductRelDetail.storage_area_name}/>
-                        </Grid>
-
-                        <Grid item sm={6}>
+                        <Grid item sm={5}>
                             <TextField label="商品" fullWidth margin="dense" variant="outlined"value={modalData.storageProductRelDetail.product_name}/>
                         </Grid>
 
-                        <Grid item sm={6}>
+                        <Grid item sm={5}>
+                            <TextField label="领用人" fullWidth margin="dense" variant="outlined"value={modalData.storageProductRelDetail.apply_real_name}/>
+                        </Grid>
+
+                        <Grid item sm={2}>
+                            <TextField label="领取时间" fullWidth margin="dense" variant="outlined"value={commonUtil.getDateTime(modalData.storageProductRelDetail.created_on)}/>
+                        </Grid>
+
+                        <Grid item sm={5}>
+                            <TextField label="仓库" fullWidth margin="dense" variant="outlined"value={modalData.storageProductRelDetail.storage_name}/>
+                        </Grid>
+
+                        <Grid item sm={5}>
+                            <TextField label="仓库分区" fullWidth margin="dense" variant="outlined"value={modalData.storageProductRelDetail.storage_area_name}/>
+                        </Grid>
+
+                        <Grid item sm={2}>
                             <TextField label="数量" fullWidth margin="dense" variant="outlined"value={modalData.storageProductRelDetail.storage_count}/>
                         </Grid>
+
+                        {modalData.storageProductRelDetail.unique_flag === sysConst.UNIQUE_FLAG[1].value && modalData.storageProductRelDetail.prod_unique_arr.length > 0 &&
+                        <Grid item sm={12} container spacing={1}>
+                            <Grid item sm={12}>唯一编码：</Grid>
+                            {modalData.storageProductRelDetail.prod_unique_arr.map((item, index) => (
+                                <Grid item sm={4}>{item}</Grid>
+                            ))}
+                        </Grid>}
                     </Grid>}
 {/*                    {modalData.pageType==='no-data' &&
                     <Grid item sm={12}>暂未领取</Grid>}*/}
