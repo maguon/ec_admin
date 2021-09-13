@@ -65,9 +65,9 @@ function UpLoadFile (props) {
             buttonRef.current.open(e)
         }
     }
-    const handleOnBrandFileLoad = (file)=>{
-        if(file==null ||file.length ==0){
-            Swal.fire("文件类型错误");
+    const handleOnBrandFileLoad = (file,fileName)=>{
+        let ext = fileName&&fileName.name.slice(fileName.name.lastIndexOf(".")+1).toLowerCase();
+        if ("csv" != ext) { Swal.fire("文件类型错误");
         } else {
             //表头验证
             setHeaderArray(file[0].data);
@@ -103,9 +103,9 @@ function UpLoadFile (props) {
             }
         }
     }
-    const handleOnCategoryFileLoad =(file)=>{
-        if(file==null ||file.length ==0){
-            Swal.fire("文件类型错误");
+    const handleOnCategoryFileLoad =(file,fileName)=>{
+        let ext = fileName&&fileName.name.slice(fileName.name.lastIndexOf(".")+1).toLowerCase();
+        if ("csv" != ext) { Swal.fire("文件类型错误");
         } else {
             //表头验证
             setHeaderArrayCategory(file[0].data);
@@ -211,15 +211,17 @@ function UpLoadFile (props) {
                                     {( {file} ) => {
                                         setInputFile(file);
                                         return (
-                                            <Button variant="contained"  color="primary" onClick={handleOpenDialog}>
-                                                批量品牌数据导入
-                                            </Button>
+                                            <aside>
+                                                <Button variant="contained"  color="primary" onClick={handleOpenDialog}>
+                                                    批量品牌数据导入
+                                                </Button>
+                                            </aside>
                                         )}}
                                 </CSVReader>
                             </Grid>
                         </Grid>
                         {/*本地校验*/}
-                        <div style={{display:dataBox?'block':'none'}}>
+                        {dataBox&&<div>
                             <p  xs={12} align='center' style={{padding: "20px",background:'#f50057',color:'white',fontSize:'18px'}}>错误数据<span>{errorNumber}</span>条，请修改后重新上传</p>
                             <TableContainer component={Paper}>
                                 <Table  size={'small'} aria-label="a dense table">
@@ -245,30 +247,30 @@ function UpLoadFile (props) {
                                     </TableBody>
                                 </Table>
                             </TableContainer>
-                        </div>
+                        </div>}
                         {/*上传校验*/}
-                        <div style={{display:successData?'block':'none'}}>
+                        {successData&&<div>
                             <Divider style={{marginTop: 20}}/>
                             <p><span>{uploadFileReducer.array.successedInsert}</span>/<span>{dataLength}</span></p>
 
-                            <p style={{display:localSuccess?'block':'none'}} align='center'>
+                            {localSuccess&&<p align='center'>
                                 <i className="mdi mdi-check "></i><span>本地校验成功</span>
-                            </p>
-                            <p style={{display:uploadFileReducer.uploadFlag?'block':'none'}} align='center'>
+                            </p>}
+                            {uploadFileReducer.uploadFlag&&<p align='center'>
                                 <i className="mdi mdi-check"></i><span>上传完成</span>
-                            </p>
-                            <p  style={{display:uploadFileReducer.uploadFlag?'block':'none'}} align='center'>
+                            </p>}
+                            {uploadFileReducer.uploadFlag&&<p align='center'>
                                 <span>错误条数:<span>{uploadFileReducer.array.failedCase}</span></span>
                                 <span>正确条数:<span>{uploadFileReducer.array.successedInsert}</span></span>
                                 <span>总条数:<span>{dataLength}</span></span>
-                            </p>
+                            </p>}
                             <p align='center'>
-                                <Button variant="contained"  color="primary" style={{display:localSuccess?'block':'none'}} disabled={uploadFileReducer.uploadFlag} onClick={uploadBrandCsv} >
+                                {localSuccess&& <Button variant="contained"  color="primary" disabled={uploadFileReducer.uploadFlag} onClick={uploadBrandCsv} >
                                     导入数据库
-                                </Button>
+                                </Button>}
                             </p>
 
-                        </div>
+                        </div>}
                         {/*大图*/}
                         <div style={{marginTop:'100px'}}>
                             <b style={{width:'60%',marginLeft:'30%'}}>品牌导入模板字段的解释说明:</b>
@@ -320,15 +322,17 @@ function UpLoadFile (props) {
                                     {( {file} ) => {
                                         setInputFileCategory(file);
                                         return (
-                                            <Button variant="contained"  color="primary" onClick={handleOpenDialog}>
-                                                批量分类数据导入
-                                            </Button>
+                                            <aside>
+                                                <Button variant="contained"  color="primary" onClick={handleOpenDialog}>
+                                                    批量分类数据导入
+                                                </Button>
+                                            </aside>
                                         )}}
                                 </CSVReader>
                             </Grid>
                         </Grid>
                         {/*本地校验*/}
-                        <div style={{display:dataBoxCategory?'block':'none'}}>
+                        {dataBoxCategory&&<div>
                             <p  xs={12} align='center' style={{padding: "20px",background:'#f50057',color:'white',fontSize:'18px'}}>错误数据<span>{errorNumberCategory}</span>条，请修改后重新上传</p>
                             <TableContainer component={Paper}>
                                 <Table  size={'small'} aria-label="a dense table">
@@ -353,30 +357,30 @@ function UpLoadFile (props) {
                                     </TableBody>
                                 </Table>
                             </TableContainer>
-                        </div>
+                        </div>}
                         {/*上传校验*/}
-                        <div style={{display:successDataCategory?'block':'none'}}>
+                        {successDataCategory&&<div>
                             <Divider style={{marginTop: 20}}/>
                             <p><span>{uploadFileReducer.categoryArray.successedInsert}</span>/<span>{dataLengthCategory}</span></p>
 
-                            <p style={{display:localSuccessCategory?'block':'none'}} align='center'>
+                            {localSuccessCategory&&<p align='center'>
                                 <i className="mdi mdi-check "></i><span>本地校验成功</span>
-                            </p>
-                            <p style={{display:uploadFileReducer.categoryUploadFlag?'block':'none'}} align='center'>
+                            </p>}
+                            {uploadFileReducer.categoryUploadFlag&&<p align='center'>
                                 <i className="mdi mdi-check"></i><span>上传完成</span>
-                            </p>
-                            <p  style={{display:uploadFileReducer.categoryUploadFlag?'block':'none'}} align='center'>
+                            </p>}
+                            {uploadFileReducer.categoryUploadFlag&&<p align='center'>
                                 <span>错误条数:<span>{uploadFileReducer.categoryArray.failedCase}</span></span>
                                 <span>正确条数:<span>{uploadFileReducer.categoryArray.successedInsert}</span></span>
                                 <span>总条数:<span>{dataLengthCategory}</span></span>
-                            </p>
+                            </p>}
                             <p align='center'>
-                                <Button variant="contained"  color="primary" style={{display:localSuccessCategory?'block':'none'}} disabled={uploadFileReducer.categoryUploadFlag} onClick={uploadCategoryCsv} >
+                                {localSuccessCategory&&<Button variant="contained"  color="primary" disabled={uploadFileReducer.categoryUploadFlag} onClick={uploadCategoryCsv} >
                                     导入数据库
-                                </Button>
+                                </Button>}
                             </p>
 
-                        </div>
+                        </div>}
                         {/*大图*/}
                         <div style={{marginTop:'100px'}}>
                             <b style={{width:'60%',marginLeft:'30%'}}>分类导入模板字段的解释说明:</b>

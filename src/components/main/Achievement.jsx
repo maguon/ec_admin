@@ -1,12 +1,32 @@
 import React, {useEffect} from 'react';
 import {connect, useDispatch} from 'react-redux';
-import {Grid, Typography, AppBar, Tab, Tabs, TableContainer, Paper, Table, TableHead, TableRow, TableBody, TableCell, TextField, Fab, Box, Button} from "@material-ui/core";
+import {
+    Grid,
+    Typography,
+    AppBar,
+    Tab,
+    Tabs,
+    TableContainer,
+    Paper,
+    Table,
+    TableHead,
+    TableRow,
+    TableBody,
+    TableCell,
+    TextField,
+    Fab,
+    Box,
+    Button,
+    IconButton
+} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import TabContext from '@material-ui/lab/TabContext';
 import TabPanel from '@material-ui/lab/TabPanel';
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from "@material-ui/pickers";
 import {AchievementActionType} from "../../types";
+import {SimpleModal} from "../index";
+const sysConst = require('../../utils/SysConst');
 const commonAction = require('../../actions/layout/CommonAction');
 const customTheme = require('../layout/Theme').customTheme;
 const AchievementAction = require('../../actions/main/AchievementAction');
@@ -48,6 +68,8 @@ function Achievement (props){
     const classes = useStyles();
     const dispatch = useDispatch();
     const [value, setValue] = React.useState('1');
+    const [uniqueModalOpen, setUniqueModalOpen] = React.useState(false);
+    const [modalData, setModalData] = React.useState({});
     useEffect(()=>{
         let  serviceParams= {
                 orderId:'',
@@ -330,6 +352,7 @@ function Achievement (props){
                                             <TableCell className={classes.tableHead} align="center">采购单号</TableCell>
                                             <TableCell className={classes.tableHead} align="center">供应商</TableCell>
                                             <TableCell className={classes.tableHead} align="center">时间</TableCell>
+                                            <TableCell className={classes.tableHead} align="center">操作</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -344,9 +367,20 @@ function Achievement (props){
                                                 <TableCell align="center" >{row.purchase_id}</TableCell>
                                                 <TableCell align="center" >{row.supplier_name}</TableCell>
                                                 <TableCell align="center" >{row.date_id}</TableCell>
+                                                <TableCell align="center" >
+                                                    <IconButton color="primary" edge="start" size="small"
+                                                                onClick={() => {
+                                                                    setModalData(row);
+                                                                    setUniqueModalOpen(true);
+                                                                }}
+                                                                disabled={row.unique_flag === sysConst.UNIQUE_FLAG[0].value}
+                                                    >
+                                                        <i className="mdi mdi-barcode-scan"/>
+                                                    </IconButton>
+                                                </TableCell>
                                             </TableRow>))}
                                         {achievementReducer.productData.productInfo.length === 0 &&
-                                        <TableRow style={{height:60}}><TableCell align="center" colSpan="9">暂无数据</TableCell></TableRow>
+                                        <TableRow style={{height:60}}><TableCell align="center" colSpan="10">暂无数据</TableCell></TableRow>
                                         }
                                     </TableBody>
                                 </Table>
@@ -367,6 +401,22 @@ function Achievement (props){
                         </div>
                     </TabPanel>
                 </TabContext>
+
+                <SimpleModal maxWidth='md' showFooter={true} title="唯一编码" open={uniqueModalOpen}
+                             onClose={()=>{setUniqueModalOpen(false)}}
+                             footer={<Button variant="contained" onClick={()=>{setUniqueModalOpen(false)}}>关闭</Button>}
+                >
+                    <Grid container spacing={2}>
+                        {modalData.unique_flag === sysConst.UNIQUE_FLAG[1].value &&
+                        <Grid item sm={12} container spacing={2}>
+                            {modalData.prod_unique_arr.map((item) => (
+                                <Grid item sm={6}>{item}</Grid>
+                            ))}
+                        </Grid>}
+                    </Grid>
+                </SimpleModal>
+
+
             </div>
         </div>
     )
