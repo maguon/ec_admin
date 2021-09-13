@@ -298,9 +298,25 @@ function StorageInOut(props) {
         }else if (orderOutModalData.storageProduct.storage_count < orderOutModalData.orderItem.prod_count) {
             validateObj.storageProduct ='库存商品数量小于订单商品数量，不能出库';
         }
+        if (orderOutModalData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value) {
+            if (!orderOutModalData.prodCnt && orderOutModalData.prodCnt<=0) {
+                validateObj.prodCnt ='请选择出库商品唯一编码';
+            } else if (orderOutModalData.prodCnt != orderOutModalData.orderItem.prod_count) {
+                validateObj.prodCnt ='出库数量与订单数量不符';
+            }
+        }
+
         setValidation(validateObj);
         if(Object.keys(validateObj).length===0){
-            dispatch(storageInOutAction.exportOrderProduct(orderOutModalData));
+            let prodUniqueArr = [];
+            if (orderOutModalData.uniqueFlag === sysConst.UNIQUE_FLAG[1].value) {
+                orderOutModalData.purchaseItemUnique.forEach((item) => {
+                    if (item.checked == true) {
+                        prodUniqueArr.push(item.unique_id)
+                    }
+                });
+            }
+            dispatch(storageInOutAction.exportOrderProduct({...orderOutModalData,prodUniqueArr:prodUniqueArr}));
             setOrderOutModalOpen(false);
         }
     };
@@ -1347,7 +1363,7 @@ function StorageInOut(props) {
                         <Button variant="contained" color="primary" onClick={()=>{dispatch(storageInOutAction.getOrderItemProdStorage(storageInOutReducer.orderOutData.start+(storageInOutReducer.orderOutData.size-1)))}}>下一页</Button>}
                     </Box>
 
-                    <SimpleModal maxWidth={orderOutModalData.pageType === 'info' ? 'md' : 'sm'}
+                    <SimpleModal maxWidth={orderOutModalData.pageType === 'info' ? 'md' : 'lg'}
                                  title="订单出库"
                                  open={orderOutModalOpen}
                                  onClose={()=>{setOrderOutModalOpen(false)}}
@@ -1360,9 +1376,9 @@ function StorageInOut(props) {
                                  }
                     >
                         <Grid container spacing={2}>
-                            <Grid item sm={6}>订单号：{orderOutModalData.orderItem.order_id}</Grid>
+                            <Grid item sm={4}>订单号：{orderOutModalData.orderItem.order_id}</Grid>
                             <Grid item sm={6}>商品：{orderOutModalData.orderItem.prod_name}</Grid>
-                            <Grid item sm={6}>数量：{orderOutModalData.orderItem.prod_count}</Grid>
+                            <Grid item sm={2}>数量：{orderOutModalData.orderItem.prod_count}</Grid>
 
                             {orderOutModalData.pageType === 'info' &&
                             <Table stickyHeader size="small" style={{marginTop: 10}}>
@@ -1394,21 +1410,33 @@ function StorageInOut(props) {
 
                             {orderOutModalData.pageType !== 'info' &&
                             <>
-                                <Grid item sm={12}>
+                                <Grid item sm={6}>
                                     <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                                   options={storageInOutReducer.storageProductList}
                                                   noOptionsText="无选项"
                                                   getOptionLabel={(option) => option.storage_name + '-' + option.storage_area_name + '-' + option.product_name + '-' + option.storage_count}
                                                   value={orderOutModalData.storageProduct}
                                                   onChange={(event, value) => {
-                                                      setOrderOutModalData({...orderOutModalData,storageProduct:value});
+                                                      if (value != null) {
+                                                          let purchaseItemUnique = [];
+                                                          if (value.unique_flag === sysConst.UNIQUE_FLAG[1].value && value.prod_unique_arr != null && value.prod_unique_arr.length > 0) {
+                                                              value.prod_unique_arr.forEach((item) => {
+                                                                  purchaseItemUnique.push({unique_id : item, checked : false});
+                                                              });
+                                                          }
+                                                          setOrderOutModalData({...orderOutModalData,storageProduct:value, selectAll: false, prodCnt:0,uniqueFlag: value.unique_flag, purchaseItemUnique: purchaseItemUnique});
+                                                      } else {
+                                                          setOrderOutModalData({...orderOutModalData,storageProduct:value, selectAll: false, prodCnt:0,uniqueFlag: sysConst.UNIQUE_FLAG[0].value, purchaseItemUnique: []});
+                                                      }
                                                   }}
+
                                                   renderInput={(params) => <TextField {...params} label="仓库" margin="dense" variant="outlined"
                                                               error={validation.storageProduct&&validation.storageProduct!=''} helperText={validation.storageProduct}
                                                   />}
                                     />
                                 </Grid>
-                                <Grid item sm={12}>
+
+                                <Grid item sm={4}>
                                     <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                                   options={commonReducer.userList} getOptionLabel={(option) => option.real_name}
                                                   value={orderOutModalData.reUser}
@@ -1420,8 +1448,63 @@ function StorageInOut(props) {
                                     />
                                 </Grid>
 
+                                {orderOutModalData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value &&
+                                <Grid item xs={2}>
+                                    <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" disabled value={orderOutModalData.prodCnt}
+                                               error={validation.prodCnt&&validation.prodCnt!=''} helperText={validation.prodCnt}/>
+                                </Grid>}
+
+                                {orderOutModalData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value &&
+                                <Grid item sm={12} container>
+                                    <Grid item sm={12}>
+                                        <FormControlLabel key="select-all" label="全选"
+                                                          control={
+                                                              <Checkbox color="primary" key={'select-all-chk'}
+                                                                        checked={orderOutModalData.selectAll}
+                                                                        onChange={(e) => {
+                                                                            orderOutModalData.purchaseItemUnique.forEach((item) => {
+                                                                                item.checked = e.target.checked;
+                                                                            });
+                                                                            setOrderOutModalData({
+                                                                                ...orderOutModalData,
+                                                                                selectAll: e.target.checked,
+                                                                                purchaseItemUnique: orderOutModalData.purchaseItemUnique,
+                                                                                prodCnt: e.target.checked ? orderOutModalData.purchaseItemUnique.length : 0
+                                                                            });
+                                                                        }}
+                                                              />
+                                                          }
+                                        />
+                                    </Grid>
+                                    {orderOutModalData.purchaseItemUnique.map((row, index) => (
+                                        <Grid item sm={4}>
+                                            <FormControlLabel key={'checkbox_child_' + index} label={row.unique_id}
+                                                              control={
+                                                                  <Checkbox color="primary" key={'checkbox_child_chk_' + index}
+                                                                            checked={row.checked == true}
+                                                                            onChange={(e) => {
+                                                                                orderOutModalData.purchaseItemUnique[index].checked = e.target.checked;
+                                                                                let selectedSize = 0;
+                                                                                orderOutModalData.purchaseItemUnique.forEach((item) => {
+                                                                                    if (item.checked === true) {
+                                                                                        selectedSize++;
+                                                                                    }
+                                                                                });
+                                                                                setOrderOutModalData({
+                                                                                    ...orderOutModalData,
+                                                                                    selectAll: selectedSize === orderOutModalData.purchaseItemUnique.length,
+                                                                                    purchaseItemUnique: orderOutModalData.purchaseItemUnique,
+                                                                                    prodCnt: selectedSize
+                                                                                });
+                                                                            }}
+                                                                  />
+                                                              }
+                                            />
+                                        </Grid>))}
+                                </Grid>}
+
                                 <Grid item xs={12}>
-                                    <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={2} value={orderOutModalData.remark}
+                                    <TextField label="备注" fullWidth margin="dense" variant="outlined" multiline rows={1} value={orderOutModalData.remark}
                                                onChange={(e) => {setOrderOutModalData({...orderOutModalData,remark:e.target.value})}}/>
                                 </Grid>
                             </>}
@@ -1688,13 +1771,17 @@ function StorageInOut(props) {
                                               getOptionLabel={(option) => option.storage_name + '-' + option.storage_area_name + '-' + option.product_name + '-' + option.storage_count}
                                               value={modalData.storageProduct}
                                               onChange={(event, value) => {
-                                                  let purchaseItemUnique = [];
-                                                  if (value.unique_flag === sysConst.UNIQUE_FLAG[1].value && value.prod_unique_arr != null && value.prod_unique_arr.length > 0) {
-                                                      value.prod_unique_arr.forEach((item) => {
-                                                          purchaseItemUnique.push({unique_id : item, checked : false});
-                                                      });
+                                                  if (value != null) {
+                                                      let purchaseItemUnique = [];
+                                                      if (value.unique_flag === sysConst.UNIQUE_FLAG[1].value && value.prod_unique_arr != null && value.prod_unique_arr.length > 0) {
+                                                          value.prod_unique_arr.forEach((item) => {
+                                                              purchaseItemUnique.push({unique_id : item, checked : false});
+                                                          });
+                                                      }
+                                                      setModalData({...modalData,storageProduct:value, selectAll: false, prodCnt:0,uniqueFlag: value.unique_flag, purchaseItemUnique: purchaseItemUnique});
+                                                  } else {
+                                                      setModalData({...modalData,storageProduct:value, selectAll: false, prodCnt:0,uniqueFlag: sysConst.UNIQUE_FLAG[0].value, purchaseItemUnique: []});
                                                   }
-                                                  setModalData({...modalData,storageProduct:value, selectAll: false, prodCnt:0,uniqueFlag: value.unique_flag, purchaseItemUnique: purchaseItemUnique});
                                               }}
                                               renderInput={(params) => <TextField {...params} label="仓库" margin="dense" variant="outlined"
                                                                                   error={validation.storageProduct&&validation.storageProduct!=''} helperText={validation.storageProduct}

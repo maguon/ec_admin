@@ -414,7 +414,7 @@ export const exportOrderProduct = (data) => async (dispatch, getState) => {
         // 状态
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/storageProductRel/' + data.storageProduct.id + '/storProdRelDetailExport';
-        const params = {
+        let params = {
             // 出库
             storageType: sysConst.STORAGE_OP_TYPE[1].value,
             // 订单出库
@@ -428,6 +428,11 @@ export const exportOrderProduct = (data) => async (dispatch, getState) => {
             orderProdId: data.orderItem.id,
             remark: data.remark
         };
+
+        if (data.uniqueFlag === sysConst.UNIQUE_FLAG[1].value) {
+            params = {...params, prodUniqueArr: data.prodUniqueArr, uniqueFlag: data.uniqueFlag};
+        }
+
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpPost(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
