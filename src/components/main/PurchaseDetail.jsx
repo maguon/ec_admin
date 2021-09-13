@@ -495,7 +495,7 @@ function PurchaseDetail (props){
                                     <i className="mdi mdi-check mdi-24px"  style={{color:'#3f51b5'}} onClick={() => {updatePurchaseDetailItemInfo(item.id,index)}}/>
                                 </Grid>}
                                 {purchaseDetailReducer.purchaseDetailInfo.status!==3&&<Grid item xs={1}  align="center"  style={{marginTop:'14px'}}>
-                                    <i className="mdi mdi-rename-box mdi-24px"  style={{color:'#3f51b5'}} onClick={() => {openUniqueModel(item.id,item.product_id,item.product_name,item.purchase_count )}}/>
+                                    <i className="mdi mdi-barcode-scan mdi-24px"  style={{color:'#3f51b5'}} onClick={() => {openUniqueModel(item.id,item.product_id,item.product_name,item.purchase_count )}}/>
                                 </Grid>}
                             </Grid>
                         ))}

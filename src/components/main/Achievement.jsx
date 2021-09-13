@@ -375,7 +375,7 @@ function Achievement (props){
                                                                 }}
                                                                 disabled={row.unique_flag === sysConst.UNIQUE_FLAG[0].value}
                                                     >
-                                                        <i className="mdi mdi-table-of-contents"/>
+                                                        <i className="mdi mdi-barcode-scan"/>
                                                     </IconButton>
                                                 </TableCell>
                                             </TableRow>))}
