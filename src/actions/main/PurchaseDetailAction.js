@@ -71,8 +71,8 @@ export const updatePurchaseDetailInfoStatus = (id,params) => async (dispatch, ge
         const res = await httpUtil.httpPut(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true) {
-            dispatch(getPurchaseDetailInfo(id));
             Swal.fire("修改成功", "", "success");
+            dispatch(getPurchaseDetailInfo(id));
         } else if (res.success === false) {
             Swal.fire('修改失败', res.msg, 'warning');
         }

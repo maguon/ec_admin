@@ -123,11 +123,11 @@ export const updateUserInfo = (params,id) => async (dispatch) => {
 //修改状态
 export const updateUserStatus =(status,id)  => async (dispatch) => {
     // 状态
-    let newStatus = 0;
-    if (status === 0) {
-        newStatus = 1
+    let newStatus;
+    if (status === sysConst.USE_FLAG[0].value) {
+        newStatus = sysConst.USE_FLAG[1].value
     } else {
-        newStatus = 0
+        newStatus = sysConst.USE_FLAG[0].value
     }
     const url = apiHost + '/api/user/' + id + '/status?status=' + newStatus;
     dispatch({type: AppActionType.showLoadProgress, payload: true});

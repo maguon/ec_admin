@@ -44,10 +44,10 @@ export const changeStatus = (id, status) => async (dispatch, getState) => {
     try {
         // 状态
         let newStatus;
-        if (status === 0) {
-            newStatus = 1
+        if (status === sysConst.USE_FLAG[0].value) {
+            newStatus = sysConst.USE_FLAG[1].value
         } else {
-            newStatus = 0
+            newStatus = sysConst.USE_FLAG[0].value
         }
         // 状态
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)

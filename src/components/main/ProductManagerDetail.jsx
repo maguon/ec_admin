@@ -34,7 +34,8 @@ import {ProductManagerDetailActionType} from '../../types';
 import {fileHost} from '../../config/index';
 import TreeItem from "@material-ui/lab/TreeItem";
 import TreeView from "@material-ui/lab/TreeView";
-
+import {SimpleModal} from "../index";
+const PurchaseDetailAction = require('../../actions/main/PurchaseDetailAction');
 const productManagerDetailAction = require('../../actions/main/ProductManagerDetailAction');
 const commonAction = require('../../actions/layout/CommonAction');
 const commonUtil = require('../../utils/CommonUtil');
@@ -49,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 
 // 商品- 详情
 function ProductManagerDetail(props) {
-    const {productManagerDetailReducer, commonReducer} = props;
+    const {productManagerDetailReducer, purchaseDetailReducer,commonReducer} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     const {id} = useParams();
@@ -62,7 +63,10 @@ function ProductManagerDetail(props) {
     const [productImgSrc,setProductImgSrc] = useState('');
     // 适配车型
     const [matchModel, setMatchModel] = useState(new Map());
-
+    //采购模态框
+    const [uniqueModalOpen, setUniqueModalOpen] = useState(false);
+    //
+    const [modalUniqueModalFlag, setModalUniqueModalFlag] = useState('');
     useEffect(() => {
         // 取得画面 select控件，基础数据
         dispatch(commonAction.getCategoryList());
@@ -200,7 +204,6 @@ function ProductManagerDetail(props) {
         event.preventDefault();
         dispatch(productManagerDetailAction.getCarModelList(nodeIds))
     };
-
     return (
         <div className={classes.root} style={{minWidth: 960}}>
             {/* 标题部分 */}
@@ -529,6 +532,7 @@ function ProductManagerDetail(props) {
                                     <TableCell className={classes.tableHead} align="center">总成本</TableCell>
                                     <TableCell className={classes.tableHead} align="center">采购日期</TableCell>
                                     <TableCell className={classes.tableHead} align="center">备注</TableCell>
+                                    <TableCell className={classes.tableHead} align="center">操作</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -542,12 +546,24 @@ function ProductManagerDetail(props) {
                                         <TableCell align="center">{row.total_cost}</TableCell>
                                         <TableCell align="center">{commonUtil.getDate(row.created_on)}</TableCell>
                                         <TableCell align="left">{row.price}</TableCell>
+                                        <TableCell align="center">
+                                            <IconButton color="primary" edge="start" size="small"
+                                                        onClick={() => {
+                                                            dispatch(PurchaseDetailAction.getUniqueList(row.id))
+                                                            setModalUniqueModalFlag(row.unique_flag)
+                                                            setUniqueModalOpen(true);
+                                                        }}
+                                                        disabled={row.unique_flag != sysConst.UNIQUE_FLAG[1].value}
+                                            >
+                                                <i className="mdi mdi-barcode-scan"/>
+                                            </IconButton>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
 
                                 {productManagerDetailReducer.purchaseList.length === 0 &&
                                 <TableRow>
-                                    <TableCell colSpan={8} align="center">暂无数据</TableCell>
+                                    <TableCell colSpan={9} align="center">暂无数据</TableCell>
                                 </TableRow>}
                             </TableBody>
                         </Table>
@@ -594,6 +610,18 @@ function ProductManagerDetail(props) {
                     </TableContainer>
                 </TabPanel>
             </TabContext>
+            <SimpleModal maxWidth='md' showFooter={true} title="唯一编码" open={uniqueModalOpen}
+                         onClose={()=>{setUniqueModalOpen(false)}}
+                         footer={<Button variant="contained" onClick={()=>{setUniqueModalOpen(false)}}>关闭</Button>}
+            >
+                <Grid container spacing={2}>
+                    <Grid item sm={12} container spacing={2}>
+                        {purchaseDetailReducer.uniqueList.map((item) => (
+                            <Grid item sm={6} key={item.id}>{item.unique_id}</Grid>
+                        ))}
+                    </Grid>
+                </Grid>
+            </SimpleModal>
         </div>
     )
 }
@@ -601,6 +629,7 @@ function ProductManagerDetail(props) {
 const mapStateToProps = (state) => {
     return {
         productManagerDetailReducer: state.ProductManagerDetailReducer,
+        purchaseDetailReducer: state.PurchaseDetailReducer,
         commonReducer: state.CommonReducer
     }
 };
