@@ -80,12 +80,17 @@ function StorageProduct(props) {
     const initModal = async (item) =>{
         // 清空仓库分区
         dispatch(CommonActionType.setStorageAreaList([]));
-        // 根据purchase_item_id 取得唯一标识码 列表
-        let ret = await dispatch(commonAction.getPurchaseItemUnique(item.purchase_item_id));
+        // 唯一标识码
+        let purchaseItemUnique = [];
+        if (item.unique_flag === sysConst.UNIQUE_FLAG[1].value && item.prod_unique_arr.length > 0) {
+            item.prod_unique_arr.forEach((item)=>{
+                purchaseItemUnique.push({unique_id : item, checked : false});
+            });
+        }
         // 清check内容
         setValidation({});
         // 页面属性
-        setModalData({selectAll: false, purchaseItemUnique:ret,storageProduct:item,storage:null,storageArea:null,count:'',remark:''});
+        setModalData({selectAll: false, purchaseItemUnique:purchaseItemUnique,storageProduct:item,storage:null,storageArea:null,count:'',remark:''});
         // 设定模态打开
         setModalOpen(true);
     };
@@ -110,8 +115,16 @@ function StorageProduct(props) {
     const submitModal= ()=>{
         const errorCount = validate();
         if(errorCount===0){
+            let prodUniqueArr = [];
+            if (modalData.storageProduct.unique_flag === sysConst.UNIQUE_FLAG[1].value) {
+                modalData.purchaseItemUnique.forEach((item) => {
+                    if (item.checked == true) {
+                        prodUniqueArr.push(item.unique_id)
+                    }
+                });
+            }
+            dispatch(storageProductAction.moveProduct({...modalData,prodUniqueArr:prodUniqueArr}));
             setModalOpen(false);
-            dispatch(storageProductAction.moveProduct(modalData));
             if (storageProductReducer.queryParams.storage != null) {
                 dispatch(commonAction.getStorageAreaList(storageProductReducer.queryParams.storage.id));
             } else {
@@ -410,6 +423,7 @@ function StorageProduct(props) {
 
                     <Grid item xs={2}>
                         <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" value={modalData.count}
+                                   disabled={modalData.storageProduct.unique_flag == sysConst.UNIQUE_FLAG[1].value}
                                    onChange={(e)=>{setModalData({...modalData, count: e.target.value});}}
                                    error={validation.count&&validation.count!=''}
                                    helperText={validation.count}

@@ -88,10 +88,12 @@ export const moveProduct = (data) => async (dispatch, getState) => {
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/storageProductRel/' + data.storageProduct.id + '/storageMove';
         const params = {
+            remark: data.remark,
+            moveCount: data.count,
             moveStorageId: data.storage == null ? '' : data.storage.id,
             moveStorageAreaId: data.storageArea == null ? '' : data.storageArea.id,
-            moveCount: data.count,
-            remark: data.remark
+            prodUniqueArr:data.prodUniqueArr,
+            uniqueFlag: data.storageProduct.unique_flag
         };
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpPut(url, params);
