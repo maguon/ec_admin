@@ -276,6 +276,7 @@ export const getOrderInTabList = (dataStart) => async (dispatch, getState) => {
 export const getOrderInStorageInfo = (orderRefundProdId, orderId, orderProdId) => async (dispatch) => {
     try {
         let url;
+
         if (orderRefundProdId == null) {
             url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
                 + '/storageProductRelDetail?orderId=' + orderId + '&orderProdId=' + orderProdId;
@@ -283,14 +284,18 @@ export const getOrderInStorageInfo = (orderRefundProdId, orderId, orderProdId) =
             url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
                 + '/storageProductRelDetail?orderRefundProdId=' + orderRefundProdId;
         }
+// TODO DELETE
+//         url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageProductRelDetail';
 
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success && res.rows.length > 0) {
-            dispatch({type: StorageInOutActionType.setOrderInStorageInfo, payload: res.rows[0]});
+            // dispatch({type: StorageInOutActionType.setOrderInStorageInfo, payload: res.rows[0]});
+            return res.rows[0];
         } else {
-            dispatch({type: StorageInOutActionType.setOrderInStorageInfo, payload: {}});
+            // dispatch({type: StorageInOutActionType.setOrderInStorageInfo, payload: {}});
+            return {};
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
@@ -515,6 +520,10 @@ const getParams = () => (dispatch, getState) => {
         dateIdStart: commonUtil.getDateFormat(queryParams.dateIdStart),
         dateIdEnd: commonUtil.getDateFormat(queryParams.dateIdEnd)
     };
+    if (queryParams.prodUniqueId && queryParams.prodUniqueId.length > 0) {
+        // TODO
+        conditionsObj = {...conditionsObj, prodUniqueId: queryParams.prodUniqueId, prodUniqueFlag: sysConst.UNIQUE_FLAG[1].value}
+    }
     return httpUtil.objToUrl(conditionsObj);
 };
 
@@ -561,15 +570,13 @@ export const inOutStorageProduct = (data) => async (dispatch, getState) => {
             storageSubType: storageSubType,
             // 领用人
             applyUserId: data.reUser === null ? '' : data.reUser.id,
+            // 唯一编码flag
+            uniqueFlag: data.uniqueFlag
         };
-        if (data.type === 'out') {
-            if (data.uniqueFlag === sysConst.UNIQUE_FLAG[1].value) {
-                params = {...params, prodUniqueArr: data.prodUniqueArr, uniqueFlag: data.uniqueFlag};
-            }
-        } else {
-            if (data.uniqueFlag === sysConst.UNIQUE_FLAG[1].value) {
-                params = {...params, prodUniqueArr: data.prodUniqueArr, uniqueFlag: data.uniqueFlag};
-            }
+        if (data.uniqueFlag === sysConst.UNIQUE_FLAG[1].value) {
+            params = {...params, prodUniqueArr: data.prodUniqueArr};
+        }
+        if (data.type === 'in') {
             params = {...params, oldFlag: data.oldFlag};
         }
         dispatch({type: AppActionType.showLoadProgress, payload: true});

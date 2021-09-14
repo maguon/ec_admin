@@ -613,7 +613,7 @@ function OrderDetail(props) {
                 </Grid>
             ))}
 
-            {/* 提升高度：当盘点详情过多时，避免 最后一条会被footer挡住 */}
+            {/* 提升高度 */}
             <Grid style={{height: 50}}>&nbsp;</Grid>
             <SimpleModal
                 maxWidth={modalData.pageType ==='receive' ? 'lg' : 'sm'}

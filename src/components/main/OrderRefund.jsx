@@ -8,7 +8,7 @@ import {
     Checkbox,
     Divider,
     Fab,
-    FormControl,
+    FormControl, FormControlLabel,
     Grid,
     IconButton,
     InputLabel,
@@ -133,7 +133,7 @@ function OrderRefund(props) {
                         productList[i].disabled = has;
                         productList[i].remark = '';
                         productList[i].itemProdId = productList[i].id;
-                        productList[i].prodRefundCount = productList[i].prod_count;
+                        productList[i].prodRefundCount = productList[i].unique_flag == sysConst.UNIQUE_FLAG[1].value ? '0' : productList[i].prod_count;
                         productList[i].prodRefundPrice = '0';
                         newProductList.push(productList[i]);
                     }
@@ -518,6 +518,19 @@ function OrderRefund(props) {
                                         <Checkbox checked={item.checked} disabled={item.disabled}
                                                   onChange={(e) => {
                                                       modalData.productList[index].checked = e.target.checked;
+                                                      if (e.target.checked == true) {
+                                                          let purchaseItemUnique = [];
+                                                          if (modalData.productList[index].unique_flag === sysConst.UNIQUE_FLAG[1].value && modalData.productList[index].prod_unique_arr.length > 0) {
+                                                              modalData.productList[index].prod_unique_arr.forEach((item) => {
+                                                                  purchaseItemUnique.push({unique_id : item, checked : false});
+                                                              });
+                                                          }
+                                                          modalData.productList[index].purchaseItemUnique = purchaseItemUnique;
+                                                      } else {
+                                                          modalData.productList[index].checked = e.target.checked;
+                                                          modalData.productList[index].purchaseItemUnique = [];
+                                                      }
+                                                      setModalData({...modalData});
                                                   }}/>
                                     </Grid>
                                     <Grid item xs={9}>
@@ -560,6 +573,7 @@ function OrderRefund(props) {
 
                                     <Grid item xs={2}>
                                         <TextField label="退货数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prodRefundCount}
+                                                   disabled={modalData.productList[index].unique_flag == sysConst.UNIQUE_FLAG[1].value}
                                                    onChange={(e)=>{
                                                        modalData.productList[index].prodRefundCount = e.target.value;
                                                        setModalData({...modalData, productList:modalData.productList});
@@ -578,6 +592,53 @@ function OrderRefund(props) {
                                         />
                                     </Grid>
                                 </Grid>
+
+                                {}
+
+                                {modalData.productList[index].unique_flag == sysConst.UNIQUE_FLAG[1].value && modalData.productList[index].purchaseItemUnique != undefined
+                                && modalData.productList[index].purchaseItemUnique.length > 0 &&
+                                <>
+                                <Grid item sm={12} container style={{marginLeft: 20}}>
+                                    <Grid item sm={12}>
+                                        <FormControlLabel key="select-all" label="全选"
+                                                          control={
+                                                              <Checkbox color="primary" key={'select-all-chk'}
+                                                                        checked={modalData.productList[index].selectAll == true}
+                                                                        onChange={(e) => {
+                                                                            modalData.productList[index].purchaseItemUnique.forEach((item) => {
+                                                                                item.checked = e.target.checked;
+                                                                            });
+                                                                            modalData.productList[index].selectAll = e.target.checked;
+                                                                            modalData.productList[index].prodRefundCount = e.target.checked ? modalData.productList[index].prod_unique_arr.length : 0;
+                                                                            setModalData({...modalData});
+                                                                        }}
+                                                              />
+                                                          }
+                                        />
+                                    </Grid>
+                                    {modalData.productList[index].purchaseItemUnique.map((row, i) => (
+                                        <Grid item sm={4}>
+                                            <FormControlLabel key={'checkbox_child_' + i} label={row.unique_id}
+                                                              control={
+                                                                  <Checkbox color="primary" key={'checkbox_child_chk_' + i}
+                                                                            checked={row.checked == true}
+                                                                            onChange={(e) => {
+                                                                                modalData.productList[index].purchaseItemUnique[i].checked = e.target.checked;
+                                                                                let selectedSize = 0;
+                                                                                modalData.productList[index].purchaseItemUnique.forEach((item) => {
+                                                                                    if (item.checked === true) {
+                                                                                        selectedSize++;
+                                                                                    }
+                                                                                });
+                                                                                modalData.productList[index].selectAll = (selectedSize === modalData.productList[index].purchaseItemUnique.length);
+                                                                                modalData.productList[index].prodRefundCount = selectedSize;
+                                                                                setModalData({...modalData});
+                                                                            }}
+                                                                  />
+                                                              }
+                                            />
+                                        </Grid>))}
+                                </Grid></>}
                             </Grid>
                         ))}
 

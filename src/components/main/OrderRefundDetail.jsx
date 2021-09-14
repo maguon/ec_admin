@@ -3,14 +3,24 @@ import {Link, useParams} from "react-router-dom";
 import {connect, useDispatch} from 'react-redux';
 import Swal from "sweetalert2";
 // 引入material-ui基础组件
-import {Button, Divider, Grid, IconButton, makeStyles, TextField, Typography} from "@material-ui/core";
+import {
+    Button,
+    Checkbox,
+    Divider,
+    FormControlLabel,
+    Grid,
+    IconButton,
+    makeStyles,
+    TextField,
+    Typography
+} from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {OrderRefundDetailActionType} from "../../types";
+import {SimpleModal} from "../index";
 
 const orderRefundDetailAction = require('../../actions/main/OrderRefundDetailAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
-const commonAction = require('../../actions/layout/CommonAction');
 const customTheme = require('../layout/Theme').customTheme;
 
 const useStyles = makeStyles((theme) => ({
@@ -20,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function OrderRefundDetail(props) {
-    const {orderRefundDetailReducer, commonReducer, changeOrderRefundStatus,deleteService, deleteProduct} = props;
+    const {orderRefundDetailReducer, changeOrderRefundStatus,deleteService, deleteProduct} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     const {id} = useParams();
@@ -41,6 +51,8 @@ function OrderRefundDetail(props) {
     const [newProdData, setNewProdData] = React.useState({productInfo: {},prodRefundPrice:'',prodRefundCount: '',remark:''});
     // 校验
     const [validation,setValidation] = React.useState({});
+    const [modalOpen, setModalOpen] = React.useState(false);
+    const [modalData, setModalData] = React.useState({dataItem: {}});
 
     const addService = () => {
         const validateObj ={};
@@ -72,6 +84,8 @@ function OrderRefundDetail(props) {
         }
         if (!newProdData.prodRefundCount && newProdData.prodRefundCount!== 0) {
             validateObj.prodRefundCount ='请输入退货数量';
+        } else if (newProdData.prodRefundCount < 1) {
+            validateObj.prodRefundCount ='退货数必须大于0';
         } else if (newProdData.prodRefundCount > newProdData.productInfo.prod_count) {
             validateObj.prodRefundCount ='退货数不能大于商品数';
         }
@@ -79,7 +93,7 @@ function OrderRefundDetail(props) {
         if(Object.keys(validateObj).length===0){
             dispatch(orderRefundDetailAction.addOrderRefundProd(id, newProdData));
             // 清空数据
-            setNewProdData({productInfo: {},prodRefundPrice:'',prodRefundCount: '',remark:''});
+            setNewProdData({productInfo: {},prodRefundPrice:'',prodRefundCount: '',remark:'', uniqueFlag: sysConst.UNIQUE_FLAG[0].value});
         }
     };
 
@@ -315,7 +329,13 @@ function OrderRefundDetail(props) {
                                   getOptionLabel={(option) => option.prod_name}
                                   value={newProdData.productInfo}
                                   onChange={(event, value) => {
-                                      setNewProdData({...newProdData, productInfo: value});
+                                      let purchaseItemUnique = [];
+                                      if (value.unique_flag == sysConst.UNIQUE_FLAG[1].value && value.prod_unique_arr != null && value.prod_unique_arr.length > 0) {
+                                          value.prod_unique_arr.forEach((item) => {
+                                              purchaseItemUnique.push({unique_id : item, checked : false});
+                                          });
+                                      }
+                                      setNewProdData({...newProdData, productInfo: value,selectAll: false, prodRefundCount:'',uniqueFlag: value.unique_flag, purchaseItemUnique: purchaseItemUnique});
                                   }}
                                   renderInput={(params) => <TextField {...params} label="选择商品" margin="dense" variant="outlined"
                                       error={validation.productInfo&&validation.productInfo!=''} helperText={validation.productInfo}
@@ -352,6 +372,7 @@ function OrderRefundDetail(props) {
 
                     <Grid item xs={2}>
                         <TextField label="退货数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={newProdData.prodRefundCount}
+                                   disabled={newProdData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value}
                                    onChange={(e)=>{
                                        setNewProdData({...newProdData, prodRefundCount: e.target.value});
                                    }}
@@ -373,6 +394,54 @@ function OrderRefundDetail(props) {
                         </IconButton>
                     </Grid>}
                 </Grid>
+            </Grid>}
+            {newProdData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value &&
+            <Grid container spacing={1}>
+                <Grid item sm={12}>
+                    <FormControlLabel key="select-all" label="全选"
+                                      control={
+                                          <Checkbox color="primary" key={'select-all-chk'}
+                                                    checked={newProdData.selectAll}
+                                                    onChange={(e) => {
+                                                        newProdData.purchaseItemUnique.forEach((item) => {
+                                                            item.checked = e.target.checked;
+                                                        });
+                                                        setNewProdData({
+                                                            ...newProdData,
+                                                            selectAll: e.target.checked,
+                                                            purchaseItemUnique: newProdData.purchaseItemUnique,
+                                                            prodRefundCount: e.target.checked ? newProdData.purchaseItemUnique.length : 0
+                                                        });
+                                                    }}
+                                          />
+                                      }
+                    />
+                </Grid>
+                {newProdData.purchaseItemUnique.map((row, index) => (
+                    <Grid item sm={4}>
+                        <FormControlLabel key={'checkbox_child_' + index} label={row.unique_id}
+                                          control={
+                                              <Checkbox color="primary" key={'checkbox_child_chk_' + index}
+                                                        checked={row.checked == true}
+                                                        onChange={(e) => {
+                                                            newProdData.purchaseItemUnique[index].checked = e.target.checked;
+                                                            let selectedSize = 0;
+                                                            newProdData.purchaseItemUnique.forEach((item) => {
+                                                                if (item.checked === true) {
+                                                                    selectedSize++;
+                                                                }
+                                                            });
+                                                            setNewProdData({
+                                                                ...newProdData,
+                                                                selectAll: selectedSize === newProdData.purchaseItemUnique.length,
+                                                                purchaseItemUnique: newProdData.purchaseItemUnique,
+                                                                prodRefundCount: selectedSize
+                                                            });
+                                                        }}
+                                              />
+                                          }
+                        />
+                    </Grid>))}
             </Grid>}
 
             {orderRefundDetailReducer.orderRefundProdList.map((item,index)=>(
@@ -439,12 +508,30 @@ function OrderRefundDetail(props) {
 
                         {orderRefundDetailReducer.orderRefundInfo.status !== 7 &&
                         <Grid container item xs={1}>
-                            <Grid item xs={6}>
+                            <Grid item xs={4}>
+                                <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{setModalData({dataItem: item});setModalOpen(true)}}>
+                                    <i className="mdi mdi-barcode-scan"/>
+                                </IconButton>
+                            </Grid>
+                            <SimpleModal maxWidth='md' showFooter={true} title="唯一编码" open={modalOpen}
+                                         onClose={()=>{setModalOpen(false)}}
+                                         footer={<Button variant="contained" onClick={()=>{setModalOpen(false)}}>关闭</Button>}
+                            >
+                                <Grid container spacing={2}>
+                                    {modalData.dataItem.unique_flag === sysConst.UNIQUE_FLAG[1].value &&
+                                    <Grid item sm={12} container spacing={2}>
+                                        {modalData.dataItem.prod_unique_arr.map((item) => (
+                                            <Grid item sm={6}>{item}</Grid>
+                                        ))}
+                                    </Grid>}
+                                </Grid>
+                            </SimpleModal>
+                            <Grid item xs={4}>
                                 <IconButton color="secondary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{deleteProduct(item)}}>
                                     <i className="mdi mdi-delete"/>
                                 </IconButton>
                             </Grid>
-                            <Grid item xs={6}>
+                            <Grid item xs={4}>
                                 <IconButton color="primary" edge="start" size="small" style={{paddingTop: '18px'}}
                                             onClick={() => {
                                                 let errCnt = 0;
