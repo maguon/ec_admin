@@ -433,17 +433,34 @@ export const downLoadPDF = (orderId) => async (dispatch, getState) => {
         });
         if (orderProdList.length > 0) {
             let bodyList = [];
+
             orderProdList.forEach((item) => {
-                bodyList.push(
-                    [
+                item.prod_unique_arr?item.prod_unique_arr.forEach((arr, index) => (
+                    index==0? bodyList.push([
                         item.prod_name,
                         item.unit_price,
                         item.prod_count,
                         item.discount_prod_price,
                         item.actual_prod_price,
-                        item.remark,
-                    ]);
+                        arr
+                    ]):bodyList.push([
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        arr
+                    ])
+                )):bodyList.push([
+                    item.prod_name,
+                    item.unit_price,
+                    item.prod_count,
+                    item.discount_prod_price,
+                    item.actual_prod_price,
+                    ''
+                ])
             });
+
             bodyList.push([
                 {content: '商品金额：' + orderInfo.prod_price, colSpan: 2, styles: {halign: 'right'}},
                 {content: '折扣：' + orderInfo.discount_prod_price, colSpan: 2, styles: {halign: 'right'}},
@@ -451,7 +468,7 @@ export const downLoadPDF = (orderId) => async (dispatch, getState) => {
             ]);
             doc.autoTable({
                 startY: doc.lastAutoTable.finalY,
-                head: [['商品', '价格', '数量', '折扣', '实际价格', '备注']],
+                head: [['商品', '价格', '数量', '折扣', '实际价格', {content: '唯一编码', styles: {halign: 'center'}}]],
                 body: bodyList,
                 /* head: [['配件编码', '材料名称', '配件类型', '计量单位', '数量', '材料单价','应收金额','折后金额', '备 注']],
                   body: [
