@@ -206,9 +206,13 @@ export const refundStorage = (data) => async (dispatch, getState) => {
         // 状态
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/purchaseRefund/' + data.purchaseRefund.id + '/storageProductRel/'+ data.storageProduct.id  +'/refundStorage';
-        const params = {
-            remark: data.remark
+        let params = {
+            remark: data.remark,
+            uniqueFlag: data.uniqueFlag
         };
+        if (data.uniqueFlag === sysConst.UNIQUE_FLAG[1].value) {
+            params = {...params, prodUniqueArr: data.prodUniqueArr};
+        }
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpPut(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
@@ -276,7 +280,6 @@ export const getOrderInTabList = (dataStart) => async (dispatch, getState) => {
 export const getOrderInStorageInfo = (orderRefundProdId, orderId, orderProdId) => async (dispatch) => {
     try {
         let url;
-
         if (orderRefundProdId == null) {
             url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
                 + '/storageProductRelDetail?orderId=' + orderId + '&orderProdId=' + orderProdId;
@@ -284,8 +287,6 @@ export const getOrderInStorageInfo = (orderRefundProdId, orderId, orderProdId) =
             url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
                 + '/storageProductRelDetail?orderRefundProdId=' + orderRefundProdId;
         }
-// TODO DELETE
-//         url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageProductRelDetail';
 
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpGet(url);
@@ -308,24 +309,28 @@ export const importOrderProduct = (data) => async (dispatch, getState) => {
         // 状态
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/storageProductRel/' + data.storageProductRelId + '/storProdRelDetailImport';
-        const params = {
+        let params = {
+            remark: data.remark,
+            // 商品数量
+            storageCount: parseFloat(data.prodCnt),
             // 出库
             storageType: sysConst.STORAGE_OP_TYPE[0].value,
             // 订单出库
             storageSubType: sysConst.STORAGE_OP_IMPORT_TYPE[3].value,
-            // 商品数量
-            storageCount: parseFloat(data.prodCnt),
-            // 领用人
-            applyUserId: data.reUser === null ? '' : data.reUser.id,
             // 订单
             orderId: data.refundOrderItem.order_id,
             // 退单号
             orderRefundId: data.refundOrderItem.order_refund_id,
             orderRefundProdId: data.refundOrderItem.id,
+            // 领用人
+            applyUserId: data.reUser === null ? '' : data.reUser.id,
             // 是否全新
             oldFlag: data.oldFlag,
-            remark: data.remark
+            uniqueFlag: data.uniqueFlag
         };
+        if (data.uniqueFlag === sysConst.UNIQUE_FLAG[1].value) {
+            params = {...params, prodUniqueArr: data.prodUniqueArr};
+        }
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpPost(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
@@ -605,6 +610,24 @@ export const getStorageProductRelDetailInfo = (storageProductRelDetailId) => asy
             return res.rows;
         } else if (!res.success) {
             return [];
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+export const getStorageProductRelInfo = (storageProductRelId) => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/storageProductRel?storageProductRelId=' + storageProductRelId;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success && res.rows.length > 0) {
+            return res.rows[0];
+        } else {
+            return {};
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");

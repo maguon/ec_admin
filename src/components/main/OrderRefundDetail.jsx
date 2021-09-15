@@ -329,13 +329,14 @@ function OrderRefundDetail(props) {
                                   getOptionLabel={(option) => option.prod_name}
                                   value={newProdData.productInfo}
                                   onChange={(event, value) => {
-                                      let purchaseItemUnique = [];
-                                      if (value.unique_flag == sysConst.UNIQUE_FLAG[1].value && value.prod_unique_arr != null && value.prod_unique_arr.length > 0) {
-                                          value.prod_unique_arr.forEach((item) => {
-                                              purchaseItemUnique.push({unique_id : item, checked : false});
-                                          });
-                                      }
-                                      setNewProdData({...newProdData, productInfo: value,selectAll: false, prodRefundCount:'',uniqueFlag: value.unique_flag, purchaseItemUnique: purchaseItemUnique});
+                                      setNewProdData({...newProdData, productInfo: value});
+                                      // let purchaseItemUnique = [];
+                                      // if (value.unique_flag == sysConst.UNIQUE_FLAG[1].value && value.prod_unique_arr != null && value.prod_unique_arr.length > 0) {
+                                      //     value.prod_unique_arr.forEach((item) => {
+                                      //         purchaseItemUnique.push({unique_id : item, checked : false});
+                                      //     });
+                                      // }
+                                      // setNewProdData({...newProdData, productInfo: value,selectAll: false, prodRefundCount:'',uniqueFlag: value.unique_flag, purchaseItemUnique: purchaseItemUnique});
                                   }}
                                   renderInput={(params) => <TextField {...params} label="选择商品" margin="dense" variant="outlined"
                                       error={validation.productInfo&&validation.productInfo!=''} helperText={validation.productInfo}
@@ -372,7 +373,7 @@ function OrderRefundDetail(props) {
 
                     <Grid item xs={2}>
                         <TextField label="退货数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={newProdData.prodRefundCount}
-                                   disabled={newProdData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value}
+                                   // disabled={newProdData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value}
                                    onChange={(e)=>{
                                        setNewProdData({...newProdData, prodRefundCount: e.target.value});
                                    }}
@@ -395,54 +396,54 @@ function OrderRefundDetail(props) {
                     </Grid>}
                 </Grid>
             </Grid>}
-            {newProdData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value &&
-            <Grid container spacing={1}>
-                <Grid item sm={12}>
-                    <FormControlLabel key="select-all" label="全选"
-                                      control={
-                                          <Checkbox color="primary" key={'select-all-chk'}
-                                                    checked={newProdData.selectAll}
-                                                    onChange={(e) => {
-                                                        newProdData.purchaseItemUnique.forEach((item) => {
-                                                            item.checked = e.target.checked;
-                                                        });
-                                                        setNewProdData({
-                                                            ...newProdData,
-                                                            selectAll: e.target.checked,
-                                                            purchaseItemUnique: newProdData.purchaseItemUnique,
-                                                            prodRefundCount: e.target.checked ? newProdData.purchaseItemUnique.length : 0
-                                                        });
-                                                    }}
-                                          />
-                                      }
-                    />
-                </Grid>
-                {newProdData.purchaseItemUnique.map((row, index) => (
-                    <Grid item sm={4}>
-                        <FormControlLabel key={'checkbox_child_' + index} label={row.unique_id}
-                                          control={
-                                              <Checkbox color="primary" key={'checkbox_child_chk_' + index}
-                                                        checked={row.checked == true}
-                                                        onChange={(e) => {
-                                                            newProdData.purchaseItemUnique[index].checked = e.target.checked;
-                                                            let selectedSize = 0;
-                                                            newProdData.purchaseItemUnique.forEach((item) => {
-                                                                if (item.checked === true) {
-                                                                    selectedSize++;
-                                                                }
-                                                            });
-                                                            setNewProdData({
-                                                                ...newProdData,
-                                                                selectAll: selectedSize === newProdData.purchaseItemUnique.length,
-                                                                purchaseItemUnique: newProdData.purchaseItemUnique,
-                                                                prodRefundCount: selectedSize
-                                                            });
-                                                        }}
-                                              />
-                                          }
-                        />
-                    </Grid>))}
-            </Grid>}
+            {/*{newProdData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value &&*/}
+            {/*<Grid container spacing={1}>*/}
+            {/*    <Grid item sm={12}>*/}
+            {/*        <FormControlLabel key="select-all" label="全选"*/}
+            {/*                          control={*/}
+            {/*                              <Checkbox color="primary" key={'select-all-chk'}*/}
+            {/*                                        checked={newProdData.selectAll}*/}
+            {/*                                        onChange={(e) => {*/}
+            {/*                                            newProdData.purchaseItemUnique.forEach((item) => {*/}
+            {/*                                                item.checked = e.target.checked;*/}
+            {/*                                            });*/}
+            {/*                                            setNewProdData({*/}
+            {/*                                                ...newProdData,*/}
+            {/*                                                selectAll: e.target.checked,*/}
+            {/*                                                purchaseItemUnique: newProdData.purchaseItemUnique,*/}
+            {/*                                                prodRefundCount: e.target.checked ? newProdData.purchaseItemUnique.length : 0*/}
+            {/*                                            });*/}
+            {/*                                        }}*/}
+            {/*                              />*/}
+            {/*                          }*/}
+            {/*        />*/}
+            {/*    </Grid>*/}
+            {/*    {newProdData.purchaseItemUnique.map((row, index) => (*/}
+            {/*        <Grid item sm={4}>*/}
+            {/*            <FormControlLabel key={'checkbox_child_' + index} label={row.unique_id}*/}
+            {/*                              control={*/}
+            {/*                                  <Checkbox color="primary" key={'checkbox_child_chk_' + index}*/}
+            {/*                                            checked={row.checked == true}*/}
+            {/*                                            onChange={(e) => {*/}
+            {/*                                                newProdData.purchaseItemUnique[index].checked = e.target.checked;*/}
+            {/*                                                let selectedSize = 0;*/}
+            {/*                                                newProdData.purchaseItemUnique.forEach((item) => {*/}
+            {/*                                                    if (item.checked === true) {*/}
+            {/*                                                        selectedSize++;*/}
+            {/*                                                    }*/}
+            {/*                                                });*/}
+            {/*                                                setNewProdData({*/}
+            {/*                                                    ...newProdData,*/}
+            {/*                                                    selectAll: selectedSize === newProdData.purchaseItemUnique.length,*/}
+            {/*                                                    purchaseItemUnique: newProdData.purchaseItemUnique,*/}
+            {/*                                                    prodRefundCount: selectedSize*/}
+            {/*                                                });*/}
+            {/*                                            }}*/}
+            {/*                                  />*/}
+            {/*                              }*/}
+            {/*            />*/}
+            {/*        </Grid>))}*/}
+            {/*</Grid>}*/}
 
             {orderRefundDetailReducer.orderRefundProdList.map((item,index)=>(
                 <Grid container spacing={1} key={index}>
@@ -509,7 +510,12 @@ function OrderRefundDetail(props) {
                         {orderRefundDetailReducer.orderRefundInfo.status !== 7 &&
                         <Grid container item xs={1}>
                             <Grid item xs={4}>
-                                <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{setModalData({dataItem: item});setModalOpen(true)}}>
+                                <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}}
+                                            onClick={async ()=>{
+                                                let ret = await dispatch(orderRefundDetailAction.getStorageProductRelDetailInfo(item.id));
+                                                setModalData({dataItem: ret.prod_unique_arr != null ? ret.prod_unique_arr : []});
+                                                setModalOpen(true);
+                                            }}>
                                     <i className="mdi mdi-barcode-scan"/>
                                 </IconButton>
                             </Grid>
@@ -518,12 +524,14 @@ function OrderRefundDetail(props) {
                                          footer={<Button variant="contained" onClick={()=>{setModalOpen(false)}}>关闭</Button>}
                             >
                                 <Grid container spacing={2}>
-                                    {modalData.dataItem.unique_flag === sysConst.UNIQUE_FLAG[1].value &&
+                                    {modalData.dataItem.length > 0 &&
                                     <Grid item sm={12} container spacing={2}>
-                                        {modalData.dataItem.prod_unique_arr.map((item) => (
+                                        {modalData.dataItem.map((item) => (
                                             <Grid item sm={6}>{item}</Grid>
                                         ))}
                                     </Grid>}
+                                    {modalData.dataItem.length <= 0 &&
+                                    <Grid item sm={12} container spacing={2}>暂无</Grid>}
                                 </Grid>
                             </SimpleModal>
                             <Grid item xs={4}>

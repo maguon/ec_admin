@@ -270,7 +270,7 @@ function StorageInOut(props) {
             setOrderInModalData({
                 pageType: pageType,
                 refundOrderItem: item,
-                prodCnt: 0,
+                prodCnt: ret.unique_flag == sysConst.OLD_FLAG[0].value ? ret.storage_count : 0,
                 oldFlag: sysConst.OLD_FLAG[0].value,
                 reUser: null,
                 remark: '',
@@ -293,7 +293,7 @@ function StorageInOut(props) {
         setValidation(validateObj);
         if(Object.keys(validateObj).length===0){
             let prodUniqueArr = [];
-            if (orderInModalData.uniqueFlag === sysConst.UNIQUE_FLAG[1].value) {
+            if (orderInModalData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value) {
                 orderInModalData.purchaseItemUnique.forEach((item) => {
                     if (item.checked == true) {
                         prodUniqueArr.push(item.unique_id)
@@ -305,6 +305,7 @@ function StorageInOut(props) {
                 prodUniqueArr:prodUniqueArr,
                 storageProductRelId: orderInModalData.orderInStorageInfo.storage_product_rel_id
             }));
+            setOrderInModalOpen(false);
         }
     };
 
@@ -364,7 +365,16 @@ function StorageInOut(props) {
     const initRefundModal = (item, pageType) => {
         // 清check内容
         setValidation({});
-        setRefundModalData({...refundModalData,pageType:pageType,purchaseRefund:item,uniqueFlag: sysConst.UNIQUE_FLAG[0].value,purchaseItemUnique:[],storageProduct:null,remark:''});
+        setRefundModalData({
+            ...refundModalData,
+            pageType: pageType,
+            purchaseRefund: item,
+            uniqueFlag: sysConst.UNIQUE_FLAG[0].value,
+            purchaseItemUnique: [],
+            storageProduct: null,
+            prodCnt: item.refund_count,
+            remark: ''
+        });
         // 取得库存商品信息
         if (pageType === 'info') {
             dispatch(storageInOutAction.getStorageProductRelDetail(item.storage_rel_id))
@@ -378,11 +388,12 @@ function StorageInOut(props) {
     const submitRefundModal= ()=>{
         const validateObj ={};
         if (!refundModalData.storageProduct) {
-            validateObj.storageProduct ='请选择库存商品';
-        }else if (refundModalData.storageProduct.storage_count < refundModalData.purchaseRefund.refund_count) {
-            validateObj.storageProduct ='库存商品数量小于退货数量，不能退货';
+            validateObj.storageProduct ='请选择仓库';
+        }
+        if (!refundModalData.prodCnt) {
+            validateObj.prodCnt ='请选择库存商品';
         } else if (refundModalData.prodCnt != refundModalData.purchaseRefund.refund_count) {
-            validateObj.prodCnt ='出库数量与退货数量不符';
+            validateObj.prodCnt ='出库数与退货数不一致';
         }
         setValidation(validateObj);
         if(Object.keys(validateObj).length===0){
@@ -394,7 +405,6 @@ function StorageInOut(props) {
                     }
                 });
             }
-            // TODO
             dispatch(storageInOutAction.refundStorage({...refundModalData,prodUniqueArr:prodUniqueArr}));
             setRefundModalOpen(false);
         }
@@ -466,10 +476,22 @@ function StorageInOut(props) {
                 if(Object.keys(validateObj).length===0){
                     let ret = await dispatch(storageInOutAction.getStorageProductRelDetailInfo(modalData.inOutNo));
                     if (ret.length > 0) {
+                        // 取得仓库存放的商品uniqueId
+                        let storageProductRel = await dispatch(storageInOutAction.getStorageProductRelInfo(ret[0].storage_product_rel_id));
+                        let storageUniqueArray = storageProductRel.prod_unique_arr != null ? storageProductRel.prod_unique_arr : [];
+                        let uniqueMap = new Map();
+                        // 将商品uniqueId 放入map
+                        storageUniqueArray.forEach((item) => {
+                            uniqueMap.set(item,'');
+                        });
+
                         let purchaseItemUnique = [];
                         if (ret[0].unique_flag === sysConst.UNIQUE_FLAG[1].value && ret[0].prod_unique_arr != null && ret[0].prod_unique_arr.length > 0) {
                             ret[0].prod_unique_arr.forEach((item) => {
-                                purchaseItemUnique.push({unique_id : item, checked : false});
+                                // 如果该商品 在原来位置没有的话，则可以进行入库
+                                if (!uniqueMap.has(item)) {
+                                    purchaseItemUnique.push({unique_id : item, checked : false});
+                                }
                             });
                         }
                         setModalData({
@@ -945,7 +967,7 @@ function StorageInOut(props) {
                         <Button variant="contained" color="primary" onClick={()=>{dispatch(storageInOutAction.getPurchaseRefund(storageInOutReducer.purchaseRefundData.start+(storageInOutReducer.purchaseRefundData.size-1)))}}>下一页</Button>}
                     </Box>
 
-                    <SimpleModal maxWidth={refundModalData.pageType === 'info' ? 'md' : 'lg'}
+                    <SimpleModal maxWidth={'lg'}
                                  title="退货出库"
                                  open={refundModalOpen}
                                  onClose={()=>{setRefundModalOpen(false)}}
@@ -958,38 +980,33 @@ function StorageInOut(props) {
                                  }
                     >
                         <Grid container spacing={2}>
-                            <Grid item sm={6}>采购单号：{refundModalData.purchaseRefund.purchase_id}</Grid>
-                            <Grid item sm={6}>供应商：{refundModalData.purchaseRefund.supplier_name}</Grid>
-                            <Grid item sm={6}>商品：{refundModalData.purchaseRefund.product_name}</Grid>
-                            <Grid item sm={6}>退货数量：{refundModalData.purchaseRefund.refund_count}</Grid>
+                            <Grid item sm={3}>采购单号：{refundModalData.purchaseRefund.purchase_id}</Grid>
+                            <Grid item sm={4}>供应商：{refundModalData.purchaseRefund.supplier_name}</Grid>
+                            <Grid item sm={4}>商品：{refundModalData.purchaseRefund.product_name}</Grid>
+                            <Grid item sm={1}>退货数：{refundModalData.purchaseRefund.refund_count}</Grid>
 
                             {refundModalData.pageType === 'info' &&
-                            <Table stickyHeader size="small" style={{marginTop: 10}}>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell className={classes.tableHead} align="center">仓库</TableCell>
-                                        <TableCell className={classes.tableHead} align="center">仓库分区</TableCell>
-                                        <TableCell className={classes.tableHead} align="center">操作人员</TableCell>
-                                        <TableCell className={classes.tableHead} align="center">操作日期</TableCell>
-                                        <TableCell className={classes.tableHead} align="center">备注</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {storageInOutReducer.storageProductRelDetail.map((row) => (
-                                        <TableRow key={'storage-product-rel-detail' + row.id}>
-                                            <TableCell align="center">{row.storage_name}</TableCell>
-                                            <TableCell align="center">{row.storage_area_name}</TableCell>
-                                            <TableCell align="center">{row.real_name}</TableCell>
-                                            <TableCell align="center">{commonUtil.getDate(row.created_on)}</TableCell>
-                                            <TableCell align="center">{row.remark}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                    {storageInOutReducer.storageProductRelDetail.length === 0 &&
-                                    <TableRow>
-                                        <TableCell colSpan={5} align="center">暂无数据</TableCell>
-                                    </TableRow>}
-                                </TableBody>
-                            </Table>}
+                            <>
+                                {storageInOutReducer.storageProductRelDetail.map((row) => (
+                                    <>
+                                        <Grid item sm={2}><TextField fullWidth  margin="dense" variant="outlined" label="仓库" value={row.storage_name}/></Grid>
+                                        <Grid item sm={2}><TextField fullWidth  margin="dense" variant="outlined" label="仓库分区" value={row.storage_area_name}/></Grid>
+                                        <Grid item sm={1}><TextField fullWidth  margin="dense" variant="outlined" label="操作人员" value={row.real_name}/></Grid>
+                                        <Grid item sm={7} container spacing={1}>
+                                            <Grid item sm={2}><TextField fullWidth  margin="dense" variant="outlined" label="操作日期" value={commonUtil.getDate(row.created_on)}/></Grid>
+                                            <Grid item sm={10}><TextField fullWidth  margin="dense" variant="outlined" label="备注" value={row.remark}/></Grid>
+                                        </Grid>
+
+                                        {row.unique_flag == sysConst.UNIQUE_FLAG[1].value && row.prod_unique_arr.length > 0 &&
+                                        <>
+                                            <Grid item sm={12}>唯一编码：</Grid>
+                                            {row.prod_unique_arr.map((item) => (
+                                                <Grid item sm={4}>{item}</Grid>
+                                            ))}
+                                        </>}
+                                    </>
+                                ))}
+                            </>}
 
                             {refundModalData.pageType !== 'info' &&
                             <>
@@ -1007,9 +1024,23 @@ function StorageInOut(props) {
                                                                   purchaseItemUnique.push({unique_id : item, checked : false});
                                                               });
                                                           }
-                                                          setRefundModalData({...refundModalData,storageProduct:value, selectAll: false, prodCnt:0,uniqueFlag: value.unique_flag, purchaseItemUnique: purchaseItemUnique});
+                                                          setRefundModalData({
+                                                              ...refundModalData,
+                                                              storageProduct: value,
+                                                              selectAll: false,
+                                                              prodCnt: value.unique_flag === sysConst.UNIQUE_FLAG[1].value ? 0 : refundModalData.purchaseRefund.refund_count,
+                                                              uniqueFlag: value.unique_flag,
+                                                              purchaseItemUnique: purchaseItemUnique
+                                                          });
                                                       } else {
-                                                          setRefundModalData({...refundModalData,storageProduct:value, selectAll: false, prodCnt:0,uniqueFlag: sysConst.UNIQUE_FLAG[0].value, purchaseItemUnique: []});
+                                                          setRefundModalData({
+                                                              ...refundModalData,
+                                                              storageProduct: value,
+                                                              selectAll: false,
+                                                              prodCnt: refundModalData.purchaseRefund.refund_count,
+                                                              uniqueFlag: sysConst.UNIQUE_FLAG[0].value,
+                                                              purchaseItemUnique: []
+                                                          });
                                                       }
                                                   }}
                                                   renderInput={(params) => <TextField {...params} label="仓库" margin="dense" variant="outlined"
@@ -1019,13 +1050,12 @@ function StorageInOut(props) {
                                     />
                                 </Grid>
 
-                                {refundModalData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value &&
                                 <Grid item xs={2}>
                                     <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" disabled value={refundModalData.prodCnt}
                                                error={validation.prodCnt&&validation.prodCnt!=''} helperText={validation.prodCnt}/>
-                                </Grid>}
+                                </Grid>
 
-                                {refundModalData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value &&
+                                {refundModalData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value && refundModalData.purchaseItemUnique.length > 0 &&
                                 <Grid item sm={12} container>
                                     <Grid item sm={12}>
                                         <FormControlLabel key="select-all" label="全选"
@@ -1221,7 +1251,7 @@ function StorageInOut(props) {
                         <Button variant="contained" color="primary" onClick={()=>{dispatch(storageInOutAction.getOrderInTabList(storageInOutReducer.orderInData.start+(storageInOutReducer.orderInData.size-1)))}}>下一页</Button>}
                     </Box>
 
-                    <SimpleModal maxWidth={orderInModalData.pageType === 'info' ? 'md' : 'lg'}
+                    <SimpleModal maxWidth={'lg'}
                                  title="退单入库"
                                  open={orderInModalOpen}
                                  onClose={()=>{setOrderInModalOpen(false)}}
@@ -1239,10 +1269,17 @@ function StorageInOut(props) {
                             <>
                                 <Typography gutterBottom className={classes.title}>库存信息</Typography>
                                 <Grid container spacing={2} style={{marginBottom:10}}>
-                                    <Grid item sm={6}>商品：{orderInModalData.orderInStorageInfo.product_name}</Grid>
-                                    <Grid item sm={6}>仓库：{orderInModalData.orderInStorageInfo.storage_name}</Grid>
-                                    <Grid item sm={6}>仓库分区：{orderInModalData.orderInStorageInfo.storage_area_name}</Grid>
-                                    <Grid item sm={6}>数量：{orderInModalData.orderInStorageInfo.storage_count}</Grid>
+                                    <Grid item sm={3}>商品：{orderInModalData.orderInStorageInfo.product_name}</Grid>
+                                    <Grid item sm={4}>仓库：{orderInModalData.orderInStorageInfo.storage_name}</Grid>
+                                    <Grid item sm={4}>仓库分区：{orderInModalData.orderInStorageInfo.storage_area_name}</Grid>
+                                    <Grid item sm={1}>数量：{orderInModalData.orderInStorageInfo.storage_count}</Grid>
+                                    {orderInModalData.orderInStorageInfo.unique_flag == sysConst.UNIQUE_FLAG[1].value && orderInModalData.orderInStorageInfo.prod_unique_arr.length > 0 &&
+                                    <>
+                                        <Grid item sm={12}>唯一编码：</Grid>
+                                        {orderInModalData.orderInStorageInfo.prod_unique_arr.map((item) => (
+                                            <Grid item sm={4}>{item}</Grid>
+                                        ))}
+                                    </>}
                                 </Grid>
                             </>}
 
@@ -1309,11 +1346,10 @@ function StorageInOut(props) {
                                 </Grid>}
 
                                 <Grid container spacing={1} style={{marginBottom: 20}}>
-                                    {orderInModalData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value &&
                                     <Grid item xs={1}>
                                         <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" disabled value={orderInModalData.prodCnt}
                                                    error={validation.prodCnt&&validation.prodCnt!=''} helperText={validation.prodCnt}/>
-                                    </Grid>}
+                                    </Grid>
                                     <Grid item xs={1}>
                                         <FormControl variant="outlined" fullWidth margin="dense">
                                             <InputLabel>是否全新</InputLabel>
@@ -1955,7 +1991,7 @@ function StorageInOut(props) {
                                 />
                             </Grid>
 
-                            {modalData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value &&
+                            {modalData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value && modalData.purchaseItemUnique.length > 0 &&
                             <Grid item sm={12} container>
                                 <Grid item sm={12}>
                                     <FormControlLabel key="select-all" label="全选"
@@ -2059,7 +2095,7 @@ function StorageInOut(props) {
                                         <Grid item sm={12} style={{color:'red'}}>返库商品将重新放在原来的仓储位置</Grid>
                                     </Grid>}
 
-                                    {modalData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value &&
+                                    {modalData.uniqueFlag == sysConst.UNIQUE_FLAG[1].value && modalData.purchaseItemUnique.length > 0 &&
                                     <Grid item sm={12} container>
                                         <Grid item sm={12}>
                                             <FormControlLabel key="select-all" label="全选"
