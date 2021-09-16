@@ -227,7 +227,7 @@ function StorageCheck(props) {
                                 }}/>
                             </IconButton>
                         </Grid>}
-                        {storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[0].value &&
+
                         <Grid item xs={1} align="center">
                             <IconButton disabled={row.unique_flag == sysConst.UNIQUE_FLAG[0].value}>
                                 <i className="mdi mdi-barcode-scan" onClick={()=>{
@@ -259,7 +259,7 @@ function StorageCheck(props) {
                                     });
                                 }}/>
                             </IconButton>
-                        </Grid>}
+                        </Grid>
                     </Grid>
 
                 </Grid>
@@ -273,79 +273,94 @@ function StorageCheck(props) {
                              </>}
             >
                 <Grid container spacing={1}>
-                    <Grid item sm={11}>
-                        <TextField label="新增唯一编码" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                   value={modalData.uniqueId}
-                                   onChange={(e) => {
-                                       setModalData({...modalData,uniqueId: e.target.value});
-                                   }}
-                                   error={validation.uniqueId&&validation.uniqueId!=''} helperText={validation.uniqueId}
-                        />
-                    </Grid>
-                    <Grid item sm={1} style={{textAlign:'center'}}>
-                        <IconButton color="primary">
-                            <i className="mdi mdi-plus-circle-outline" onClick={()=>{
-                                if (!modalData.uniqueId) {
-                                    setValidation({uniqueId: '唯一编码不能为空'});
-                                } else if (modalData.uniqueId.length > 40) {
-                                    setValidation({uniqueId: '唯一编码最大40位'});
-                                } else  if (modalData.uniqueMap.has(modalData.uniqueId)) {
-                                    setValidation({uniqueId: '唯一编码不能重复'});
-                                } else {
-                                    setValidation({});
-                                    modalData.uniqueMap.set(modalData.uniqueId, false);
-                                    modalData.uniqueArray.push({unique_id : modalData.uniqueId, checked : false});
-                                    setModalData({...modalData, selectAll : false, uniqueId: ''});
-                                }
-                            }}/>
-                        </IconButton>
-                    </Grid>
+                    {storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[0].value &&
+                        <>
+                            <Grid item sm={11}>
+                                <TextField label="新增唯一编码" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
+                                           value={modalData.uniqueId}
+                                           onChange={(e) => {
+                                               setModalData({...modalData,uniqueId: e.target.value});
+                                           }}
+                                           error={validation.uniqueId&&validation.uniqueId!=''} helperText={validation.uniqueId}
+                                />
+                            </Grid>
+                            <Grid item sm={1} style={{textAlign:'center'}}>
+                                <IconButton color="primary">
+                                    <i className="mdi mdi-plus-circle-outline" onClick={()=>{
+                                        if (!modalData.uniqueId) {
+                                            setValidation({uniqueId: '唯一编码不能为空'});
+                                        } else if (modalData.uniqueId.length > 40) {
+                                            setValidation({uniqueId: '唯一编码最大40位'});
+                                        } else  if (modalData.uniqueMap.has(modalData.uniqueId)) {
+                                            setValidation({uniqueId: '唯一编码不能重复'});
+                                        } else {
+                                            setValidation({});
+                                            modalData.uniqueMap.set(modalData.uniqueId, false);
+                                            modalData.uniqueArray.push({unique_id : modalData.uniqueId, checked : false});
+                                            setModalData({...modalData, selectAll : false, uniqueId: ''});
+                                        }
+                                    }}/>
+                                </IconButton>
+                            </Grid>
 
-                    <Grid item sm={12}>
-                        <FormControlLabel key="select-all" label="全选"
-                                          control={
-                                              <Checkbox color="primary" key={'select-all-chk'}
-                                                        checked={modalData.selectAll}
-                                                        onChange={(e) => {
-                                                            modalData.uniqueArray.forEach((item) => {
-                                                                item.checked = e.target.checked;
-                                                            });
-                                                            setModalData({
-                                                                ...modalData,
-                                                                selectAll: e.target.checked,
-                                                                uniqueArray: modalData.uniqueArray,
-                                                                selectedNum: e.target.checked ? modalData.uniqueArray.length : 0
-                                                            });
-                                                        }}
-                                              />
-                                          }
-                        />
-                    </Grid>
-                    {modalData.uniqueArray.map((row, index) => (
-                        <Grid item sm={4}>
-                            <FormControlLabel key={'checkbox_child_' + index} label={row.unique_id}
-                                              control={
-                                                  <Checkbox color="primary" key={'checkbox_child_chk_' + index}
-                                                            checked={row.checked == true}
-                                                            onChange={(e) => {
-                                                                modalData.uniqueArray[index].checked = e.target.checked;
-                                                                let selectedSize = 0;
-                                                                modalData.uniqueArray.forEach((item) => {
-                                                                    if (item.checked === true) {
-                                                                        selectedSize++;
-                                                                    }
-                                                                });
-                                                                setModalData({
-                                                                    ...modalData,
-                                                                    selectAll: selectedSize === modalData.uniqueArray.length,
-                                                                    uniqueArray: modalData.uniqueArray,
-                                                                    selectedNum: selectedSize
-                                                                });
-                                                            }}
-                                                  />
-                                              }
-                            />
-                        </Grid>))}
+                            <Grid item sm={12}>
+                                <FormControlLabel key="select-all" label="全选"
+                                                  control={
+                                                      <Checkbox color="primary" key={'select-all-chk'}
+                                                                checked={modalData.selectAll}
+                                                                onChange={(e) => {
+                                                                    modalData.uniqueArray.forEach((item) => {
+                                                                        item.checked = e.target.checked;
+                                                                    });
+                                                                    setModalData({
+                                                                        ...modalData,
+                                                                        selectAll: e.target.checked,
+                                                                        uniqueArray: modalData.uniqueArray,
+                                                                        selectedNum: e.target.checked ? modalData.uniqueArray.length : 0
+                                                                    });
+                                                                }}
+                                                      />
+                                                  }
+                                />
+                            </Grid>
+
+                            {modalData.uniqueArray.map((row, index) => (
+                                <Grid item sm={4}>
+                                    <FormControlLabel key={'checkbox_child_' + index} label={row.unique_id}
+                                                      control={
+                                                          <Checkbox color="primary" key={'checkbox_child_chk_' + index}
+                                                                    checked={row.checked == true}
+                                                                    onChange={(e) => {
+                                                                        modalData.uniqueArray[index].checked = e.target.checked;
+                                                                        let selectedSize = 0;
+                                                                        modalData.uniqueArray.forEach((item) => {
+                                                                            if (item.checked === true) {
+                                                                                selectedSize++;
+                                                                            }
+                                                                        });
+                                                                        setModalData({
+                                                                            ...modalData,
+                                                                            selectAll: selectedSize === modalData.uniqueArray.length,
+                                                                            uniqueArray: modalData.uniqueArray,
+                                                                            selectedNum: selectedSize
+                                                                        });
+                                                                    }}
+                                                          />
+                                                      }
+                                    />
+                                </Grid>))}
+                        </>
+                    }
+
+                    {storageCheckDetailReducer.storageCheckInfo.status != sysConst.STORAGE_RET_STATUS[0].value &&
+                        <>
+                            {modalData.uniqueArray.map((row, index) => (
+                                <>
+                                    {row.checked == true && <Grid item sm={4}>{row.unique_id}</Grid>}
+                                </>
+                                ))}
+                        </>
+                    }
                 </Grid>
             </SimpleModal>
 
