@@ -74,10 +74,14 @@ export const saveStorageCheckRel = (data) => async (dispatch, getState) => {
     try {
         const storageCheckInfo = getState().StorageCheckDetailReducer.storageCheckInfo;
         let detailList = getState().StorageCheckDetailReducer.detailList;
-        const params = {
-            checkCount: data.checkCount,
-            remark: data.remark
+        let params = {
+            remark: data.remark == null ? '' : data.remark,
+            checkCount: data.check_count,
+            uniqueFlag: data.unique_flag
         };
+        if (data.unique_flag === sysConst.UNIQUE_FLAG[1].value) {
+            params = {...params, checkUniqueArr: data.uniqueArray == null ? [] : data.uniqueArray};
+        }
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageCheckRel/' + data.id;
         dispatch({type: AppActionType.showLoadProgress, payload: true});

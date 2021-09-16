@@ -4,7 +4,6 @@ import {connect, useDispatch} from 'react-redux';
 import Swal from "sweetalert2";
 // 引入material-ui基础组件
 import {Button,Checkbox,Divider,FormControlLabel,Grid,IconButton,makeStyles,TextField,Typography} from "@material-ui/core";
-
 import {CommonActionType, StorageCheckDetailActionType} from "../../types";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {SimpleModal} from "../index";
@@ -16,7 +15,6 @@ const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const commonAction = require('../../actions/layout/CommonAction');
 const customTheme = require('../layout/Theme').customTheme;
-
 const useStyles = makeStyles((theme) => ({
     root: customTheme.root,
     title: customTheme.pageTitle,
@@ -24,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function StorageCheck(props) {
-    const {storageCheckDetailReducer, commonReducer, saveStorageCheckRel, confirmCheck, downLoadCsv, downLoadPDF} = props;
+    const {storageCheckDetailReducer, commonReducer, confirmCheck, downLoadCsv, downLoadPDF} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
     const {id} = useParams();
@@ -38,13 +36,9 @@ function StorageCheck(props) {
     const [modalOpen, setModalOpen] = React.useState(false);
     const [uniqueModalOpen, setUniqueModalOpen] = React.useState(false);
     // 模态数据
-    const [modalData, setModalData] = React.useState({});
+    const [modalData, setModalData] = React.useState({uniqueArray:[]});
     // 模态校验
     const [validation,setValidation] = React.useState({});
-    // const [expanded, setExpanded] = React.useState(false);
-    // const handleChange = (panel) => (event, isExpanded) => {
-    //     setExpanded(isExpanded ? panel : false);
-    // };
 
     //初始添加模态框值
     const initModal =(storageCheckId) =>{
@@ -99,6 +93,18 @@ function StorageCheck(props) {
             dispatch(storageCheckDetailAction.saveModalData(modalData));
             setModalOpen(false);
         }
+    };
+
+    const closeUniqueModal= ()=>{
+        let uniqueArray = [];
+        modalData.uniqueArray.forEach((item) => {
+            if (item.checked === true) {
+                uniqueArray.push(item.unique_id)
+            }
+        });
+        dispatch(StorageCheckDetailActionType.setDetailList({name: "check_count", value: modalData.selectedNum, index: modalData.dataIndex}));
+        dispatch(StorageCheckDetailActionType.setDetailList({name: "uniqueArray", value: uniqueArray, index: modalData.dataIndex}));
+        setUniqueModalOpen(false);
     };
 
     return (
@@ -158,122 +164,11 @@ function StorageCheck(props) {
                         <IconButton color="primary" edge="start" onClick={()=>{downLoadPDF(storageCheckDetailReducer.storageCheckInfo)}}>
                             <i className="mdi mdi-file-pdf mdi-24px"/>
                         </IconButton>
-                        {storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[0].value &&
-                        <IconButton color="primary" edge="start" size="small" onClick={()=>{initModal(storageCheckDetailReducer.storageCheckInfo.id)}}>盈</IconButton>}
+                        {/*{storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[0].value &&*/}
+                        {/*<IconButton color="primary" edge="start" size="small" onClick={()=>{initModal(storageCheckDetailReducer.storageCheckInfo.id)}}>盈</IconButton>}*/}
                     </Typography>
                 </Grid>
             </Grid>
-
-
-
-            {/*{storageCheckDetailReducer.detailList.map((row, index) => (*/}
-            {/*    <Accordion expanded={expanded === 'panel' + index} onChange={handleChange('panel' + index)}>*/}
-            {/*        <AccordionSummary expandIcon={<i className="mdi mdi-chevron-down mdi-24px"/>}>*/}
-            {/*            <Grid container spacing={1} key={index}>*/}
-            {/*                <Grid item sm={2}>*/}
-            {/*                    <TextField label="仓库" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }} disabled*/}
-            {/*                               value={row.storage_name}/>*/}
-            {/*                </Grid>*/}
-            {/*                <Grid item sm={2}>*/}
-            {/*                    <TextField label="仓库分区" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }} disabled*/}
-            {/*                               value={row.storage_area_name}/>*/}
-            {/*                </Grid>*/}
-            {/*                <Grid item sm={2}>*/}
-            {/*                    <TextField label="商品" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }} disabled*/}
-            {/*                               value={row.product_name}/>*/}
-            {/*                </Grid>*/}
-            {/*                <Grid item sm={1}>*/}
-            {/*                    <TextField label="是否全新" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }} disabled*/}
-            {/*                               value={commonUtil.getJsonValue(sysConst.OLD_FLAG, row.old_flag)}/>*/}
-            {/*                </Grid>*/}
-            {/*                <Grid item sm={1}>*/}
-            {/*                    <TextField label="库存数" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }} disabled*/}
-            {/*                               value={row.storage_count}/>*/}
-            {/*                </Grid>*/}
-            {/*                <Grid item sm={1}>*/}
-            {/*                    <TextField label="盘点数" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }} type="number"*/}
-            {/*                               disabled={storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[1].value}*/}
-            {/*                               value={row.check_count}*/}
-            {/*                               onChange={(e) => {*/}
-            {/*                                   dispatch(StorageCheckDetailActionType.setDetailList({name: "check_count", value: e.target.value, index: index}))*/}
-            {/*                               }}*/}
-            {/*                    />*/}
-            {/*                </Grid>*/}
-            {/*                <Grid item container sm={3}>*/}
-            {/*                    <Grid item sm={10}>*/}
-            {/*                        <TextField label="备注" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}*/}
-            {/*                                   disabled={storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[1].value}*/}
-            {/*                                   value={row.remark}*/}
-            {/*                                   onChange={(e) => {*/}
-            {/*                                       dispatch(StorageCheckDetailActionType.setDetailList({name: "remark", value: e.target.value, index: index}))*/}
-            {/*                                   }}*/}
-            {/*                        />*/}
-            {/*                    </Grid>*/}
-
-            {/*                    {storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[0].value &&*/}
-            {/*                    <Grid item xs={2} align="center">*/}
-            {/*                        <IconButton>*/}
-            {/*                            /!* check_status = 0 ,未check， = 1，则是正常 *!/*/}
-            {/*                            <i className={`mdi ${row.check_status === sysConst.STORAGE_CHECK_STATUS[0].value ? 'mdi-check-circle-outline blue' : (row.check_status === sysConst.STORAGE_CHECK_STATUS[1].value ? 'mdi-check-circle green' : 'mdi-alert-circle-outline red')} mdi-24px`}*/}
-            {/*                               onClick={(event)=>{event.preventDefault();saveStorageCheckRel(row.id, row.check_count, row.remark)}}/>*/}
-            {/*                        </IconButton>*/}
-            {/*                    </Grid>}*/}
-            {/*                </Grid>*/}
-
-            {/*            </Grid>*/}
-            {/*        </AccordionSummary>*/}
-            {/*        <AccordionDetails>*/}
-            {/*            {row.unique_flag == sysConst.UNIQUE_FLAG[1].value &&*/}
-            {/*            <Grid item sm={12} container>*/}
-            {/*                <Grid item sm={12}>*/}
-            {/*                    <FormControlLabel key="select-all" label="全选"*/}
-            {/*                                      control={*/}
-            {/*                                          <Checkbox color="primary" key={'select-all-chk'}*/}
-            {/*                                                    checked={row.selectAll}*/}
-            {/*                                                    onChange={(e) => {*/}
-            {/*                                                        // purchaseModalData.purchaseItemUnique.forEach((item) => {*/}
-            {/*                                                        //     item.checked = e.target.checked;*/}
-            {/*                                                        // });*/}
-            {/*                                                        // setPurchaseModalData({*/}
-            {/*                                                        //     ...purchaseModalData,*/}
-            {/*                                                        //     selectAll: e.target.checked,*/}
-            {/*                                                        //     purchaseItemUnique: purchaseModalData.purchaseItemUnique,*/}
-            {/*                                                        //     productCnt: e.target.checked ? purchaseModalData.purchaseItemUnique.length : 0*/}
-            {/*                                                        // });*/}
-            {/*                                                    }}*/}
-            {/*                                          />*/}
-            {/*                                      }*/}
-            {/*                    />*/}
-            {/*                </Grid>*/}
-            {/*                {row.purchaseItemUnique.map((item, index) => (*/}
-            {/*                    <Grid item sm={4}>*/}
-            {/*                        <FormControlLabel key={'checkbox_child_' + index} label={item.unique_id}*/}
-            {/*                                          control={*/}
-            {/*                                              <Checkbox color="primary" key={'checkbox_child_chk_' + index}*/}
-            {/*                                                        checked={item.checked == true}*/}
-            {/*                                                        onChange={(e) => {*/}
-            {/*                                                            // purchaseModalData.purchaseItemUnique[index].checked = e.target.checked;*/}
-            {/*                                                            // let selectedSize = 0;*/}
-            {/*                                                            // purchaseModalData.purchaseItemUnique.forEach((item) => {*/}
-            {/*                                                            //     if (item.checked === true) {*/}
-            {/*                                                            //         selectedSize++;*/}
-            {/*                                                            //     }*/}
-            {/*                                                            // });*/}
-            {/*                                                            // setPurchaseModalData({*/}
-            {/*                                                            //     ...purchaseModalData,*/}
-            {/*                                                            //     selectAll: selectedSize === purchaseModalData.purchaseItemUnique.length,*/}
-            {/*                                                            //     purchaseItemUnique: purchaseModalData.purchaseItemUnique,*/}
-            {/*                                                            //     productCnt: selectedSize*/}
-            {/*                                                            // });*/}
-            {/*                                                        }}*/}
-            {/*                                              />*/}
-            {/*                                          }*/}
-            {/*                        />*/}
-            {/*                    </Grid>))}*/}
-            {/*            </Grid>}*/}
-            {/*        </AccordionDetails>*/}
-            {/*    </Accordion>*/}
-            {/*))}*/}
 
             {/* 下部分 */}
             {storageCheckDetailReducer.detailList.map((row, index) => (
@@ -300,7 +195,7 @@ function StorageCheck(props) {
                     </Grid>
                     <Grid item sm={1}>
                         <TextField label="盘点数" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }} type="number"
-                                   disabled={storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[1].value}
+                                   disabled={storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[1].value || row.unique_flag == sysConst.UNIQUE_FLAG[1].value}
                                    value={row.check_count}
                                    onChange={(e) => {
                                        dispatch(StorageCheckDetailActionType.setDetailList({name: "check_count", value: e.target.value, index: index}))
@@ -323,13 +218,46 @@ function StorageCheck(props) {
                             <IconButton>
                                 {/* check_status = 0 ,未check， = 1，则是正常 */}
                                 <i className={`mdi ${row.check_status === sysConst.STORAGE_CHECK_STATUS[0].value ? 'mdi-check-circle-outline blue' : (row.check_status === sysConst.STORAGE_CHECK_STATUS[1].value ? 'mdi-check-circle green' : 'mdi-alert-circle-outline red')} mdi-24px`}
-                                onClick={()=>{saveStorageCheckRel(row.id, row.check_count, row.remark)}}/>
+                                onClick={()=>{
+                                    if (row.check_count === '') {
+                                        Swal.fire("盘点数不能为空，请输入", '', "warning");
+                                    } else {
+                                        dispatch(storageCheckDetailAction.saveStorageCheckRel(row));
+                                    }
+                                }}/>
                             </IconButton>
                         </Grid>}
                         {storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[0].value &&
                         <Grid item xs={1} align="center">
-                            <IconButton>
-                                <i className="mdi mdi-barcode-scan" onClick={()=>{setUniqueModalOpen(true);setModalData({...modalData, dataIndex:index});}}/>
+                            <IconButton disabled={row.unique_flag == sysConst.UNIQUE_FLAG[0].value}>
+                                <i className="mdi mdi-barcode-scan" onClick={()=>{
+                                    setUniqueModalOpen(true);
+                                    setValidation({});
+                                    let prodUnique = row.prod_unique_arr == null ? [] : row.prod_unique_arr;
+                                    let checkUnique = row.check_unique_arr == null ? [] : row.check_unique_arr;
+                                    let map = new Map();
+                                    prodUnique.forEach((item) => {map.set(item,false)});
+                                    checkUnique.forEach((item) => {map.set(item,true)});
+
+                                    let uniqueArray = [];
+                                    let selectedNum = 0;
+                                    for (let [key, value] of map) {
+                                        uniqueArray.push({unique_id : key, checked : value});
+                                        if (value == true) {
+                                            selectedNum++;
+                                        }
+                                    }
+
+                                    setModalData({
+                                        ...modalData,
+                                        dataIndex: index,
+                                        uniqueId: '',
+                                        selectedNum: selectedNum,
+                                        selectAll: selectedNum == uniqueArray.length ? true : false,
+                                        uniqueMap: map,
+                                        uniqueArray: uniqueArray
+                                    });
+                                }}/>
                             </IconButton>
                         </Grid>}
                     </Grid>
@@ -338,71 +266,86 @@ function StorageCheck(props) {
             ))}
 
             <SimpleModal maxWidth='lg' showFooter title="唯一编码" open={uniqueModalOpen}
-                         onClose={()=>{setUniqueModalOpen(false)}}
+                         onClose={()=>{closeUniqueModal()}}
                          footer={
                              <>
-                                 <Button variant="contained" color="primary" onClick={()=>{
-                                     dispatch(StorageCheckDetailActionType.setDetailList({name: "check_count", value: 10, index: modalData.dataIndex}));
-                                     dispatch(StorageCheckDetailActionType.setDetailList({name: "uniqueId", value: [], index: modalData.dataIndex}));
-                                     setUniqueModalOpen(false);
-                                 }}>确定</Button>
-                                 <Button variant="contained" onClick={()=>{setUniqueModalOpen(false)}}>关闭</Button>
+                                 <Button variant="contained" onClick={()=>{closeUniqueModal()}}>关闭</Button>
                              </>}
             >
                 <Grid container spacing={1}>
+                    <Grid item sm={11}>
+                        <TextField label="新增唯一编码" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
+                                   value={modalData.uniqueId}
+                                   onChange={(e) => {
+                                       setModalData({...modalData,uniqueId: e.target.value});
+                                   }}
+                                   error={validation.uniqueId&&validation.uniqueId!=''} helperText={validation.uniqueId}
+                        />
+                    </Grid>
+                    <Grid item sm={1} style={{textAlign:'center'}}>
+                        <IconButton color="primary">
+                            <i className="mdi mdi-plus-circle-outline" onClick={()=>{
+                                if (!modalData.uniqueId) {
+                                    setValidation({uniqueId: '唯一编码不能为空'});
+                                } else if (modalData.uniqueId.length > 40) {
+                                    setValidation({uniqueId: '唯一编码最大40位'});
+                                } else  if (modalData.uniqueMap.has(modalData.uniqueId)) {
+                                    setValidation({uniqueId: '唯一编码不能重复'});
+                                } else {
+                                    setValidation({});
+                                    modalData.uniqueMap.set(modalData.uniqueId, false);
+                                    modalData.uniqueArray.push({unique_id : modalData.uniqueId, checked : false});
+                                    setModalData({...modalData, selectAll : false, uniqueId: ''});
+                                }
+                            }}/>
+                        </IconButton>
+                    </Grid>
+
                     <Grid item sm={12}>
                         <FormControlLabel key="select-all" label="全选"
                                           control={
                                               <Checkbox color="primary" key={'select-all-chk'}
-                                                        // checked={newProdData.selectAll}
-                                                        // onChange={(e) => {
-                                                        //     newProdData.purchaseItemUnique.forEach((item) => {
-                                                        //         item.checked = e.target.checked;
-                                                        //     });
-                                                        //     setNewProdData({
-                                                        //         ...newProdData,
-                                                        //         selectAll: e.target.checked,
-                                                        //         purchaseItemUnique: newProdData.purchaseItemUnique,
-                                                        //         prodRefundCount: e.target.checked ? newProdData.purchaseItemUnique.length : 0
-                                                        //     });
-                                                        // }}
+                                                        checked={modalData.selectAll}
+                                                        onChange={(e) => {
+                                                            modalData.uniqueArray.forEach((item) => {
+                                                                item.checked = e.target.checked;
+                                                            });
+                                                            setModalData({
+                                                                ...modalData,
+                                                                selectAll: e.target.checked,
+                                                                uniqueArray: modalData.uniqueArray,
+                                                                selectedNum: e.target.checked ? modalData.uniqueArray.length : 0
+                                                            });
+                                                        }}
                                               />
                                           }
                         />
                     </Grid>
+                    {modalData.uniqueArray.map((row, index) => (
                         <Grid item sm={4}>
-                            <FormControlLabel key={'checkbox_child_'} label={'ttttttt'}
+                            <FormControlLabel key={'checkbox_child_' + index} label={row.unique_id}
                                               control={
-                                                  <Checkbox color="primary" key={'checkbox_child_chk_'}
+                                                  <Checkbox color="primary" key={'checkbox_child_chk_' + index}
+                                                            checked={row.checked == true}
+                                                            onChange={(e) => {
+                                                                modalData.uniqueArray[index].checked = e.target.checked;
+                                                                let selectedSize = 0;
+                                                                modalData.uniqueArray.forEach((item) => {
+                                                                    if (item.checked === true) {
+                                                                        selectedSize++;
+                                                                    }
+                                                                });
+                                                                setModalData({
+                                                                    ...modalData,
+                                                                    selectAll: selectedSize === modalData.uniqueArray.length,
+                                                                    uniqueArray: modalData.uniqueArray,
+                                                                    selectedNum: selectedSize
+                                                                });
+                                                            }}
                                                   />
                                               }
                             />
-                        </Grid>
-                    {/*{newProdData.purchaseItemUnique.map((row, index) => (*/}
-                    {/*    <Grid item sm={4}>*/}
-                    {/*        <FormControlLabel key={'checkbox_child_' + index} label={row.unique_id}*/}
-                    {/*                          control={*/}
-                    {/*                              <Checkbox color="primary" key={'checkbox_child_chk_' + index}*/}
-                    {/*                                        checked={row.checked == true}*/}
-                    {/*                                        onChange={(e) => {*/}
-                    {/*                                            newProdData.purchaseItemUnique[index].checked = e.target.checked;*/}
-                    {/*                                            let selectedSize = 0;*/}
-                    {/*                                            newProdData.purchaseItemUnique.forEach((item) => {*/}
-                    {/*                                                if (item.checked === true) {*/}
-                    {/*                                                    selectedSize++;*/}
-                    {/*                                                }*/}
-                    {/*                                            });*/}
-                    {/*                                            setNewProdData({*/}
-                    {/*                                                ...newProdData,*/}
-                    {/*                                                selectAll: selectedSize === newProdData.purchaseItemUnique.length,*/}
-                    {/*                                                purchaseItemUnique: newProdData.purchaseItemUnique,*/}
-                    {/*                                                prodRefundCount: selectedSize*/}
-                    {/*                                            });*/}
-                    {/*                                        }}*/}
-                    {/*                              />*/}
-                    {/*                          }*/}
-                    {/*        />*/}
-                    {/*    </Grid>))}*/}
+                        </Grid>))}
                 </Grid>
             </SimpleModal>
 
@@ -550,13 +493,6 @@ const mapDispatchToProps = (dispatch) => ({
     getStorageCheckInfo: (id) => {
         dispatch(storageCheckDetailAction.getStorageCheckInfo(id));
         dispatch(storageCheckDetailAction.getStorageCheckRelList(id));
-    },
-    saveStorageCheckRel: (id, checkCount, remark) => {
-        if (checkCount === '') {
-            Swal.fire("盘点数不能为空，请输入", '', "warning");
-        } else {
-            dispatch(storageCheckDetailAction.saveStorageCheckRel({id, checkCount, remark}));
-        }
     },
     confirmCheck: (storageCheckInfo) => {
         // 计划盘点数 <> 盘点完成数 则不能执行完成操作
