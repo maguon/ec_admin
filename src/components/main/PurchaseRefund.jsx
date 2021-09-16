@@ -102,6 +102,7 @@ function PurchaseRefund (props){
     const [putTransferCostTypeFlag, setPutTransferCostTypeFlag] = useState(true);
     const [putStatus,setPutStatus] = useState('');
     const [putPurchaseId,setPutPurchaseId] = useState('');
+    const [uniqueData,setUniqueData] = useState({});
 
     useEffect(()=>{
         getProductList();
@@ -245,6 +246,7 @@ function PurchaseRefund (props){
         setPurchaseItemId(item.purchase_item_id);
         setPutStatus(item.status)
         setPutPurchaseId(item.id);
+        setUniqueData(item);
     }
     //上一页
     const getPrePurchaseRefundList = () => {
@@ -790,7 +792,12 @@ function PurchaseRefund (props){
                         />
                     </Grid>
                 </Grid>
-
+                <h4>唯一编码</h4>
+                {uniqueData.unique_flag == sysConst.UNIQUE_FLAG[1].value &&<Grid container  spacing={3}>
+                    {uniqueData.prod_unique_arr.map((item) => (
+                    <Grid item xs={4}>{item}</Grid>
+                    ))}
+                </Grid>}
                 <h4>出库记录</h4>
                 <Grid>
                     {purchaseRefundReducer.storageProductRelArray.map((item) => (
