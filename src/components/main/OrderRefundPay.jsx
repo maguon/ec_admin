@@ -37,6 +37,7 @@ function OrderRefundPay(props) {
     const [remarks, setRemarks] = React.useState('');
     const [orderList,setOrderList]=React.useState([]);
     const [flag, setFlag] = React.useState(true);
+    const [clientAgent,setClientAgent] = React.useState({id:'',name:''});
     useEffect(() => {
         let queryParams = {
             // 订单编号
@@ -56,9 +57,11 @@ function OrderRefundPay(props) {
         props.getOrderList(0);
     }, []);
     const modelOpen = () => {
+        let batchData={serviceRefundPrice:0,prodRefundPrice:0,transferRefundPrice:0,prodRefundCount:0,totalRefundPrice:0};
         setPayType(2);
         setPaymentType(1);
         setRemarks('');
+        setClientAgent({id:'',name:''});
         if(selected.length==0){
             Swal.fire("请选择需要支付的订单", '', "warning");
         }else {
@@ -70,7 +73,9 @@ function OrderRefundPay(props) {
                     batchData.totalRefundPrice+= Number(item.total_refund_price);
                     selectedId.push(Number(item.order_id));
             })
+            setClientAgent({id:selected[0].o_client_agent_id,name:selected[0].o_client_agent_name})
             setModalOpen(true);
+            setBatchData(batchData);
         }
     }
     const handleSelectAllClick = (event) => {
@@ -114,7 +119,7 @@ function OrderRefundPay(props) {
     };
     const isSelected = (id) => selected.indexOf(id) !== -1;
     const getAllOrderData = () => {
-        getAllOrder(remarks,paymentType,selectedId,batchData)
+        getAllOrder(remarks,paymentType,selectedId,batchData,clientAgent.id)
         setModalOpen(false);
     }
     //初始添加模态框值
@@ -131,6 +136,7 @@ function OrderRefundPay(props) {
     };
     const modalClose = () => {
         setBatchData({serviceRefundPrice:0,prodRefundPrice:0,transferRefundPrice:0,prodRefundCount:0,totalRefundPrice:0})
+        setClientAgent({id:'',name:''})
         setSelectedId([]);
         setModalOpen(false);
     }
@@ -464,7 +470,7 @@ function OrderRefundPay(props) {
             >
                 <Grid container spacing={2}>
 
-                    <Grid item sm={6}>
+                    <Grid item sm={4}>
                         <TextField className={classes.selectCondition} disabled={true}
                                    select
                                    margin="dense"
@@ -483,7 +489,7 @@ function OrderRefundPay(props) {
                             ))}
                         </TextField>
                     </Grid>
-                    <Grid item sm={6}>
+                    <Grid item sm={4}>
                         <TextField className={classes.selectCondition}
                                    select
                                    margin="dense"
@@ -502,7 +508,15 @@ function OrderRefundPay(props) {
                             ))}
                         </TextField>
                     </Grid>
-
+                    <Grid item sm={4}>
+                        <TextField className={classes.selectCondition} disabled={true}
+                                   margin="dense"
+                                   label="客户集群"
+                                   value={clientAgent.name}
+                                   variant="outlined"
+                        >
+                        </TextField>
+                    </Grid>
                     <Grid item sm>服务退款：{batchData.serviceRefundPrice}</Grid>
                     <Grid item sm>商品退款：{batchData.prodRefundPrice}</Grid>
                     <Grid item sm>退货运费：{batchData.transferRefundPrice}</Grid>
@@ -536,8 +550,8 @@ const mapDispatchToProps = (dispatch) => ({
     getOrderList: (dataStart) => {
         dispatch(OrderRefundPayAction.getOrderList(dataStart))
     },
-    getAllOrder:(remarks,paymentType,selectedId,batchData)=>{
-        dispatch(OrderRefundPayAction.getAllOrder(remarks,paymentType,selectedId,batchData))
+    getAllOrder:(remarks,paymentType,selectedId,batchData,id)=>{
+        dispatch(OrderRefundPayAction.getAllOrder(remarks,paymentType,selectedId,batchData,id))
     },
     getOrderRefundBasic:(refundId)=>{
         dispatch(OrderRefundPayAction.getOrderRefundService(refundId));

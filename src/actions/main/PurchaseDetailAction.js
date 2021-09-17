@@ -15,7 +15,7 @@ export const getPurchaseDetailInfo = (params) => async (dispatch, getState) => {
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true && res.rows.length>0) {
             dispatch({type: PurchaseDetailActionType.getPurchaseDetailInfo, payload: res.rows[0]});
-            dispatch({type: PurchaseDetailActionType.getProductDetailArray, payload: res.rows});
+
         } else if (res.success === false) {
             Swal.fire('获取供应商信息失败', res.msg, 'warning');
         }
@@ -34,6 +34,7 @@ export const getPurchaseItemDetailInfo = (params) => async (dispatch, getState) 
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true && res.rows.length>0) {
             dispatch({type: PurchaseDetailActionType.getPurchaseDetailItemInfo, payload: res.rows});
+            dispatch({type: PurchaseDetailActionType.getProductDetailArray, payload: res.rows});
         } else if (res.success === false) {
             Swal.fire('获取采购信息失败', res.msg, 'warning');
         }
@@ -139,7 +140,7 @@ export const getStorageProductArray = (params) => async (dispatch) => {
 };
 
 
-export const addRefundDetailItem = (id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType) => async (dispatch) => {
+export const addRefundDetailItem = (id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType,itemId) => async (dispatch) => {
     try {
         let params = {
             "remark": addTransferRemark,
@@ -154,7 +155,7 @@ export const addRefundDetailItem = (id,item,addTransferCostType,addTransferCost,
             "orderId": 0
         };
         // 基本url
-        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchase/'+id+'/purchaseItem/'+item.id+'/purchaseRefund';
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/purchase/'+id+'/purchaseItem/'+itemId+'/purchaseRefund';
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpPost(url, params);
         dispatch({type: AppActionType.showLoadProgress, payload: false});

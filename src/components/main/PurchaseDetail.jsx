@@ -192,14 +192,12 @@ function PurchaseDetail (props){
         setModalOpenFlag(true);
         setAddTransferCostType(1);
         setAddTransferCost(0);
-        setAddProduct(-1);
         setAddUnitCost(0);
         setAddPurchaseCount(0);
         setAddTransferRemark('');
     }
-    const handleAddItemOpen=(product_name) =>{
+    const handleAddItemOpen=() =>{
         setModalItemOpenFlag(true);
-        setAddProduct(product_name)
         setAddStorageType(1)
         setAddTransferCostType(1);
         setAddTransferCost(0);
@@ -227,7 +225,7 @@ function PurchaseDetail (props){
     const addRefundDetailInfo =() => {
         const errorCount = validate();
         if(errorCount==0){
-            addRefundDetailItem(id,addProduct,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType);
+            addRefundDetailItem(id,addProduct,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType,addProduct.id);
             setModalOpenFlag(false);
         }
     }
@@ -236,7 +234,7 @@ function PurchaseDetail (props){
         if(errorCount==0){
             for(var value of purchaseDetailReducer.storageProductArray){
                 if(value.product_name==addProduct){
-                    addRefundDetailItem(id,value,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageTypeItem);
+                    addRefundDetailItem(id,value,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageTypeItem,value.purchase_item_id);
                     setModalItemOpenFlag(false);
                 }
             }
@@ -300,6 +298,7 @@ function PurchaseDetail (props){
         setProductId(pro);
         setProductName(name);
         setCount(count);
+        setProductUnique('');
         dispatch(PurchaseDetailAction.getUniqueList(id))
         setUniqueModalOpenFlag(true);
     }
@@ -336,6 +335,7 @@ function PurchaseDetail (props){
         setWarningFlag(false);
         setFileTypeFlag(false);
         purchaseDetailReducer.addInfoFlag=false;
+        setProductUnique('');
         dispatch(PurchaseDetailAction.deleteRel({purchaseItem,product,id}))
     }
     return(
@@ -532,7 +532,7 @@ function PurchaseDetail (props){
                     </TabPanel>
                     <TabPanel value='2'>
                         <Grid item xs align="right">
-                            <Fab color="primary" aria-label="add" size="small" onClick={()=>{handleAddOpen()}}>退</Fab>
+                            <Fab color="primary" aria-label="add" size="small" onClick={()=>{setAddProduct(-1);handleAddOpen()}}>退</Fab>
                         </Grid>
                         <Grid container spacing={2}>
                             <TableContainer component={Paper} style={{marginTop:40}}>
@@ -560,7 +560,7 @@ function PurchaseDetail (props){
                                                 <TableCell align="center">{row.storage_count}</TableCell>
                                                 <TableCell align="center">{row.date_id}</TableCell>
                                                 <TableCell align="center">
-                                                    <Fab color="primary" aria-label="add" size="small"   onClick={() => {handleAddItemOpen(row.product_name)}}>退</Fab>
+                                                    <Fab color="primary" aria-label="add" size="small"   onClick={() => {setAddProduct(row.product_name);handleAddItemOpen()}}>退</Fab>
                                                 </TableCell>
                                             </TableRow>
                                         ))}
@@ -677,7 +677,7 @@ function PurchaseDetail (props){
                     </Grid>
                     <Grid item xs>
                         <TextField label="总价" fullWidth={true} disabled={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                   value={Number(addUnitCost>9999999.99?0:addUnitCost<0?0:addUnitCost*addPurchaseCount>9999999.99?0:addPurchaseCount<0?0:addPurchaseCount)-Number(addTransferCost>9999999.99?0:addTransferCost<0?0:addTransferCost)}
+                                   value={Number(addPurchaseCount>9999999.99?0:addPurchaseCount<0?0:addPurchaseCount)*Number(addUnitCost>9999999.99?0:addUnitCost<0?0:addUnitCost)-Number(addTransferCost>9999999.99?0:addTransferCost<0?0:addTransferCost)}
                         />
                     </Grid>
                 </Grid>
@@ -821,28 +821,16 @@ function PurchaseDetail (props){
                     </Grid>
                     <Grid item xs>
                         <TextField label="总价" fullWidth={true} disabled={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                   value={Number(addUnitCost>9999999.99?0:addUnitCost<0?0:addUnitCost*addPurchaseCount>9999999.99?0:addPurchaseCount<0?0:addPurchaseCount)-Number(addTransferCost>9999999.99?0:addTransferCost<0?0:addTransferCost)}
+                                   value={Number(addPurchaseCount>9999999.99?0:addPurchaseCount<0?0:addPurchaseCount)*Number(addUnitCost>9999999.99?0:addUnitCost<0?0:addUnitCost)-Number(addTransferCost>9999999.99?0:addTransferCost<0?0:addTransferCost)}
                         />
                     </Grid>
                 </Grid>
                 {/*商品选择*/}
                 <Grid  container spacing={3}>
                     <Grid item xs>
-                        <FormControl variant="outlined" fullWidth={true} margin="dense" disabled={true}>
-                            <InputLabel id="standard-select-outlined-label" shrink>商品</InputLabel>
-                            <Select
-                                label="商品"
-                                labelId="standard-select-outlined-label"
-                                id="standard-select-outlined"
-                                value={addProduct}
-                                onChange={(e)=>{
-                                setAddProduct(e.target.value)
-                            }}>
-                                {purchaseDetailReducer.productDetailArray.map((item, index) => (
-                                    <MenuItem key={item.id} value={item.product_name}>{item.product_name}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+                        <TextField label="商品" fullWidth={true} disabled={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}  disabled={true}
+                                   value={addProduct}
+                        />
                     </Grid>
                     <Grid item xs>
                         <TextField type="number" label="退货单价" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
@@ -1040,8 +1028,8 @@ const mapDispatchToProps = (dispatch,ownProps) => ({
     getStorageProductArray:(id)=>{
         dispatch(PurchaseDetailAction.getStorageProductArray(id))
     },
-    addRefundDetailItem:(id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType)=>{
-        dispatch(PurchaseDetailAction.addRefundDetailItem(id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType))
+    addRefundDetailItem:(id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType,itemId)=>{
+        dispatch(PurchaseDetailAction.addRefundDetailItem(id,item,addTransferCostType,addTransferCost,addUnitCost,addPurchaseCount,addTransferRemark,addStorageType,itemId))
     },
     downLoadPDF: (purchaseDetailInfo,purchaseDetailItemInfo,name) => {
         dispatch(PurchaseAction.downLoadPDF(purchaseDetailInfo,purchaseDetailItemInfo,name))

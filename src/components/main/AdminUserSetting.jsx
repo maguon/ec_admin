@@ -1,23 +1,7 @@
 import React, {useEffect,useState}from 'react';
 import {connect} from 'react-redux';
 import Swal from 'sweetalert2';
-import {
-    Button,
-    Divider,
-    Grid,
-    Typography,
-    Paper,
-    TextField,
-    TableContainer,
-    Table,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody,
-    IconButton,
-    Box,
-    Fab,
-    Switch,
+import {Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, IconButton, Box, Fab, Switch, FormControl, InputLabel, Select, MenuItem,
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {makeStyles} from "@material-ui/core/styles";
@@ -54,9 +38,9 @@ function AdminUserSetting (props) {
     const classes = useStyles();
     const [paramPhone,setParamPhone]=useState("");
     const [paramRealName,setParamRealName]=useState("");
-    const [paramType,setParamType]=useState("-1");
-    const [paramGender,setParamGender]=useState("-1");
-    const [paramStatus,setParamStatus]=useState("-1");
+    const [paramType,setParamType]=useState("");
+    const [paramGender,setParamGender]=useState("");
+    const [paramStatus,setParamStatus]=useState("");
     const [modalOpenFlag, setModalOpenFlag] = useState(false);
     const [adminUsername, setAdminUsername] = useState("");
     const [type, setType] = useState(null);
@@ -230,64 +214,52 @@ function AdminUserSetting (props) {
                     />
                 </Grid>
                 <Grid item xs>
-                    <TextField className={classes.selectCondition}
-                               select
-                               margin="dense"
-                               label="用户群组"
-                               value={paramType}
-                               onChange={(e)=>setParamType(e.target.value)}
-                               SelectProps={{
-                                   native: true,
-                               }}
-                               variant="outlined"
-                    >
-                        <option key={1} value={-1} disabled={true}>请选择</option>
-                        {adminUserSettingReducer.typeArray.map((option) => (
-                            <option key={option.id} value={option.id}>
-                                {option.type_name}
-                            </option>
-                        ))}
-                    </TextField>
+                    <FormControl variant="outlined" fullWidth margin="dense">
+                        <InputLabel >用户群组</InputLabel>
+                        <Select label="用户群组"
+                                value={paramType}
+                                onChange={(event, value) => {
+                                    setParamType(event.target.value);
+                                }}
+                        >
+                            <MenuItem value="">请选择</MenuItem>
+                            {adminUserSettingReducer.typeArray.map((item) => (
+                                <MenuItem key={item.id} value={item.id}>{item.type_name}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                 </Grid>
                 <Grid item xs>
-                    <TextField className={classes.selectCondition}
-                               select
-                               margin="dense"
-                               label="性别"
-                               value={paramGender}
-                               onChange={(e)=>setParamGender(e.target.value)}
-                               SelectProps={{
-                                   native: true,
-                               }}
-                               variant="outlined"
-                    >
-                        <option key={1} value={-1} disabled={true}>请选择</option>
-                        {sysConst.GENDER.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </TextField>
+                    <FormControl variant="outlined" fullWidth margin="dense">
+                        <InputLabel >性别</InputLabel>
+                        <Select label="性别"
+                                value={paramGender}
+                                onChange={(event, value) => {
+                                    setParamGender(event.target.value);
+                                }}
+                        >
+                            <MenuItem value="">请选择</MenuItem>
+                            {sysConst.GENDER.map((item) => (
+                                <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                 </Grid>
                 <Grid item xs>
-                    <TextField className={classes.selectCondition}
-                               select
-                               margin="dense"
-                               label="状态"
-                               onChange={(e)=>setParamStatus(e.target.value)}
-                               value={paramStatus}
-                               SelectProps={{
-                                   native: true,
-                               }}
-                               variant="outlined"
-                    >
-                        <option key={1} value={-1} disabled={true}>请选择</option>
-                        {sysConst.USE_FLAG.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </TextField>
+                    <FormControl variant="outlined" fullWidth margin="dense">
+                        <InputLabel >状态</InputLabel>
+                        <Select label="状态"
+                                value={paramStatus}
+                                onChange={(event, value) => {
+                                    setParamStatus(event.target.value);
+                                }}
+                        >
+                            <MenuItem value="">请选择</MenuItem>
+                            {sysConst.USE_FLAG.map((item) => (
+                                <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                 </Grid>
                 {/*查询按钮*/}
                 <Grid item xs={1} align="center">

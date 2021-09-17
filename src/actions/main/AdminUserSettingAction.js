@@ -11,9 +11,6 @@ export const getUserList = () => async (dispatch, getState) => {
         const size = getState().AdminUserSettingReducer.size;
         // 检索条件
        const paramsObj=getState().AdminUserSettingReducer.queryObj;
-        paramsObj.gender = paramsObj.gender==-1?'': paramsObj.gender;
-        paramsObj.type = paramsObj.type==-1?'': paramsObj.type;
-        paramsObj.status = paramsObj.status==-1?'': paramsObj.status;
         // 基本检索URL
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/user?size=' + size;
         let conditions = httpUtil.objToUrl(paramsObj);

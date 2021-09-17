@@ -71,7 +71,8 @@ function OrderPay(props) {
     }, []);
     const getOrderPayList=()=>{
         props.getOrderList(0)
-        dispatch(orderPayAction.getOrderStat())
+        dispatch(orderPayAction.getOrderStat());
+        setSelected([]);
     }
     const modelOpen = () => {
         setPayType(1);
