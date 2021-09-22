@@ -1825,11 +1825,44 @@ function StorageInOut(props) {
                                             }}
                                 />
                             </Grid>
-
+                            <Grid item xs={2}>
+                                <FormControl variant="outlined" fullWidth margin="dense">
+                                    <InputLabel>是否全新</InputLabel>
+                                    <Select label="是否全新"
+                                            value={storageInOutReducer.storageProductDetailParams.oldFlag}
+                                            onChange={(e, value) => {
+                                                dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "oldFlag", value: e.target.value}));
+                                            }}
+                                    >
+                                        <MenuItem value="">请选择</MenuItem>
+                                        {sysConst.OLD_FLAG.map((item, index) => (
+                                            <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={2}>
+                                <FormControl variant="outlined" fullWidth margin="dense">
+                                    <InputLabel>是否唯一编码</InputLabel>
+                                    <Select label="是否唯一编码"
+                                            value={storageInOutReducer.storageProductDetailParams.uniqueFlag}
+                                            onChange={(e, value) => {
+                                                dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "uniqueFlag", value: e.target.value}));
+                                            }}
+                                    >
+                                        <MenuItem value="">请选择</MenuItem>
+                                        {sysConst.UNIQUE_FLAG.map((item, index) => (
+                                            <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            {storageInOutReducer.storageProductDetailParams.uniqueFlag == 1 &&
                             <Grid item xs={2}>
                                 <TextField label="唯一编码" fullWidth margin="dense" variant="outlined" value={storageInOutReducer.storageProductDetailParams.prodUniqueId}
                                            onChange={(e)=>{dispatch(StorageInOutActionType.setStorageProductDetailParam({name: "prodUniqueId", value: e.target.value}))}}/>
-                            </Grid>
+                            </Grid>}
+
                         </Grid>
                         <Grid container item xs={3} spacing={1} style={{textAlign:'right',marginTop: 30}}>
                             {/*查询按钮*/}

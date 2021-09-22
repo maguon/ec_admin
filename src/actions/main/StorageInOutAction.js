@@ -523,11 +523,12 @@ const getParams = () => (dispatch, getState) => {
         purchaseId: queryParams.purchaseId,
         productId: queryParams.productId,
         dateIdStart: commonUtil.getDateFormat(queryParams.dateIdStart),
-        dateIdEnd: commonUtil.getDateFormat(queryParams.dateIdEnd)
+        dateIdEnd: commonUtil.getDateFormat(queryParams.dateIdEnd),
+        oldFlag: queryParams.oldFlag,
+        uniqueFlag: queryParams.uniqueFlag,
     };
-    if (queryParams.prodUniqueId && queryParams.prodUniqueId.length > 0) {
-        // TODO
-        conditionsObj = {...conditionsObj, prodUniqueId: queryParams.prodUniqueId, prodUniqueFlag: sysConst.UNIQUE_FLAG[1].value}
+    if (queryParams.uniqueFlag == sysConst.UNIQUE_FLAG[1].value) {
+        conditionsObj = {...conditionsObj, prodUniqueId: queryParams.prodUniqueId}
     }
     return httpUtil.objToUrl(conditionsObj);
 };
