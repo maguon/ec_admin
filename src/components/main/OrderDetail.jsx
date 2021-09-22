@@ -336,7 +336,7 @@ function OrderDetail(props) {
             <Grid container spacing={1}>
                 <Grid item container sm={1}><Typography gutterBottom className={classes.title}>服务</Typography></Grid>
             </Grid>
-            {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 &&
+            {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 && orderDetailReducer.orderInfo.status !== 5 &&
             <Grid  container spacing={1}>
                 <Grid item xs={2}>
                     <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
@@ -460,6 +460,8 @@ function OrderDetail(props) {
                                     </IconButton>
                                 </Grid>
                             </Grid>
+                            {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 && orderDetailReducer.orderInfo.status !== 5 &&
+                            <>
                             <Grid item xs={4} align='center'>
                                 <IconButton color="secondary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{deleteService(item)}}>
                                     <i className="mdi mdi-delete"> </i>
@@ -470,6 +472,7 @@ function OrderDetail(props) {
                                     <i className="mdi mdi-check-circle-outline"> </i>
                                 </IconButton>
                             </Grid>
+                            </>}
                         </Grid>}
                     </Grid>
                 </Grid>
@@ -479,7 +482,7 @@ function OrderDetail(props) {
             <Grid container spacing={1}>
                 <Grid item container sm={1}><Typography gutterBottom className={classes.title}>商品</Typography></Grid>
             </Grid>
-            {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 &&
+            {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 && orderDetailReducer.orderInfo.status !== 5 &&
             <Grid container spacing={1}>
                 <Grid item xs={2}>
                     <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
@@ -595,7 +598,7 @@ function OrderDetail(props) {
                                 </IconButton>
                             </Grid>}
 
-                            {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 && item.status === sysConst.PROD_ITEM_STATUS[0].value &&
+                            {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 && orderDetailReducer.orderInfo.status !== 5 && item.status === sysConst.PROD_ITEM_STATUS[0].value &&
                             <>
                                 <Grid item xs={4} align='center'>
                                     <IconButton color="secondary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{deleteProd(item)}}>
