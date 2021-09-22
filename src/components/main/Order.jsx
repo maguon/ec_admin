@@ -663,8 +663,8 @@ function Order(props) {
                                                       addProduct(value.id);
                                                   }}
                                                   renderInput={(params) => <TextField {...params} label="服务名称" margin="dense" variant="outlined"
-                                                                                      error={validation.serviceList[index].serviceInfo!=''}
-                                                                                      helperText={validation.serviceList[index].serviceInfo}
+                                                                                      error={validation.serviceList && validation.serviceList.length > 0 && validation.serviceList[index].serviceInfo!=''}
+                                                                                      helperText={validation.serviceList && validation.serviceList.length > 0 && validation.serviceList[index].serviceInfo}
                                                   />}
                                     />
                                 </Grid>

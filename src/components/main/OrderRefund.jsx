@@ -115,6 +115,7 @@ function OrderRefund(props) {
                             }
                         }
                         // 没有退的情况下，可以继续申请退
+                        serviceList[i].checked = false;
                         serviceList[i].disabled = has;
                         serviceList[i].remark = '';
                         serviceList[i].itemServiceId = serviceList[i].id;
@@ -130,6 +131,7 @@ function OrderRefund(props) {
                             }
                         }
                         // 没有退的情况下，可以继续申请退
+                        productList[i].checked = false;
                         productList[i].disabled = has;
                         productList[i].remark = '';
                         productList[i].itemProdId = productList[i].id;
@@ -444,9 +446,10 @@ function OrderRefund(props) {
                             <Grid container spacing={1} key={index}>
                                 <Grid item container xs={2}>
                                     <Grid item xs={3} style={{paddingTop: 5}}>
-                                        <Checkbox checked={item.checked} disabled={item.disabled}
+                                        <Checkbox checked={item.checked && item.checked == true} disabled={item.disabled}
                                                   onChange={(e) => {
                                                       modalData.serviceList[index].checked = e.target.checked;
+                                                      setModalData({...modalData, serviceList:modalData.serviceList});
                                                   }}/>
                                     </Grid>
                                     <Grid item xs={9}>
@@ -519,6 +522,7 @@ function OrderRefund(props) {
                                         <Checkbox checked={item.checked} disabled={item.disabled}
                                                   onChange={(e) => {
                                                       modalData.productList[index].checked = e.target.checked;
+                                                      setModalData({...modalData, productList:modalData.productList});
                                                       // if (e.target.checked == true) {
                                                       //     let purchaseItemUnique = [];
                                                       //     if (modalData.productList[index].unique_flag === sysConst.UNIQUE_FLAG[1].value && modalData.productList[index].prod_unique_arr.length > 0) {
