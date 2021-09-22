@@ -209,7 +209,7 @@ function StorageCheck(props) {
                         <Grid item sm={10}>
                             <TextField label="备注" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                     disabled={storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[1].value}
-                                    value={row.remark}
+                                    value={row.remark == null ? '' : row.remark}
                                     onChange={(e) => {
                                         dispatch(StorageCheckDetailActionType.setDetailList({name: "remark", value: e.target.value, index: index}))
                                     }}
