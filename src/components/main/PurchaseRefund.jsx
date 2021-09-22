@@ -151,8 +151,8 @@ function PurchaseRefund (props){
         if(!purchaseRefundId){
             validateObj.purchaseRefundId='请输入采购ID';
         }else {
-            let result = purchaseRefundReducer.purchaseItem.some(item=>item.id===purchaseRefundId);
-            if(result){
+            let result =purchaseRefundReducer.purchaseItem.length==0?null:purchaseRefundReducer.purchaseItem.some(item=>item.id===purchaseRefundId);
+            if(result!==null){
                 getPurchaseItem(purchaseRefundId);
                 setAddProduct("-1");
                 setActiveStep((prevActiveStep) => prevActiveStep + 1);

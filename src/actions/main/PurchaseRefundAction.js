@@ -41,11 +41,9 @@ export const getPurchaseList = () => async (dispatch, getState) => {
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-        if (res.success&&res.rows.length>0) {
+        if (res.success) {
             dispatch({type: PurchaseRefundActionType.setPurchaseItem, payload: res.rows});
-        } else if (res.success&&res.rows.length==0) {
-            Swal.fire('未查到此采购ID', res.msg, 'warning');
-        }else{
+        } else{
             Swal.fire('获取失败', res.msg, 'warning');
         }
     } catch (err) {
