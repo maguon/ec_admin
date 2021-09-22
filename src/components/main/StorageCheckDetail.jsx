@@ -95,7 +95,7 @@ function StorageCheck(props) {
         }
     };
 
-    const closeUniqueModal= ()=>{
+    const submitUniqueModal= (type)=>{
         let uniqueArray = [];
         modalData.uniqueArray.forEach((item) => {
             if (item.checked === true) {
@@ -103,8 +103,11 @@ function StorageCheck(props) {
             }
         });
         dispatch(StorageCheckDetailActionType.setDetailList({name: "check_count", value: modalData.selectedNum, index: modalData.dataIndex}));
-        dispatch(StorageCheckDetailActionType.setDetailList({name: "uniqueArray", value: uniqueArray, index: modalData.dataIndex}));
+        dispatch(StorageCheckDetailActionType.setDetailList({name: "check_unique_arr", value: uniqueArray, index: modalData.dataIndex}));
         setUniqueModalOpen(false);
+        if (type === 'submit') {
+            dispatch(storageCheckDetailAction.saveStorageCheckRel(storageCheckDetailReducer.detailList[modalData.dataIndex]));
+        }
     };
 
     return (
@@ -250,6 +253,7 @@ function StorageCheck(props) {
 
                                     setModalData({
                                         ...modalData,
+                                        dataRow: row,
                                         dataIndex: index,
                                         uniqueId: '',
                                         selectedNum: selectedNum,
@@ -266,10 +270,11 @@ function StorageCheck(props) {
             ))}
 
             <SimpleModal maxWidth='lg' showFooter title="唯一编码" open={uniqueModalOpen}
-                         onClose={()=>{closeUniqueModal()}}
+                         onClose={()=>{submitUniqueModal('close')}}
                          footer={
                              <>
-                                 <Button variant="contained" onClick={()=>{closeUniqueModal()}}>关闭</Button>
+                                 <Button variant="contained" color="primary" onClick={()=>{submitUniqueModal('submit')}}>确定</Button>
+                                 <Button variant="contained" onClick={()=>{submitUniqueModal('close')}}>关闭</Button>
                              </>}
             >
                 <Grid container spacing={1}>
@@ -296,8 +301,8 @@ function StorageCheck(props) {
                                         } else {
                                             setValidation({});
                                             modalData.uniqueMap.set(modalData.uniqueId, false);
-                                            modalData.uniqueArray.push({unique_id : modalData.uniqueId, checked : false});
-                                            setModalData({...modalData, selectAll : false, uniqueId: ''});
+                                            modalData.uniqueArray.push({unique_id : modalData.uniqueId, checked : true});
+                                            setModalData({...modalData, selectedNum : modalData.selectedNum + 1, uniqueId: ''});
                                         }
                                     }}/>
                                 </IconButton>

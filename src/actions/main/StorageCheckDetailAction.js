@@ -80,7 +80,7 @@ export const saveStorageCheckRel = (data) => async (dispatch, getState) => {
             uniqueFlag: data.unique_flag
         };
         if (data.unique_flag === sysConst.UNIQUE_FLAG[1].value) {
-            params = {...params, checkUniqueArr: data.uniqueArray == null ? [] : data.uniqueArray};
+            params = {...params, checkUniqueArr: data.check_unique_arr == null ? [] : data.check_unique_arr};
         }
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/storageCheckRel/' + data.id;
@@ -92,8 +92,10 @@ export const saveStorageCheckRel = (data) => async (dispatch, getState) => {
             dispatch(getStorageCheckInfo(storageCheckInfo.id));
             await dispatch(getStorageCheckRelList(storageCheckInfo.id));
             for (let i = 0; i < detailList.length; i++) {
-                dispatch(StorageCheckDetailActionType.setDetailList({name: "check_count", value: detailList[i].check_count, index: i}))
-                dispatch(StorageCheckDetailActionType.setDetailList({name: "remark", value: detailList[i].remark, index: i}))
+                dispatch(StorageCheckDetailActionType.setDetailList({name: "check_count", value: detailList[i].check_count, index: i}));
+                dispatch(StorageCheckDetailActionType.setDetailList({name: "remark", value: detailList[i].remark, index: i}));
+                dispatch(StorageCheckDetailActionType.setDetailList({name: "unique_flag", value: detailList[i].unique_flag, index: i}));
+                dispatch(StorageCheckDetailActionType.setDetailList({name: "check_unique_arr", value: detailList[i].check_unique_arr, index: i}));
             }
         } else if (!res.success) {
             Swal.fire("保存失败", res.msg, "warning");
