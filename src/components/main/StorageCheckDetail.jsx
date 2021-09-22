@@ -273,7 +273,8 @@ function StorageCheck(props) {
                          onClose={()=>{submitUniqueModal('close')}}
                          footer={
                              <>
-                                 <Button variant="contained" color="primary" onClick={()=>{submitUniqueModal('submit')}}>确定</Button>
+                                 {storageCheckDetailReducer.storageCheckInfo.status == sysConst.STORAGE_RET_STATUS[0].value &&
+                                 <Button variant="contained" color="primary" onClick={()=>{submitUniqueModal('submit')}}>确定</Button>}
                                  <Button variant="contained" onClick={()=>{submitUniqueModal('close')}}>关闭</Button>
                              </>}
             >
