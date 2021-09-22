@@ -10,6 +10,8 @@ const initialState = {
     storageCheckStat: {},
     // 订单统计
     orderStat: {},
+    // 退单统计
+    orderRefundStat: {},
 };
 
 export default handleActions({
@@ -35,6 +37,12 @@ export default handleActions({
         return {
             ...state,
             orderStat: action.payload
+        }
+    },
+    [StoragePanelActionType.getOrderRefundStat]: (state, action) => {
+        return {
+            ...state,
+            orderRefundStat: action.payload
         }
     },
 }, initialState);

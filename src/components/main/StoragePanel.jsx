@@ -75,6 +75,17 @@ function StoragePanel(props) {
                         </CardContent>
                     </Card>
                 </Grid>
+
+                <Grid item container xs={4}>
+                    <Card className={classes.card}>
+                        <CardContent>
+                            <Grid container spacing={1}>
+                                <Grid item xs={12}><Typography variant="h5" gutterBottom>未入库的退单商品</Typography></Grid>
+                                <Grid item xs={6}><Typography color="textSecondary">未出库数：{storagePanelReducer.orderRefundStat.count}</Typography></Grid>
+                            </Grid>
+                        </CardContent>
+                    </Card>
+                </Grid>
             </Grid>
         </div>
     )
@@ -92,6 +103,7 @@ const mapDispatchToProps = (dispatch) => ({
         dispatch(storagePanelAction.getPurchaseRefundStat());
         dispatch(storagePanelAction.getStorageCheckStat());
         dispatch(storagePanelAction.getOrderStat());
+        dispatch(storagePanelAction.getOrderRefundProd());
     }
 });
 

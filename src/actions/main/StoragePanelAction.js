@@ -83,8 +83,7 @@ export const getOrderStat = () => async (dispatch) => {
     try {
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/orderItemProdStorage?orderItemType=' + sysConst.STORAGE_OP_TYPE[0].value;
-
+            + '/orderItemProdStorage?status=1&&orderItemType=' + sysConst.STORAGE_OP_TYPE[0].value;
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
@@ -96,6 +95,25 @@ export const getOrderStat = () => async (dispatch) => {
             }
         } else if (!res.success) {
             Swal.fire("获取未出库的订单商品信息失败", res.msg, "warning");
+        }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+// 获取未入库的退单商品信息
+export const getOrderRefundProd = () => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/orderRefundProd?status=' + sysConst.ORDER_REFUND_STORAGE_STATUS[0].value;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        let res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: StoragePanelActionType.getOrderRefundStat, payload: res.count});
+        } else if (!res.success) {
+            Swal.fire("获取未入库的退单商品信息失败", res.msg, "warning");
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
