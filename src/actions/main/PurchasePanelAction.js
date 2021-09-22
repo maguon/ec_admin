@@ -94,7 +94,7 @@ export const getProdStoreWarning = (params) => async (dispatch,getState) => {
                 dispatch({type: PurchasePanelActionType.getProdStoreWarningSize, payload: res.rows.length});
                 dispatch({type: PurchasePanelActionType.getProdStoreWarning, payload: res.rows.slice(0, size - 1)});*/
             } else {
-                dispatch({type: PurchasePanelActionType.getProdStoreWarning, payload: {}});
+                dispatch({type: PurchasePanelActionType.getProdStoreWarning, payload: []});
             }
         } else if (!res.success) {
             Swal.fire("获取未出库的订单商品信息失败", res.msg, "warning");

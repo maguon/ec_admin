@@ -514,6 +514,48 @@ function PurchaseRefund (props){
                                 <Grid  container spacing={3} >
                                     <Grid item xs={3}>
                                         <FormControl variant="outlined" fullWidth={true} margin="dense">
+                                            <InputLabel id="standard-select-outlined-label" shrink>商品</InputLabel>
+                                            <Select
+                                                label="商品"
+                                                labelId="standard-select-outlined-label"
+                                                id="standard-select-outlined"
+                                                value={addProduct}
+                                                onChange={(e)=>{
+                                                    setAddProduct(e.target.value)
+                                                }}
+                                                error={validationStep.addProduct&&validationStep.addProduct!=null}
+                                            >  <MenuItem key={-1} value={-1}>请选择</MenuItem>
+                                                {purchaseRefundReducer.productArray.map((item, index) => (
+                                                    item.storage_product_id==null?<MenuItem key={'productRefund-'+item.id} value={item}>{item.product_name}(未入库)</MenuItem>:<MenuItem key={item.id} value={item}>{item.product_name}(已入库-{item.storage_count})</MenuItem>
+                                                ))}
+                                            </Select>
+                                            {(validationStep.addProduct&&validationStep.addProduct!=''&&validationStep.addProduct!='-1' && <FormHelperText style={{color: 'red'}}>{validationStep.addProduct}</FormHelperText>)}
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <FormControl variant="outlined" fullWidth={true} margin="dense">
+                                            <InputLabel id="standard-select-outlined-label" shrink>是否出库</InputLabel>
+                                            <Select
+                                                label="是否出库"
+                                                labelId="standard-select-outlined-label"
+                                                id="standard-select-outlined"
+                                                value={addStorageType}
+                                                onChange={(e)=>{
+                                                    setAddStorageType(e.target.value)
+                                                }}
+                                            >
+                                                {sysConst.STORAGE_TYPE.map((item, index) => (
+                                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+
+
+
+
+                                    <Grid item xs={3}>
+                                        <FormControl variant="outlined" fullWidth={true} margin="dense">
                                             <InputLabel id="standard-select-outlined-label" shrink>运费类型</InputLabel>
                                             <Select
                                                 label="运费类型"
@@ -538,51 +580,11 @@ function PurchaseRefund (props){
                                                    }}
                                         />
                                     </Grid>
-                                    <Grid item xs={3}>
-                                        <TextField label="总价" fullWidth={true} disabled={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                                   value={Number(addUnitCost*addPurchaseCount)-Number(addTransferCost)}
-                                        />
-                                    </Grid>
-                                    <Grid item xs={3}>
-                                        <FormControl variant="outlined" fullWidth={true} margin="dense">
-                                            <InputLabel id="standard-select-outlined-label" shrink>是否出库</InputLabel>
-                                            <Select
-                                                label="是否出库"
-                                                labelId="standard-select-outlined-label"
-                                                id="standard-select-outlined"
-                                                value={addStorageType}
-                                                onChange={(e)=>{
-                                                    setAddStorageType(e.target.value)
-                                                }}
-                                            >
-                                                {sysConst.STORAGE_TYPE.map((item, index) => (
-                                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
+
+
                                 </Grid>
                                 <Grid  container spacing={3}>
-                                    <Grid item xs={3}>
-                                        <FormControl variant="outlined" fullWidth={true} margin="dense">
-                                            <InputLabel id="standard-select-outlined-label" shrink>商品</InputLabel>
-                                            <Select
-                                                label="商品"
-                                                labelId="standard-select-outlined-label"
-                                                id="standard-select-outlined"
-                                                value={addProduct}
-                                                onChange={(e)=>{
-                                                    setAddProduct(e.target.value)
-                                                }}
-                                                error={validationStep.addProduct&&validationStep.addProduct!=null}
-                                            >  <MenuItem key={-1} value={-1}>请选择</MenuItem>
-                                                {purchaseRefundReducer.productArray.map((item, index) => (
-                                                    item.storage_product_id==null?<MenuItem key={'productRefund-'+item.id} value={item}>{item.product_name}(未入库)</MenuItem>:<MenuItem key={item.id} value={item}>{item.product_name}(已入库-{item.storage_count})</MenuItem>
-                                                ))}
-                                            </Select>
-                                            {(validationStep.addProduct&&validationStep.addProduct!=''&&validationStep.addProduct!='-1' && <FormHelperText style={{color: 'red'}}>{validationStep.addProduct}</FormHelperText>)}
-                                        </FormControl>
-                                    </Grid>
+
                                     <Grid item xs={3}>
                                         <TextField type="number" label="退货单价" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                                    value={addUnitCost}
@@ -606,6 +608,11 @@ function PurchaseRefund (props){
                                     <Grid item xs={3}>
                                         <TextField type="number" disabled={true} label="退货总价" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                                    value={Number(addPurchaseCount)*Number(addUnitCost)}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <TextField label="总价" fullWidth={true} disabled={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
+                                                   value={Number(addUnitCost*addPurchaseCount)-Number(addTransferCost)}
                                         />
                                     </Grid>
                                 </Grid>
@@ -674,24 +681,55 @@ function PurchaseRefund (props){
                                 />
                             </FormControl>
                         </Grid>
+                        <Grid item xs>
+                            <FormControl variant="outlined"   disabled={true} fullWidth={true} margin="dense">
+                                <InputLabel id="standard-select-outlined-label" shrink>供应商名称</InputLabel>
+                                <TextField fullWidth
+                                           disabled={true}
+                                           size="small"
+                                           name="supplierName"
+                                           type="text"
+                                           label="供应商名称"
+                                           variant="outlined"
+                                           value={putSupplier}
+
+                                />
+                            </FormControl>
+                        </Grid>
                     </Grid>
                     <Grid  container spacing={3}>
-
-                    <Grid item xs>
-                        <FormControl variant="outlined"   disabled={true} fullWidth={true} margin="dense">
-                            <InputLabel id="standard-select-outlined-label" shrink>供应商名称</InputLabel>
-                            <TextField fullWidth
-                                       disabled={true}
-                                       size="small"
-                                       name="supplierName"
-                                       type="text"
-                                       label="供应商名称"
-                                       variant="outlined"
-                                       value={putSupplier}
-
-                            />
-                        </FormControl>
-                    </Grid>
+                        <Grid item xs>
+                            <FormControl variant="outlined"   disabled={true} fullWidth={true} margin="dense">
+                                <InputLabel id="standard-select-outlined-label" shrink>商品</InputLabel>
+                                <TextField fullWidth
+                                           disabled={true}
+                                           size="small"
+                                           name="supplierName"
+                                           type="text"
+                                           label="商品"
+                                           variant="outlined"
+                                           value={putProduct}
+                                />
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs>
+                            <FormControl variant="outlined" fullWidth={true} margin="dense">
+                                <InputLabel id="standard-select-outlined-label" shrink>是否出库</InputLabel>
+                                <Select
+                                    label="是否出库"
+                                    labelId="standard-select-outlined-label"
+                                    id="standard-select-outlined"
+                                    value={putStorageType}
+                                    onChange={(e)=>{
+                                        setPutStorageType(e.target.value)
+                                    }}
+                                >
+                                    {sysConst.STORAGE_TYPE.map((item, index) => (
+                                        <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Grid>
                     <Grid item xs>
                         <FormControl variant="outlined" fullWidth={true} margin="dense">
                             <InputLabel id="standard-select-outlined-label" shrink>运费类型</InputLabel>
@@ -718,28 +756,10 @@ function PurchaseRefund (props){
                                    }}
                         />
                     </Grid>
-                    <Grid item xs>
-                        <TextField label="总价" fullWidth={true} disabled={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                   value={Number(putUnitCost*putPurchaseCount)-Number(putTransferCost)}
-                        />
-                    </Grid>
                 </Grid>
                 {/*商品选择*/}
                 <Grid  container spacing={3}>
-                    <Grid item xs>
-                        <FormControl variant="outlined"   disabled={true} fullWidth={true} margin="dense">
-                            <InputLabel id="standard-select-outlined-label" shrink>商品</InputLabel>
-                            <TextField fullWidth
-                                       disabled={true}
-                                       size="small"
-                                       name="supplierName"
-                                       type="text"
-                                       label="商品"
-                                       variant="outlined"
-                                       value={putProduct}
-                            />
-                        </FormControl>
-                    </Grid>
+
                     <Grid item xs>
                         <TextField type="number" label="退货单价" fullWidth={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
                                    value={putUnitCost}
@@ -761,26 +781,13 @@ function PurchaseRefund (props){
                                    value={Number(putUnitCost)*Number(putPurchaseCount)}
                         />
                     </Grid>
+                    <Grid item xs>
+                        <TextField label="总价" fullWidth={true} disabled={true} margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
+                                   value={Number(putUnitCost*putPurchaseCount)-Number(putTransferCost)}
+                        />
+                    </Grid>
                 </Grid>
                 <Grid  container spacing={3}>
-                    <Grid item xs>
-                        <FormControl variant="outlined" fullWidth={true} margin="dense">
-                            <InputLabel id="standard-select-outlined-label" shrink>是否出库</InputLabel>
-                            <Select
-                                label="是否出库"
-                                labelId="standard-select-outlined-label"
-                                id="standard-select-outlined"
-                                value={putStorageType}
-                                onChange={(e)=>{
-                                    setPutStorageType(e.target.value)
-                                }}
-                            >
-                                {sysConst.STORAGE_TYPE.map((item, index) => (
-                                    <MenuItem key={item.value} value={item.value}>{item.label}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Grid>
                     <Grid item xs>
                         <TextField
                             fullWidth={true}
