@@ -348,7 +348,7 @@ function ProductManager(props) {
                     </TableHead>
                     <TableBody>
                         {productManagerReducer.productData.dataList.map((row) => (
-                            <TableRow key={row.id}>
+                            <TableRow key={row.id} style={(row.storage_count != null && ((row.storage_min != null && row.storage_count < row.storage_min) || (row.storage_max != null && row.storage_count > row.storage_max))) ? {background: '#D3D3D3'} : {}}>
                                 <TableCell align="center">{row.id}</TableCell>
                                 <TableCell align="center">{row.category_name}</TableCell>
                                 <TableCell align="center">{row.category_sub_name}</TableCell>
@@ -358,10 +358,11 @@ function ProductManager(props) {
                                 <TableCell align="center">{commonUtil.getJsonValue(sysConst.STANDARD_TYPE, row.standard_type)}</TableCell>
                                 <TableCell align="center">{row.unit_name}</TableCell>
                                 <TableCell align="right">{row.price}</TableCell>
-                                <TableCell align="right">
-                                    {((row.storage_min != null && row.storage_count < row.storage_min) || (row.storage_max != null && row.storage_count > row.storage_max))
-                                        ? <span style={{color: "red"}}>{row.storage_count}</span> : <span>{row.storage_count}</span>}
-                                </TableCell>
+                                {/*<TableCell align="right">*/}
+                                {/*    {((row.storage_min != null && row.storage_count < row.storage_min) || (row.storage_max != null && row.storage_count > row.storage_max))*/}
+                                {/*        ? <span style={{color: "red"}}><b>{row.storage_count}</b></span> : <span>{row.storage_count}</span>}*/}
+                                {/*</TableCell>*/}
+                                <TableCell align="right">{row.storage_count}</TableCell>
                                 <TableCell align="center">{commonUtil.getJsonValue(sysConst.USE_FLAG, row.status)}</TableCell>
                                 <TableCell align="center">
                                     {/* 停用/可用 状态 */}
