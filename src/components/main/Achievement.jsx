@@ -260,7 +260,7 @@ function Achievement (props){
                         <div>
                             {/*查询条件*/}
                             <Grid container  spacing={1}>
-                                <Grid container item xs={11} spacing={1}>
+                                <Grid container item xs={10} spacing={1}>
                                     {/*订单号*/}
                                     <Grid item xs>
                                         <TextField label="订单编号" fullWidth margin="dense" variant="outlined" type="number" value={achievementReducer.productParams.orderId}
@@ -332,10 +332,19 @@ function Achievement (props){
                                     </Grid>
                                 </Grid>
                                 {/*查询按钮*/}
-                                <Grid item xs={1} style={{textAlign: 'right',marginTop:10}}>
-                                    <Fab color="primary" size="small" onClick={getOrderItemProdArray}>
-                                        <i className="mdi mdi-magnify mdi-24px"/>
-                                    </Fab>
+                                <Grid item xs={2} container style={{textAlign:'center',marginTop:10}}>
+                                    {/*查询按钮*/}
+                                    <Grid item xs={6}>
+                                        <Fab color="primary" size="small" onClick={getOrderItemProdArray}>
+                                            <i className="mdi mdi-magnify mdi-24px"/>
+                                        </Fab>
+                                    </Grid>
+
+                                    <Grid item xs={6}>
+                                        <Fab color="primary" size="small" onClick={()=>{dispatch(AchievementAction.downLoadCsv())}}>
+                                            <i className="mdi mdi-cloud-download mdi-24px"/>
+                                        </Fab>
+                                    </Grid>
                                 </Grid>
                             </Grid>
                             {/*主体*/}
@@ -415,8 +424,6 @@ function Achievement (props){
                         </Grid>}
                     </Grid>
                 </SimpleModal>
-
-
             </div>
         </div>
     )

@@ -56,6 +56,7 @@ export const getOrderItemProd = (params) => async (dispatch, getState) => {
             dateEnd:commonUtil.formatDate(param.dateEnd, 'yyyyMMdd'),
             saleUserId: param.saleUserId == null? '' : param.saleUserId.id,
             prodId:param.prodId==null?'':param.prodId.id,
+            orderStatus:sysConst.ORDER_STATUS[3].value
         };
         let conditions = httpUtil.objToUrl(paramsObj);
         url = conditions.length > 0 ? url + "&" + conditions : url;
@@ -73,5 +74,30 @@ export const getOrderItemProd = (params) => async (dispatch, getState) => {
         }
     } catch (err) {
         Swal.fire('操作失败', err.message, 'error');
+    }
+};
+export const downLoadCsv = () => async (dispatch,getState) => {
+    try {
+        const param=getState().AchievementReducer.productParams;
+        let paramsObjCsv = {
+            purchaseId:param.purchaseId,
+            supplierId:param.supplierId == null? '' : param.supplierId.id,
+            orderId:param.orderId,
+            dateStart:commonUtil.formatDate(param.dateStart, 'yyyyMMdd'),
+            dateEnd:commonUtil.formatDate(param.dateEnd, 'yyyyMMdd'),
+            saleUserId: param.saleUserId == null? '' : param.saleUserId.id,
+            prodId:param.prodId==null?'':param.prodId.id,
+            orderStatus:sysConst.ORDER_STATUS[3].value
+        };
+        // 基本检索URL
+        let url = 'http://' + apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/orderItemProd.csv?1=1';
+        // 检索条件
+        let conditions = httpUtil.objToUrl(paramsObjCsv);
+        // 检索URL
+        url = conditions.length > 0 ? url + "&" + conditions : url;
+        window.open(url);
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
     }
 };
