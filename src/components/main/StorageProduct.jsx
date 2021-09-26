@@ -61,8 +61,9 @@ function StorageProduct(props) {
 
     // 模态属性
     const [modalOpen, setModalOpen] = React.useState(false);
+    const [uniqueModalOpen, setUniqueModalOpen] = React.useState(false);
     // 模态数据
-    const [modalData, setModalData] = React.useState({storageProduct:{}});
+    const [modalData, setModalData] = React.useState({storageProduct:{}, dataItem: {}});
     // 模态校验
     const [validation,setValidation] = useState({});
 
@@ -90,7 +91,7 @@ function StorageProduct(props) {
         // 清check内容
         setValidation({});
         // 页面属性
-        setModalData({selectAll: false, purchaseItemUnique:purchaseItemUnique,storageProduct:item,storage:null,storageArea:null,count:'',remark:''});
+        setModalData({...modalData,selectAll: false, purchaseItemUnique:purchaseItemUnique,storageProduct:item,storage:null,storageArea:null,count:'',remark:''});
         // 设定模态打开
         setModalOpen(true);
     };
@@ -289,6 +290,16 @@ function StorageProduct(props) {
                                     <IconButton color="primary" size="small" edge="start" onClick={() => {initModal(row)}}>
                                         <i className="mdi mdi-truck"/>
                                     </IconButton>
+                                    {/* 唯一编码 */}
+                                    <IconButton color="primary" edge="start" size="small"
+                                                onClick={() => {
+                                                    setModalData({...modalData,dataItem: row});
+                                                    setUniqueModalOpen(true);
+                                                }}
+                                                disabled={row.unique_flag === sysConst.UNIQUE_FLAG[0].value || (row.prod_unique_arr != null && row.prod_unique_arr.length == 0)}
+                                    >
+                                        <i className="mdi mdi-barcode-scan"/>
+                                    </IconButton>
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -317,6 +328,20 @@ function StorageProduct(props) {
                 <Button variant="contained" color="primary"
                         onClick={()=>{dispatch(storageProductAction.getStorageProductList(storageProductReducer.storageProductData.start+(storageProductReducer.storageProductData.size-1)))}}>下一页</Button>}
             </Box>
+
+            <SimpleModal maxWidth='md' showFooter={true} title="唯一编码" open={uniqueModalOpen}
+                         onClose={()=>{setUniqueModalOpen(false)}}
+                         footer={<Button variant="contained" onClick={()=>{setUniqueModalOpen(false)}}>关闭</Button>}
+            >
+                <Grid container spacing={2}>
+                    {modalData.dataItem.unique_flag === sysConst.UNIQUE_FLAG[1].value && modalData.dataItem.prod_unique_arr.length > 0 &&
+                    <Grid item sm={12} container spacing={1}>
+                        {modalData.dataItem.prod_unique_arr.map((item) => (
+                            <Grid item sm={4}>{item}</Grid>
+                        ))}
+                    </Grid>}
+                </Grid>
+            </SimpleModal>
 
             <SimpleModal maxWidth={'lg'}
                          title="移库"
