@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config';
-import {AppActionType, OrderDetailActionType, OrderRefundPayActionType} from '../../types';
+import {AppActionType, OrderRefundPayActionType} from '../../types';
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const commonUtil = require('../../utils/CommonUtil');
@@ -43,6 +43,7 @@ const getParams = () => (dispatch, getState) => {
         orderId: queryParams.orderId,
         // 订单状态
         status: queryParams.status,
+        clientSerial:queryParams.clientSerial,
         // 客户姓名
         clientId: queryParams.client == null ? '' : queryParams.client.id,
         // 客户集群

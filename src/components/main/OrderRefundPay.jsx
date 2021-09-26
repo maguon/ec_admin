@@ -7,7 +7,7 @@ import {Box, Button, Divider, Fab, FormControl, Grid, InputLabel, makeStyles, Me
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from '@material-ui/pickers';
 import {SimpleModal} from "../index";
-import {OrderPayActionType, OrderRefundPayActionType} from "../../types";
+import {OrderActionType, OrderPayActionType, OrderRefundPayActionType} from "../../types";
 const OrderRefundPayAction = require('../../actions/main/OrderRefundPayAction');
 const commonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');
@@ -209,6 +209,15 @@ function OrderRefundPay(props) {
                             </Select>
                         </FormControl>
                     </Grid>
+
+
+                    <Grid item xs>
+                        <TextField label="车牌" fullWidth margin="dense" variant="outlined" value={orderRefundPayReducer.queryParams.clientSerial}
+                                   onChange={(e)=>{dispatch(OrderPayActionType.setQueryPayParam({name: "clientSerial", value: e.target.value}))}}/>
+                    </Grid>
+
+
+
                     <Grid item xs>
                         <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
                                       options={commonReducer.clientAgentList}
@@ -289,6 +298,7 @@ function OrderRefundPay(props) {
                             </TableCell>
                             <TableCell className={classes.tableHead} align="center">退单号</TableCell>
                             <TableCell className={classes.tableHead} align="center">订单号</TableCell>
+                            <TableCell className={classes.tableHead} align="center">车牌号</TableCell>
                             <TableCell className={classes.tableHead} align="center">客户姓名</TableCell>
                             <TableCell className={classes.tableHead} align="center">客户集群</TableCell>
                             <TableCell className={classes.tableHead} align="center">退单状态</TableCell>
@@ -328,6 +338,7 @@ function OrderRefundPay(props) {
                                     </TableCell>
                                     <TableCell align="center">{row.id}</TableCell>
                                     <TableCell align="center">{row.order_id}</TableCell>
+                                    <TableCell align="center">{row.o_client_serial}</TableCell>
                                     <TableCell align="center">{row.o_client_name}</TableCell>
                                     <TableCell align="center">{row.o_client_agent_name}</TableCell>
                                     <TableCell align="center">{commonUtil.getJsonValue(sysConst.ORDER_REFUND_STATUS, row.status)}</TableCell>
@@ -359,7 +370,7 @@ function OrderRefundPay(props) {
                             </TableRow>}
                         {orderRefundPayReducer.orderData.dataList.length === 0 &&
                         <TableRow>
-                            <TableCell colSpan={13} align="center">暂无数据</TableCell>
+                            <TableCell colSpan={15} align="center">暂无数据</TableCell>
                         </TableRow>}
                     </TableBody>
                 </Table>

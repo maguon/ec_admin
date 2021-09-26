@@ -19,6 +19,7 @@ const initialState = {
         orderId: '',
         // 订单状态
         status: '',
+        clientSerial:'',
         // 客户姓名
         clientId: null ,
         // 客户集群
