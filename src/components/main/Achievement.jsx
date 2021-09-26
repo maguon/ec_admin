@@ -24,7 +24,7 @@ import TabContext from '@material-ui/lab/TabContext';
 import TabPanel from '@material-ui/lab/TabPanel';
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from "@material-ui/pickers";
-import {AchievementActionType} from "../../types";
+import {AchievementActionType, OrderPayActionType} from "../../types";
 import {SimpleModal} from "../index";
 const sysConst = require('../../utils/SysConst');
 const commonAction = require('../../actions/layout/CommonAction');
@@ -133,17 +133,47 @@ function Achievement (props){
                         <div>
                             {/*查询条件*/}
                             <Grid container  spacing={1}>
-                                <Grid container item xs={11} spacing={1}>
+                                <Grid container item xs={10} spacing={1}>
                                     {/*订单号*/}
                                     <Grid item xs>
                                         <TextField label="订单编号" fullWidth margin="dense" variant="outlined" type="number" value={achievementReducer.serviceParams.orderId}
                                                    onChange={(e)=>{dispatch(AchievementActionType.setServiceParam({name: "orderId", value: e.target.value}))}}/>
 
                                     </Grid>
+                                    <Grid item xs>
+                                        <TextField label="车牌" fullWidth margin="dense" variant="outlined" value={achievementReducer.serviceParams.clientSerial}
+                                                   onChange={(e)=>{dispatch(AchievementActionType.setServiceParam({name: "clientSerial", value: e.target.value}))}}/>
+                                    </Grid>
+                                    <Grid item xs>
+                                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
+                                                      options={commonReducer.clientAgentList}
+                                                      getOptionLabel={(option) => option.name}
+                                                      value={achievementReducer.serviceParams.clientAgentId}
+                                                      onChange={(event, value) => {
+                                                          dispatch(AchievementActionType.setServiceParam({
+                                                              name: "clientAgentId",
+                                                              value: value
+                                                          }));
+                                                      }}
+                                                      renderInput={(params) => <TextField {...params} label="客户集群" margin="dense"
+                                                                                          variant="outlined"/>}
+                                        />
+                                    </Grid>
+                                    <Grid item xs>
+                                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
+                                                      options={commonReducer.clientList}
+                                                      getOptionLabel={(option) => option.name}
+                                                      value={achievementReducer.serviceParams.clientId}
+                                                      onChange={(event, value) => {
+                                                          dispatch(AchievementActionType.setServiceParam({name: "clientId", value: value}));
+                                                      }}
+                                                      renderInput={(params) => <TextField {...params} label="客户" margin="dense"
+                                                                                          variant="outlined"/>}
+                                        />
+                                    </Grid>
                                     {/*名称*/}
                                     <Grid item  xs>
                                         <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
-                                                      ListboxProps={{ style: { maxHeight: '175px' } }}
                                                       options={commonReducer.saleServiceList}
                                                       getOptionLabel={(option) => option.service_name}
                                                       value={achievementReducer.serviceParams.saleServiceId}
@@ -156,7 +186,6 @@ function Achievement (props){
                                     {/*施工*/}
                                     <Grid item  xs>
                                         <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
-                                                      ListboxProps={{ style: { maxHeight: '175px' } }}
                                                       options={commonReducer.userList}
                                                       getOptionLabel={(option) => option.real_name}
                                                       value={achievementReducer.serviceParams.deployUserId}
@@ -169,7 +198,6 @@ function Achievement (props){
                                     {/*验收*/}
                                     <Grid item  xs>
                                         <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
-                                                      ListboxProps={{ style: { maxHeight: '175px' } }}
                                                       options={commonReducer.userList}
                                                       getOptionLabel={(option) => option.real_name}
                                                       value={achievementReducer.serviceParams.checkUserId}
@@ -202,10 +230,20 @@ function Achievement (props){
                                     </Grid>
                                 </Grid>
                                 {/*查询按钮*/}
-                                <Grid item xs={1} style={{textAlign: 'right',marginTop:10}}>
-                                    <Fab color="primary" size="small" onClick={getOrderItemServiceArray}>
-                                        <i className="mdi mdi-magnify mdi-24px"/>
-                                    </Fab>
+                                <Grid item xs={2} container style={{textAlign:'center',marginTop:10}}>
+                                    {/*查询按钮*/}
+                                    <Grid item xs={6}>
+                                        <Fab color="primary" size="small" onClick={getOrderItemServiceArray}>
+                                            <i className="mdi mdi-magnify mdi-24px"/>
+                                        </Fab>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Fab color="primary" size="small" onClick={()=>{dispatch(AchievementAction.downServiceLoadCsv())}}>
+                                            <i className="mdi mdi-cloud-download mdi-24px"/>
+                                        </Fab>
+                                    </Grid>
+
+
                                 </Grid>
                             </Grid>
                             {/*主体*/}
@@ -214,6 +252,10 @@ function Achievement (props){
                                     <TableHead >
                                         <TableRow>
                                             <TableCell className={classes.tableHead} align="center">订单号</TableCell>
+                                            <TableCell className={classes.tableHead} align="center">客户集群</TableCell>
+                                            <TableCell className={classes.tableHead} align="center">客户姓名</TableCell>
+                                            <TableCell className={classes.tableHead} align="center">客户电话</TableCell>
+                                            <TableCell className={classes.tableHead} align="center">车牌</TableCell>
                                             <TableCell className={classes.tableHead} align="center">服务名称</TableCell>
                                             <TableCell className={classes.tableHead} align="center">售价</TableCell>
                                             <TableCell className={classes.tableHead} align="center">折扣</TableCell>
@@ -227,6 +269,10 @@ function Achievement (props){
                                         {achievementReducer.serviceData.serviceInfo.length > 0 &&achievementReducer.serviceData.serviceInfo.map((row) => (
                                             <TableRow key={'service-'+row.id}>
                                                 <TableCell align="center" >{row.order_id}</TableCell>
+                                                <TableCell align="center">{row.or_client_agent_name}</TableCell>
+                                                <TableCell align="center">{row.or_client_name}</TableCell>
+                                                <TableCell align="center">{row.or_client_tel}</TableCell>
+                                                <TableCell align="center" >{row.or_client_serial}</TableCell>
                                                 <TableCell align="center" >{row.sale_service_name}</TableCell>
                                                 <TableCell align="center" >{row.fixed_price=='0.00'?row.unit_price+'*'+Number(row.service_count):row.fixed_price}</TableCell>
                                                 <TableCell align="center" >{row.discount_service_price}</TableCell>
@@ -236,7 +282,7 @@ function Achievement (props){
                                                 <TableCell align="center" >{row.or_date_id}</TableCell>
                                             </TableRow>))}
                                         {achievementReducer.serviceData.serviceInfo.length === 0 &&
-                                        <TableRow style={{height:60}}><TableCell align="center" colSpan="8">暂无数据</TableCell></TableRow>
+                                        <TableRow style={{height:60}}><TableCell align="center" colSpan="12">暂无数据</TableCell></TableRow>
                                         }
                                     </TableBody>
                                 </Table>
@@ -273,6 +319,38 @@ function Achievement (props){
                                                    onChange={(e)=>{dispatch(AchievementActionType.setProductParam({name: "purchaseId", value: e.target.value}))}}/>
 
                                     </Grid>
+                                    <Grid item xs>
+                                        <TextField label="车牌" fullWidth margin="dense" variant="outlined" value={achievementReducer.productParams.clientSerial}
+                                                   onChange={(e)=>{dispatch(AchievementActionType.setProductParam({name: "clientSerial", value: e.target.value}))}}/>
+                                    </Grid>
+                                    <Grid item xs>
+                                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
+                                                      options={commonReducer.clientAgentList}
+                                                      getOptionLabel={(option) => option.name}
+                                                      value={achievementReducer.productParams.clientAgentId}
+                                                      onChange={(event, value) => {
+                                                          dispatch(AchievementActionType.setProductParam({
+                                                              name: "clientAgentId",
+                                                              value: value
+                                                          }));
+                                                      }}
+                                                      renderInput={(params) => <TextField {...params} label="客户集群" margin="dense"
+                                                                                          variant="outlined"/>}
+                                        />
+                                    </Grid>
+                                    <Grid item xs>
+                                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
+                                                      options={commonReducer.clientList}
+                                                      getOptionLabel={(option) => option.name}
+                                                      value={achievementReducer.productParams.clientId}
+                                                      onChange={(event, value) => {
+                                                          dispatch(AchievementActionType.setProductParam({name: "clientId", value: value}));
+                                                      }}
+                                                      renderInput={(params) => <TextField {...params} label="客户" margin="dense"
+                                                                                          variant="outlined"/>}
+                                        />
+                                    </Grid>
+
                                     {/*供应商*/}
                                     <Grid item  xs>
                                         <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
@@ -353,6 +431,10 @@ function Achievement (props){
                                     <TableHead >
                                         <TableRow>
                                             <TableCell className={classes.tableHead} align="center">订单号</TableCell>
+                                            <TableCell className={classes.tableHead} align="center">客户集群</TableCell>
+                                            <TableCell className={classes.tableHead} align="center">客户姓名</TableCell>
+                                            <TableCell className={classes.tableHead} align="center">客户电话</TableCell>
+                                            <TableCell className={classes.tableHead} align="center">车牌</TableCell>
                                             <TableCell className={classes.tableHead} align="center">商品名称</TableCell>
                                             <TableCell className={classes.tableHead} align="center">价格*数量</TableCell>
                                             <TableCell className={classes.tableHead} align="center">折扣</TableCell>
@@ -368,6 +450,10 @@ function Achievement (props){
                                         {achievementReducer.productData.productInfo.length > 0 &&achievementReducer.productData.productInfo.map((row,index) => (
                                             <TableRow key={'prod-'+index}>
                                                 <TableCell align="center" >{row.order_id}</TableCell>
+                                                <TableCell align="center">{row.or_client_agent_name}</TableCell>
+                                                <TableCell align="center">{row.or_client_name}</TableCell>
+                                                <TableCell align="center">{row.or_client_tel}</TableCell>
+                                                <TableCell align="center" >{row.or_client_serial}</TableCell>
                                                 <TableCell align="center" >{row.prod_name}</TableCell>
                                                 <TableCell align="center" >{row.unit_price}*{Number(row.prod_count)}</TableCell>
                                                 <TableCell align="center" >{row.discount_prod_price}</TableCell>
@@ -389,7 +475,7 @@ function Achievement (props){
                                                 </TableCell>
                                             </TableRow>))}
                                         {achievementReducer.productData.productInfo.length === 0 &&
-                                        <TableRow style={{height:60}}><TableCell align="center" colSpan="10">暂无数据</TableCell></TableRow>
+                                        <TableRow style={{height:60}}><TableCell align="center" colSpan="14">暂无数据</TableCell></TableRow>
                                         }
                                     </TableBody>
                                 </Table>
@@ -439,6 +525,10 @@ const mapDispatchToProps = (dispatch) => ({
     getBaseSelectList:()=>{
         // 取得用户信息列表
         dispatch(commonAction.getUserList());
+        // 取得客户列表
+        dispatch(commonAction.getClientList());
+        // 取得客户集群列表
+        dispatch(commonAction.getClientAgentList());
         // 取得服务列表
         dispatch(commonAction.getSaleServiceList());
         // 取得商品列表

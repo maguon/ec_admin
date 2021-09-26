@@ -20,7 +20,10 @@ export const getOrderItemService = (params) => async (dispatch, getState) => {
             dateEnd:commonUtil.formatDate(paramsObj.dateEnd, 'yyyyMMdd'),
             saleServiceId: paramsObj.saleServiceId == null? '' : paramsObj.saleServiceId.id,
             deployUserId:paramsObj.deployUserId==null?'':paramsObj.deployUserId.id,
-            checkUserId:paramsObj.checkUserId==null?'':paramsObj.checkUserId.id
+            checkUserId:paramsObj.checkUserId==null?'':paramsObj.checkUserId.id,
+            clientSerial:paramsObj.clientSerial,
+            clientAgentId:paramsObj.clientAgentId==null?'':paramsObj.clientAgentId.id,
+            clientId:paramsObj.clientId==null?'':paramsObj.clientId.id,
         };
         let conditions = httpUtil.objToUrl(paramsObject);
         url = conditions.length > 0 ? url + "&" + conditions : url;
@@ -56,7 +59,10 @@ export const getOrderItemProd = (params) => async (dispatch, getState) => {
             dateEnd:commonUtil.formatDate(param.dateEnd, 'yyyyMMdd'),
             saleUserId: param.saleUserId == null? '' : param.saleUserId.id,
             prodId:param.prodId==null?'':param.prodId.id,
-            orderStatus:sysConst.ORDER_STATUS[3].value
+            orderStatus:sysConst.ORDER_STATUS[3].value,
+            clientSerial:param.clientSerial,
+            clientAgentId:param.clientAgentId==null?'':param.clientAgentId.id,
+            clientId:param.clientId==null?'':param.clientId.id
         };
         let conditions = httpUtil.objToUrl(paramsObj);
         url = conditions.length > 0 ? url + "&" + conditions : url;
@@ -76,6 +82,32 @@ export const getOrderItemProd = (params) => async (dispatch, getState) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
+export const downServiceLoadCsv = () => async (dispatch,getState) => {
+    try {
+        const paramsObj=getState().AchievementReducer.serviceParams;
+        let paramsObjCsv = {
+            orderId:paramsObj.orderId,
+            dateStart:commonUtil.formatDate(paramsObj.dateStart, 'yyyyMMdd'),
+            dateEnd:commonUtil.formatDate(paramsObj.dateEnd, 'yyyyMMdd'),
+            saleServiceId: paramsObj.saleServiceId == null? '' : paramsObj.saleServiceId.id,
+            deployUserId:paramsObj.deployUserId==null?'':paramsObj.deployUserId.id,
+            checkUserId:paramsObj.checkUserId==null?'':paramsObj.checkUserId.id,
+            clientSerial:paramsObj.clientSerial,
+            clientAgentId:paramsObj.clientAgentId==null?'':paramsObj.clientAgentId.id,
+            clientId:paramsObj.clientId==null?'':paramsObj.clientId.id
+        };
+        // 基本检索URL
+        let url = 'http://' + apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/orderItemService.csv?1=1';
+        // 检索条件
+        let conditions = httpUtil.objToUrl(paramsObjCsv);
+        // 检索URL
+        url = conditions.length > 0 ? url + "&" + conditions : url;
+        window.open(url);
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
 export const downLoadCsv = () => async (dispatch,getState) => {
     try {
         const param=getState().AchievementReducer.productParams;
@@ -87,7 +119,10 @@ export const downLoadCsv = () => async (dispatch,getState) => {
             dateEnd:commonUtil.formatDate(param.dateEnd, 'yyyyMMdd'),
             saleUserId: param.saleUserId == null? '' : param.saleUserId.id,
             prodId:param.prodId==null?'':param.prodId.id,
-            orderStatus:sysConst.ORDER_STATUS[3].value
+            orderStatus:sysConst.ORDER_STATUS[3].value,
+            clientSerial:param.clientSerial,
+            clientAgentId:param.clientAgentId==null?'':param.clientAgentId.id,
+            clientId:param.clientId==null?'':param.clientId.id
         };
         // 基本检索URL
         let url = 'http://' + apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)

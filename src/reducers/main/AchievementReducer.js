@@ -8,7 +8,10 @@ const initialState = {
         deployUserId:null,
         checkUserId:null,
         dateStart:'',
-        dateEnd:''
+        dateEnd:'',
+        clientSerial:'',
+        clientAgentId:null,
+        clientId:null
     },
     productParams: {
         purchaseId:'',
@@ -17,7 +20,10 @@ const initialState = {
         saleUserId:null,
         prodId:null,
         dateStart:'',
-        dateEnd:''
+        dateEnd:'',
+        clientSerial:'',
+        clientAgentId:null,
+        clientId:null
     },
     // 检索结果
     serviceData:{
