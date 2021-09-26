@@ -87,11 +87,16 @@ export const getOrderStat = () => async (dispatch) => {
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         let res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
+
         if (res.success) {
             if (res.rows.length > 0) {
-                dispatch({type: StoragePanelActionType.getOrderStat, payload: res.count});
+                let prodCnt = 0;
+                res.rows.forEach((item) => {
+                    prodCnt = prodCnt + parseInt(item.prod_count)
+                });
+                dispatch({type: StoragePanelActionType.getOrderStat, payload: {count: res.rows.length, prodCnt : prodCnt}});
             } else {
-                dispatch({type: StoragePanelActionType.getOrderStat, payload: {}});
+                dispatch({type: StoragePanelActionType.getOrderStat, payload: {count: 0, prodCnt : 0}});
             }
         } else if (!res.success) {
             Swal.fire("获取未出库的订单商品信息失败", res.msg, "warning");
@@ -111,7 +116,15 @@ export const getOrderRefundProd = () => async (dispatch) => {
         let res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
-            dispatch({type: StoragePanelActionType.getOrderRefundStat, payload: res.count});
+            if (res.rows.length > 0) {
+                let prodCnt = 0;
+                res.rows.forEach((item) => {
+                    prodCnt = prodCnt + parseInt(item.prod_refund_count)
+                });
+                dispatch({type: StoragePanelActionType.getOrderRefundStat, payload: {count: res.rows.length, prodCnt : prodCnt}});
+            } else {
+                dispatch({type: StoragePanelActionType.getOrderRefundStat, payload: {count: 0, prodCnt : 0}});
+            }
         } else if (!res.success) {
             Swal.fire("获取未入库的退单商品信息失败", res.msg, "warning");
         }

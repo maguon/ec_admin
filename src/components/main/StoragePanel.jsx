@@ -71,6 +71,7 @@ function StoragePanel(props) {
                             <Grid container spacing={1}>
                                 <Grid item xs={12}><Typography variant="h5" gutterBottom>未出库的订单商品</Typography></Grid>
                                 <Grid item xs={6}><Typography color="textSecondary">未出库数：{storagePanelReducer.orderStat.count}</Typography></Grid>
+                                <Grid item xs={6}><Typography color="textSecondary" align="right">商品数量：{storagePanelReducer.orderStat.prodCnt}</Typography></Grid>
                             </Grid>
                         </CardContent>
                     </Card>
@@ -82,6 +83,7 @@ function StoragePanel(props) {
                             <Grid container spacing={1}>
                                 <Grid item xs={12}><Typography variant="h5" gutterBottom>未入库的退单商品</Typography></Grid>
                                 <Grid item xs={6}><Typography color="textSecondary">未出库数：{storagePanelReducer.orderRefundStat.count}</Typography></Grid>
+                                <Grid item xs={6}><Typography color="textSecondary" align="right">商品数量：{storagePanelReducer.orderRefundStat.prodCnt}</Typography></Grid>
                             </Grid>
                         </CardContent>
                     </Card>
