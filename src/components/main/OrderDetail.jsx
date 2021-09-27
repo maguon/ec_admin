@@ -37,6 +37,8 @@ function OrderDetail(props) {
     // 新增服务数据
     const [newServiceData, setNewServiceData] = React.useState({
         serviceInfo: {},
+        serviceType: {},
+        servicePartType: {},
         servicePriceType: '',
         fixedPrice: '',
         unitPrice: '',
@@ -50,6 +52,7 @@ function OrderDetail(props) {
     });
     // 新增商品数据
     const [newProdData, setNewProdData] = React.useState({
+        serviceItem: {},
         productInfo: {},
         prodPrice:'',
         prodCount: 1,
@@ -72,15 +75,31 @@ function OrderDetail(props) {
         // 清check内容
         setValidation({});
         // 初始化模态数据
-        if (pageType === 'deploy' || pageType === 'check') {
-            setModalData({
-                ...modalData,
-                orderItemService: item,
-                pageType: pageType,
-                pageTitle: pageTitle,
-                deployUser: {id: item.deploy_user_id,real_name: item.deploy_user_name},
-                checkUser: {id: item.check_user_id,real_name: item.check_user_name}
+        // if (pageType === 'deploy' || pageType === 'check') {
+        //     setModalData({
+        //         ...modalData,
+        //         orderItemService: item,
+        //         pageType: pageType,
+        //         pageTitle: pageTitle,
+        //         deployUser: {id: item.deploy_user_id,real_name: item.deploy_user_name},
+        //         checkUser: {id: item.check_user_id,real_name: item.check_user_name}
+        //     });
+        //     setModalOpen(true);
+        if (pageType === 'product') {
+            setNewProdData({
+                ...newProdData,
+                serviceItem : item,
+                productInfo: '',
+                prodPrice:'',
+                prodCount: 1,
+                actualProdPrice:0,
+                orderItemType: 1,
+                discountProdPrice:0,
+                prodId: '',
+                prodName: '',
+                remark:''
             });
+            setModalData({...modalData,pageType: pageType,pageTitle: pageTitle});
             setModalOpen(true);
         } else {
             let ret = await dispatch(orderDetailAction.getStorageProductRelDetail(item.order_id, item.id));
@@ -94,24 +113,24 @@ function OrderDetail(props) {
         }
     };
 
-    const submitModal = () => {
-        const validateObj ={};
-        if (modalData.pageType === 'deploy') {
-            if (!modalData.deployUser) {
-                validateObj.deployUser ='请选择施工人';
-            }
-        }
-        if (modalData.pageType === 'check') {
-            if (!modalData.checkUser) {
-                validateObj.checkUser ='请选择验收人';
-            }
-        }
-        setValidation(validateObj);
-        if(Object.keys(validateObj).length===0){
-            dispatch(orderDetailAction.saveModalData(modalData));
-            setModalOpen(false);
-        }
-    };
+    // const submitModal = () => {
+    //     const validateObj ={};
+    //     if (modalData.pageType === 'deploy') {
+    //         if (!modalData.deployUser) {
+    //             validateObj.deployUser ='请选择施工人';
+    //         }
+    //     }
+    //     if (modalData.pageType === 'check') {
+    //         if (!modalData.checkUser) {
+    //             validateObj.checkUser ='请选择验收人';
+    //         }
+    //     }
+    //     setValidation(validateObj);
+    //     if(Object.keys(validateObj).length===0){
+    //         dispatch(orderDetailAction.saveModalData(modalData));
+    //         setModalOpen(false);
+    //     }
+    // };
 
     const addService = () => {
         const validateObj ={};
@@ -127,6 +146,8 @@ function OrderDetail(props) {
             // 清空数据
             setNewServiceData({
                 serviceInfo: '',
+                serviceType: {name:''},
+                servicePartType: {name:''},
                 servicePriceType: '',
                 fixedPrice: '',
                 unitPrice: '',
@@ -155,18 +176,19 @@ function OrderDetail(props) {
         setValidation(validateObj);
         if(Object.keys(validateObj).length===0){
             dispatch(orderDetailAction.addOrderItemProd(id, {...newProdData, clientId:orderDetailReducer.orderInfo.client_id, clientAgentId:orderDetailReducer.orderInfo.client_agent_id}));
-            // 清空数据
-            setNewProdData({
-                productInfo: '',
-                prodPrice:'',
-                prodCount: 1,
-                actualProdPrice:0,
-                orderItemType: 1,
-                discountProdPrice:0,
-                prodId: '',
-                prodName: '',
-                remark:''
-            });
+            setModalOpen(false);
+            // // 清空数据
+            // setNewProdData({
+            //     productInfo: '',
+            //     prodPrice:'',
+            //     prodCount: 1,
+            //     actualProdPrice:0,
+            //     orderItemType: 1,
+            //     discountProdPrice:0,
+            //     prodId: '',
+            //     prodName: '',
+            //     remark:''
+            // });
         }
     };
 
@@ -180,6 +202,8 @@ function OrderDetail(props) {
         }
         setNewServiceData({
             serviceInfo: value,
+            serviceType: {id:value.service_type, name : commonUtil.getJsonValue(sysConst.SERVICE_TYPE, value.service_type)},
+            servicePartType: {id:value.service_part_type, name : commonUtil.getJsonValue(sysConst.SERVICE_PART_TYPE, value.service_part_type)},
             servicePriceType: value.service_price_type,
             fixedPrice: value.fixed_price,
             unitPrice: value.unit_price,
@@ -195,6 +219,7 @@ function OrderDetail(props) {
     const calcNewProdPrice =(value, prodCnt, discountProdPrice) =>{
         let realPrice = ((value.price * prodCnt) || 0) - parseFloat(discountProdPrice || 0);
         setNewProdData({
+            ...newProdData,
             productInfo: value,
             orderItemType: 1,
             prodPrice: value.price,
@@ -338,18 +363,22 @@ function OrderDetail(props) {
             </Grid>
             {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 && orderDetailReducer.orderInfo.status !== 5 &&
             <Grid  container spacing={1}>
-                <Grid item xs={2}>
-                    <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
-                                  options={commonReducer.saleServiceList}
-                                  getOptionLabel={(option) => option.service_name}
-                                  value={newServiceData.serviceInfo}
-                                  onChange={(event, value) => {
-                                      calcNewServicePrice(value, newServiceData.discountServicePrice);
-                                  }}
-                                  renderInput={(params) => <TextField {...params} label="选择服务" margin="dense" variant="outlined"
-                                          error={validation.serviceInfo&&validation.serviceInfo!=''} helperText={validation.serviceInfo}
-                                  />}
-                    />
+                <Grid item xs={4} container spacing={1}>
+                    <Grid item xs={6}>
+                        <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
+                                      options={commonReducer.saleServiceList}
+                                      getOptionLabel={(option) => option.service_name}
+                                      value={newServiceData.serviceInfo}
+                                      onChange={(event, value) => {
+                                          calcNewServicePrice(value, newServiceData.discountServicePrice);
+                                      }}
+                                      renderInput={(params) => <TextField {...params} label="选择服务" margin="dense" variant="outlined"
+                                                                          error={validation.serviceInfo&&validation.serviceInfo!=''} helperText={validation.serviceInfo}
+                                      />}
+                        />
+                    </Grid>
+                    <Grid item xs={3}><TextField label="服务类型" fullWidth disabled margin="dense" variant="outlined" InputLabelProps={{shrink: true}} value={newServiceData.serviceType.name}/></Grid>
+                    <Grid item xs={3}><TextField label="服务项目类型" fullWidth disabled margin="dense" variant="outlined" InputLabelProps={{shrink: true}} value={newServiceData.servicePartType.name}/></Grid>
                 </Grid>
 
                 {newServiceData.servicePriceType === sysConst.SERVICE_PRICE_TYPE[0].value &&
@@ -379,7 +408,7 @@ function OrderDetail(props) {
                     <TextField label="实际价格" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={newServiceData.actualServicePrice}/>
                 </Grid>
 
-                <Grid item container xs={7} spacing={1}>
+                <Grid item container xs={5} spacing={1}>
                     <Grid item xs={10}>
                         <TextField label="备注" fullWidth margin="dense" variant="outlined" value={newServiceData.remark} onChange={(e)=>{
                             setNewServiceData({...newServiceData, remark: e.target.value});
@@ -396,13 +425,19 @@ function OrderDetail(props) {
             {/* 下部分：订单服务列表 */}
             {orderDetailReducer.orderSerVList.map((item, index) => (
                 <Grid  container spacing={1} key={index}>
-                    <Grid item xs={2}>
-                        <Autocomplete fullWidth disableClearable disabled
-                                      options={commonReducer.saleServiceList}
-                                      getOptionLabel={(option) => option.service_name}
-                                      value={{id:item.sale_service_id, service_name: item.sale_service_name}}
-                                      renderInput={(params) => <TextField {...params} label="服务名称" margin="dense" variant="outlined"/>}
-                        />
+                    <Grid item xs={4} container spacing={1}>
+                        <Grid item xs={6}>
+                            <Autocomplete fullWidth disableClearable disabled ListboxProps={{style: {maxHeight: '175px'}}}
+                                          options={commonReducer.saleServiceList}
+                                          getOptionLabel={(option) => option.service_name}
+                                          value={{id:item.sale_service_id, service_name: item.sale_service_name}}
+                                          renderInput={(params) => <TextField {...params} label="服务名称" margin="dense" variant="outlined"/>}
+                            />
+                        </Grid>
+                        <Grid item xs={3}><TextField label="服务类型" fullWidth disabled margin="dense" variant="outlined" InputLabelProps={{shrink: true}}
+                                                     value={commonUtil.getJsonValue(sysConst.SERVICE_TYPE, item.service_type)}/></Grid>
+                        <Grid item xs={3}><TextField label="服务项目类型" fullWidth disabled margin="dense" variant="outlined" InputLabelProps={{shrink: true}}
+                                                     value={commonUtil.getJsonValue(sysConst.SERVICE_PART_TYPE, item.service_part_type)}/></Grid>
                     </Grid>
 
                     {item.fixed_price != 0 &&
@@ -433,33 +468,74 @@ function OrderDetail(props) {
                         <TextField label="实际价格" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={item.actual_service_price}/>
                     </Grid>
 
-                    <Grid item container xs={7} spacing={1}>
-                        <Grid item xs={6}>
+                    <Grid item container xs={5} spacing={1}>
+                        <Grid item xs={4}>
                             <TextField label="备注" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} value={item.remark || ''} onChange={(e)=>{
                                 orderDetailReducer.orderSerVList[index].remark = e.target.value;
                                 dispatch(OrderDetailActionType.getOrderSerVList(orderDetailReducer.orderSerVList));
                             }}/>
                         </Grid>
-                        <Grid item xs={2}>
-                            <TextField label="施工人" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={item.deploy_user_name}/>
+
+                        <Grid item xs={3}>
+                            <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
+                                          disabled={orderDetailReducer.orderInfo.status == 7 || orderDetailReducer.orderInfo.status == 0 || orderDetailReducer.orderInfo.status == 5}
+                                          options={commonReducer.userList}
+                                          getOptionLabel={(option) => option.real_name}
+                                          value={{id:item.deploy_user_id, real_name:item.deploy_user_name}}
+                                          onChange={(event, value) => {
+                                              dispatch(orderDetailAction.saveModalData({
+                                                  ...modalData,
+                                                  pageType: 'deploy',
+                                                  orderItemService: item,
+                                                  deployUser: {id: value.id,real_name: value.real_name},
+                                                  checkUser: {}
+                                              }));
+                                          }}
+                                          renderInput={(params) => <TextField {...params} label="施工人" margin="dense" variant="outlined"/>}
+                            />
                         </Grid>
-                        <Grid item xs={2}>
-                            <TextField label="验收人" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={item.check_user_name}/>
+
+                        {/*<Grid item xs={2}>*/}
+                        {/*    <TextField label="施工人" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={item.deploy_user_name}/>*/}
+                        {/*</Grid>*/}
+
+                        <Grid item xs={3}>
+                            <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
+                                          disabled={orderDetailReducer.orderInfo.status == 7 || orderDetailReducer.orderInfo.status == 0 || orderDetailReducer.orderInfo.status == 5}
+                                          options={commonReducer.userList}
+                                          getOptionLabel={(option) => option.real_name}
+                                          value={item.check_user_name}
+                                          value={{id:item.check_user_id, real_name:item.check_user_name}}
+                                          onChange={(event, value) => {
+                                              dispatch(orderDetailAction.saveModalData({
+                                                  ...modalData,
+                                                  pageType: 'check',
+                                                  orderItemService: item,
+                                                  deployUser: {},
+                                                  checkUser: {id: value.id,real_name: value.real_name},
+                                              }));
+                                          }}
+                                          renderInput={(params) => <TextField {...params} label="验收人" margin="dense" variant="outlined"/>}
+                            />
                         </Grid>
+
+                        {/*<Grid item xs={2}>*/}
+                        {/*    <TextField label="验收人" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={item.check_user_name}/>*/}
+                        {/*</Grid>*/}
                         {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 &&
                         <Grid item container xs={2}>
-                            <Grid item xs={4} container align='center'>
-                                <Grid item xs={6}>
-                                    <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{initModal(item, 'deploy', '新增施工人')}}>
-                                        <span style={{fontSize: 14}}>派</span>
-                                    </IconButton>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{initModal(item, 'check', '新增验收人')}}>
-                                        <span style={{fontSize: 14}}>验</span>
-                                    </IconButton>
-                                </Grid>
-                            </Grid>
+                            {/*<Grid item xs={4} container align='center'>*/}
+                            {/*    <Grid item xs={6}>*/}
+                            {/*        <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{initModal(item, 'deploy', '新增施工人')}}>*/}
+                            {/*            <span style={{fontSize: 14}}>派</span>*/}
+                            {/*        </IconButton>*/}
+                            {/*    </Grid>*/}
+                            {/*    <Grid item xs={6}>*/}
+                            {/*        <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{initModal(item, 'check', '新增验收人')}}>*/}
+                            {/*            <span style={{fontSize: 14}}>验</span>*/}
+                            {/*        </IconButton>*/}
+                            {/*    </Grid>*/}
+                            {/*</Grid>*/}
                             {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 && orderDetailReducer.orderInfo.status !== 5 &&
                             <>
                             <Grid item xs={4} align='center'>
@@ -472,6 +548,11 @@ function OrderDetail(props) {
                                     <i className="mdi mdi-check-circle-outline"> </i>
                                 </IconButton>
                             </Grid>
+                            <Grid item xs={4} align='center'>
+                                <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{initModal(item, 'product', '新增商品')}}>
+                                    <i className="mdi mdi-plus-circle-outline"> </i>
+                                </IconButton>
+                            </Grid>
                             </>}
                         </Grid>}
                     </Grid>
@@ -482,63 +563,67 @@ function OrderDetail(props) {
             <Grid container spacing={1}>
                 <Grid item container sm={1}><Typography gutterBottom className={classes.title}>商品</Typography></Grid>
             </Grid>
-            {orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 && orderDetailReducer.orderInfo.status !== 5 &&
-            <Grid container spacing={1}>
-                <Grid item xs={2}>
-                    <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
-                                  options={commonReducer.productList}
-                                  getOptionLabel={(option) => option.product_name}
-                                  value={newProdData.productInfo}
-                                  onChange={(event, value) => {
-                                      calcNewProdPrice(value, newProdData.prodCount, newProdData.discountProdPrice);
-                                  }}
-                                  renderInput={(params) => <TextField {...params} label="选择商品" margin="dense" variant="outlined"
-                                      error={validation.productInfo&&validation.productInfo!=''} helperText={validation.productInfo}
-                                  />}
-                    />
-                </Grid>
+            {/*{orderDetailReducer.orderInfo.status !== 7 && orderDetailReducer.orderInfo.status !== 0 && orderDetailReducer.orderInfo.status !== 5 &&*/}
+            {/*<Grid container spacing={1}>*/}
+            {/*    <Grid item xs={2}>*/}
+            {/*        <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}*/}
+            {/*                      options={commonReducer.productList}*/}
+            {/*                      getOptionLabel={(option) => option.product_name}*/}
+            {/*                      value={newProdData.productInfo}*/}
+            {/*                      onChange={(event, value) => {*/}
+            {/*                          calcNewProdPrice(value, newProdData.prodCount, newProdData.discountProdPrice);*/}
+            {/*                      }}*/}
+            {/*                      renderInput={(params) => <TextField {...params} label="选择商品" margin="dense" variant="outlined"*/}
+            {/*                          error={validation.productInfo&&validation.productInfo!=''} helperText={validation.productInfo}*/}
+            {/*                      />}*/}
+            {/*        />*/}
+            {/*    </Grid>*/}
 
-                <Grid item xs={1}>
-                    <TextField label="价格" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={newProdData.prodPrice || 0}/>
-                </Grid>
-                <Grid item xs={1}>
-                    <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={newProdData.prodCount}
-                               onChange={(e)=>{
-                                   calcNewProdPrice(newProdData.productInfo, e.target.value, newProdData.discountProdPrice);
-                               }}
-                               error={validation.prodCount&&validation.prodCount!=''} helperText={validation.prodCount}
-                    />
-                </Grid>
+            {/*    <Grid item xs={1}>*/}
+            {/*        <TextField label="价格" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={newProdData.prodPrice || 0}/>*/}
+            {/*    </Grid>*/}
+            {/*    <Grid item xs={1}>*/}
+            {/*        <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={newProdData.prodCount}*/}
+            {/*                   onChange={(e)=>{*/}
+            {/*                       calcNewProdPrice(newProdData.productInfo, e.target.value, newProdData.discountProdPrice);*/}
+            {/*                   }}*/}
+            {/*                   error={validation.prodCount&&validation.prodCount!=''} helperText={validation.prodCount}*/}
+            {/*        />*/}
+            {/*    </Grid>*/}
 
-                {/*<Grid item xs={1}>*/}
-                {/*    <TextField label="折扣" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={newProdData.discountProdPrice}*/}
-                {/*               onChange={(e)=>{*/}
-                {/*                   calcNewProdPrice(newProdData.productInfo, newProdData.prodCount, e.target.value);*/}
-                {/*               }}*/}
-                {/*               error={validation.discountProdPrice&&validation.discountProdPrice!=''} helperText={validation.discountProdPrice}*/}
-                {/*    />*/}
-                {/*</Grid>*/}
+            {/*    /!*<Grid item xs={1}>*!/*/}
+            {/*    /!*    <TextField label="折扣" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={newProdData.discountProdPrice}*!/*/}
+            {/*    /!*               onChange={(e)=>{*!/*/}
+            {/*    /!*                   calcNewProdPrice(newProdData.productInfo, newProdData.prodCount, e.target.value);*!/*/}
+            {/*    /!*               }}*!/*/}
+            {/*    /!*               error={validation.discountProdPrice&&validation.discountProdPrice!=''} helperText={validation.discountProdPrice}*!/*/}
+            {/*    /!*    />*!/*/}
+            {/*    /!*</Grid>*!/*/}
 
-                <Grid item xs={2}>
-                    <TextField label="实际价格" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={newProdData.actualProdPrice}/>
-                </Grid>
+            {/*    <Grid item xs={2}>*/}
+            {/*        <TextField label="实际价格" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={newProdData.actualProdPrice}/>*/}
+            {/*    </Grid>*/}
 
-                <Grid item container xs={6}>
-                    <Grid item xs={10}>
-                        <TextField label="备注" fullWidth margin="dense" variant="outlined" value={newProdData.remark} onChange={(e)=>{
-                            setNewProdData({...newProdData, remark: e.target.value});
-                        }}/>
-                    </Grid>
-                    <Grid item xs={2} align='center'>
-                        <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={addProduct}>
-                            <i className="mdi mdi-plus-circle-outline"/>
-                        </IconButton>
-                    </Grid>
-                </Grid>
-            </Grid>}
+            {/*    <Grid item container xs={6}>*/}
+            {/*        <Grid item xs={10}>*/}
+            {/*            <TextField label="备注" fullWidth margin="dense" variant="outlined" value={newProdData.remark} onChange={(e)=>{*/}
+            {/*                setNewProdData({...newProdData, remark: e.target.value});*/}
+            {/*            }}/>*/}
+            {/*        </Grid>*/}
+            {/*        <Grid item xs={2} align='center'>*/}
+            {/*            <IconButton color="primary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={addProduct}>*/}
+            {/*                <i className="mdi mdi-plus-circle-outline"/>*/}
+            {/*            </IconButton>*/}
+            {/*        </Grid>*/}
+            {/*    </Grid>*/}
+            {/*</Grid>}*/}
 
             {orderDetailReducer.orderProdList.map((item,index)=>(
                 <Grid container spacing={1} key={index}>
+                    <Grid item xs={1}>
+                        <TextField label="服务" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={item.service_name}/>
+                    </Grid>
+
                     <Grid item xs={2}>
                         <Autocomplete fullWidth disableClearable disabled ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.productList}
@@ -576,7 +661,7 @@ function OrderDetail(props) {
                         <TextField label="实际价格" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={item.actual_prod_price}/>
                     </Grid>
 
-                    <Grid item container xs={6}>
+                    <Grid item container xs={5}>
                         <Grid item xs={10}>
                             <TextField label="备注" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} value={item.remark} onChange={(e)=>{
                                 orderDetailReducer.orderProdList[index].remark = e.target.value;
@@ -626,8 +711,8 @@ function OrderDetail(props) {
                 showFooter={true}
                 footer={
                     <>
-                        {(modalData.pageType ==='deploy' || modalData.pageType ==='check') &&
-                        <Button variant="contained" color="primary" onClick={submitModal}>确定</Button>}
+                        {modalData.pageType ==='product' &&
+                        <Button variant="contained" color="primary" onClick={addProduct}>确定</Button>}
                         <Button variant="contained" onClick={()=>{setModalOpen(false)}}>关闭</Button>
                     </>
                 }
@@ -659,6 +744,57 @@ function OrderDetail(props) {
                                               error={validation.checkUser&&validation.checkUser!=''} helperText={validation.checkUser}/>}
                         />
                     </Grid>}
+                    {modalData.pageType==='product' &&
+                        <Grid container spacing={1}>
+                            <Grid item xs={6}>
+                                <TextField label="服务" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={newProdData.serviceItem.sale_service_name}/>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Autocomplete fullWidth disableClearable ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={commonReducer.productList}
+                                              getOptionLabel={(option) => option.product_name}
+                                              value={newProdData.productInfo}
+                                              onChange={(event, value) => {
+                                                  calcNewProdPrice(value, newProdData.prodCount, newProdData.discountProdPrice);
+                                              }}
+                                              renderInput={(params) => <TextField {...params} label="选择商品" margin="dense" variant="outlined"
+                                                                                  error={validation.productInfo&&validation.productInfo!=''} helperText={validation.productInfo}
+                                              />}
+                                />
+                            </Grid>
+
+                            <Grid item xs={4}>
+                                <TextField label="价格" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={newProdData.prodPrice || 0}/>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={newProdData.prodCount}
+                                           onChange={(e)=>{
+                                               calcNewProdPrice(newProdData.productInfo, e.target.value, newProdData.discountProdPrice);
+                                           }}
+                                           error={validation.prodCount&&validation.prodCount!=''} helperText={validation.prodCount}
+                                />
+                            </Grid>
+
+                            {/*<Grid item xs={1}>*/}
+                            {/*    <TextField label="折扣" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={newProdData.discountProdPrice}*/}
+                            {/*               onChange={(e)=>{*/}
+                            {/*                   calcNewProdPrice(newProdData.productInfo, newProdData.prodCount, e.target.value);*/}
+                            {/*               }}*/}
+                            {/*               error={validation.discountProdPrice&&validation.discountProdPrice!=''} helperText={validation.discountProdPrice}*/}
+                            {/*    />*/}
+                            {/*</Grid>*/}
+
+                            <Grid item xs={4}>
+                                <TextField label="实际价格" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={newProdData.actualProdPrice}/>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <TextField label="备注" fullWidth margin="dense" variant="outlined" value={newProdData.remark} onChange={(e)=>{
+                                    setNewProdData({...newProdData, remark: e.target.value});
+                                }}/>
+                            </Grid>
+                        </Grid>
+                    }
                     {modalData.pageType==='receive' &&
                     <Grid item sm={12} container spacing={1}>
                         {/*{modalData.storageProductRelDetail.apply_real_name + '于 ' + commonUtil.getDateTime(modalData.storageProductRelDetail.created_on)*/}

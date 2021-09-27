@@ -68,7 +68,8 @@ export const saveModalData = (modalData) => async (dispatch) => {
             clientId: modalData.clientSerial.id,
             clientAgentId: modalData.clientSerial.client_agent_id,
             transferPrice: 0,
-            OrderItemProdArray: modalData.productList,
+            // OrderItemProdArray: modalData.productList,
+            OrderItemProdArray: [],
             OrderItemServiceArray: modalData.serviceList
         };
         // 基本url

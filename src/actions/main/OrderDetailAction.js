@@ -220,6 +220,9 @@ export const addOrderItemService = (orderId, data) => async (dispatch) => {
 export const addOrderItemProd = (orderId, data) => async (dispatch) => {
     try {
         let params = {
+            // "saleUserId": 0,
+            // "saleUserName": "string",
+            remark: data.remark,
             clientId: data.clientId,
             clientAgentId: data.clientAgentId,
             orderItemType: 1,
@@ -227,7 +230,10 @@ export const addOrderItemProd = (orderId, data) => async (dispatch) => {
             prodName: data.prodName,
             prodCount: data.prodCount,
             discountProdPrice: data.discountProdPrice,
-            remark: data.remark
+            orderItemServiceId: data.serviceItem.id,
+            saleServiceId: data.serviceItem.sale_service_id,
+            serviceType: data.serviceItem.service_type,
+            servicePartType: data.serviceItem.service_part_type,
         };
         // 基本url
         const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
@@ -249,18 +255,31 @@ export const addOrderItemProd = (orderId, data) => async (dispatch) => {
 
 export const deleteOrderItemService = (data) => async (dispatch) => {
     try {
-        const url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
-            + '/order/' + data.order_id + '/orderItemService/' + data.id;
+        // 基本检索URL 先查询，该服务有商品，则不能删除
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/orderItemProd?orderId=' + data.order_id + '&orderItemServiceId=' + data.id;
         dispatch({type: AppActionType.showLoadProgress, payload: true});
-        const res = await httpUtil.httpDelete(url, {});
+        const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success) {
-            Swal.fire("删除成功", "", "success");
-            // 刷新
-            dispatch(getOrderInfo(data.order_id));
-            dispatch(getOrderItemService(data.order_id));
+            if (res.rows.length > 0) {
+                Swal.fire("该服务存在关联商品，不能删除", '请先删除关联商品，再删除服务！', "warning");
+            } else {
+                dispatch({type: AppActionType.showLoadProgress, payload: true});
+                const resp = await httpUtil.httpDelete(apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+                    + '/order/' + data.order_id + '/orderItemService/' + data.id, {});
+                dispatch({type: AppActionType.showLoadProgress, payload: false});
+                if (resp.success) {
+                    Swal.fire("删除成功", "", "success");
+                    // 刷新
+                    dispatch(getOrderInfo(data.order_id));
+                    dispatch(getOrderItemService(data.order_id));
+                } else if (!resp.success) {
+                    Swal.fire('删除失败', res.msg, 'warning');
+                }
+            }
         } else if (!res.success) {
-            Swal.fire('删除失败', res.msg, 'warning');
+            Swal.fire("获取订单服务列表信息失败", res.msg, "warning");
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");

@@ -638,35 +638,43 @@ function Order(props) {
 
                         {modalData.serviceList.map((item,index)=>(
                             <Grid  container spacing={1} key={index}>
-                                <Grid item xs={3}>
-                                    <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
-                                                  options={commonReducer.saleServiceList}
-                                                  disableClearable
-                                                  getOptionLabel={(option) => option.service_name}
-                                                  value={item.serviceInfo}
-                                                  onChange={(event, value) => {
-                                                      // setModalData({...modalData.serviceList[index], serviceInfo: value});
-                                                      modalData.serviceList[index].serviceInfo = value;
-                                                      // 固定售价
-                                                      modalData.serviceList[index].fixed_price = value.fixed_price;
-                                                      // 销售单价
-                                                      modalData.serviceList[index].unit_price = value.unit_price;
-                                                      // 销售数量
-                                                      modalData.serviceList[index].service_price_count = value.service_price_count;
-                                                      modalData.serviceList[index].service_price_type = value.service_price_type;
+                                <Grid item xs={4} container spacing={1}>
+                                    <Grid item xs={4}>
+                                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                                      options={commonReducer.saleServiceList}
+                                                      disableClearable
+                                                      getOptionLabel={(option) => option.service_name}
+                                                      value={item.serviceInfo}
+                                                      onChange={(event, value) => {
+                                                          // setModalData({...modalData.serviceList[index], serviceInfo: value});
+                                                          modalData.serviceList[index].serviceInfo = value;
+                                                          // 服务类型
+                                                          modalData.serviceList[index].service_type = commonUtil.getJsonValue(sysConst.SERVICE_TYPE, value.service_type);
+                                                          // 服务项目类型
+                                                          modalData.serviceList[index].service_part_type = commonUtil.getJsonValue(sysConst.SERVICE_PART_TYPE, value.service_part_type);
+                                                          // 固定售价
+                                                          modalData.serviceList[index].fixed_price = value.fixed_price;
+                                                          // 销售单价
+                                                          modalData.serviceList[index].unit_price = value.unit_price;
+                                                          // 销售数量
+                                                          modalData.serviceList[index].service_price_count = value.service_price_count;
+                                                          modalData.serviceList[index].service_price_type = value.service_price_type;
 
-                                                      modalData.serviceList[index].orderItemType = 1;
-                                                      modalData.serviceList[index].saleServiceId = value.id;
-                                                      modalData.serviceList[index].saleServiceName = value.service_name;
+                                                          modalData.serviceList[index].orderItemType = 1;
+                                                          modalData.serviceList[index].saleServiceId = value.id;
+                                                          modalData.serviceList[index].saleServiceName = value.service_name;
 
-                                                      calcRealPrice(index, item);
-                                                      addProduct(value.id);
-                                                  }}
-                                                  renderInput={(params) => <TextField {...params} label="服务名称" margin="dense" variant="outlined"
-                                                                                      error={validation.serviceList && validation.serviceList.length > 0 && validation.serviceList[index].serviceInfo!=''}
-                                                                                      helperText={validation.serviceList && validation.serviceList.length > 0 && validation.serviceList[index].serviceInfo}
-                                                  />}
-                                    />
+                                                          calcRealPrice(index, item);
+                                                          addProduct(value.id);
+                                                      }}
+                                                      renderInput={(params) => <TextField {...params} label="服务名称" margin="dense" variant="outlined"
+                                                                                          error={validation.serviceList && validation.serviceList.length > 0 && validation.serviceList[index].serviceInfo!=''}
+                                                                                          helperText={validation.serviceList && validation.serviceList.length > 0 && validation.serviceList[index].serviceInfo}
+                                                      />}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}><TextField label="服务类型" fullWidth disabled margin="dense" variant="outlined" InputLabelProps={{shrink: true}} value={item.service_type}/></Grid>
+                                    <Grid item xs={4}><TextField label="服务项目类型" fullWidth disabled margin="dense" variant="outlined" InputLabelProps={{shrink: true}} value={item.service_part_type}/></Grid>
                                 </Grid>
 
                                 {item.service_price_type === sysConst.SERVICE_PRICE_TYPE[0].value &&
@@ -698,7 +706,7 @@ function Order(props) {
                                     <TextField label="实际价格" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={item.realPrice}/>
                                 </Grid>
 
-                                <Grid item container xs={5}>
+                                <Grid item container xs={4}>
                                     <Grid item xs={11}>
                                         <TextField label="备注" fullWidth margin="dense" variant="outlined" value={item.remark} onChange={(e)=>{
                                             modalData.serviceList[index].remark = e.target.value;
@@ -715,81 +723,81 @@ function Order(props) {
                         ))}
 
                         {/*  商品 */}
-                        <Grid container spacing={1}>
-                            <Grid item container sm={1}>
-                                <Grid item sm={6}><Typography gutterBottom className={classes.title}>商品</Typography></Grid>
-                                <Grid item sm={6}>
-                                    <IconButton onClick={()=>{addProduct(null)}} size="small">
-                                        <i className="mdi mdi-plus-circle-outline" style={{marginTop: 2,color:'black'}} />
-                                    </IconButton>
-                                </Grid>
-                            </Grid>
-                        </Grid>
+                        {/*<Grid container spacing={1}>*/}
+                        {/*    <Grid item container sm={1}>*/}
+                        {/*        <Grid item sm={6}><Typography gutterBottom className={classes.title}>商品</Typography></Grid>*/}
+                        {/*        <Grid item sm={6}>*/}
+                        {/*            <IconButton onClick={()=>{addProduct(null)}} size="small">*/}
+                        {/*                <i className="mdi mdi-plus-circle-outline" style={{marginTop: 2,color:'black'}} />*/}
+                        {/*            </IconButton>*/}
+                        {/*        </Grid>*/}
+                        {/*    </Grid>*/}
+                        {/*</Grid>*/}
 
-                        {modalData.productList.map((item,index)=>(
-                            <Grid container spacing={1} key={index}>
-                                <Grid item xs={3}>
-                                    <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
-                                                  options={commonReducer.productList}
-                                                  disableClearable
-                                                  getOptionLabel={(option) => option.product_name}
-                                                  value={item.productInfo}
-                                                  onChange={(event, value) => {
-                                                      modalData.productList[index].productInfo = value;
-                                                      modalData.productList[index].price = value.price;
-                                                      modalData.productList[index].prodId = value.id;
-                                                      modalData.productList[index].prodName = value.product_name;
-                                                      calcProdPrice(index);
-                                                  }}
-                                                  renderInput={(params) => <TextField {...params} label="商品名称" margin="dense" variant="outlined"
-                                                    error={validation.productList[index].productInfo!=''} helperText={validation.productList[index].productInfo}
-                                                  />}
-                                    />
-                                </Grid>
+                        {/*{modalData.productList.map((item,index)=>(*/}
+                        {/*    <Grid container spacing={1} key={index}>*/}
+                        {/*        <Grid item xs={3}>*/}
+                        {/*            <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}*/}
+                        {/*                          options={commonReducer.productList}*/}
+                        {/*                          disableClearable*/}
+                        {/*                          getOptionLabel={(option) => option.product_name}*/}
+                        {/*                          value={item.productInfo}*/}
+                        {/*                          onChange={(event, value) => {*/}
+                        {/*                              modalData.productList[index].productInfo = value;*/}
+                        {/*                              modalData.productList[index].price = value.price;*/}
+                        {/*                              modalData.productList[index].prodId = value.id;*/}
+                        {/*                              modalData.productList[index].prodName = value.product_name;*/}
+                        {/*                              calcProdPrice(index);*/}
+                        {/*                          }}*/}
+                        {/*                          renderInput={(params) => <TextField {...params} label="商品名称" margin="dense" variant="outlined"*/}
+                        {/*                            error={validation.productList[index].productInfo!=''} helperText={validation.productList[index].productInfo}*/}
+                        {/*                          />}*/}
+                        {/*            />*/}
+                        {/*        </Grid>*/}
 
-                                <Grid item xs={1}>
-                                    <TextField label="价格" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={item.price}/>
-                                </Grid>
+                        {/*        <Grid item xs={1}>*/}
+                        {/*            <TextField label="价格" fullWidth margin="dense" variant="outlined" disabled InputLabelProps={{shrink: true}} value={item.price}/>*/}
+                        {/*        </Grid>*/}
 
-                                <Grid item xs={1}>
-                                    <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prodCount}
-                                               onChange={(e)=>{
-                                                   modalData.productList[index].prodCount = e.target.value || 1;
-                                                   calcProdPrice(index);
-                                               }}
-                                    />
-                                </Grid>
+                        {/*        <Grid item xs={1}>*/}
+                        {/*            <TextField label="数量" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.prodCount}*/}
+                        {/*                       onChange={(e)=>{*/}
+                        {/*                           modalData.productList[index].prodCount = e.target.value || 1;*/}
+                        {/*                           calcProdPrice(index);*/}
+                        {/*                       }}*/}
+                        {/*            />*/}
+                        {/*        </Grid>*/}
 
-                                {/*<Grid item xs={2}>*/}
-                                {/*    <TextField label="折扣" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.discountProdPrice}*/}
-                                {/*               onChange={(e)=>{*/}
-                                {/*                   modalData.productList[index].discountProdPrice = e.target.value;*/}
-                                {/*                   calcProdPrice(index);*/}
-                                {/*               }}*/}
-                                {/*               error={validation.productList.length>0 && validation.productList[index].discountProdPrice && validation.productList[index].discountProdPrice!=''}*/}
-                                {/*               helperText={validation.productList[index].discountProdPrice}*/}
-                                {/*    />*/}
-                                {/*</Grid>*/}
+                        {/*        /!*<Grid item xs={2}>*!/*/}
+                        {/*        /!*    <TextField label="折扣" fullWidth margin="dense" variant="outlined" type="number" InputLabelProps={{shrink: true}} value={item.discountProdPrice}*!/*/}
+                        {/*        /!*               onChange={(e)=>{*!/*/}
+                        {/*        /!*                   modalData.productList[index].discountProdPrice = e.target.value;*!/*/}
+                        {/*        /!*                   calcProdPrice(index);*!/*/}
+                        {/*        /!*               }}*!/*/}
+                        {/*        /!*               error={validation.productList.length>0 && validation.productList[index].discountProdPrice && validation.productList[index].discountProdPrice!=''}*!/*/}
+                        {/*        /!*               helperText={validation.productList[index].discountProdPrice}*!/*/}
+                        {/*        /!*    />*!/*/}
+                        {/*        /!*</Grid>*!/*/}
 
-                                <Grid item xs={2}>
-                                    <TextField label="实际价格" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={item.realPrice}/>
-                                </Grid>
+                        {/*        <Grid item xs={2}>*/}
+                        {/*            <TextField label="实际价格" fullWidth margin="dense" variant="outlined" InputLabelProps={{shrink: true}} disabled value={item.realPrice}/>*/}
+                        {/*        </Grid>*/}
 
-                                <Grid item container xs={5}>
-                                    <Grid item xs={11}>
-                                        <TextField label="备注" fullWidth margin="dense" variant="outlined" value={item.remark} onChange={(e)=>{
-                                            modalData.productList[index].remark = e.target.value;
-                                            setModalData({...modalData});
-                                        }}/>
-                                    </Grid>
-                                    <Grid item xs={1} align='center'>
-                                        <IconButton color="secondary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{deleteProduct(index)}}>
-                                            <i className="mdi mdi-delete purple-font"> </i>
-                                        </IconButton>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                        ))}
+                        {/*        <Grid item container xs={5}>*/}
+                        {/*            <Grid item xs={11}>*/}
+                        {/*                <TextField label="备注" fullWidth margin="dense" variant="outlined" value={item.remark} onChange={(e)=>{*/}
+                        {/*                    modalData.productList[index].remark = e.target.value;*/}
+                        {/*                    setModalData({...modalData});*/}
+                        {/*                }}/>*/}
+                        {/*            </Grid>*/}
+                        {/*            <Grid item xs={1} align='center'>*/}
+                        {/*                <IconButton color="secondary" edge="start" size="small" style={{paddingTop:'18px'}} onClick={()=>{deleteProduct(index)}}>*/}
+                        {/*                    <i className="mdi mdi-delete purple-font"> </i>*/}
+                        {/*                </IconButton>*/}
+                        {/*            </Grid>*/}
+                        {/*        </Grid>*/}
+                        {/*    </Grid>*/}
+                        {/*))}*/}
 
                         <Grid container spacing={1}>
                             <Grid item sm={12}>
