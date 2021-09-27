@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config/index';
-import {AppActionType, ClientAgentDetailActionType, ClientInformationDetailActionType} from '../../types';
+import {AppActionType, ClientInformationDetailActionType} from '../../types';
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
@@ -72,7 +72,9 @@ export const updateClient = () => async (dispatch, getState) => {
             clientSerialDetail: clientInfo.client_serial_detail,
             modelId: 0,
             modelName: "",
-            clientAgentId: clientInfo.client_agent_id.id
+            clientAgentId: clientInfo.client_agent_id.id,
+            matchBrandId: clientInfo.match_brand_id==null?0:clientInfo.match_brand_id.id,
+            matchModelId:clientInfo.match_model_id==null?0:clientInfo.match_model_id.id
         };
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/client/' + clientInfo.id;
@@ -145,3 +147,19 @@ export const getOrderItemService=(id)=>async (dispatch, getState) => {
         Swal.fire("操作失败", err.message, "error");
     }
 }
+export const getMatchModelList = (brandId) => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/prodMatchModel?matchBrandId=' + brandId;
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: ClientInformationDetailActionType.setMatchModelList, payload: res.rows});
+        } else if (!res.success) {
+            Swal.fire('获取车型信息失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire('操作失败', err.message, 'error');
+    }
+};

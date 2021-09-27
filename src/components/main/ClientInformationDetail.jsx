@@ -12,15 +12,20 @@ import {
     Tabs,
     Accordion,
     AccordionSummary,
-    Divider, FormControl, InputLabel, MenuItem, Select, TableRow, TableCell, Box
+    Divider, FormControl, InputLabel, MenuItem, Select, Box
 } from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import TabContext from '@material-ui/lab/TabContext';
 import TabPanel from '@material-ui/lab/TabPanel';
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
-import {ClientInformationDetailActionType} from '../../types';
+import {
+    ClientInformationActionType,
+    ClientInformationDetailActionType,
+    ProductManagerDetailActionType
+} from '../../types';
 const ClientInformationDetailAction = require('../../actions/main/ClientInformationDetailAction');
+const ClientInformationAction = require('../../actions/main/ClientInformationAction');
 const sysConst = require('../../utils/SysConst');
 const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
@@ -78,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ClientInformationDetail (props){
-    const {clientInformationDetailReducer,getClientInfo,updateClient,getUserArray,getClientAgent,getOrderList,getOrderItemProd,getOrderItemService} = props;
+    const {clientInformationDetailReducer,clientInformationReducer,getClientInfo,updateClient,getUserArray,getClientAgent,getOrderList,getOrderItemProd,getOrderItemService} = props;
     const dispatch = useDispatch();
     const {id} = useParams();
     const classes = useStyles();
@@ -298,8 +303,34 @@ function ClientInformationDetail (props){
                             </Grid>
                         </Grid>
                         <Grid  container spacing={3}>
+                            <Grid item xs={3}>
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={clientInformationReducer.prodMatchBrandArray}
+                                              getOptionLabel={(option) => option.brand_name}
+                                              value={clientInformationDetailReducer.clientInfo.match_brand_id}
+                                              onChange={(event, value) => {
+                                                  // 将当前选中值 赋值 reducer
+                                                  dispatch(ClientInformationDetailActionType.setClientInfo({name: "match_brand_id", value: value}));
+                                                  dispatch(ClientInformationDetailActionType.setClientInfo({name: "match_model_id", value: null}));
+                                                  dispatch(ClientInformationDetailAction.getMatchModelList(value?value.id:0));
+                                              }}
+                                              renderInput={(params) => <TextField {...params} label="品牌" margin="dense" variant="outlined"/>}
+                                />
+                            </Grid>
+                            <Grid item xs={3}>
+                                <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                              options={clientInformationDetailReducer.prodMatchModelArray}
+                                              noOptionsText="无选项"
+                                              getOptionLabel={(option) => option.match_model_name}
+                                              value={clientInformationDetailReducer.clientInfo.match_model_id}
+                                              onChange={(event, value) => {
+                                                  dispatch(ClientInformationDetailActionType.setClientInfo({name:"match_model_id",value:value}))
+                                              }}
+                                              renderInput={(params) => <TextField {...params} label="车型" margin="dense" variant="outlined"/>}
+                                />
+                            </Grid>
                             {/*备注remark*/}
-                            <Grid item xs>
+                            <Grid item xs={6}>
                                 <TextField
                                     fullWidth={true}
                                     margin="dense"
@@ -416,7 +447,8 @@ function ClientInformationDetail (props){
 }
 const mapStateToProps = (state) => {
     return {
-        clientInformationDetailReducer: state.ClientInformationDetailReducer
+        clientInformationDetailReducer: state.ClientInformationDetailReducer,
+        clientInformationReducer:state.ClientInformationReducer,
     }
 };
 
@@ -426,6 +458,7 @@ const mapDispatchToProps = (dispatch) => ({
     },
     getClientAgent: () => {
         dispatch(ClientInformationDetailAction.getClientAgent());
+        dispatch(ClientInformationAction.getProdMatchBrandList());
     },
     getClientInfo: (id) => {
         dispatch(ClientInformationDetailAction.getClientInfo(id));

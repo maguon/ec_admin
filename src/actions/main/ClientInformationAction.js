@@ -5,6 +5,7 @@ const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
+const ClientInformationDetailAction = require('../../actions/main/ClientInformationDetailAction');
 export const getUserArray = () => async (dispatch) => {
     try {
         // admin用户 检索 URL
@@ -121,6 +122,8 @@ export const addClientInformation = (params) => async (dispatch) => {
             "clientAgentId": params.clientAgentId==null?'':params.clientAgentId.id,
             "referUser":params.referUser==null?'':params.referUser.id,
             "sourceType": params.sourceType,
+            "matchBrandId": params.modalData.brandName==null?0:params.modalData.brandName.id,
+            "matchModelId": params.modalData.matchModelName==null?0:params.modalData.matchModelName.id
         };
         // 基本url
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/client';
@@ -137,5 +140,42 @@ export const addClientInformation = (params) => async (dispatch) => {
         }
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
+    }
+};
+export const getProdMatchBrandList = () => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/prodMatchBrand';
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: ClientInformationActionType.setProdMatchBrandList, payload: res.rows});
+            dispatch(ClientInformationDetailAction.getMatchModelList(res.rows[0].id));
+        } else if (!res.success) {
+            Swal.fire('获取品牌信息失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire('操作失败', err.message, 'error');
+    }
+};
+
+export const getProdMatchModelList = (brandId) => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/prodMatchModel?matchBrandId=' + brandId;
+
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+
+        if (res.success) {
+            dispatch({type: ClientInformationActionType.setProdMatchModelList, payload: res.rows});
+        } else if (!res.success) {
+            Swal.fire('获取车型信息失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire('操作失败', err.message, 'error');
     }
 };

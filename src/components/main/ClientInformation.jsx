@@ -59,6 +59,7 @@ function ClientInformation (props) {
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
     const [referUser, setReferUser] = useState(null);
+    const [modalData, setModalData] = React.useState({});
     const [validation,setValidation] = useState({});
     useEffect(()=>{
         if (!fromDetail) {
@@ -88,7 +89,6 @@ function ClientInformation (props) {
         if (!clientSerial) {
             validateObj.clientSerial ='请选择车牌号';
         }
-
         setValidation(validateObj);
         return Object.keys(validateObj).length
     }
@@ -97,6 +97,11 @@ function ClientInformation (props) {
         getClientInformationList(0);
     }
     const modalOpenModal=()=>{
+        setModalData({
+            ...modalData,
+            brandName: null,
+            matchModelName: null,
+        });
         setModalOpenFlag(true);
         setClientAgentId(null);
         setRemark('');
@@ -115,7 +120,7 @@ function ClientInformation (props) {
     const addClientInfo=()=>{
         const errorCount = validate();
         if(errorCount==0){
-            addClientInformation({clientAgentId,remark,clientSerial,clientSerialDetail,sourceType,tel,name,address,referUser});
+            addClientInformation({clientAgentId,remark,clientSerial,clientSerialDetail,sourceType,tel,name,address,referUser,modalData});
             setModalOpenFlag(false);
         }
     }
@@ -237,13 +242,13 @@ function ClientInformation (props) {
                     </Grid>
                 </Grid>
                 {/*查询按钮*/}
-                <Grid item xs={1} style={{textAlign: 'right',marginTop:10}}>
+                <Grid item xs={1} style={{textAlign: 'center',marginTop:10}}>
                     <Fab color="primary" size="small" onClick={getClientInformationArray}>
                         <i className="mdi mdi-magnify mdi-24px"/>
                     </Fab>
                 </Grid>
                 {/*追加按钮*/}
-                <Grid item xs={1} style={{textAlign: 'right',marginTop:10}}>
+                <Grid item xs={1} style={{textAlign: 'center',marginTop:10}}>
                     <Fab color="primary" size="small"  onClick={() => {modalOpenModal()}}>
                         <i className="mdi mdi-plus mdi-24px"/>
                     </Fab>
@@ -264,6 +269,8 @@ function ClientInformation (props) {
                                 <StyledTableCell align="center">客户集群</StyledTableCell>
                                 <StyledTableCell align="center">用户</StyledTableCell>
                                 <StyledTableCell align="center">地址</StyledTableCell>
+                                <StyledTableCell align="center">品牌</StyledTableCell>
+                                <StyledTableCell align="center">车型</StyledTableCell>
                                 <StyledTableCell align="center">推荐人</StyledTableCell>
                                 <StyledTableCell align="center">创建时间</StyledTableCell>
                                 <StyledTableCell align="center">操作</StyledTableCell>
@@ -281,6 +288,8 @@ function ClientInformation (props) {
                                     <TableCell align="center" >{row.client_agent_name}</TableCell>
                                     <TableCell align="center" >{row.name}</TableCell>
                                     <TableCell align="center" >{row.address}</TableCell>
+                                    <TableCell align="center" >{row.match_brand_name}</TableCell>
+                                    <TableCell align="center" >{row.match_model_name}</TableCell>
                                     <TableCell align="center" >{row.refer_real_name}</TableCell>
                                     <TableCell align="center" >{row.date_id}</TableCell>
                                     <TableCell align="center">
@@ -297,7 +306,7 @@ function ClientInformation (props) {
                                     </TableCell>
                                 </TableRow>))}
                             {clientInformationReducer.clientInformationArray.length === 0 &&
-                            <TableRow style={{height:60}}><TableCell align="center" colSpan="11">暂无数据</TableCell></TableRow>
+                            <TableRow style={{height:60}}><TableCell align="center" colSpan="13">暂无数据</TableCell></TableRow>
                             }
                         </TableBody>
                     </Table>
@@ -451,9 +460,40 @@ function ClientInformation (props) {
                         />
                     </Grid>
                 </Grid>
+
                 <Grid  container spacing={3}>
+                    <Grid item xs={3}>
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                      options={clientInformationReducer.prodMatchBrandArray}
+                                      getOptionLabel={(option) => option.brand_name}
+                                      value={modalData.brandName}
+                                      onChange={(event, value) => {
+                                          setModalData({...modalData,brandName:value, matchModelName: null});
+                                          // 商品分类有选择时，取得商品子分类， 否则清空
+                                          if (value != null) {
+                                              dispatch(ClientInformationAction.getProdMatchModelList(value.id));
+                                          } else {
+                                              dispatch(ClientInformationActionType.setProdMatchModelList([]));
+                                          }
+                                      }}
+
+                                      renderInput={(params) => <TextField {...params} label="品牌" margin="dense" variant="outlined"/>}
+                        />
+                    </Grid>
+                    <Grid item xs={3}>
+                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
+                                      options={clientInformationReducer.prodMatchModelArray}
+                                      noOptionsText="无选项"
+                                      getOptionLabel={(option) => option.match_model_name}
+                                      value={modalData.matchModelName}
+                                      onChange={(event, value) => {
+                                          setModalData({...modalData,matchModelName:value});
+                                      }}
+                                      renderInput={(params) => <TextField {...params} label="车型" margin="dense" variant="outlined"/>}
+                        />
+                    </Grid>
                     {/*备注remark*/}
-                    <Grid item xs>
+                    <Grid item xs={6}>
                         <TextField
                             fullWidth={true}
                             margin="dense"
@@ -482,6 +522,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => ({
     getClientAgent:()=>{
         dispatch(ClientInformationAction.getClientAgent());
+        dispatch(ClientInformationAction.getProdMatchBrandList());
     },
     getUserArray:()=>{
         dispatch(ClientInformationAction.getUserArray());
@@ -503,8 +544,8 @@ const mapDispatchToProps = (dispatch) => ({
             }
         });
     },
-    addClientInformation:({clientAgentId,remark,clientSerial,clientSerialDetail,sourceType,tel,name,address,referUser})=>{
-        dispatch(ClientInformationAction.addClientInformation({clientAgentId,remark,clientSerial,clientSerialDetail,sourceType,tel,name,address,referUser}));
+    addClientInformation:({clientAgentId,remark,clientSerial,clientSerialDetail,sourceType,tel,name,address,referUser,modalData})=>{
+        dispatch(ClientInformationAction.addClientInformation({clientAgentId,remark,clientSerial,clientSerialDetail,sourceType,tel,name,address,referUser,modalData}));
     }
 })
 export default connect(mapStateToProps, mapDispatchToProps)(ClientInformation)

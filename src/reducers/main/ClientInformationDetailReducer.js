@@ -12,6 +12,8 @@ const initialState = {
         client_agent_id:null,
         refer_user:'',
         source_type:0,
+        match_brand_id: null,
+        match_model_id: null
     },
     referUserInfo:[],
     clientAgentInfo:[],
@@ -26,14 +28,16 @@ const initialState = {
         orderInfo: [],
     },
     orderItemProdInfo:[],
-    orderItemServiceInfo:[]
+    orderItemServiceInfo:[],
+    prodMatchModelArray:[]
 };
 
 export default handleActions({
     [ClientInformationDetailActionType.getClientInfo]: (state, action) => {
         let ret = action.payload;
-        ret.client_agent_id={id:action.payload.client_agent_id,name:action.payload.client_agent_name}
-
+        ret.client_agent_id={id:action.payload.client_agent_id,name:action.payload.client_agent_name};
+        ret.match_brand_id={id:action.payload.match_brand_id,brand_name:action.payload.match_brand_name};
+        ret.match_model_id={id:action.payload.match_model_id,match_model_name:action.payload.match_model_name};
         return {
             ...state,
             clientInfo: ret
@@ -78,4 +82,11 @@ export default handleActions({
             orderItemServiceInfo: action.payload
         }
     },
+    [ClientInformationDetailActionType.setMatchModelList]: (state, action) => {
+        return {
+            ...state,
+            prodMatchModelArray: action.payload
+        }
+    },
+
 }, initialState)
