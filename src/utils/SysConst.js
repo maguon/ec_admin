@@ -240,7 +240,7 @@ export const STORAGE_OP_SUB_TYPE= [
     {value: 24, label: "订单出库"},
     {value: 25, label: "内部领料出库"},
 ];
-//项目类型
+//服务类型
 export const SERVICE_TYPE= [
     {value: 1, label: "保养"},
     {value: 2, label: "维修"},

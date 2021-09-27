@@ -395,7 +395,7 @@ function ServiceSetting (props){
             {/*查询条件*/}
             <Grid container  spacing={1}>
                 <Grid container item xs={10} spacing={1}>
-                    {/*项目类型serviceType*/}
+                    {/*服务类型serviceType*/}
                     <Grid item  xs>
                         <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true}
                                       options={sysConst.SERVICE_TYPE}
@@ -404,7 +404,7 @@ function ServiceSetting (props){
                                       onChange={(e,value) => {
                                           dispatch(ServiceSettingActionType.setServiceSettingQueryObjs({name: "serviceType", value: value}));
                                       }}
-                                      renderInput={(params) => <TextField {...params} label="项目类型" margin="dense" variant="outlined"/>}
+                                      renderInput={(params) => <TextField {...params} label="服务类型" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
                     {/*服务项目类型servicePartType*/}
@@ -513,7 +513,7 @@ function ServiceSetting (props){
                             <TableRow style={{height:50}}>
                                 <StyledTableCell align="center">ID</StyledTableCell>
                                 <StyledTableCell align="center">名称</StyledTableCell>
-                                <StyledTableCell align="center">项目类型</StyledTableCell>
+                                <StyledTableCell align="center">服务类型</StyledTableCell>
                                 <StyledTableCell align="center">服务项目类型</StyledTableCell>
                                 <StyledTableCell align="center">售价类型</StyledTableCell>
                                 <StyledTableCell align="center">固定售价</StyledTableCell>
@@ -638,7 +638,7 @@ function ServiceSetting (props){
                         <TextField fullWidth
                                    size="small"
                                    select
-                                   label="项目类型"
+                                   label="服务类型"
                                    name="serviceType"
                                    type="number"
                                    onChange={(e)=>{
@@ -1182,7 +1182,7 @@ function ServiceSetting (props){
                                 <TextField fullWidth
                                            size="small"
                                            select
-                                           label="项目类型"
+                                           label="服务类型"
                                            name="modifyServiceType"
                                            type="number"
                                            onChange={(e)=>{
