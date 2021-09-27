@@ -50,6 +50,7 @@ function ServiceSetting (props){
     const [validation,setValidation] = useState({});
     const [serviceName,setServiceName] = useState('');
     const [serviceType,setServiceType] = useState('');
+    const [servicePartType,setServicePartType]= useState('');
     const [servicePriceFlag, setServicePriceFlag] = useState(true);
     const [servicePriceType,setServicePriceType] = useState('');
     const [fixedPrice,setFixedPrice] = useState('');
@@ -79,6 +80,7 @@ function ServiceSetting (props){
     const [modifyValidation,setModifyValidation] = useState({});
     const [modifyServiceName,setModifyServiceName] = useState('');
     const [modifyServiceType,setModifyServiceType] = useState('');
+    const [modifyServicePartType,setModifyServicePartType] = useState('');
     const [modifyServicePriceFlag, setModifyServicePriceFlag] = useState(true);
     const [modifyServicePriceType,setModifyServicePriceType] = useState('');
     const [modifyFixedPrice,setModifyFixedPrice] = useState('');
@@ -255,6 +257,7 @@ function ServiceSetting (props){
         setModalOpenFlag(true);
         setServiceName('');
         setServiceType(1);
+        setServicePartType(1);
         setServicePriceFlag(true);
         setServicePriceType(1);
         setFixedPrice('');
@@ -286,6 +289,7 @@ function ServiceSetting (props){
         setModifyModalOpenFlag(true);
         setModifyServiceName(item.service_name);
         setModifyServiceType(item.service_type);
+        setModifyServicePartType(item.service_part_type);
         setModifyServicePriceType(item.service_price_type);
         setModifyFixedPrice(item.fixed_price)
         setModifyUnitPrice(item.unit_price)
@@ -351,7 +355,7 @@ function ServiceSetting (props){
         if(errorCount==0){
             props.addServiceSetting(
                 {
-                    serviceName,serviceType,servicePriceType,fixedPrice,unitPrice, servicePriceCount,serviceCostType,fixedCost,unitCost,serviceCostCount,totalPrice,totalCost,salePerfType,salePerfFixed,salePerfRatio,deployPerfType,
+                    serviceName,serviceType,servicePartType,servicePriceType,fixedPrice,unitPrice, servicePriceCount,serviceCostType,fixedCost,unitCost,serviceCostCount,totalPrice,totalCost,salePerfType,salePerfFixed,salePerfRatio,deployPerfType,
                     deployPerfFixed,deployPerfRatio,checkPerfType,checkPerfFixed,checkPerfRatio,remarks});
             setModalOpenFlag(false);
         }
@@ -359,7 +363,7 @@ function ServiceSetting (props){
     const updateServiceSetting =() => {
         const errorCount = modifyValidate();
         if (errorCount == 0) {
-            updateServiceSettingItem({modifyId,modifyRemarks,modifyServiceName, modifyServiceType, modifyServicePriceType, modifyFixedPrice, modifyUnitPrice, modifyServicePriceCount, modifyServiceCostType, modifyFixedCost, modifyUnitCost,
+            updateServiceSettingItem({modifyId,modifyRemarks,modifyServiceName, modifyServiceType,modifyServicePartType, modifyServicePriceType, modifyFixedPrice, modifyUnitPrice, modifyServicePriceCount, modifyServiceCostType, modifyFixedCost, modifyUnitCost,
             modifyServiceCostCount, modifyTotalPrice, modifyTotalCost, modifySalePerfType, modifySalePerfFixed, modifySalePerfRatio, modifyDeployPerfType, modifyDeployPerfFixed, modifyDeployPerfRatio, modifyCheckPerfType, modifyCheckPerfFixed, modifyCheckPerfRatio,
             })
             setModifyModalOpenFlag(false);
@@ -391,7 +395,7 @@ function ServiceSetting (props){
             {/*查询条件*/}
             <Grid container  spacing={1}>
                 <Grid container item xs={10} spacing={1}>
-                    {/*服务类型serviceType*/}
+                    {/*项目类型serviceType*/}
                     <Grid item  xs>
                         <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true}
                                       options={sysConst.SERVICE_TYPE}
@@ -400,7 +404,19 @@ function ServiceSetting (props){
                                       onChange={(e,value) => {
                                           dispatch(ServiceSettingActionType.setServiceSettingQueryObjs({name: "serviceType", value: value}));
                                       }}
-                                      renderInput={(params) => <TextField {...params} label="服务类型" margin="dense" variant="outlined"/>}
+                                      renderInput={(params) => <TextField {...params} label="项目类型" margin="dense" variant="outlined"/>}
+                        />
+                    </Grid>
+                    {/*服务项目类型servicePartType*/}
+                    <Grid item  xs>
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth={true}
+                                      options={sysConst.SERVICE_PART_TYPE}
+                                      getOptionLabel={(option) => option.label}
+                                      value={serviceSettingReducer.queryObj.servicePartType}
+                                      onChange={(e,value) => {
+                                          dispatch(ServiceSettingActionType.setServiceSettingQueryObjs({name: "servicePartType", value: value}));
+                                      }}
+                                      renderInput={(params) => <TextField {...params} label="服务项目类型" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
                     {/*服务价格类型servicePriceType*/}
@@ -497,7 +513,8 @@ function ServiceSetting (props){
                             <TableRow style={{height:50}}>
                                 <StyledTableCell align="center">ID</StyledTableCell>
                                 <StyledTableCell align="center">名称</StyledTableCell>
-                                <StyledTableCell align="center">类型</StyledTableCell>
+                                <StyledTableCell align="center">项目类型</StyledTableCell>
+                                <StyledTableCell align="center">服务项目类型</StyledTableCell>
                                 <StyledTableCell align="center">售价类型</StyledTableCell>
                                 <StyledTableCell align="center">固定售价</StyledTableCell>
                                 <StyledTableCell align="center">销售单价</StyledTableCell>
@@ -528,6 +545,7 @@ function ServiceSetting (props){
                                     <TableCell align="center" >{row.id}</TableCell>
                                     <TableCell align="center" >{row.service_name}</TableCell>
                                     <TableCell align="center" >{commonUtil.getJsonValue(sysConst.SERVICE_TYPE,row.service_type)}</TableCell>
+                                    <TableCell align="center" >{commonUtil.getJsonValue(sysConst.SERVICE_PART_TYPE,row.service_part_type)}</TableCell>
                                     <TableCell align="center" >{commonUtil.getJsonValue(sysConst.SERVICE_PRICE_TYPE,row.service_price_type)}</TableCell>
                                     <TableCell align="center" >{row.fixed_price}</TableCell>
                                     <TableCell align="center" >{row.unit_price}</TableCell>
@@ -562,7 +580,7 @@ function ServiceSetting (props){
                                     </TableCell>
                                 </TableRow>))}
                             {serviceSettingReducer.serviceSettingArray.length === 0 &&
-                            <TableRow style={{height:60}}><TableCell align="center" colSpan="15">暂无数据</TableCell></TableRow>
+                            <TableRow style={{height:60}}><TableCell align="center" colSpan="16">暂无数据</TableCell></TableRow>
                             }
                         </TableBody>
                     </Table>
@@ -614,11 +632,13 @@ function ServiceSetting (props){
 
                         />
                     </Grid>
-                    <Grid item xs>
+                </Grid>
+                <Grid  container spacing={3}>
+                    <Grid item xs={4}>
                         <TextField fullWidth
                                    size="small"
                                    select
-                                   label="服务类型"
+                                   label="项目类型"
                                    name="serviceType"
                                    type="number"
                                    onChange={(e)=>{
@@ -631,6 +651,29 @@ function ServiceSetting (props){
                                    variant="outlined"
                         >
                             {sysConst.SERVICE_TYPE.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </TextField>
+                     </Grid>
+                    <Grid item xs={4}>
+                        <TextField fullWidth
+                                   size="small"
+                                   select
+                                   label="服务项目类型"
+                                   name="servicePartType"
+                                   type="number"
+                                   onChange={(e)=>{
+                                       setServicePartType(e.target.value)
+                                   }}
+                                   value={servicePartType}
+                                   SelectProps={{
+                                       native: true,
+                                   }}
+                                   variant="outlined"
+                        >
+                            {sysConst.SERVICE_PART_TYPE.map((option) => (
                                 <option key={option.value} value={option.value}>
                                     {option.label}
                                 </option>
@@ -1133,11 +1176,13 @@ function ServiceSetting (props){
 
                                 />
                             </Grid>
-                            <Grid item xs>
+                        </Grid>
+                        <Grid  container spacing={3}>
+                            <Grid item xs={4}>
                                 <TextField fullWidth
                                            size="small"
                                            select
-                                           label="服务类型"
+                                           label="项目类型"
                                            name="modifyServiceType"
                                            type="number"
                                            onChange={(e)=>{
@@ -1150,6 +1195,29 @@ function ServiceSetting (props){
                                            variant="outlined"
                                 >
                                     {sysConst.SERVICE_TYPE.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </TextField>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <TextField fullWidth
+                                           size="small"
+                                           select
+                                           label="服务项目类型"
+                                           name="modifyServicePartType"
+                                           type="number"
+                                           onChange={(e)=>{
+                                               setModifyServicePartType(e.target.value)
+                                           }}
+                                           value={modifyServicePartType}
+                                           SelectProps={{
+                                               native: true,
+                                           }}
+                                           variant="outlined"
+                                >
+                                    {sysConst.SERVICE_PART_TYPE.map((option) => (
                                         <option key={option.value} value={option.value}>
                                             {option.label}
                                         </option>
@@ -1686,17 +1754,17 @@ const mapDispatchToProps = (dispatch) => ({
     getSericeSettingList: (start) => {
         dispatch(ServiceSettingAction.getServiceSettingList(start));
     },
-    addServiceSetting:({serviceName,serviceType,servicePriceType,fixedPrice,unitPrice, servicePriceCount,serviceCostType,fixedCost,
+    addServiceSetting:({serviceName,serviceType,servicePartType,servicePriceType,fixedPrice,unitPrice, servicePriceCount,serviceCostType,fixedCost,
                            unitCost,serviceCostCount,totalPrice,totalCost,salePerfType,salePerfFixed,salePerfRatio,deployPerfType,
                            deployPerfFixed,deployPerfRatio,checkPerfType,checkPerfFixed,checkPerfRatio,remarks})=>{
-        dispatch(ServiceSettingAction.addServiceSetting({serviceName,serviceType,servicePriceType,fixedPrice,unitPrice, servicePriceCount,serviceCostType,fixedCost,
+        dispatch(ServiceSettingAction.addServiceSetting({serviceName,serviceType,servicePartType,servicePriceType,fixedPrice,unitPrice, servicePriceCount,serviceCostType,fixedCost,
             unitCost,serviceCostCount,totalPrice,totalCost,salePerfType,salePerfFixed,salePerfRatio,deployPerfType,
             deployPerfFixed,deployPerfRatio,checkPerfType,checkPerfFixed,checkPerfRatio,remarks}));
     },
-    updateServiceSettingItem:({modifyId,modifyRemarks,modifyServiceName,modifyServiceType,modifyServicePriceType,modifyFixedPrice,modifyUnitPrice,modifyServicePriceCount,modifyServiceCostType, modifyFixedCost,
+    updateServiceSettingItem:({modifyId,modifyRemarks,modifyServiceName,modifyServiceType,modifyServicePartType,modifyServicePriceType,modifyFixedPrice,modifyUnitPrice,modifyServicePriceCount,modifyServiceCostType, modifyFixedCost,
                                   modifyUnitCost, modifyServiceCostCount,modifyTotalPrice,modifyTotalCost, modifySalePerfType, modifySalePerfFixed, modifySalePerfRatio, modifyDeployPerfType, modifyDeployPerfFixed, modifyDeployPerfRatio, modifyCheckPerfType, modifyCheckPerfFixed, modifyCheckPerfRatio,
                               })=>{
-        dispatch(ServiceSettingAction.updateServiceSettingItem({modifyId,modifyRemarks,modifyServiceName,modifyServiceType,modifyServicePriceType,modifyFixedPrice,modifyUnitPrice,modifyServicePriceCount,modifyServiceCostType, modifyFixedCost,
+        dispatch(ServiceSettingAction.updateServiceSettingItem({modifyId,modifyRemarks,modifyServiceName,modifyServiceType,modifyServicePartType,modifyServicePriceType,modifyFixedPrice,modifyUnitPrice,modifyServicePriceCount,modifyServiceCostType, modifyFixedCost,
             modifyUnitCost, modifyServiceCostCount,modifyTotalPrice,modifyTotalCost, modifySalePerfType, modifySalePerfFixed, modifySalePerfRatio, modifyDeployPerfType, modifyDeployPerfFixed, modifyDeployPerfRatio, modifyCheckPerfType, modifyCheckPerfFixed, modifyCheckPerfRatio,
         }))
     },

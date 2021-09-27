@@ -4,6 +4,7 @@ const initialState = {
     //查询条件
     queryObj:{
         serviceType:null,
+        servicePartType:null,
         servicePriceType :null,
         serviceCostType :null,
         salePerfType :null,

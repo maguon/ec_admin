@@ -16,6 +16,7 @@ export const getServiceSettingList = (params) => async (dispatch, getState) => {
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/saleService?start=' + start + '&size=' + size;
         let paramsObject = {
             serviceType: paramsObj.serviceType == null? '' : paramsObj.serviceType.value,
+            servicePartType :paramsObj.servicePartType == null? '' : paramsObj.servicePartType.value,
             servicePriceType:paramsObj.servicePriceType==null?'':paramsObj.servicePriceType.value,
             serviceCostType:paramsObj.serviceCostType==null?'':paramsObj.serviceCostType.value,
             salePerfType:paramsObj.salePerfType==null?'':paramsObj.salePerfType.value,
@@ -46,6 +47,7 @@ export const addServiceSetting = (params) => async (dispatch, getState) => {
             "remark": params.remarks,
             "serviceName":params.serviceName,
             "serviceType":params.serviceType,
+            'servicePartType':params.servicePartType,
             "servicePriceType": params.servicePriceType,
             "fixedPrice":params.fixedPrice==''?0:params.fixedPrice,
             "unitPrice": params.unitPrice==''?0:params.unitPrice,
@@ -88,6 +90,7 @@ export const updateServiceSettingItem = (params) => async (dispatch, getState) =
             "remark": params.modifyRemarks,
             "serviceName":params.modifyServiceName,
             "serviceType":params.modifyServiceType,
+            'servicePartType':params.modifyServicePartType,
             "servicePriceType": params.modifyServicePriceType,
             "fixedPrice":params.modifyFixedPrice==''?0:params.modifyFixedPrice,
             "unitPrice": params.modifyUnitPrice==''?0:params.modifyUnitPrice,
