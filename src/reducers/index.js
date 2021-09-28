@@ -51,6 +51,7 @@ import UserAchievementReducer from './main/UserAchievementReducer';
 import UserAchievementDetailReducer from './main/UserAchievementDetailReducer';
 import CarModelReducer from './main/CarModelReducer';
 import UserPerfLevelReducer from './main/UserPerfLevelReducer';
+import ServiceItemStatReducer from './main/ServiceItemStatReducer';
 export default combineReducers({
     form: reduxFormReducer,
     AppReducer,
@@ -103,5 +104,6 @@ export default combineReducers({
     UserAchievementReducer,
     UserAchievementDetailReducer,
     CarModelReducer,
-    UserPerfLevelReducer
+    UserPerfLevelReducer,
+    ServiceItemStatReducer
 });

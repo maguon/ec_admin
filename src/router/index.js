@@ -47,7 +47,8 @@ import {
     UserAchievement,
     UserAchievementDetail,
     CarModel,
-    UserPerfLevel
+    UserPerfLevel,
+    ServiceItemStat
 } from "../components";
 
 export const routes = [
@@ -127,6 +128,7 @@ export const routesWithHeader = [
     {path: "/purchase_stat", exact: true, component: PurchaseStat},
     {path: "/order_stat", exact: true, component: OrderStat},
     {path: "/client_stat", exact: true, component: ClientStat},
+    {path: "/service_item_stat", exact: true, component: ServiceItemStat},
     /** 数据字典 */
     {path: "/data_dictionary", exact: true, component: DataDictionary},
 

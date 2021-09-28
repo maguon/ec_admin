@@ -556,7 +556,14 @@ export const ALL_PAGE_LIST = [
                 "name": "客户统计",
                 "icon": "mdi-chevron-right",
                 "usable": false
-            }
+            },
+            {
+                "link": "/service_item_stat",
+                "name": "服务项目统计",
+                "icon": "mdi-chevron-right",
+                "usable": false
+            },
+
         ]
     },
     {
