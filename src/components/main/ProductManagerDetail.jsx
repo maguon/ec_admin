@@ -318,7 +318,7 @@ function ProductManagerDetail(props) {
                             </Grid>
                             <Grid item sm={6}>
                                 <TextField label="产地" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                        value={productManagerDetailReducer.productInfo.product_address}
+                                        value={productManagerDetailReducer.productInfo.product_address == null ? '' : productManagerDetailReducer.productInfo.product_address}
                                         onChange={(e) => {
                                             dispatch(ProductManagerDetailActionType.setProductInfo({name: "product_address",value: e.target.value}))
                                         }}
@@ -327,7 +327,7 @@ function ProductManagerDetail(props) {
 
                             <Grid item sm={6}>
                                 <TextField label="序列号" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                        value={productManagerDetailReducer.productInfo.product_serial}
+                                        value={productManagerDetailReducer.productInfo.product_serial == null ? '' : productManagerDetailReducer.productInfo.product_serial}
                                         onChange={(e) => {
                                             dispatch(ProductManagerDetailActionType.setProductInfo({name: "product_serial",value: e.target.value}))
                                         }}
