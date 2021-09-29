@@ -238,7 +238,7 @@ export const STORAGE_OP_SUB_TYPE= [
     {value: 22, label: "移库出库"},
     {value: 23, label: "盘亏出库"},
     {value: 24, label: "订单出库"},
-    {value: 25, label: "内部领料出库"},
+    {value: 25, label: "内部领料出库"}
 ];
 //服务类型
 export const SERVICE_TYPE= [
@@ -249,13 +249,15 @@ export const SERVICE_TYPE= [
 ];
 //服务项目类型
 export const SERVICE_PART_TYPE= [
-    {value: 1, label: "电器"},
-    {value: 2, label: "发动机"},
-    {value: 3, label: "底盘"},
-    {value: 4, label: "液压"},
-    {value: 5, label: "车身"},
-    {value: 6, label: "电焊"},
-    {value: 7, label: "其他部分"}
+    {value: 1, label: "车身部分"},
+    {value: 2, label: "电焊部分"},
+    {value: 3, label: "液压部分"},
+    {value: 4, label: "电器部分"},
+    {value: 5, label: "气路部分"},
+    {value: 6, label: "发动机部分"},
+    {value: 7, label: "底盘部分"},
+    {value: 8, label: "轮胎部分"},
+    {value: 9, label: "其他部分"}
 ];
 //服务价格类型
 export const SERVICE_PRICE_TYPE= [
