@@ -310,7 +310,7 @@ function ProductManagerDetail(props) {
                             </Grid>
                             <Grid item sm={6}>
                                 <TextField label="商品别名" fullWidth margin="dense" variant="outlined" InputLabelProps={{ shrink: true }}
-                                        value={productManagerDetailReducer.productInfo.product_s_name}
+                                        value={productManagerDetailReducer.productInfo.product_s_name == null ? '' : productManagerDetailReducer.productInfo.product_s_name}
                                         onChange={(e) => {
                                             dispatch(ProductManagerDetailActionType.setProductInfo({name: "product_s_name",value: e.target.value}))
                                         }}
