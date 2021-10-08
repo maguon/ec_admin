@@ -2,7 +2,7 @@ import {handleActions} from 'redux-actions';
 import {LoginActionType} from '../../types';
 
 const initialState = {
-    userName: '19999999999',
+    userName: '',
     password: ''
 };
 
