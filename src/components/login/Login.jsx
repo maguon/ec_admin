@@ -36,9 +36,7 @@ const Login = (props) => {
             height: '100%',
             justifyContent: 'center',
             alignItems: "center"
-        }}
-             noValidate
-             autoComplete="off">
+        }}>
             <Container maxWidth="md" style={{paddingTop: 80}}>
                 <Typography color="textPrimary" variant="h2" align="center"><img style={{paddingTop: 6}} src="/logo120.png" alt=""/></Typography>
                 <Typography color="textPrimary" variant="h2" align="center">{webName}</Typography>
