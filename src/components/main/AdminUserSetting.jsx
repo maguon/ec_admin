@@ -6,6 +6,7 @@ import {Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Tab
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {makeStyles} from "@material-ui/core/styles";
 import {SimpleModal} from '../index';
+import {defaultUserType} from '../../config/index';
 import {AdminUserSettingActionType} from '../../types';
 const adminUserSettingAction = require('../../actions/main/AdminUserSettingAction');
 const sysConst = require('../../utils/SysConst');
@@ -38,7 +39,7 @@ function AdminUserSetting (props) {
     const classes = useStyles();
     const [paramPhone,setParamPhone]=useState("");
     const [paramRealName,setParamRealName]=useState("");
-    const [paramType,setParamType]=useState("");
+    const [paramType,setParamType]=useState(defaultUserType);
     const [paramGender,setParamGender]=useState("");
     const [paramStatus,setParamStatus]=useState("");
     const [modalOpenFlag, setModalOpenFlag] = useState(false);
@@ -83,9 +84,6 @@ function AdminUserSetting (props) {
             if (!type||type.type_name==null) {
                 validateObj.type ='请输入用户集群';
             }
-            if (!perfLevelId||perfLevelId.perf_name==null) {
-                validateObj.perfLevelId ='请输入绩效集群';
-            }
             if (!adminUsername) {
                 validateObj.adminUsername ='请输入用户姓名';
             }
@@ -100,14 +98,22 @@ function AdminUserSetting (props) {
     const addUser= ()=>{
         const errorCount = validate();
         if(errorCount==0){
-            props.addUser(adminUsername, adminUserPhone,password,gender,type.id,perfLevelId.id,1);
+            if(perfLevelId==null){
+                props.addUser(adminUsername, adminUserPhone,password,gender,type.id,0,1);
+            }else{
+                props.addUser(adminUsername, adminUserPhone,password,gender,type.id,perfLevelId.id,1);
+            }
             setModalOpenFlag(false);
         }
     }
     const setUser= ()=>{
         const errorCount = validate();
         if(errorCount==0){
-            props.updateUserInfo(adminUsername, gender,type.id,perfLevelId.id,id);
+            if(perfLevelId==null){
+                props.updateUserInfo(adminUsername, gender,type.id,0,id);
+            } else {
+                props.updateUserInfo(adminUsername, gender,type.id,perfLevelId.id,id);
+            }
             setModalOpenFlag(false);
         }
     }
@@ -194,6 +200,21 @@ function AdminUserSetting (props) {
             {/*查询条件*/}
             <Grid container  spacing={1}>
                 <Grid item xs>
+                    <FormControl variant="outlined" fullWidth margin="dense">
+                        <InputLabel >用户群组</InputLabel>
+                        <Select label="用户群组"
+                                value={paramType}
+                                onChange={(event, value) => {
+                                    setParamType(event.target.value);
+                                }}
+                        >
+                            {adminUserSettingReducer.typeArray.map((item) => (
+                                <MenuItem key={item.id} value={item.id}>{item.type_name}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <Grid item xs>
                     <TextField
                         fullWidth={true}
                         margin="dense"
@@ -212,22 +233,6 @@ function AdminUserSetting (props) {
                         value={paramRealName}
                         onChange={(e)=>setParamRealName(e.target.value)}
                     />
-                </Grid>
-                <Grid item xs>
-                    <FormControl variant="outlined" fullWidth margin="dense">
-                        <InputLabel >用户群组</InputLabel>
-                        <Select label="用户群组"
-                                value={paramType}
-                                onChange={(event, value) => {
-                                    setParamType(event.target.value);
-                                }}
-                        >
-                            <MenuItem value="">请选择</MenuItem>
-                            {adminUserSettingReducer.typeArray.map((item) => (
-                                <MenuItem key={item.id} value={item.id}>{item.type_name}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
                 </Grid>
                 <Grid item xs>
                     <FormControl variant="outlined" fullWidth margin="dense">
