@@ -1,5 +1,5 @@
 import Swal from 'sweetalert2';
-import {apiHost} from '../../config/index';
+import {apiHost, hiddenUserType} from '../../config/index';
 import {AppActionType, UserAchievementActionType} from '../../types';
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
@@ -12,7 +12,21 @@ export const getUserType = () => async (dispatch) => {
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
         if (res.success === true) {
-            dispatch({type: UserAchievementActionType.setTypeInfo, payload: res.rows});
+            let roles = [];
+            let hiddenFlag;
+            res.rows.forEach((item) => {
+                hiddenFlag = false;
+                for (let i = 0; i < hiddenUserType.length; i++) {
+                    if (item.id == hiddenUserType[i]) {
+                        hiddenFlag = true;
+                        break;
+                    }
+                }
+                if (!hiddenFlag) {
+                    roles.push(item);
+                }
+            });
+            dispatch({type: UserAchievementActionType.setTypeInfo, payload: roles});
         } else if (res.success === false) {
             Swal.fire('获取用户群组信息失败', res.msg, 'warning');
         }
