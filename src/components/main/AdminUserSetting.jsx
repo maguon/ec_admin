@@ -6,7 +6,6 @@ import {Button, Divider, Grid, Typography, Paper, TextField, TableContainer, Tab
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {makeStyles} from "@material-ui/core/styles";
 import {SimpleModal} from '../index';
-import {defaultUserType} from '../../config/index';
 import {AdminUserSettingActionType} from '../../types';
 const adminUserSettingAction = require('../../actions/main/AdminUserSettingAction');
 const sysConst = require('../../utils/SysConst');
@@ -37,9 +36,10 @@ const useStyles = makeStyles((theme) => ({
 function AdminUserSetting (props) {
     const {adminUserSettingReducer,updateUserStatusInfo,getUserById} = props;
     const classes = useStyles();
+    const paramTypeId=adminUserSettingReducer.typeArray.length==0?'':adminUserSettingReducer.typeArray[0].id;
     const [paramPhone,setParamPhone]=useState("");
     const [paramRealName,setParamRealName]=useState("");
-    const [paramType,setParamType]=useState(defaultUserType);
+    const [paramType,setParamType]=useState('');
     const [paramGender,setParamGender]=useState("");
     const [paramStatus,setParamStatus]=useState("");
     const [modalOpenFlag, setModalOpenFlag] = useState(false);
@@ -62,17 +62,18 @@ function AdminUserSetting (props) {
             realName:paramRealName,
             status:paramStatus,
             phone :paramPhone,
-            type :paramType,
+            type :paramTypeId,
             gender :paramGender,
             start :pageNumber
         };
         props.setQueryObj(queryObj);
-    },[paramRealName,paramStatus,paramPhone,paramType,paramGender,pageNumber])
+    },[paramRealName,paramStatus,paramPhone,paramTypeId,paramGender,pageNumber])
     useEffect(()=>{
+        setParamType(paramTypeId);
         props.getUserList();
         props.getUserTypeList();
         props.getPerfLevelList();
-    },[]);
+    },[paramTypeId]);
     //验证()
     const validate = ()=>{
         const validateObj ={}
