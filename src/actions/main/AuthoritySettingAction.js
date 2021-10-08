@@ -1,5 +1,5 @@
 import Swal from 'sweetalert2';
-import {apiHost} from '../../config';
+import {apiHost, hiddenUserType} from '../../config';
 import {AppActionType, AuthoritySettingActionType} from '../../types';
 
 const httpUtil = require('../../utils/HttpUtils');
@@ -16,9 +16,23 @@ export const getUserGroupList = () => async (dispatch, getState) => {
         dispatch({type: AppActionType.showLoadProgress, payload: true});
         const res = await httpUtil.httpGet(url);
         dispatch({type: AppActionType.showLoadProgress, payload: false});
-
         if (res.success) {
-            dispatch({type: AuthoritySettingActionType.setUserGroupList, payload: res.rows});
+            let roles = [];
+            let hiddenFlag;
+            res.rows.forEach((item) => {
+                hiddenFlag = false;
+                for (let i = 0; i < hiddenUserType.length; i++) {
+                    if (item.id == hiddenUserType[i]) {
+                        hiddenFlag = true;
+                        break;
+                    }
+                }
+                if (!hiddenFlag) {
+                    roles.push(item);
+                }
+            });
+
+            dispatch({type: AuthoritySettingActionType.setUserGroupList, payload: roles});
         } else if (!res.success) {
             Swal.fire('获取用户群组信息失败', res.msg, 'warning');
         }
@@ -43,6 +57,7 @@ export const getMenuList = (conditionUserType) => async (dispatch, getState) => 
             if (res.rows.length > 0){
                 dispatch({type: AuthoritySettingActionType.setCurrentRemark, payload: res.rows[0].remarks});
                 dispatch({type: AuthoritySettingActionType.setMenuList, payload: commonUtil.objToMap(res.rows[0].menu_list)});
+                // dispatch({type: AuthoritySettingActionType.setMenuList, payload: commonUtil.objToMap(sysConst.ALL_PAGE_JSON)});
             }else {
                 dispatch({type: AuthoritySettingActionType.setCurrentRemark, payload: ''});
                 dispatch({type: AuthoritySettingActionType.setMenuList, payload: new Map()});

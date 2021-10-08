@@ -625,3 +625,121 @@ export const ALL_PAGE_LIST = [
         ]
     }
 ];
+
+// 全部权限（包含所有机能设定）
+export const ALL_PAGE_JSON = {
+    "/": {
+        "usable": true
+    },
+    "/storage_panel": {
+        "usable": true
+    },
+    "/purchase_panel": {
+        "usable": true
+    },
+    "/finance_panel": {
+        "usable": true
+    },
+    "/order_panel": {
+        "usable": true
+    },
+    "/order": {
+        "usable": true
+    },
+    "/order_refund": {
+        "usable": true
+    },
+    "/achievement": {
+        "usable": true
+    },
+    "/user_achievement": {
+        "usable": true
+    },
+    "/purchase": {
+        "usable": true
+    },
+    "/purchase_refund": {
+        "usable": true
+    },
+    "/supplier": {
+        "usable": true
+    },
+    "/category_manager": {
+        "usable": true
+    },
+    "/brand_manager": {
+        "usable": true
+    },
+    "/product_manager": {
+        "usable": true
+    },
+    "/storage_product": {
+        "usable": true
+    },
+    "/storage_in_out": {
+        "usable": true
+    },
+    "/storage_check": {
+        "usable": true
+    },
+    "/storage": {
+        "usable": true
+    },
+    "/purchase_pay": {
+        "usable": true
+    },
+    "/purchase_refund_pay": {
+        "usable": true
+    },
+    "/order_pay": {
+        "usable": true
+    },
+    "/order_refund_pay": {
+        "usable": true
+    },
+    "/collection_refund": {
+        "usable": true
+    },
+    "/client_information": {
+        "usable": true
+    },
+    "/client_agent": {
+        "usable": true
+    },
+    "/purchase_stat": {
+        "usable": true
+    },
+    "/order_stat": {
+        "usable": true
+    },
+    "/client_stat": {
+        "usable": true
+    },
+    "/service_item_stat": {
+        "usable": true
+    },
+    "/data_dictionary": {
+        "usable": true
+    },
+    "/admin_user_setting": {
+        "usable": true
+    },
+    "/upload": {
+        "usable": true
+    },
+    "/service_setting": {
+        "usable": true
+    },
+    "/app_setting": {
+        "usable": true
+    },
+    "/car_model": {
+        "usable": true
+    },
+    "/user_perf_level": {
+        "usable": true
+    },
+    "/authority_setting": {
+        "usable": true
+    }
+};
