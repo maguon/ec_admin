@@ -312,18 +312,26 @@ function ProductManager(props) {
                     </Grid>
                 </Grid>
 
-                {/*查询按钮*/}
-                <Grid item xs={1} style={{textAlign: 'right'}}>
-                    <Fab color="primary" size="small" onClick={()=>{dispatch(productManagerAction.getProductList(0))}}>
-                        <i className="mdi mdi-magnify mdi-24px"/>
-                    </Fab>
-                </Grid>
+                <Grid item xs={2} container style={{textAlign:'right'}}>
+                    {/*查询按钮*/}
+                    <Grid item xs={4}>
+                        <Fab color="primary" size="small" onClick={()=>{dispatch(productManagerAction.getProductList(0))}}>
+                            <i className="mdi mdi-magnify mdi-24px"/>
+                        </Fab>
+                    </Grid>
 
-                {/*追加按钮*/}
-                <Grid item xs={1} style={{textAlign: 'right'}}>
-                    <Fab color="primary" size="small" onClick={() => {initModal()}}>
-                        <i className="mdi mdi-plus mdi-24px"/>
-                    </Fab>
+                    {/*追加按钮*/}
+                    <Grid item xs={4}>
+                        <Fab color="primary" size="small" onClick={() => {initModal()}}>
+                            <i className="mdi mdi-plus mdi-24px"/>
+                        </Fab>
+                    </Grid>
+
+                    <Grid item xs={4}>
+                        <Fab color="primary" size="small" onClick={()=>{dispatch(productManagerAction.downLoadCsv())}}>
+                            <i className="mdi mdi-cloud-download mdi-24px"/>
+                        </Fab>
+                    </Grid>
                 </Grid>
             </Grid>
 

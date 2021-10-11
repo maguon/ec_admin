@@ -12,22 +12,11 @@ export const getProductList = (dataStart) => async (dispatch, getState) => {
         const start = dataStart;
         // 检索条件：每页数量
         const size = getState().ProductManagerReducer.productData.size;
-        // 检索条件
-        const queryParams = getState().ProductManagerReducer.queryParams;
         // 基本检索URL
         let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
             + '/product?start=' + start + '&size=' + size;
         // 检索条件
-        let conditionsObj = {
-            categoryId: queryParams.category == null ? '' : queryParams.category.id,
-            categorySubId: queryParams.categorySub == null ? '' : queryParams.categorySub.id,
-            brandId: queryParams.brand === null ? '' : queryParams.brand.id,
-            brandModelId: queryParams.brandModel == null ? '' : queryParams.brandModel.id,
-            productId: queryParams.product == null ? '' : queryParams.product.id,
-            standardType: queryParams.standardType == null ? '' : queryParams.standardType,
-            status: queryParams.status == null ? '' : queryParams.status,
-        };
-        let conditions = httpUtil.objToUrl(conditionsObj);
+        let conditions = dispatch(getParams());
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
 
@@ -110,6 +99,36 @@ export const saveModalData = (modalData) => async (dispatch, getState) => {
         } else if (!res.success) {
             Swal.fire("保存失败", res.msg, "warning");
         }
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
+
+const getParams = () => (dispatch, getState) => {
+    // 检索条件
+    const queryParams = getState().ProductManagerReducer.queryParams;
+    let conditionsObj = {
+        categoryId: queryParams.category == null ? '' : queryParams.category.id,
+        categorySubId: queryParams.categorySub == null ? '' : queryParams.categorySub.id,
+        brandId: queryParams.brand === null ? '' : queryParams.brand.id,
+        brandModelId: queryParams.brandModel == null ? '' : queryParams.brandModel.id,
+        productId: queryParams.product == null ? '' : queryParams.product.id,
+        standardType: queryParams.standardType == null ? '' : queryParams.standardType,
+        status: queryParams.status == null ? '' : queryParams.status,
+    };
+    return httpUtil.objToUrl(conditionsObj);
+};
+
+export const downLoadCsv = () => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = 'http://' + apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/product.csv?1=1';
+        // 检索条件
+        let conditions = dispatch(getParams());
+        // 检索URL
+        url = conditions.length > 0 ? url + "&" + conditions : url;
+        window.open(url);
     } catch (err) {
         Swal.fire("操作失败", err.message, "error");
     }
