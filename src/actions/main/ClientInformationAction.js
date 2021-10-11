@@ -6,6 +6,24 @@ const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
 const ClientInformationDetailAction = require('../../actions/main/ClientInformationDetailAction');
+const getParams = () => (dispatch, getState) => {
+    // 检索条件
+    const paramsObj=getState().ClientInformationReducer.queryClientObj;
+    let paramsObject = {
+        tel:paramsObj.tel,
+        clientSerial:paramsObj.clientSerial,
+        clientSerialDetail:paramsObj.clientSerialDetail,
+        referUser :paramsObj.referUser==null?'':paramsObj.referUser.id,
+        dateIdStart: commonUtil.formatDate(paramsObj.dateIdStart, 'yyyyMMdd'),
+        dateIdEnd: commonUtil.formatDate(paramsObj.dateIdEnd, 'yyyyMMdd'),
+        sourceType:paramsObj.sourceType==null?'':paramsObj.sourceType.value,
+        clientAgentId:paramsObj.clientAgentId==null?'':paramsObj.clientAgentId.id,
+        status:paramsObj.status==null?'':paramsObj.status.value,
+    };
+    return httpUtil.objToUrl(paramsObject);
+};
+
+
 export const getUserArray = () => async (dispatch) => {
     try {
         // admin用户 检索 URL
@@ -34,21 +52,9 @@ export const getClientInformationList=(params)=>async (dispatch,getState) => {
         // 检索条件：每页数量
         const size = getState().ClientInformationReducer.size;
         // 检索条件
-        const paramsObj=getState().ClientInformationReducer.queryClientObj;
+        let conditions = dispatch(getParams());
         // 基本检索URL
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/client?start=' + start + '&size=' + size;
-        let paramsObject = {
-            tel:paramsObj.tel,
-            clientSerial:paramsObj.clientSerial,
-            clientSerialDetail:paramsObj.clientSerialDetail,
-            referUser :paramsObj.referUser==null?'':paramsObj.referUser.id,
-            dateIdStart: commonUtil.formatDate(paramsObj.dateIdStart, 'yyyyMMdd'),
-            dateIdEnd: commonUtil.formatDate(paramsObj.dateIdEnd, 'yyyyMMdd'),
-            sourceType:paramsObj.sourceType==null?'':paramsObj.sourceType.value,
-            clientAgentId:paramsObj.clientAgentId==null?'':paramsObj.clientAgentId.id,
-            status:paramsObj.status==null?'':paramsObj.status.value,
-        };
-        let conditions = httpUtil.objToUrl(paramsObject);
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
         dispatch({type: AppActionType.showLoadProgress, payload: true});
@@ -160,7 +166,6 @@ export const getProdMatchBrandList = () => async (dispatch) => {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
-
 export const getProdMatchModelList = (brandId) => async (dispatch) => {
     try {
         // 基本检索URL
@@ -177,5 +182,19 @@ export const getProdMatchModelList = (brandId) => async (dispatch) => {
         }
     } catch (err) {
         Swal.fire('操作失败', err.message, 'error');
+    }
+};
+export const downLoadCsv = () => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = 'http://' + apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/client.csv?1=1';
+        // 检索条件
+        let conditions = dispatch(getParams());
+        // 检索URL
+        url = conditions.length > 0 ? url + "&" + conditions : url;
+        window.open(url);
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
     }
 };
