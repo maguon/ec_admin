@@ -241,17 +241,25 @@ function ClientInformation (props) {
                         />
                     </Grid>
                 </Grid>
-                {/*查询按钮*/}
-                <Grid item xs={1} style={{textAlign: 'center',marginTop:10}}>
-                    <Fab color="primary" size="small" onClick={getClientInformationArray}>
-                        <i className="mdi mdi-magnify mdi-24px"/>
-                    </Fab>
-                </Grid>
-                {/*追加按钮*/}
-                <Grid item xs={1} style={{textAlign: 'center',marginTop:10}}>
-                    <Fab color="primary" size="small"  onClick={() => {modalOpenModal()}}>
-                        <i className="mdi mdi-plus mdi-24px"/>
-                    </Fab>
+                <Grid item xs={2} container style={{textAlign:'center',marginTop:10}}>
+                    {/*查询按钮*/}
+                    <Grid item xs={4}>
+                        <Fab color="primary" size="small" onClick={getClientInformationArray}>
+                            <i className="mdi mdi-magnify mdi-24px"/>
+                        </Fab>
+                    </Grid>
+                    {/*追加按钮*/}
+                    <Grid item xs={4}>
+                        <Fab color="primary" size="small"  onClick={() => {modalOpenModal()}}>
+                            <i className="mdi mdi-plus mdi-24px"/>
+                        </Fab>
+                    </Grid>
+                    {/*下载按钮*/}
+                    <Grid item xs={4}>
+                        <Fab color="primary" size="small"  onClick={() => {dispatch(ClientInformationAction.downLoadCsv())}}>
+                            <i className="mdi  mdi-cloud-download mdi-24px"/>
+                        </Fab>
+                    </Grid>
                 </Grid>
             </Grid>
             {/*主体*/}

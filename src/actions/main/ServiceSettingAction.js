@@ -5,26 +5,29 @@ const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
 //取得画面列表
+const getParams = () => (dispatch, getState) => {
+    // 检索条件
+    const paramsObj = getState().ServiceSettingReducer.queryObj;
+    let paramsObject = {
+        serviceType: paramsObj.serviceType == null? '' : paramsObj.serviceType.value,
+        servicePartType :paramsObj.servicePartType == null? '' : paramsObj.servicePartType.value,
+        servicePriceType:paramsObj.servicePriceType==null?'':paramsObj.servicePriceType.value,
+        serviceCostType:paramsObj.serviceCostType==null?'':paramsObj.serviceCostType.value,
+        salePerfType:paramsObj.salePerfType==null?'':paramsObj.salePerfType.value,
+        deployPerfType:paramsObj.deployPerfType==null?'':paramsObj.deployPerfType.value,
+        checkPerfType:paramsObj.checkPerfType==null?'':paramsObj.checkPerfType.value,
+        status:paramsObj.status==null?'':paramsObj.status.value,
+    };
+    return httpUtil.objToUrl(paramsObject);
+};
 export const getServiceSettingList = (params) => async (dispatch, getState) => {
     try {
         const start = params;
         // 检索条件：每页数量
         const size = getState().ServiceSettingReducer.size;
-        // 检索条件
-        const paramsObj=getState().ServiceSettingReducer.queryObj;
+        let conditions = dispatch(getParams());
         // 基本检索URL
         let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/saleService?start=' + start + '&size=' + size;
-        let paramsObject = {
-            serviceType: paramsObj.serviceType == null? '' : paramsObj.serviceType.value,
-            servicePartType :paramsObj.servicePartType == null? '' : paramsObj.servicePartType.value,
-            servicePriceType:paramsObj.servicePriceType==null?'':paramsObj.servicePriceType.value,
-            serviceCostType:paramsObj.serviceCostType==null?'':paramsObj.serviceCostType.value,
-            salePerfType:paramsObj.salePerfType==null?'':paramsObj.salePerfType.value,
-            deployPerfType:paramsObj.deployPerfType==null?'':paramsObj.deployPerfType.value,
-            checkPerfType:paramsObj.checkPerfType==null?'':paramsObj.checkPerfType.value,
-            status:paramsObj.status==null?'':paramsObj.status.value,
-        };
-        let conditions = httpUtil.objToUrl(paramsObject);
         // 检索URL
         url = conditions.length > 0 ? url + "&" + conditions : url;
         dispatch({type: AppActionType.showLoadProgress, payload: true});
@@ -206,3 +209,17 @@ export const deleteRel =(params) => async (dispatch, getState) => {
        /* Swal.fire("操作失败", err.message, "error");*/
     }
 }
+export const downLoadCsv = () => async (dispatch) => {
+    try {
+        // 基本检索URL
+        let url = 'http://' + apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID)
+            + '/saleService.csv?1=1';
+        // 检索条件
+        let conditions = dispatch(getParams());
+        // 检索URL
+        url = conditions.length > 0 ? url + "&" + conditions : url;
+        window.open(url);
+    } catch (err) {
+        Swal.fire("操作失败", err.message, "error");
+    }
+};
