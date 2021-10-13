@@ -18,14 +18,8 @@ import {makeStyles} from "@material-ui/core/styles";
 import TabContext from '@material-ui/lab/TabContext';
 import TabPanel from '@material-ui/lab/TabPanel';
 import Autocomplete from "@material-ui/lab/Autocomplete";
-
-import {
-    ClientInformationActionType,
-    ClientInformationDetailActionType,
-    ProductManagerDetailActionType
-} from '../../types';
+import {ClientInformationDetailActionType} from '../../types';
 const ClientInformationDetailAction = require('../../actions/main/ClientInformationDetailAction');
-const ClientInformationAction = require('../../actions/main/ClientInformationAction');
 const sysConst = require('../../utils/SysConst');
 const customTheme = require('../layout/Theme').customTheme;
 const useStyles = makeStyles((theme) => ({
@@ -190,6 +184,9 @@ function ClientInformationDetail (props){
                             {/*VIN clientSerialDetail*/}
                             <Grid item xs>
                                 <TextField
+                                    SelectProps={{
+                                        native: true,
+                                    }}
                                     fullWidth={true}
                                     margin="dense"
                                     variant="outlined"
@@ -271,20 +268,14 @@ function ClientInformationDetail (props){
                                             dispatch(ClientInformationDetailActionType.setClientInfo({name:"address",value:e.target.value}))
                                         }}
                                         value={clientInformationDetailReducer.clientInfo.address}
+                                        SelectProps={{
+                                            native: true,
+                                        }}
                                     />
                                 </Grid>
                             </Grid>
                             {/*推荐人 referUser*/}
                             <Grid item xs>
-                               {/* <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth disabled={true}
-                                              options={clientInformationDetailReducer.referUserInfo}
-                                              getOptionLabel={(option) => option.real_name}
-                                              value={clientInformationDetailReducer.clientInfo.refer_user}
-                                              onChange={(e,value)=>{
-                                                  dispatch(ClientInformationDetailActionType.setClientInfo({name:"refer_user",value:value}))
-                                              }}
-                                              renderInput={(params) => <TextField {...params} label="推荐人" margin="dense" variant="outlined"/>}
-                                />*/}
                                 <FormControl variant="outlined" fullWidth margin="dense">
                                     <InputLabel>推荐人</InputLabel>
                                     <Select label="推荐人"
@@ -305,7 +296,7 @@ function ClientInformationDetail (props){
                         <Grid  container spacing={3}>
                             <Grid item xs={3}>
                                 <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
-                                              options={clientInformationReducer.prodMatchBrandArray}
+                                              options={clientInformationDetailReducer.prodMatchBrandArray}
                                               getOptionLabel={(option) => option.brand_name}
                                               value={clientInformationDetailReducer.clientInfo.match_brand_id}
                                               onChange={(event, value) => {
@@ -340,6 +331,9 @@ function ClientInformationDetail (props){
                                         dispatch(ClientInformationDetailActionType.setClientInfo({name:"remark",value:e.target.value}))
                                     }}
                                     value={clientInformationDetailReducer.clientInfo.remark}
+                                    SelectProps={{
+                                        native: true,
+                                    }}
                                 />
                             </Grid>
                         </Grid>
@@ -458,7 +452,7 @@ const mapDispatchToProps = (dispatch) => ({
     },
     getClientAgent: () => {
         dispatch(ClientInformationDetailAction.getClientAgent());
-        dispatch(ClientInformationAction.getProdMatchBrandList());
+        dispatch(ClientInformationDetailAction.getProdMatchBrandList());
     },
     getClientInfo: (id) => {
         dispatch(ClientInformationDetailAction.getClientInfo(id));

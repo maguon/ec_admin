@@ -21,9 +21,7 @@ const initialState = {
     // 客户信息列表
     clientInformationArray: [],
     referUserArray:[],
-    clientAgentArray:[],
-    prodMatchBrandArray:[],
-    prodMatchModelArray:[]
+    clientAgentArray:[]
 };
 export default handleActions({
     [ClientInformationActionType.setClientInformationQueryObj]: (state, action) => {
@@ -69,17 +67,5 @@ export default handleActions({
             ...state,
             clientAgentArray: action.payload
         }
-    },
-    [ClientInformationActionType.setProdMatchBrandList]: (state, action) => {
-        return {
-            ...state,
-            prodMatchBrandArray: action.payload
-        }
-    },
-    [ClientInformationActionType.setProdMatchModelList]: (state, action) => {
-        return {
-            ...state,
-            prodMatchModelArray: action.payload
-        }
-    },
+    }
 }, initialState)

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {Link} from "react-router-dom";
 import Swal from "sweetalert2";
@@ -7,11 +7,12 @@ import {withStyles,makeStyles} from "@material-ui/core/styles";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {DatePicker} from '@material-ui/pickers';
 import {ClientInformationActionType} from '../../types';
-import {SimpleModal} from "../index";
+import {CreateClientInformation} from "../index";
 const commonUtil = require('../../utils/CommonUtil');
 const sysConst = require('../../utils/SysConst');
 const customTheme = require('../layout/Theme').customTheme;
 const ClientInformationAction = require('../../actions/main/ClientInformationAction');
+const CreateClientInformationAction =require('../../actions/main/model/CreateClientInformationAction');
 const useStyles = makeStyles((theme) => ({
     // 标题样式
     root: {
@@ -35,32 +36,13 @@ const StyledTableCell = withStyles((theme) => ({
         fontWeight:'bold',
         background:'#F7F6F9',
         borderTop: '2px solid #D4D4D4'
-    },
-    option: {
-        fontSize: 28,
-        '& > span': {
-            marginRight: 10,
-            fontSize: 30,
-        },
-    },
+    }
 }))(TableCell);
 
 function ClientInformation (props) {
-    const {clientInformationReducer,appReducer,getClientInformationList,getUserArray,changeStatus,fromDetail,getClientAgent,addClientInformation} = props;
+    const {clientInformationReducer,getClientInformationList,getUserArray,changeStatus,fromDetail,getClientAgent,openCreateClientInformation} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
-    const [modalOpenFlag, setModalOpenFlag] = useState(false);
-    const [clientAgentId, setClientAgentId] = useState(null);
-    const [remark, setRemark] = useState('');
-    const [clientSerial, setClientSerial] = useState('');
-    const [clientSerialDetail, setClientSerialDetail] = useState('');
-    const [sourceType, setSourceType] = useState('1');
-    const [tel, setTel] = useState('');
-    const [name, setName] = useState('');
-    const [address, setAddress] = useState('');
-    const [referUser, setReferUser] = useState(null);
-    const [modalData, setModalData] = React.useState({});
-    const [validation,setValidation] = useState({});
     useEffect(()=>{
         if (!fromDetail) {
             let queryClientObj={
@@ -80,49 +62,12 @@ function ClientInformation (props) {
         getClientAgent();
         getClientInformationList(clientInformationReducer.start);
     },[]);
-    //验证()
-    const validate = ()=>{
-        const validateObj ={}
-        if (!clientAgentId||clientAgentId==null) {
-            validateObj.clientAgentId ='请选择客户集群';
-        }
-        if (!clientSerial) {
-            validateObj.clientSerial ='请选择车牌号';
-        }
-        setValidation(validateObj);
-        return Object.keys(validateObj).length
-    }
     //查询采购列表
     const getClientInformationArray =() =>{
         getClientInformationList(0);
     }
     const modalOpenModal=()=>{
-        setModalData({
-            ...modalData,
-            brandName: null,
-            matchModelName: null,
-        });
-        setModalOpenFlag(true);
-        setClientAgentId(null);
-        setRemark('');
-        setClientSerial('');
-        setClientSerialDetail('');
-        setSourceType('1');
-        setTel('');
-        setName('');
-        setAddress('');
-        setReferUser(appReducer.currentUser);
-    }
-    // 关闭模态
-    const modalClose = () => {
-        setModalOpenFlag(false);
-    };
-    const addClientInfo=()=>{
-        const errorCount = validate();
-        if(errorCount==0){
-            addClientInformation({clientAgentId,remark,clientSerial,clientSerialDetail,sourceType,tel,name,address,referUser,modalData});
-            setModalOpenFlag(false);
-        }
+        openCreateClientInformation()
     }
     //下一页
     const getNextClientList = () => {
@@ -331,188 +276,7 @@ function ClientInformation (props) {
                     上一页
                 </Button>}
             </Box>
-            {/*模态框*/}
-            <SimpleModal
-                maxWidth="md"
-                maxHeight="md"
-                title="新增客户信息"
-                open={modalOpenFlag}
-                onClose={modalClose}
-                showFooter={true}
-                footer={
-                    <>
-                        <Button variant="contained" onClick={addClientInfo} color="primary">
-                            确定
-                        </Button>
-                        <Button onClick={modalClose} color="primary" autoFocus>
-                            取消
-                        </Button>
-                    </>
-                }
-            >
-
-                <Grid  container spacing={3}>
-                    {/*客户集群clientAgentId*/}
-                    <Grid item xs>
-                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }} fullWidth
-                                      options={clientInformationReducer.clientAgentArray}
-                                      getOptionLabel={(option) => option.name}
-                                      value={clientAgentId}
-                                      onChange={(e,value)=>{setClientAgentId(value)}}
-                                      renderInput={(params) => <TextField {...params} label="客户集群" margin="dense" variant="outlined"
-                                                                          error={validation.clientAgentId&&validation.clientAgentId!=''}
-                                                                          helperText={validation.clientAgentId}
-                                       />}
-                        />
-                    </Grid>
-                    {/*车牌号 clientSerial*/}
-                    <Grid item xs>
-                        <TextField
-                            fullWidth={true}
-                            margin="dense"
-                            variant="outlined"
-                            label="车牌号"
-                            value={clientSerial}
-                            onChange={(e)=>setClientSerial(e.target.value)}
-                            error={validation.clientSerial&&validation.clientSerial!=''}
-                            helperText={validation.clientSerial}
-                        />
-                    </Grid>
-                    {/*VIN clientSerialDetail*/}
-                    <Grid item xs>
-                        <TextField
-                            fullWidth={true}
-                            margin="dense"
-                            variant="outlined"
-                            label="VIN"
-                            value={clientSerialDetail}
-                            onChange={(e)=>setClientSerialDetail(e.target.value)}
-                        />
-                    </Grid>
-                    {/*类型名称 modelId,modelName*/}
-                   {/* <Grid item xs></Grid>*/}
-                    {/*客户来源 sourceType*/}
-                    <Grid item xs>
-                        <TextField style={{marginTop:'7px'}} fullWidth
-                                   size="small"
-                                   select
-                                   label="客户来源"
-                                   name="sourceType"
-                                   type="number"
-                                   onChange={(e)=>setSourceType(e.target.value)}
-                                   value={sourceType}
-                                   SelectProps={{
-                                       native: true,
-                                   }}
-                                   variant="outlined"
-                        >
-                            {sysConst.SOURCE_TYPE.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </TextField>
-                    </Grid>
-                </Grid>
-
-                <Grid  container spacing={3}>
-                    {/*用户 name*/}
-                    <Grid item xs>
-                        <Grid item xs>
-                            <TextField
-                                fullWidth={true}
-                                margin="dense"
-                                variant="outlined"
-                                label="用户"
-                                value={name}
-                                onChange={(e)=>setName(e.target.value)}
-                            />
-                        </Grid>
-                    </Grid>
-                    {/*电话 tel*/}
-                    <Grid item xs>
-                        <Grid item xs>
-                            <TextField
-                                fullWidth={true}
-                                margin="dense"
-                                variant="outlined"
-                                type='number'
-                                label="电话"
-                                value={tel}
-                                onChange={(e)=>setTel(e.target.value)}
-                            />
-                        </Grid>
-                    </Grid>
-                    {/*地址 address*/}
-                    <Grid item xs>
-                        <Grid item xs>
-                            <TextField
-                                fullWidth={true}
-                                margin="dense"
-                                variant="outlined"
-                                label="地址"
-                                value={address}
-                                onChange={(e)=>setAddress(e.target.value)}
-                            />
-                        </Grid>
-                    </Grid>
-                    {/*推荐人 referUser*/}
-                    <Grid item xs>
-                        <Autocomplete fullWidth
-                                      ListboxProps={{ style: { maxHeight: '175px' } }}
-                                      options={clientInformationReducer.referUserArray}
-                                      getOptionLabel={(option) => option.real_name}
-                                      value={referUser}
-                                      onChange={(e,value)=>setReferUser(value)}
-                                      renderInput={(params) => <TextField {...params} label="推荐人" margin="dense" variant="outlined"/>}
-                        />
-                    </Grid>
-                </Grid>
-
-                <Grid  container spacing={3}>
-                    <Grid item xs={3}>
-                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
-                                      options={clientInformationReducer.prodMatchBrandArray}
-                                      getOptionLabel={(option) => option.brand_name}
-                                      value={modalData.brandName}
-                                      onChange={(event, value) => {
-                                          setModalData({...modalData,brandName:value, matchModelName: null});
-                                          // 商品分类有选择时，取得商品子分类， 否则清空
-                                          if (value != null) {
-                                              dispatch(ClientInformationAction.getProdMatchModelList(value.id));
-                                          } else {
-                                              dispatch(ClientInformationActionType.setProdMatchModelList([]));
-                                          }
-                                      }}
-
-                                      renderInput={(params) => <TextField {...params} label="品牌" margin="dense" variant="outlined"/>}
-                        />
-                    </Grid>
-                    <Grid item xs={3}>
-                        <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
-                                      options={clientInformationReducer.prodMatchModelArray}
-                                      noOptionsText="无选项"
-                                      getOptionLabel={(option) => option.match_model_name}
-                                      value={modalData.matchModelName}
-                                      onChange={(event, value) => {
-                                          setModalData({...modalData,matchModelName:value});
-                                      }}
-                                      renderInput={(params) => <TextField {...params} label="车型" margin="dense" variant="outlined"/>}
-                        />
-                    </Grid>
-                    {/*备注remark*/}
-                    <Grid item xs={6}>
-                        <TextField
-                            fullWidth={true}
-                            margin="dense"
-                            variant="outlined"
-                            label="备注"
-                            value={remark}
-                            onChange={(e)=>setRemark(e.target.value)}
-                        />
-                    </Grid>
-                </Grid>
-            </SimpleModal>
+            <CreateClientInformation />
         </div>
     )
 }
@@ -530,7 +294,6 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => ({
     getClientAgent:()=>{
         dispatch(ClientInformationAction.getClientAgent());
-        dispatch(ClientInformationAction.getProdMatchBrandList());
     },
     getUserArray:()=>{
         dispatch(ClientInformationAction.getUserArray());
@@ -552,8 +315,8 @@ const mapDispatchToProps = (dispatch) => ({
             }
         });
     },
-    addClientInformation:({clientAgentId,remark,clientSerial,clientSerialDetail,sourceType,tel,name,address,referUser,modalData})=>{
-        dispatch(ClientInformationAction.addClientInformation({clientAgentId,remark,clientSerial,clientSerialDetail,sourceType,tel,name,address,referUser,modalData}));
-    }
+    openCreateClientInformation: () => {
+        dispatch(CreateClientInformationAction.openCreateClientInformation());
+    },
 })
 export default connect(mapStateToProps, mapDispatchToProps)(ClientInformation)

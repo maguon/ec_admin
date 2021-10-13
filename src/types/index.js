@@ -50,6 +50,7 @@ import * as UserAchievementDetailActionType from './main/UserAchievementDetailAc
 import * as CarModelActionType from './main/CarModelActionType';
 import * as UserPerfLevelActionType from './main/UserPerfLevelActionType';
 import * as ServiceItemStatActionType from './main/ServiceItemStatActionType';
+import * as CreateClientInformationActionType from './main/model/CreateClientInformationActionType'
 export {
     AppActionType,
     CommonActionType,
@@ -102,5 +103,6 @@ export {
     UserAchievementDetailActionType,
     CarModelActionType,
     UserPerfLevelActionType,
-    ServiceItemStatActionType
+    ServiceItemStatActionType,
+    CreateClientInformationActionType
 }

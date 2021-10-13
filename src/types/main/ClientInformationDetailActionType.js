@@ -7,3 +7,4 @@ export const getOrderList = createAction('GET_ORDER_LIST');
 export const getOrderItemProdList = createAction('GET_ORDER_ITEM_PROD_LIST');
 export const getOrderItemServiceList = createAction('GET_ORDER_ITEM_SERVICE_LIST')
 export const setMatchModelList = createAction('SET_MATCH_MODEL_LIST')
+export const setMatchBrandList = createAction('SET_MATCH_BRAND_LIST')

@@ -32,9 +32,10 @@ import {DatePicker} from '@material-ui/pickers';
 // 引入Dialog
 import {SimpleModal} from "../index";
 import {OrderActionType, CommonActionType} from "../../types";
-
+import {CreateClientInformation} from "../index";
 const orderAction = require('../../actions/main/OrderAction');
 const orderDetailAction = require('../../actions/main/OrderDetailAction');
+const CreateClientInformationAction =require('../../actions/main/model/CreateClientInformationAction');
 const commonAction = require('../../actions/layout/CommonAction');
 const sysConst = require('../../utils/SysConst');
 const commonUtil = require('../../utils/CommonUtil');
@@ -47,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Order(props) {
-    const {orderReducer, appReducer, commonReducer, fromDetail} = props;
+    const {orderReducer, appReducer, commonReducer, fromDetail,openCreateClientInformation} = props;
     const classes = useStyles();
     const dispatch = useDispatch();
 
@@ -299,7 +300,9 @@ function Order(props) {
         }
         setModalData({...modalData});
     };
-
+    const modalOpenModal=()=>{
+        openCreateClientInformation()
+    }
     return (
         <div className={classes.root}>
             {/* 标题部分 */}
@@ -456,20 +459,25 @@ function Order(props) {
 
                 <Grid item xs={2} container style={{textAlign:'right',marginTop:30}}>
                     {/*查询按钮*/}
-                    <Grid item xs={4}>
+                    <Grid item xs={3}>
                         <Fab color="primary" size="small" onClick={()=>{dispatch(orderAction.getOrderList(0))}}>
                             <i className="mdi mdi-magnify mdi-24px"/>
                         </Fab>
                     </Grid>
 
                     {/*追加按钮*/}
-                    <Grid item xs={4}>
+                    <Grid item xs={3}>
                         <Fab color="primary" size="small" onClick={initModal}>
                             <i className="mdi mdi-plus mdi-24px"/>
                         </Fab>
                     </Grid>
-
-                    <Grid item xs={4}>
+                    {/*添加客户信息*/}
+                    <Grid item xs={3}>
+                        <Fab color="primary" size="small" onClick={modalOpenModal}>
+                          客
+                        </Fab>
+                    </Grid>
+                    <Grid item xs={3}>
                         <Fab color="primary" size="small" onClick={()=>{dispatch(orderAction.downLoadCsv())}}>
                             <i className="mdi mdi-cloud-download mdi-24px"/>
                         </Fab>
@@ -547,7 +555,7 @@ function Order(props) {
                 <Button variant="contained" color="primary"
                         onClick={()=>{dispatch(orderAction.getOrderList(orderReducer.orderData.start+(orderReducer.orderData.size-1)))}}>下一页</Button>}
             </Box>
-
+            <CreateClientInformation />
             <SimpleModal
                 maxWidth={'lg'}
                 title= "新增订单"
@@ -847,6 +855,9 @@ const mapDispatchToProps = (dispatch) => ({
     },
     getOrderList: (dataStart) => {
         dispatch(orderAction.getOrderList(dataStart))
+    },
+    openCreateClientInformation: () => {
+        dispatch(CreateClientInformationAction.openCreateClientInformation());
     },
 });
 

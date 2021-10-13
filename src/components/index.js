@@ -59,6 +59,7 @@ import UserAchievementDetail from './main/UserAchievementDetail';
 import CarModel from './main/CarModel';
 import UserPerfLevel from './main/UserPerfLevel';
 import ServiceItemStat from  './main/ServiceItemStat';
+import CreateClientInformation from './main/model/CreateClientInformation'
 export {
     Header,
     Footer,
@@ -120,5 +121,6 @@ export {
     UserAchievementDetail,
     CarModel,
     UserPerfLevel,
-    ServiceItemStat
+    ServiceItemStat,
+    CreateClientInformation
 }

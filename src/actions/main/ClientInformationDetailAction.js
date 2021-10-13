@@ -1,6 +1,7 @@
 import Swal from 'sweetalert2';
 import {apiHost} from '../../config/index';
 import {AppActionType, ClientInformationDetailActionType} from '../../types';
+const ClientInformationDetailAction = require('../../actions/main/ClientInformationDetailAction');
 const httpUtil = require('../../utils/HttpUtils');
 const localUtil = require('../../utils/LocalUtils');
 const sysConst = require('../../utils/SysConst');
@@ -147,6 +148,25 @@ export const getOrderItemService=(id)=>async (dispatch, getState) => {
         Swal.fire("操作失败", err.message, "error");
     }
 }
+export const getProdMatchBrandList = () => async (dispatch,getState) => {
+    try {
+        // 基本检索URL
+        let url = apiHost + '/api/user/' + localUtil.getSessionItem(sysConst.LOGIN_USER_ID) + '/prodMatchBrand';
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        if (res.success) {
+            dispatch({type: ClientInformationDetailActionType.setMatchBrandList, payload: res.rows});
+            if(getState().ClientInformationDetailReducer.clientInfo.match_brand_id==null){return;}else {
+                dispatch(ClientInformationDetailAction.getMatchModelList(getState().ClientInformationDetailReducer.clientInfo.match_brand_id.id));
+            }
+        } else if (!res.success) {
+            Swal.fire('获取品牌信息失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire('操作失败', err.message, 'error');
+    }
+};
 export const getMatchModelList = (brandId) => async (dispatch) => {
     try {
         // 基本检索URL

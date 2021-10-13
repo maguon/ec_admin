@@ -29,15 +29,24 @@ const initialState = {
     },
     orderItemProdInfo:[],
     orderItemServiceInfo:[],
-    prodMatchModelArray:[]
+    prodMatchModelArray:[],
+    prodMatchBrandArray:[]
 };
 
 export default handleActions({
     [ClientInformationDetailActionType.getClientInfo]: (state, action) => {
         let ret = action.payload;
         ret.client_agent_id={id:action.payload.client_agent_id,name:action.payload.client_agent_name};
-        ret.match_brand_id={id:action.payload.match_brand_id,brand_name:action.payload.match_brand_name};
-        ret.match_model_id={id:action.payload.match_model_id,match_model_name:action.payload.match_model_name};
+        if(action.payload.match_brand_id==0&&action.payload.match_brand_name==null){
+            ret.match_brand_id=null
+        }else {
+            ret.match_brand_id={id:action.payload.match_brand_id,brand_name:action.payload.match_brand_name};
+        }
+       if(action.payload.match_model_id==0&&action.payload.match_model_name==null){
+           ret.match_model_id=null
+       }else {
+           ret.match_model_id={id:action.payload.match_model_id,match_model_name:action.payload.match_model_name};
+       }
         return {
             ...state,
             clientInfo: ret
@@ -86,6 +95,12 @@ export default handleActions({
         return {
             ...state,
             prodMatchModelArray: action.payload
+        }
+    },
+    [ClientInformationDetailActionType.setMatchBrandList]: (state, action) => {
+        return {
+            ...state,
+            prodMatchBrandArray: action.payload
         }
     },
 
