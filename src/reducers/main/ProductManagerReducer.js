@@ -19,10 +19,11 @@ const initialState = {
         categorySub: null,
         brand: null,
         brandModel: null,
-        product: null,
+        productId: null,
         standardType: '',
         status: ''
-    }
+    },
+    productArray:[]
 };
 
 export default handleActions({
@@ -46,4 +47,11 @@ export default handleActions({
             queryParams: paramsObj
         }
     },
+    [ProductManagerActionType.setProductManagerArray]: (state, action) => {
+        return {
+            ...state,
+            productArray: action.payload
+        }
+    },
+
 }, initialState)

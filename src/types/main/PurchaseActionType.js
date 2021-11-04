@@ -11,6 +11,7 @@ export const setPurchaseAddObj = createAction('SET_PURCHASE_ADD_OBJ');
 export const setPurchasePdfData = createAction('SET_PURCHASE_PDF_DATA');
 export const getSupplierArray = createAction('GET_SUPPLIER_ARRAY');
 export const getPurchaseItemArray = createAction('GET_PURCHASE_ITEM_ARRAY');
-
-
-
+export const setPurchaseQueryParam = createAction('SET_PURCHASE_QUERY_PARAM');
+export const setPurchaseQueryParams = createAction('SET_PURCHASE_QUERY_PARAMS');
+export const setPurchaseProductArray = createAction('GET_PURCHASE_PRODUCT_ARRAY');
+export const getProductArray = createAction('GET_PRODUCT_ARRAY');

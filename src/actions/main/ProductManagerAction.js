@@ -37,6 +37,38 @@ export const getProductList = (dataStart) => async (dispatch, getState) => {
     }
 };
 
+export const getProductParamsList = () => async (dispatch,getState) => {
+    try {
+        let url=apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/product?';
+        const queryParams = getState().ProductManagerReducer.queryParams;
+            let paramsObject = {
+                categoryId: queryParams.category == null ? '' : queryParams.category.id,
+                categorySubId: queryParams.categorySub == null ? '' : queryParams.categorySub.id,
+                brandId: queryParams.brand === null ? '' : queryParams.brand.id,
+                brandModelId: queryParams.brandModel == null ? '' : queryParams.brandModel.id,
+            };
+            let conditions = httpUtil.objToUrl(paramsObject);
+            // 检索URL
+
+            if(conditions.length> 0){
+                url=url + "&" + conditions;
+                dispatch({type: AppActionType.showLoadProgress, payload: true});
+                const res = await httpUtil.httpGet(url);
+                dispatch({type: AppActionType.showLoadProgress, payload: false});
+                if (res.success === true) {
+                    dispatch({type: ProductManagerActionType.setProductManagerArray, payload: res.rows});
+                } else if (res.success === false) {
+                    Swal.fire('获取商品列表信息失败', res.msg, 'warning');
+                }
+            }else {
+                dispatch({type: ProductManagerActionType.setProductManagerArray, payload:[]});
+            }
+
+    } catch (err) {
+        Swal.fire('操作失败', err.message, 'error');
+    }
+};
+
 export const changeStatus = (id, status) => async (dispatch, getState) => {
     try {
         // 状态
@@ -112,7 +144,7 @@ const getParams = () => (dispatch, getState) => {
         categorySubId: queryParams.categorySub == null ? '' : queryParams.categorySub.id,
         brandId: queryParams.brand === null ? '' : queryParams.brand.id,
         brandModelId: queryParams.brandModel == null ? '' : queryParams.brandModel.id,
-        productId: queryParams.product == null ? '' : queryParams.product.id,
+        productId: queryParams.productId == null ? '' : queryParams.productId.id,
         standardType: queryParams.standardType == null ? '' : queryParams.standardType,
         status: queryParams.status == null ? '' : queryParams.status,
     };

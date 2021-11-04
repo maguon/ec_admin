@@ -29,7 +29,7 @@ import {
 import Autocomplete from "@material-ui/lab/Autocomplete";
 // 引入Dialog
 import {SimpleModal} from "../index";
-import {CommonActionType, ProductManagerActionType} from "../../types";
+import {CommonActionType, ProductManagerActionType, PurchaseActionType} from "../../types";
 
 const productManagerAction = require('../../actions/main/ProductManagerAction');
 const commonAction = require('../../actions/layout/CommonAction');
@@ -55,7 +55,7 @@ function ProductManager(props) {
                 categorySub: null,
                 brand: null,
                 brandModel: null,
-                product: null,
+                productId: null,
                 standardType: '',
                 status: ''
             };
@@ -216,7 +216,7 @@ function ProductManager(props) {
             {/* 上部分：检索条件输入区域 */}
             <Grid container spacing={3}>
                 <Grid container item xs={10} spacing={1}>
-                    <Grid item xs={2}>
+                    <Grid item xs>
                         <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.categoryList}
                                       getOptionLabel={(option) => option.category_name}
@@ -224,6 +224,8 @@ function ProductManager(props) {
                                       onChange={(event, value) => {
                                           dispatch(ProductManagerActionType.setQueryParam({name: "category", value: value}));
                                           dispatch(ProductManagerActionType.setQueryParam({name: "categorySub", value: null}));
+                                          dispatch(ProductManagerActionType.setQueryParam({name: "productId", value: null}));
+                                          dispatch(productManagerAction.getProductParamsList())
                                           if (value != null) {
                                               dispatch(commonAction.getCategorySubList(value.id));
                                           } else {
@@ -233,7 +235,7 @@ function ProductManager(props) {
                                       renderInput={(params) => <TextField {...params} label="商品分类" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs>
                         <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.categorySubList}
                                       noOptionsText="无选项"
@@ -241,12 +243,14 @@ function ProductManager(props) {
                                       value={productManagerReducer.queryParams.categorySub}
                                       onChange={(event, value) => {
                                           dispatch(ProductManagerActionType.setQueryParam({name: "categorySub", value: value}));
+                                          dispatch(ProductManagerActionType.setQueryParam({name: "productId", value: null}));
+                                          dispatch(productManagerAction.getProductParamsList())
                                       }}
                                       renderInput={(params) => <TextField {...params} label="商品子分类" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
 
-                    <Grid item xs={2}>
+                    <Grid item xs>
                         <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.brandList}
                                       getOptionLabel={(option) => option.brand_name}
@@ -254,6 +258,8 @@ function ProductManager(props) {
                                       onChange={(event, value) => {
                                           dispatch(ProductManagerActionType.setQueryParam({name: "brand", value: value}));
                                           dispatch(ProductManagerActionType.setQueryParam({name: "brandModel", value: null}));
+                                          dispatch(ProductManagerActionType.setQueryParam({name: "productId", value: null}));
+                                          dispatch(productManagerAction.getProductParamsList())
                                           // 品牌有选择时，取得品牌型号， 否则清空
                                           if (value != null) {
                                               dispatch(commonAction.getBrandModelList(value.id));
@@ -264,7 +270,7 @@ function ProductManager(props) {
                                       renderInput={(params) => <TextField {...params} label="品牌" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs>
                         <Autocomplete fullWidth ListboxProps={{style: {maxHeight: '175px'}}}
                                       options={commonReducer.brandModelList}
                                       noOptionsText="无选项"
@@ -272,12 +278,26 @@ function ProductManager(props) {
                                       value={productManagerReducer.queryParams.brandModel}
                                       onChange={(event, value) => {
                                           dispatch(ProductManagerActionType.setQueryParam({name: "brandModel", value: value}));
+                                          dispatch(ProductManagerActionType.setQueryParam({name: "productId", value: null}));
+                                          dispatch(productManagerAction.getProductParamsList())
+
                                       }}
                                       renderInput={(params) => <TextField {...params} label="品牌型号" margin="dense" variant="outlined"/>}
                         />
                     </Grid>
+                    <Grid item xs>
+                        <Autocomplete ListboxProps={{ style: { maxHeight: '175px' } }}
+                                      options={productManagerReducer.productArray}
+                                      getOptionLabel={(option) => option.product_name}
+                                      onChange={(event, value) => {
+                                          dispatch(ProductManagerActionType.setQueryParam({name: "productId", value: value}));
+                                      }}
+                                      value={productManagerReducer.queryParams.productId}
+                                      renderInput={(params) => <TextField {...params} label="商品名称" margin="dense" variant="outlined"/>}
+                        />
+                    </Grid>
 
-                    <Grid item xs={2}>
+                    <Grid item xs>
                         <FormControl variant="outlined" fullWidth margin="dense">
                             <InputLabel>标准类型</InputLabel>
                             <Select label="标准类型"
@@ -294,7 +314,7 @@ function ProductManager(props) {
                         </FormControl>
                     </Grid>
 
-                    <Grid item xs={2}>
+                    <Grid item xs>
                         <FormControl variant="outlined" fullWidth margin="dense">
                             <InputLabel>状态</InputLabel>
                             <Select label="状态"

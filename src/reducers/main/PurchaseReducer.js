@@ -41,9 +41,33 @@ const initialState = {
     supplierArray: [],
     //商品
     productArray:[],
+    productListArray:[],
     purchasePdfData: {},
     supplierPdfArray:{},
     purchaseItemArray:[],
+    // 检索条件
+    queryParams: {
+        categoryId: null,
+        categorySubId: null,
+        brandId: null,
+        brandModelId: null,
+        productId: null,
+        purchaseId:'',
+        supplierId:null,
+        planDateStart:'',
+        planDateEnd:'',
+    },
+    // 检索结果
+    productData: {
+        // 开始位置
+        start: 0,
+        // 每页数量
+        size: 11,
+        // 检索结果数量
+        dataSize: 0,
+        // 数据列表
+        purchaseProductList: []
+    },
 };
 export default handleActions({
     [PurchaseActionType.setPurchaseQueryObj]: (state, action) => {
@@ -122,4 +146,31 @@ export default handleActions({
            purchaseItemArray: action.payload
         }
     },
+    [PurchaseActionType.setPurchaseQueryParams]: (state, action) => {
+        return {
+            ...state,
+            queryParams: action.payload
+        }
+    },
+    [PurchaseActionType.setPurchaseQueryParam]: (state, action) => {
+        const {name, value} = action.payload;
+        const paramsObj = {...state.queryParams, [name]: value};
+        return {
+            ...state,
+            queryParams: paramsObj
+        }
+    },
+    [PurchaseActionType.setPurchaseProductArray]: (state, action) => {
+        return {
+            ...state,
+            productData: action.payload
+        }
+    },
+    [PurchaseActionType.getProductArray]: (state, action) => {
+        return {
+            ...state,
+            productListArray: action.payload
+        }
+    },
+
 }, initialState)

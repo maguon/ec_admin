@@ -25,21 +25,50 @@ export const getSupplierList = () => async (dispatch) => {
     }
 };
 // 采购管理 -> 采购 获取商品列表
-export const getProductList = () => async (dispatch) => {
+export const getProductList = (value) => async (dispatch,getState) => {
     try {
-        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/product?';
-        dispatch({type: AppActionType.showLoadProgress, payload: true});
-        const res = await httpUtil.httpGet(url);
-        dispatch({type: AppActionType.showLoadProgress, payload: false});
-        if (res.success === true) {
-            dispatch({type: PurchaseActionType.getProductList, payload: res.rows});
-        } else if (res.success === false) {
-            Swal.fire('获取管理员列表信息失败', res.msg, 'warning');
+        let url=apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/product?';
+        if(value=='1'){
+             url = url;
+            dispatch({type: AppActionType.showLoadProgress, payload: true});
+            const res = await httpUtil.httpGet(url);
+            dispatch({type: AppActionType.showLoadProgress, payload: false});
+            if (res.success === true) {
+                dispatch({type: PurchaseActionType.getProductList, payload: res.rows});
+            } else if (res.success === false) {
+                Swal.fire('获取商品列表信息失败', res.msg, 'warning');
+            }
+        }else {
+            const paramsObj=getState().PurchaseReducer.queryParams;
+            let paramsObject = {
+                categoryId: paramsObj.categoryId == null ? '' : paramsObj.categoryId.id,
+                categorySubId: paramsObj.categorySubId == null ? '' : paramsObj.categorySubId.id,
+                brandId: paramsObj.brandId == null ? '' : paramsObj.brandId.id,
+                brandModelId: paramsObj.brandModelId == null ? '' : paramsObj.brandModelId.id,
+            };
+            let conditions = httpUtil.objToUrl(paramsObject);
+            // 检索URL
+            if(conditions.length > 0){
+                url =  url + "&" + conditions;
+                dispatch({type: AppActionType.showLoadProgress, payload: true});
+                const res = await httpUtil.httpGet(url);
+                dispatch({type: AppActionType.showLoadProgress, payload: false});
+                if (res.success === true) {
+                    dispatch({type: PurchaseActionType.getProductArray, payload: res.rows});
+                } else if (res.success === false) {
+                    Swal.fire('获取商品列表信息失败', res.msg, 'warning');
+                }
+            }else {
+                dispatch({type: PurchaseActionType.getProductArray, payload:[]});
+            }
+
         }
+
     } catch (err) {
         Swal.fire('操作失败', err.message, 'error');
     }
 };
+
 // 采购管理 -> 采购 增加商品列表
 export const addPurchaseInfo = (supplier,paramsItem,transferCostType,transferCost,remark) => async (dispatch) => {
     try {
@@ -47,16 +76,16 @@ export const addPurchaseInfo = (supplier,paramsItem,transferCostType,transferCos
         for(let i=0;i<paramsItem.length;i++){
             let obj = {};
             obj.remark = paramsItem[i].remark;
-            obj.productId= paramsItem[i].product.split('&')[0];
-            obj.productName= paramsItem[i].product.split('&')[1];
+            obj.productId= paramsItem[i].product.id;
+            obj.productName= paramsItem[i].product.product_name;
             obj.unitCost= paramsItem[i].unitCost;
             obj.purchaseCount= paramsItem[i].unitNumber;
             paramsPurchase.push(obj);
         }
         const params =  {
                 remark:remark,
-                supplierId: supplier.split('&')[0],
-                supplierName: supplier.split('&')[1],
+                supplierId: supplier.id,
+                supplierName: supplier.supplier_name,
                 transferCostType: transferCostType,
                 transferCost:transferCost,
                 orderId: 0,
@@ -107,7 +136,46 @@ export const getPurchaseList = (params) => async (dispatch, getState) => {
             dispatch({type: PurchaseActionType.setPurchaseListDataSize, payload: res.rows.length});
             dispatch({type: PurchaseActionType.setPurchaseArray, payload: res.rows.slice(0, size - 1)});
         } else if (res.success === false) {
-            Swal.fire('获取管理员列表信息失败', res.msg, 'warning');
+            Swal.fire('获取采购列表信息失败', res.msg, 'warning');
+        }
+    } catch (err) {
+        Swal.fire('操作失败', err.message, 'error');
+    }
+};
+export const getPurchaseProductList = (params) => async (dispatch, getState) => {
+    try {
+        const start = params;
+        // 检索条件：每页数量
+        const size = getState().PurchaseReducer.productData.size;
+        // 检索条件
+        const paramsObj=getState().PurchaseReducer.queryParams;
+        // 基本检索URL
+        let url = apiHost + '/api/user/'+localUtil.getSessionItem(sysConst.LOGIN_USER_ID)+'/purchaseItem?start=' + start + '&size=' + size;
+        let paramsObject = {
+            categoryId: paramsObj.categoryId == null ? '' : paramsObj.categoryId.id,
+            categorySubId: paramsObj.categorySubId == null ? '' : paramsObj.categorySubId.id,
+            brandId: paramsObj.brandId == null ? '' : paramsObj.brandId.id,
+            brandModelId: paramsObj.brandModelId == null ? '' : paramsObj.brandModelId.id,
+            productId:  paramsObj.productId == null ? '' : paramsObj.productId.id,
+            purchaseId:paramsObj.purchaseId,
+            supplierId:paramsObj.supplierId == null? '' : paramsObj.supplierId.id,
+            planDateStart:commonUtil.formatDate(paramsObj.planDateStart, 'yyyyMMdd'),
+            planDateEnd:commonUtil.formatDate(paramsObj.planDateEnd, 'yyyyMMdd'),
+        };
+        let conditions = httpUtil.objToUrl(paramsObject);
+        dispatch({type: AppActionType.showLoadProgress, payload: true});
+        // 检索URL
+        url = conditions.length > 0 ? url + "&" + conditions : url;
+        const res = await httpUtil.httpGet(url);
+        dispatch({type: AppActionType.showLoadProgress, payload: false});
+        let newData = getState().PurchaseReducer.productData;
+        if (res.success === true) {
+            newData.start = start;
+            newData.dataSize = res.rows.length;
+            newData.purchaseProductList = res.rows.slice(0, size - 1);
+            dispatch({type: PurchaseActionType.setPurchaseProductArray, payload: newData});
+        } else if (res.success === false) {
+            Swal.fire('获取商品列表信息失败', res.msg, 'warning');
         }
     } catch (err) {
         Swal.fire('操作失败', err.message, 'error');
